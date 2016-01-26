@@ -1,0 +1,15 @@
+# Ignore all
+*
+
+# Add back files with extensions and directories
+!*.*
+!*/
+
+# Ignore debug
+*.debug
+
+.DS_Store
+
+*.bkp
+
+vendor/golang.org/x/crypto/

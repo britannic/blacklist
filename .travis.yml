@@ -1,0 +1,9 @@
+language: go
+sudo: false
+
+before_script:
+  - go vet ./...
+os:
+  - osx
+go:
+  - tip
