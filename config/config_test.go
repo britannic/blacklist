@@ -2,7 +2,6 @@
 package config_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/britannic/blacklist/config"
@@ -11,6 +10,15 @@ import (
 func TestBlacklistCfg(t *testing.T) {
 	b, e := config.Get(config.Testdata, "blacklist")
 	if e != nil {
-		fmt.Println(b)
+		t.Error(b)
+	}
+}
+
+func TestToBool(t *testing.T) {
+	if b := config.ToBool("false"); b {
+		t.Errorf(`ToBool("false") `+"failed with %v\n", b)
+	}
+	if b := config.ToBool("true"); !b {
+		t.Errorf(`ToBool("true") `+"failed with %v\n", b)
 	}
 }
