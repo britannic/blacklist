@@ -5,7 +5,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -32,24 +31,7 @@ func basename(s string) string {
 	return s
 }
 
-// opts struct for command line options
-type opts struct {
-	File    *string
-	V       *bool
-	Version *bool
-}
-
-// getopts returns legal command lines flags and values or displays help
-func getopts() (options opts) {
-	options.File = flag.String("f", "/config/config.boot", "<file> # Load a configuration file")
-	options.V = flag.Bool("v", false, "Verbose display")
-	options.Version = flag.Bool("version", false, "# show program version number")
-	flag.Parse()
-
-	return
-}
-
-// getfile reads a file returns a []byte array
+// getfile reads a file returns a []string array
 func getfile(f string) (data []string, err error) {
 	b, err := ioutil.ReadFile(f)
 	if len(string(b)) > 0 {

@@ -1,5 +1,7 @@
 package: github.com/britannic/blacklist
 import:
+- package: github.com/Sirupsen/logrus
 - package: golang.org/x/crypto
   subpackages:
   - /ssh/terminal
+- package: runtime

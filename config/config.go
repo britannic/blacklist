@@ -9,12 +9,12 @@ package config
 import (
 	"bytes"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"sort"
 	"strings"
 
+	log "github.com/Sirupsen/logrus"
 	"golang.org/x/crypto/ssh/terminal"
 
 	r "github.com/britannic/blacklist/regx"
@@ -218,5 +218,6 @@ func Get(cfg string, root string) (b *Blacklist, err error) {
 			}
 		}
 	}
+
 	return &cfgtree, err
 }

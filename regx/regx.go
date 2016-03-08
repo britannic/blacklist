@@ -48,7 +48,7 @@ func Get(t, s string) (r []string) {
 	return
 }
 
-//Regex returns a map of struct *re populated with precompiled regex objects
+// Regex returns a map of struct *re populated with precompiled regex objects
 func Regex() *RGX {
 	return &RGX{
 		CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
@@ -61,7 +61,7 @@ func Regex() *RGX {
 		MISC: regexp.MustCompile(`^([\w-]+)$`),
 		MLTI: regexp.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`),
 		MPTY: regexp.MustCompile(`^$`),
-		NAME: regexp.MustCompile(`^([\w-]+)\s([\S]+)$`),
+		NAME: regexp.MustCompile(`^([\w-]+)\s(.*)$`),
 		NODE: regexp.MustCompile(`^([\w-]+)\s[{]{1}$`),
 		RBRC: regexp.MustCompile(`[}]`),
 		SUFX: regexp.MustCompile(`(?:#.*|\{.*|[/[].*)\z`),

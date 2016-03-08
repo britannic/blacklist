@@ -7,10 +7,11 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"sort"
 	"strings"
+
+	log "github.com/Sirupsen/logrus"
 
 	c "github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/regx"
@@ -21,6 +22,9 @@ func disabled(d c.Blacklist, root string) bool {
 	r := d[root].Disable
 	return r
 }
+
+// excludes holds fqdns that mustn't be blacklisted
+type excludes map[string]int
 
 // getExcludes returns a map[string]int of excludes
 func getExcludes(b c.Blacklist) (e excludes) {
@@ -33,6 +37,9 @@ func getExcludes(b c.Blacklist) (e excludes) {
 	return
 }
 
+// includes holds fqdns that should be blacklisted
+type includes map[string]int
+
 // getIncludes returns a map[string]int of includes
 func getIncludes(n *c.Node) (i includes) {
 	i = make(includes)
@@ -43,17 +50,26 @@ func getIncludes(n *c.Node) (i includes) {
 }
 
 // getList returns a sorted []byte of blacklist entries
-func getList(c *c.Src) (b []byte) {
+func getList(cf *c.Src) (b []byte) {
 	eq := "/"
-	if c.Type == "domains" {
+	if cf.Type == "domains" {
 		eq = "/."
 	}
 	var lines []string
-	for key := range c.List {
-		line := fmt.Sprintf("address=%v%v/%v\n", eq, key, c.IP)
+
+	sortKeys := func() (pkeys c.Keys) {
+		for pkey := range cf.List {
+			pkeys = append(pkeys, pkey)
+		}
+		sort.Sort(c.Keys(pkeys))
+		return
+	}
+
+	for _, key := range sortKeys() {
+		line := fmt.Sprintf("address=%v%v/%v\n", eq, key, cf.IP)
 		lines = append(lines, line)
 	}
-	sort.Strings(lines)
+	// sort.Strings(lines)
 	for _, line := range lines {
 		b = append(b, line...)
 	}
@@ -86,16 +102,20 @@ func process(s *c.Src, exc excludes, d string) *c.Src {
 	rx := regx.Regex()
 	s.List = make(map[string]int)
 
+NEXT:
 	for _, line := range strings.Split(d, "\n") {
-		line, ok := stripPrefix(line, s.Prfx, rx)
 		switch {
-		case ok:
-			{
-				line = strings.TrimSpace(line)
-				line = strings.TrimPrefix(line, s.Prfx)
+		case strings.HasPrefix(line, "#"), strings.HasPrefix(line, "//"):
+			continue NEXT
+		case strings.HasPrefix(line, s.Prfx):
+			var ok bool // We have to declare ok here, to fix var line shadow bug
+			line, ok = stripPrefix(line, s.Prfx, rx)
+			if ok {
 				line = strings.ToLower(line)
 				line = rx.SUFX.ReplaceAllString(line, "")
+				line = strings.TrimSpace(line)
 				fqdns := rx.FQDN.FindAllString(line, -1)
+			FQDN:
 				for _, fqdn := range fqdns {
 					fqdn = strings.TrimSpace(fqdn)
 					i := strings.Count(fqdn, ".")
@@ -107,6 +127,9 @@ func process(s *c.Src, exc excludes, d string) *c.Src {
 								s.List[fqdn] = 0
 							} else {
 								exc[fqdn]++
+								if _, exists := s.List[fqdn]; exists {
+									s.List[fqdn]++
+								}
 							}
 						}
 					case i > 1:
@@ -115,32 +138,48 @@ func process(s *c.Src, exc excludes, d string) *c.Src {
 							for i := 0; i < len(keys)-1; i++ {
 								key := strings.Join(keys[i:], ".")
 								if _, exists := exc[key]; !exists {
-									if len(key) > 5 {
-										// fmt.Printf("fqdn: %v - keys: %v - key: %v\n", fqdn, keys, key)
-										exc[key] = 0
-										exc[fqdn] = 0
-									}
+									// if len(key) > 5 && s.Type == "domains" {
+									// fmt.Printf("fqdn: %v - keys: %v - key: %v\n", fqdn, keys, key)
+									// 	exc[key] = 0
+									// }
+									exc[fqdn] = 0
 									s.List[fqdn] = 0
 								} else {
-									exc[key]++
-									exc[fqdn]++
+									// exc[key]++
+									// exc[fqdn]++
 									if _, exists := s.List[fqdn]; exists {
 										s.List[fqdn]++
+									} else {
+										s.List[fqdn] = 0
 									}
 								}
 							}
 						}
 					default:
-						break
+						continue FQDN
 					}
 				}
 			}
 		default:
-			break
+			continue NEXT
 		}
 	}
+
+	if _, ok := s.List["localhost"]; ok {
+		delete(s.List, "localhost")
+	}
+
 	return s
 }
+
+// purgeFileError contains the filename and err
+type purgeFileError struct {
+	file string
+	err  error
+}
+
+// purgeErrors is a []*purgeFileError type
+type purgeErrors []*purgeFileError
 
 func (p purgeErrors) String() (result string) {
 	for _, e := range p {
@@ -194,7 +233,12 @@ func purgeFiles(c []*c.Src) error {
 			errors = append(errors, &purgeFileError{file: f, err: err})
 		}
 	}
-	return fmt.Errorf("%v", errors)
+
+	if len(errors) > 0 {
+		return fmt.Errorf("%v", errors)
+	}
+
+	return nil
 }
 
 // stripPrefix returns the modified line and true if it can strip the prefix
