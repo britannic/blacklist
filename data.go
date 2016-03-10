@@ -23,7 +23,7 @@ func disabled(d c.Blacklist, root string) bool {
 	return r
 }
 
-// excludes holds fqdns that mustn't be blacklisted
+// excludes stores fqdns that mustn't be blacklisted
 type excludes map[string]int
 
 // getExcludes returns a map[string]int of excludes
@@ -37,7 +37,7 @@ func getExcludes(b c.Blacklist) (e excludes) {
 	return
 }
 
-// includes holds fqdns that should be blacklisted
+// includes stores fqdns that should be blacklisted
 type includes map[string]int
 
 // getIncludes returns a map[string]int of includes
@@ -69,17 +69,23 @@ func getList(cf *c.Src) (b []byte) {
 		line := fmt.Sprintf("address=%v%v/%v\n", eq, key, cf.IP)
 		lines = append(lines, line)
 	}
-	// sort.Strings(lines)
+
 	for _, line := range lines {
 		b = append(b, line...)
 	}
 	return
 }
 
+// areaURLs is a map of c.Src
+type areaURLs map[string][]*c.Src
+
 // getURLs returns an array of config.Src structs with active urls
-func getURLs(b c.Blacklist) (urls []*c.Src) {
+func getURLs(b c.Blacklist) (a areaURLs) {
 	var inc includes
+	a = make(areaURLs)
+
 	for pkey := range b {
+		var urls []*c.Src
 		if pkey != root {
 			if len(getIncludes(b[pkey])) > 0 {
 				inc = getIncludes(b[pkey])
@@ -92,6 +98,7 @@ func getURLs(b c.Blacklist) (urls []*c.Src) {
 				b[pkey].Source[skey].IP = b[pkey].IP
 				urls = append(urls, b[pkey].Source[skey])
 			}
+			a[pkey] = urls
 		}
 	}
 	return
@@ -219,10 +226,12 @@ func diffArray(a, b []string) (diff []string) {
 }
 
 // purgeFiles removes any files that are no longer configured
-func purgeFiles(c []*c.Src) error {
+func purgeFiles(a areaURLs) error {
 	var clist []string
-	for _, s := range c {
-		clist = append(clist, fmt.Sprintf(fStr, dmsqDir, s.Type, s.Name))
+	for k := range a {
+		for _, s := range a[k] {
+			clist = append(clist, fmt.Sprintf(fStr, dmsqDir, s.Type, s.Name))
+		}
 	}
 
 	dlist := listFiles(dmsqDir)

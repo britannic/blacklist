@@ -16,16 +16,19 @@ import (
 )
 
 // getBlacklists assembles the http download jobs
-func getBlacklists(timeout time.Duration, e excludes, urls []*c.Src) {
-	jobs := make(chan Job, cores)
-	results := make(chan Result, len(urls))
-	done := make(chan struct{}, cores)
+func getBlacklists(timeout time.Duration, e excludes, a areaURLs) {
 
-	go addJobs(jobs, urls, results)
-	for i := 0; i < cores; i++ {
-		go doJobs(done, jobs)
+	for k := range a {
+		jobs := make(chan Job, cores)
+		results := make(chan Result, len(a[k]))
+		done := make(chan struct{}, cores)
+
+		go addJobs(jobs, a[k], results)
+		for i := 0; i < cores; i++ {
+			go doJobs(done, jobs)
+		}
+		processResults(timeout, e, done, results)
 	}
-	processResults(timeout, e, done, results)
 }
 
 // Result holds returned data
@@ -35,8 +38,7 @@ type Result struct {
 	Src   *c.Src
 }
 
-// processResults runs the data mill on the http content and writes it to
-// its corresponding file
+// processResults mills the http content and writes it to its corresponding file
 func processResults(timeout time.Duration, e excludes, done <-chan struct{},
 	results <-chan Result) {
 	finish := time.After(time.Duration(timeout))
@@ -45,7 +47,7 @@ func processResults(timeout time.Duration, e excludes, done <-chan struct{},
 		select {
 		case result := <-results:
 			data := process(result.Src, e, string(result.Data))
-			fn := fmt.Sprintf("%v/%v.%v.blacklist.conf", dmsqDir, result.Src.Type, result.Src.Name)
+			fn := fmt.Sprintf(fStr, dmsqDir, result.Src.Type, result.Src.Name)
 			log.Printf("[Select 1] writing job[%v] %v\n", result.Src.No, fn)
 			if err := writeFile(fn, getList(data)); err != nil {
 				fmt.Println(err)
@@ -61,7 +63,7 @@ func processResults(timeout time.Duration, e excludes, done <-chan struct{},
 		select {
 		case result := <-results:
 			data := process(result.Src, e, string(result.Data))
-			fn := fmt.Sprintf("%v/%v.%v.blacklist.conf", dmsqDir, result.Src.Type, result.Src.Name)
+			fn := fmt.Sprintf(fStr, dmsqDir, result.Src.Type, result.Src.Name)
 			log.Printf("[Select 2] writing job[%v] %v\n", result.Src.No, fn)
 			if err := writeFile(fn, getList(data)); err != nil {
 				log.Println("Error: ", err)

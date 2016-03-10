@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"os/user"
+	"runtime"
 	"testing"
 
 	"github.com/britannic/blacklist/config"
@@ -18,7 +19,6 @@ func compare(t *testing.T, want, got *user.User) {
 
 func TestBasename(t *testing.T) {
 	dirPath := "/usr/root/testing.txt"
-
 	dir := basename(dirPath)
 	if dir != "testing" {
 		t.Error(dir)
@@ -26,7 +26,6 @@ func TestBasename(t *testing.T) {
 }
 
 func TestIsAdmin(t *testing.T) {
-
 	want, err := user.Current()
 	if err != nil {
 		t.Fatalf("Current: %v", err)
@@ -58,7 +57,6 @@ func cmpHash(a, b []byte) bool {
 }
 
 func TestProcess(t *testing.T) {
-
 	for _, s := range src {
 		e := make(excludes)
 		f := fmt.Sprintf("./tdata.%v.%v", s.Type, s.Name)
@@ -87,10 +85,7 @@ func TestProcess(t *testing.T) {
 			}
 		}
 
-		pdata := s
-		pdata.List = process(s, e, tdata).List
-
-		gdata := string(getList(pdata)[:])
+		gdata := string(getList(process(s, e, tdata))[:])
 
 		if !cmpHash([]byte(wdata), []byte(gdata)) {
 			mismatch := []*struct {
@@ -155,6 +150,47 @@ func TestStripPrefix(t *testing.T) {
 		case !ok:
 			t.Errorf("stripPrefix() failed for %v", s.Name)
 		}
+	}
+}
+
+func TestGetUrls(t *testing.T) {
+	blist, err := config.Get(config.Testdata, root)
+	if err != nil {
+		t.Errorf("unable to get configuration data, error code: %v\n", err)
+	}
+
+	b := *blist
+	a := getURLs(b)
+
+	for k := range b {
+		for _, url := range a[k] {
+			if g, ok := b[k].Source[url.Name]; ok {
+				want := g.URL
+				got := url.URL
+				if want != url.URL {
+					t.Errorf("%v URL mismatch:", url.Name)
+					fmt.Printf("Wanted %v\nGot: %v", want, got)
+				}
+			}
+		}
+	}
+}
+
+func TestPurgeFiles(t *testing.T) {
+	whatOS := runtime.GOOS
+	if whatOS == "darwin" {
+		dmsqDir = "/tmp"
+		logfile = "/tmp/blacklist.log"
+	}
+
+	b, err := config.Get(config.Testdata, root)
+	if err != nil {
+		t.Errorf("unable to get configuration data, error code: %v\n", err)
+	}
+
+	urls := getURLs(*b)
+	if err := purgeFiles(urls); err != nil {
+		t.Errorf("Error removing unused conf files: %v", err)
 	}
 }
 

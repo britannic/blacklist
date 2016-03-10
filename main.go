@@ -95,12 +95,13 @@ func main() {
 	}
 
 	if !disabled(*blist, root) {
-		urls := getURLs(*blist)
+		areas := getURLs(*blist)
 
-		if err := purgeFiles(urls); err != nil {
+		if err = purgeFiles(areas); err != nil {
 			log.Error("Error removing unused conf files", "error", err)
 		}
 
-		getBlacklists(timeout, getExcludes(*blist), urls)
+		ex := getExcludes(*blist)
+		getBlacklists(timeout, ex, areas)
 	}
 }

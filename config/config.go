@@ -67,7 +67,26 @@ func (b Blacklist) String() (result string) {
 // APICmd returns a map of CLI commands
 func APICmd() (r map[string]string) {
 	r = make(map[string]string)
-	l := []string{"cfExists", "cfReturnValue", "cfReturnValues", "exists", "existsActive", "getNodeType", "inSession", "isLeaf", "isMulti", "isTag", "listActiveNodes", "listNodes", "returnActiveValue", "returnActiveValues", "returnValue", "returnValues", "showCfg", "showConfig"}
+	l := []string{
+		"cfExists",
+		"cfReturnValue",
+		"cfReturnValues",
+		"exists",
+		"existsActive",
+		"getNodeType",
+		"inSession",
+		"isLeaf",
+		"isMulti",
+		"isTag",
+		"listActiveNodes",
+		"listNodes",
+		"returnActiveValue",
+		"returnActiveValues",
+		"returnValue",
+		"returnValues",
+		"showCfg",
+		"showConfig",
+	}
 	for _, k := range l {
 		r[k] = fmt.Sprintf("%v %v", api, k)
 	}
@@ -143,19 +162,17 @@ func Insession() bool {
 
 // Get extracts nodes from a EdgeOS/VyOS configuration structure
 func Get(cfg string, root string) (b *Blacklist, err error) {
-
 	if len(cfg) < 1 {
 		err = fmt.Errorf("Configuration data is empty, cannot continue")
 		return
 	}
 
+	var leaf, tnode string
 	cfgtree := make(Blacklist)
-	err = nil
 	nodes := make([]string, 5)
 	rx := r.Regex()
-	var leaf string
-	var tnode string
 
+LINE:
 	for _, line := range strings.Split(cfg, "\n") {
 		line = strings.TrimSpace(line)
 
@@ -204,13 +221,13 @@ func Get(cfg string, root string) (b *Blacklist, err error) {
 				case "dns-redirect-ip":
 					if name[2] == "" {
 						cfgtree[tnode].IP = cfgtree[root].IP
-						break
+						continue LINE
 					}
 					cfgtree[tnode].IP = name[2]
 				}
 			}
 		case rx.DESC.MatchString(line) || rx.CMNT.MatchString(line) || rx.MISC.MatchString(line):
-			break
+			continue LINE
 		case rx.RBRC.MatchString(line):
 			{
 				nodes = nodes[:len(nodes)-1] // pop last node
