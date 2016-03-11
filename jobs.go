@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -77,6 +78,31 @@ func processResults(timeout time.Duration, e excludes, done <-chan struct{},
 	}
 }
 
+func getHTTP(URL string) (body []byte, err error) {
+	const agent = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/601.4.4 (KHTML, like Gecko) Version/9.0.3 Safari/601.4.4`
+	var (
+		resp *http.Response
+		req  *http.Request
+	)
+
+	req, err = http.NewRequest("GET", URL, nil)
+	if err == nil {
+		req.Header.Set("User-Agent", agent)
+		// req.Header.Add("Content-Type", "application/json")
+		debug(httputil.DumpRequestOut(req, true))
+		resp, err = (&http.Client{}).Do(req)
+	} else {
+		log.Printf("Unable to form request for %s, error: %v", URL, err)
+	}
+
+	if err == nil {
+		defer resp.Body.Close()
+		debug(httputil.DumpResponse(resp, true))
+		body, err = ioutil.ReadAll(resp.Body)
+	}
+	return
+}
+
 // Job holds job information
 type Job struct {
 	results chan<- Result
@@ -85,35 +111,20 @@ type Job struct {
 
 // do is the pre-configured and http content loader
 func (job Job) do() {
-	if job.src.Name == "pre-configured" {
-		var body string
+	var body []byte
+	var err error
+	switch {
+	case job.src.Name == "pre-configured":
 		for key := range job.src.List {
-			body += fmt.Sprintf("%v\n", key)
+			body = append(body, fmt.Sprintf("%v\n", key)...)
 		}
-		job.results <- Result{Src: job.src, Data: body, Error: nil}
-	} else {
-		const agent = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/601.4.4 (KHTML, like Gecko) Version/9.0.3 Safari/601.4.4`
-		client := new(http.Client)
-
-		req, err := http.NewRequest("GET", job.src.URL, nil)
+	default:
+		body, err = getHTTP(job.src.URL)
 		if err != nil {
-			log.Printf("Unable to form request for %s, error: %v", job.src.URL, err)
+			log.Fatalf("ERROR: %s", err)
 		}
-
-		req.Header.Set("User-Agent", agent)
-
-		resp, err := client.Do(req)
-		if err != nil {
-			log.Printf("Unable to download %s, error: %v", job.src.URL, err)
-		}
-
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil && resp != nil && resp.StatusCode == http.StatusOK {
-			resp.Body.Close()
-		}
-		// log.Printf("Got results for job[%v]: (%v) %v\n", job.src.No, job.src.Type, job.src.Name)
-		job.results <- Result{Src: job.src, Data: string(body[:]), Error: err}
 	}
+	job.results <- Result{Src: job.src, Data: string(body[:]), Error: err}
 }
 
 // addJobs puts jobs on the tasklist
@@ -133,4 +144,15 @@ func doJobs(done chan<- struct{}, jobs <-chan Job) {
 		// log.Printf("Running job[%v]: (%v) %v\n", job.src.No, job.src.Type, job.src.Name)
 	}
 	done <- struct{}{}
+}
+
+func debug(data []byte, err error) {
+	if dbg == false {
+		return
+	}
+	if err == nil {
+		fmt.Printf("%s\n\n", data)
+	} else {
+		log.Fatalf("%s\n\n", err)
+	}
 }

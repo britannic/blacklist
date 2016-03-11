@@ -13,3 +13,13 @@
 *.bkp
 
 vendor/golang.org/x/crypto/
+
+vendor/github.com/golang/glog/
+
+vendor/gopkg.in/gemnasium/logrus-airbrake-hook.v2/
+
+vendor/gopkg.in/airbrake/gobrake.v2/
+
+vendor/github.com/Sirupsen/logrus/
+
+vendor/github.com/mattn/go-colorable/

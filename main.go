@@ -20,6 +20,7 @@ const root = "blacklist"
 var (
 	build   = "UNKNOWN"
 	cores   = runtime.NumCPU()
+	dbg     = false
 	dmsqDir = "/etc/dnsmasq.d"
 	fSfx    = ".blacklist.conf"
 	fStr    = "%v/%v.%v" + fSfx
@@ -34,7 +35,7 @@ func main() {
 
 	var (
 		poll    = time.Second * 2 // poll
-		timeout = time.Minute * 3
+		timeout = time.Minute * 30
 	)
 
 	whatOS := runtime.GOOS
@@ -52,19 +53,22 @@ func main() {
 	o := getopts()
 
 	switch {
+	case *o.debug == true:
+		dbg = true
+
+	case *o.poll != 5:
+		poll = time.Duration(*o.poll) * time.Second
+		log.Info("Poll duration", poll)
+
 	case *o.version:
-		{
-			log.Info("%s version: %s, build date: %s\n hash: %v\n", program, version, build, githash)
-			os.Exit(0)
-		}
+
+		log.Info("%s version: %s, build date: %s\n hash: %v\n", program, version, build, githash)
+		os.Exit(0)
 
 	case *o.verb:
 		log.SetFormatter(&log.TextFormatter{DisableColors: false})
 		log.SetOutput(os.Stderr)
 
-	case *o.poll != 5:
-		poll = time.Duration(*o.poll) * time.Second
-		log.Info("Poll duration", poll)
 	}
 
 	log.Info("CPU Cores: ", cores)
@@ -73,7 +77,7 @@ func main() {
 		switch whatOS {
 		case "darwin":
 			{
-				b, err = c.Get(c.Testdata, root)
+				b, err = c.Get(c.Testdata2, root)
 				if err != nil {
 					return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
 				}

@@ -17,6 +17,11 @@ var Testdata2 = `blacklist {
             include free-counter.co.uk
             include intellitxt.com
             include kiosked.com
+            source malc0de {
+                description "List of zones serving malicious executables observed by malc0de.com/database/"
+                prefix "zone "
+                url http://malc0de.com/bl/ZONES
+            }
         }
         exclude 122.2o7.net
         exclude 1e100.net
@@ -62,21 +67,6 @@ var Testdata2 = `blacklist {
         exclude ytimg.com
         hosts {
             include beap.gemini.yahoo.com
-            source openphish {
-                description "OpenPhish automatic phishing detection"
-                prefix http
-                url https://openphish.com/feed.txt
-            }
-            source volkerschatz {
-                description "Ad server blacklists"
-                prefix http
-                url http://www.volkerschatz.com/net/adpaths
-            }
-            source yoyo {
-                description "Fully Qualified Domain Names only - no prefix to strip"
-                prefix ""
-                url http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext
-            }
         }
     }`
 

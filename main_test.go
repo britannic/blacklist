@@ -194,6 +194,36 @@ func TestPurgeFiles(t *testing.T) {
 	}
 }
 
+func TestGetHTTP(t *testing.T) {
+	type data struct {
+		body []byte
+		err  error
+	}
+
+	h := &data{}
+	d := []*data{}
+
+	b, err := config.Get(config.Testdata2, root)
+	if err != nil {
+		t.Errorf("unable to get configuration data, error code: %v\n", err)
+	}
+
+	a := getURLs(*b)
+	for k := range a {
+		for _, u := range a[k] {
+			fmt.Println(u.URL)
+			if len(u.URL) > 0 {
+				h.body, h.err = getHTTP(u.URL)
+				d = append(d, h)
+			}
+		}
+	}
+
+	for _, z := range d {
+		fmt.Println(string(z.body[:]))
+	}
+}
+
 // http://play.golang.org/p/KAwluDqGIl
 var src = []*config.Src{
 	{

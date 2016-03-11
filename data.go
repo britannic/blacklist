@@ -17,6 +17,21 @@ import (
 	"github.com/britannic/blacklist/regx"
 )
 
+// diffArray returns the delta of two arrays
+func diffArray(a, b []string) (diff []string) {
+	dmap := make(map[string]int)
+	for _, d := range b {
+		dmap[d] = 0
+	}
+
+	for _, key := range a {
+		if _, ok := dmap[key]; !ok {
+			diff = append(diff, key)
+		}
+	}
+	return
+}
+
 // disabled returns true if blacklist is disabled
 func disabled(d c.Blacklist, root string) bool {
 	r := d[root].Disable
@@ -176,6 +191,7 @@ NEXT:
 		delete(s.List, "localhost")
 	}
 
+	fmt.Println(s)
 	return s
 }
 
@@ -205,21 +221,6 @@ func listFiles(d string) (files []string) {
 	for _, f := range dlist {
 		if strings.Contains(f.Name(), fSfx) {
 			files = append(files, dmsqDir+"/"+f.Name())
-		}
-	}
-	return
-}
-
-// diffArray returns the delta of two arrays
-func diffArray(a, b []string) (diff []string) {
-	dmap := make(map[string]int)
-	for _, d := range b {
-		dmap[d] = 0
-	}
-
-	for _, key := range a {
-		if _, ok := dmap[key]; !ok {
-			diff = append(diff, key)
 		}
 	}
 	return
@@ -259,9 +260,9 @@ func stripPrefix(l string, p string, rx *regx.RGX) (string, bool) {
 		}
 		return rx.HTTP.FindStringSubmatch(l)[1], true
 	case p == "":
-		break
+		return l, true
 	case strings.HasPrefix(l, p):
 		return strings.TrimPrefix(l, p), true
 	}
-	return l, true
+	return l, false
 }
