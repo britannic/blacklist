@@ -7,53 +7,59 @@ package check
 
 import "github.com/britannic/blacklist/config"
 
+// Args is a struct of check function parameters
+type Args struct {
+	Fname   string
+	Ex, Dex config.Dict
+}
+
 // LiveCfg type of config.Blacklist
 type LiveCfg config.Blacklist
 
 // ConfBlacklistings checks that only configured blacklisted includes are present in {domains,hostsreturn}pre-configured.blacklist.conf
-func (l LiveCfg) ConfBlacklistings() (b bool, err error) {
+func (l LiveCfg) ConfBlacklistings(a Args) (b bool, err error) {
 
 	return
 }
 
 // ConfExclusions checks that configured exclusions are excluded from dnsmasq conf files
-func (l LiveCfg) ConfExclusions() (b bool, err error) {
+func (l LiveCfg) ConfExclusions(a Args) (b bool, err error) {
 
 	return
 }
 
 // ConfExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
-func (l LiveCfg) ConfExcludedDomains() (b bool, err error) {
+func (l LiveCfg) ConfExcludedDomains(a Args) (b bool, err error) {
 
 	return
 }
 
 // ConfFiles checks that all blacklist sources have generated dnsmasq conf files and there aren't any orphahs
-func (l LiveCfg) ConfFiles() (b bool, err error) {
+func (l LiveCfg) ConfFiles(a Args) (b bool, err error) {
 
 	return
 }
 
 // ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
-func (l LiveCfg) ConfIP() (b bool, err error) {
+func (l LiveCfg) ConfIP(a Args) (b bool, err error) {
 
 	return
 }
 
 // ConfTemplates checks that existence/non-existence (governed by installation state) of the blacklist configure templates
-func (l LiveCfg) ConfTemplates() (b bool, err error) {
+func (l LiveCfg) ConfTemplates(a Args) (b bool, err error) {
 
 	return
 }
 
 // IPRedirection checks that each domain or host dnsmasq conf entry is redirected to the configured blackhole IP
-func (l LiveCfg) IPRedirection() (b bool, err error) {
+func (l LiveCfg) IPRedirection(a Args) (b bool, err error) {
 
 	return
 }
 
 // IsDisabled checks that blacklist is actually disabled when the flag is true
-func (l LiveCfg) IsDisabled() (b bool, err error) {
+func (l LiveCfg) IsDisabled(a Args) (b bool, err error) {
 
 	return
 }

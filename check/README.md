@@ -10,6 +10,25 @@ Package check provides routines to sanity check blacklist is working correctly
 
 
 
+## type Args
+``` go
+type Args struct {
+    Fname   string
+    Ex, Dex config.Dict
+}
+```
+Args is a struct of check function parameters
+
+
+
+
+
+
+
+
+
+
+
 ## type LiveCfg
 ``` go
 type LiveCfg config.Blacklist
@@ -28,7 +47,7 @@ LiveCfg type of config.Blacklist
 
 ### func (LiveCfg) ConfBlacklistings
 ``` go
-func (l LiveCfg) ConfBlacklistings() (b bool, err error)
+func (l LiveCfg) ConfBlacklistings(a Args) (b bool, err error)
 ```
 ConfBlacklistings checks that only configured blacklisted includes are present in {domains,hostsreturn}pre-configured.blacklist.conf
 
@@ -36,7 +55,7 @@ ConfBlacklistings checks that only configured blacklisted includes are present i
 
 ### func (LiveCfg) ConfExcludedDomains
 ``` go
-func (l LiveCfg) ConfExcludedDomains() (b bool, err error)
+func (l LiveCfg) ConfExcludedDomains(a Args) (b bool, err error)
 ```
 ConfExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
 
@@ -44,7 +63,7 @@ ConfExcludedDomains checks that domains are excluded from dnsmasq hosts conf fil
 
 ### func (LiveCfg) ConfExclusions
 ``` go
-func (l LiveCfg) ConfExclusions() (b bool, err error)
+func (l LiveCfg) ConfExclusions(a Args) (b bool, err error)
 ```
 ConfExclusions checks that configured exclusions are excluded from dnsmasq conf files
 
@@ -52,7 +71,7 @@ ConfExclusions checks that configured exclusions are excluded from dnsmasq conf 
 
 ### func (LiveCfg) ConfFiles
 ``` go
-func (l LiveCfg) ConfFiles() (b bool, err error)
+func (l LiveCfg) ConfFiles(a Args) (b bool, err error)
 ```
 ConfFiles checks that all blacklist sources have generated dnsmasq conf files and there aren't any orphahs
 
@@ -60,7 +79,7 @@ ConfFiles checks that all blacklist sources have generated dnsmasq conf files an
 
 ### func (LiveCfg) ConfIP
 ``` go
-func (l LiveCfg) ConfIP() (b bool, err error)
+func (l LiveCfg) ConfIP(a Args) (b bool, err error)
 ```
 ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
 
@@ -68,7 +87,7 @@ ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
 
 ### func (LiveCfg) ConfTemplates
 ``` go
-func (l LiveCfg) ConfTemplates() (b bool, err error)
+func (l LiveCfg) ConfTemplates(a Args) (b bool, err error)
 ```
 ConfTemplates checks that existence/non-existence (governed by installation state) of the blacklist configure templates
 
@@ -76,7 +95,7 @@ ConfTemplates checks that existence/non-existence (governed by installation stat
 
 ### func (LiveCfg) IPRedirection
 ``` go
-func (l LiveCfg) IPRedirection() (b bool, err error)
+func (l LiveCfg) IPRedirection(a Args) (b bool, err error)
 ```
 IPRedirection checks that each domain or host dnsmasq conf entry is redirected to the configured blackhole IP
 
@@ -84,7 +103,7 @@ IPRedirection checks that each domain or host dnsmasq conf entry is redirected t
 
 ### func (LiveCfg) IsDisabled
 ``` go
-func (l LiveCfg) IsDisabled() (b bool, err error)
+func (l LiveCfg) IsDisabled(a Args) (b bool, err error)
 ```
 IsDisabled checks that blacklist is actually disabled when the flag is true
 

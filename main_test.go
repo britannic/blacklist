@@ -45,7 +45,7 @@ func TestExclusions(t *testing.T) {
 	dex := make(config.Dict)
 
 	for _, s := range src {
-		f := fmt.Sprintf("./tdata.%v.%v", s.Type, s.Name)
+		f := fmt.Sprintf("testdata/tdata.%v.%v", s.Type, s.Name)
 		testdata, err := getfile(f)
 		if err != nil {
 			t.Errorf("Cannot open %v", f)
@@ -169,7 +169,7 @@ func TestProcess(t *testing.T) {
 	for _, s := range src {
 		ex := make(config.Dict)
 		dex := make(config.Dict)
-		f := fmt.Sprintf("./tdata.%v.%v", s.Type, s.Name)
+		f := fmt.Sprintf("testdata/tdata.%v.%v", s.Type, s.Name)
 		testdata, err := getfile(f)
 		if err != nil {
 			t.Errorf("Cannot open %v", f)
@@ -182,7 +182,7 @@ func TestProcess(t *testing.T) {
 			}
 		}
 
-		f = fmt.Sprintf("./sdata.%v.%v", s.Type, s.Name)
+		f = fmt.Sprintf("testdata/sdata.%v.%v", s.Type, s.Name)
 		staticdata, err := getfile(f)
 		if err != nil {
 			t.Errorf("Cannot open %v", f)
