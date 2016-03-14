@@ -1,6 +1,6 @@
 
 # regx
-    import "./regx/"
+    import "github.com/britannic/blacklist/regx"
 
 Package regx provides regex objects for processing data in files and web content
 

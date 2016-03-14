@@ -9,7 +9,10 @@ import (
 	"testing"
 
 	"github.com/britannic/blacklist/config"
+	"github.com/britannic/blacklist/data"
+	"github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/regx"
+	"github.com/britannic/blacklist/utils"
 )
 
 func compare(t *testing.T, want, got *user.User) {
@@ -26,27 +29,41 @@ func cmpHash(a, b []byte) bool {
 	return false
 }
 
+// func TestBuild(t *testing.T) {
+// 	build := map[string]string{
+// 		"build":   build,
+// 		"githash": githash,
+// 		"version": version,
+// 	}
+//
+// 	for k := range build {
+// 		if build[k] == "UNKNOWN" {
+// 			t.Errorf("k is %v", build[k])
+// 		}
+// 	}
+// }
+
 func TestBasename(t *testing.T) {
-	dirPath := "/usr/root/testing.txt"
-	dir := basename(dirPath)
+	dirPath := "/usr/global.Root/testing.txt"
+	dir := utils.Basename(dirPath)
 	if dir != "testing" {
 		t.Error(dir)
 	}
 }
 
 func TestExclusions(t *testing.T) {
-	b, err := config.Get(config.Testdata, root)
+	b, err := config.Get(config.Testdata, global.Root)
 	if err != nil {
 		t.Error("Couldn't load config.Testdata")
 	}
 
-	globex := getExcludes(*b)
-	ex := getExcludes(*b)
+	globex := data.GetExcludes(*b)
+	ex := data.GetExcludes(*b)
 	dex := make(config.Dict)
 
 	for _, s := range src {
 		f := fmt.Sprintf("testdata/tdata.%v.%v", s.Type, s.Name)
-		testdata, err := getfile(f)
+		testdata, err := utils.Getfile(f)
 		if err != nil {
 			t.Errorf("Cannot open %v", f)
 		}
@@ -58,7 +75,7 @@ func TestExclusions(t *testing.T) {
 			}
 		}
 
-		gdata := process(s, globex, dex, tdata)
+		gdata := data.Process(s, globex, dex, tdata)
 
 		for k := range gdata.List {
 			i := strings.Count(k, ".")
@@ -81,22 +98,22 @@ func TestExclusions(t *testing.T) {
 }
 
 func TestGetHTTP(t *testing.T) {
-	type data struct {
+	type tdata struct {
 		body  []byte
 		err   error
 		prcsd *config.Src
 	}
 
-	h := &data{}
-	d := []*data{}
+	h := &tdata{}
+	d := []*tdata{}
 	rx := regx.Regex()
 
-	b, err := config.Get(config.Testdata, root)
+	b, err := config.Get(config.Testdata, global.Root)
 	if err != nil {
 		t.Errorf("unable to get configuration data, error code: %v\n", err)
 	}
 
-	a := getURLs(*b)
+	a := data.GetURLs(*b)
 	ex := make(config.Dict)
 	dex := make(config.Dict)
 	for k := range a {
@@ -104,7 +121,7 @@ func TestGetHTTP(t *testing.T) {
 			if len(u.URL) > 0 {
 				h.body, h.err = getHTTP(u.URL)
 				d = append(d, h)
-				h.prcsd = process(u, ex, dex, string(h.body[:]))
+				h.prcsd = data.Process(u, ex, dex, string(h.body[:]))
 			}
 		}
 	}
@@ -120,13 +137,13 @@ func TestGetHTTP(t *testing.T) {
 }
 
 func TestGetUrls(t *testing.T) {
-	blist, err := config.Get(config.Testdata, root)
+	blist, err := config.Get(config.Testdata, global.Root)
 	if err != nil {
 		t.Errorf("unable to get configuration data, error code: %v\n", err)
 	}
 
 	b := *blist
-	a := getURLs(b)
+	a := data.GetURLs(b)
 
 	for k := range b {
 		for _, url := range a[k] {
@@ -160,7 +177,7 @@ func TestIsAdmin(t *testing.T) {
 		osAdmin = true
 	}
 
-	if isAdmin() != osAdmin {
+	if utils.IsAdmin() != osAdmin {
 		t.Error(osAdmin)
 	}
 }
@@ -170,7 +187,7 @@ func TestProcess(t *testing.T) {
 		ex := make(config.Dict)
 		dex := make(config.Dict)
 		f := fmt.Sprintf("testdata/tdata.%v.%v", s.Type, s.Name)
-		testdata, err := getfile(f)
+		testdata, err := utils.Getfile(f)
 		if err != nil {
 			t.Errorf("Cannot open %v", f)
 		}
@@ -183,7 +200,7 @@ func TestProcess(t *testing.T) {
 		}
 
 		f = fmt.Sprintf("testdata/sdata.%v.%v", s.Type, s.Name)
-		staticdata, err := getfile(f)
+		staticdata, err := utils.Getfile(f)
 		if err != nil {
 			t.Errorf("Cannot open %v", f)
 		}
@@ -195,7 +212,7 @@ func TestProcess(t *testing.T) {
 			}
 		}
 
-		gdata := string(getList(process(s, ex, dex, tdata))[:])
+		gdata := string(data.GetList(data.Process(s, ex, dex, tdata))[:])
 
 		if !cmpHash([]byte(wdata), []byte(gdata)) {
 			mismatch := []*struct {
@@ -213,9 +230,9 @@ func TestProcess(t *testing.T) {
 			}
 
 			for _, m := range mismatch {
-				writeFile(m.f, []byte(m.d))
+				utils.WriteFile(m.f, []byte(m.d))
 			}
-			t.Errorf("data mismatch between standard and processed data for %q.", s.Name)
+			t.Errorf("data mismatch between standard and data.Processed data for %q.", s.Name)
 		}
 	}
 }
@@ -223,17 +240,17 @@ func TestProcess(t *testing.T) {
 func TestPurgeFiles(t *testing.T) {
 	whatOS := runtime.GOOS
 	if whatOS == "darwin" {
-		dmsqDir = "/tmp"
-		logfile = "/tmp/blacklist.log"
+		global.DmsqDir = "/tmp"
+		global.Logfile = "/tmp/blacklist.log"
 	}
 
-	b, err := config.Get(config.Testdata, root)
+	b, err := config.Get(config.Testdata, global.Root)
 	if err != nil {
 		t.Errorf("unable to get configuration data, error code: %v\n", err)
 	}
 
-	urls := getURLs(*b)
-	if err := purgeFiles(urls); err != nil {
+	urls := data.GetURLs(*b)
+	if err := data.PurgeFiles(urls); err != nil {
 		t.Errorf("Error removing unused conf files: %v", err)
 	}
 }
@@ -251,7 +268,7 @@ func TestStripPrefix(t *testing.T) {
 			l = s.Prfx + tline
 		}
 
-		r, ok := stripPrefix(l, s.Prfx, rx)
+		r, ok := data.StripPrefix(l, s.Prfx, rx)
 		switch {
 		case tline != r:
 			t.Errorf("stripPrefix() failed for %v", s.Name)
@@ -266,18 +283,18 @@ func TestWriteAndReadFile(t *testing.T) {
 	fname := "/tmp/delete.me"
 	data := []byte{}
 	data = append(data, `This is a test file. Delete it!`...)
-	err := writeFile(fname, data)
+	err := utils.WriteFile(fname, data)
 	if err != nil {
 		t.Error(err)
 	}
 
-	fdata, err := getfile(fname)
+	fdata, err := utils.Getfile(fname)
 	fdata = append(fdata, string(data[:]))
 	switch {
 	case err != nil:
 		t.Error(err)
 	case fdata[0] != fdata[1]:
-		t.Error("data mismatch between writeFile and getFile")
+		t.Error("data mismatch between utils.WriteFile and getFile")
 	}
 }
 

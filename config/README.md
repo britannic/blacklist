@@ -1,6 +1,6 @@
 
 # config
-    import "./config"
+    import "github.com/britannic/blacklist/config"
 
 Package config provides methods and data structures for loading
 an EdgeOS/VyOS configuration

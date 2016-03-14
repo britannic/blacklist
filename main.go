@@ -12,21 +12,14 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	c "github.com/britannic/blacklist/config"
+	"github.com/britannic/blacklist/data"
+	g "github.com/britannic/blacklist/global"
 )
 
-// root constant defines the top level configuration node
-const root = "blacklist"
-
 var (
-	build   = "UNKNOWN"
 	cores   = runtime.NumCPU()
-	dbg     = false
-	dmsqDir = "/etc/dnsmasq.d"
-	fSfx    = ".blacklist.conf"
-	fStr    = "%v/%v.%v" + fSfx
+	build   = "UNKNOWN"
 	githash = "UNKNOWN"
-	logfile = "/var/log/blacklist.log"
-	program = basename(os.Args[0])
 	version = "UNKNOWN"
 )
 
@@ -40,11 +33,11 @@ func main() {
 
 	whatOS := runtime.GOOS
 	if whatOS == "darwin" {
-		dmsqDir = "/tmp"
-		logfile = "/tmp/blacklist.log"
+		g.DmsqDir = "/tmp"
+		g.Logfile = "/tmp/blacklist.log"
 	}
 
-	f, err := os.OpenFile(logfile, os.O_WRONLY|os.O_CREATE, 0755)
+	f, err := os.OpenFile(g.Logfile, os.O_WRONLY|os.O_CREATE, 0755)
 	if err == nil {
 		log.SetFormatter(&log.TextFormatter{DisableColors: true})
 		log.SetOutput(f)
@@ -54,15 +47,19 @@ func main() {
 
 	switch {
 	case *o.debug == true:
-		dbg = true
+		g.Dbg = true
 
 	case *o.poll != 5:
 		poll = time.Duration(*o.poll) * time.Second
 		log.Info("Poll duration", poll)
 
+	case *o.test:
+		code := 0
+		os.Exit(code)
+
 	case *o.version:
 
-		log.Info("%s version: %s, build date: %s\n hash: %v\n", program, version, build, githash)
+		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n", version, build, githash)
 		os.Exit(0)
 
 	case *o.verb:
@@ -77,7 +74,7 @@ func main() {
 		switch whatOS {
 		case "darwin":
 			{
-				b, err = c.Get(c.Testdata, root)
+				b, err = c.Get(c.Testdata, g.Root)
 				if err != nil {
 					return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
 				}
@@ -89,7 +86,7 @@ func main() {
 				if err != nil {
 					return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
 				}
-				b, err = c.Get(cfg, root)
+				b, err = c.Get(cfg, g.Root)
 				return b, err
 			}
 		}
@@ -98,14 +95,14 @@ func main() {
 		log.Fatal("Critical issue, exiting, error: ", err)
 	}
 
-	if !disabled(*blist, root) {
-		areas := getURLs(*blist)
+	if !data.IsDisabled(*blist, g.Root) {
+		areas := data.GetURLs(*blist)
 
-		if err = purgeFiles(areas); err != nil {
+		if err = data.PurgeFiles(areas); err != nil {
 			log.Error("Error removing unused conf files", "error", err)
 		}
 
-		ex := getExcludes(*blist)
+		ex := data.GetExcludes(*blist)
 		dex := make(c.Dict)
 		getBlacklists(timeout, dex, ex, areas)
 	}

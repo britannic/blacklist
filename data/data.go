@@ -1,4 +1,9 @@
-package main
+// Copyright 2016 NJ Software. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE.txt file.
+
+// Package data provides downloaded and configured data processing methods
+package data
 
 import (
 	"fmt"
@@ -10,11 +15,12 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	c "github.com/britannic/blacklist/config"
+	g "github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/regx"
 )
 
-// diffArray returns the delta of two arrays
-func diffArray(a, b []string) (diff []string) {
+// DiffArray returns the delta of two arrays
+func DiffArray(a, b []string) (diff []string) {
 	dmap := make(c.Dict)
 	for _, d := range b {
 		dmap[d] = 0
@@ -28,14 +34,14 @@ func diffArray(a, b []string) (diff []string) {
 	return
 }
 
-// disabled returns true if blacklist is disabled
-func disabled(d c.Blacklist, root string) bool {
+// IsDisabled returns true if blacklist is disabled
+func IsDisabled(d c.Blacklist, root string) bool {
 	r := d[root].Disable
 	return r
 }
 
-// getExcludes returns a map[string]int of excludes
-func getExcludes(b c.Blacklist) (e c.Dict) {
+// GetExcludes returns a map[string]int of excludes
+func GetExcludes(b c.Blacklist) (e c.Dict) {
 	e = make(c.Dict)
 	for pkey := range b {
 		for _, skey := range b[pkey].Exclude {
@@ -45,8 +51,8 @@ func getExcludes(b c.Blacklist) (e c.Dict) {
 	return
 }
 
-// getIncludes returns a map[string]int of includes
-func getIncludes(n *c.Node) (i c.Dict) {
+// GetIncludes returns a map[string]int of includes
+func GetIncludes(n *c.Node) (i c.Dict) {
 	i = make(c.Dict)
 	for _, skey := range n.Include {
 		i[skey] = 0
@@ -54,8 +60,8 @@ func getIncludes(n *c.Node) (i c.Dict) {
 	return
 }
 
-// getList returns a sorted []byte of blacklist entries
-func getList(cf *c.Src) (b []byte) {
+// GetList returns a sorted []byte of blacklist entries
+func GetList(cf *c.Src) (b []byte) {
 	eq := "/"
 	if cf.Type == "domains" {
 		eq = "/."
@@ -81,23 +87,23 @@ func getList(cf *c.Src) (b []byte) {
 	return
 }
 
-// areaURLs is a map of c.Src
-type areaURLs map[string][]*c.Src
+// AreaURLs is a map of c.Src
+type AreaURLs map[string][]*c.Src
 
-// getURLs returns an array of config.Src structs with active urls
-func getURLs(b c.Blacklist) (a areaURLs) {
+// GetURLs returns an array of config.Src structs with active urls
+func GetURLs(b c.Blacklist) (a AreaURLs) {
 	var inc c.Dict
-	a = make(areaURLs)
+	a = make(AreaURLs)
 
 	for pkey := range b {
 		var urls []*c.Src
-		if pkey != root {
-			if len(getIncludes(b[pkey])) > 0 {
-				inc = getIncludes(b[pkey])
+		if pkey != g.Root {
+			if len(GetIncludes(b[pkey])) > 0 {
+				inc = GetIncludes(b[pkey])
 			}
 			b[pkey].Source["pre"] = &c.Src{List: inc, Name: "pre-configured", Type: pkey}
 			if b[pkey].IP == "" {
-				b[pkey].IP = b[root].IP
+				b[pkey].IP = b[g.Root].IP
 			}
 			for skey := range b[pkey].Source {
 				b[pkey].Source[skey].IP = b[pkey].IP
@@ -109,8 +115,8 @@ func getURLs(b c.Blacklist) (a areaURLs) {
 	return
 }
 
-// process extracts hosts/domains from downloaded raw content
-func process(s *c.Src, dex c.Dict, ex c.Dict, d string) *c.Src {
+// Process extracts hosts/domains from downloaded raw content
+func Process(s *c.Src, dex c.Dict, ex c.Dict, d string) *c.Src {
 	rx := regx.Regex()
 	s.List = make(c.Dict)
 
@@ -121,7 +127,7 @@ NEXT:
 			continue NEXT
 		case strings.HasPrefix(line, s.Prfx):
 			var ok bool // We have to declare ok here, to fix var line shadow bug
-			line, ok = stripPrefix(line, s.Prfx, rx)
+			line, ok = StripPrefix(line, s.Prfx, rx)
 			if ok {
 				line = strings.ToLower(line)
 				line = rx.SUFX.ReplaceAllString(line, "")
@@ -204,34 +210,34 @@ func (p purgeErrors) String() (result string) {
 	return
 }
 
-// listFiles returns a list of blacklist files
-func listFiles(d string) (files []string) {
+// ListFiles returns a list of blacklist files
+func ListFiles(d string) (files []string) {
 	dlist, err := ioutil.ReadDir(d)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, f := range dlist {
-		if strings.Contains(f.Name(), fSfx) {
-			files = append(files, dmsqDir+"/"+f.Name())
+		if strings.Contains(f.Name(), g.FSfx) {
+			files = append(files, g.DmsqDir+"/"+f.Name())
 		}
 	}
 	return
 }
 
-// purgeFiles removes any files that are no longer configured
-func purgeFiles(a areaURLs) error {
+// PurgeFiles removes any files that are no longer configured
+func PurgeFiles(a AreaURLs) error {
 	var clist []string
 	for k := range a {
 		for _, s := range a[k] {
-			clist = append(clist, fmt.Sprintf(fStr, dmsqDir, s.Type, s.Name))
+			clist = append(clist, fmt.Sprintf(g.FStr, g.DmsqDir, s.Type, s.Name))
 		}
 	}
 
-	dlist := listFiles(dmsqDir)
+	dlist := ListFiles(g.DmsqDir)
 
 	errors := make(purgeErrors, 0)
-	for _, f := range diffArray(dlist, clist) {
+	for _, f := range DiffArray(dlist, clist) {
 		if err := os.Remove(f); err != nil {
 			errors = append(errors, &purgeFileError{file: f, err: err})
 		}
@@ -244,8 +250,8 @@ func purgeFiles(a areaURLs) error {
 	return nil
 }
 
-// stripPrefix returns the modified line and true if it can strip the prefix
-func stripPrefix(l string, p string, rx *regx.RGX) (string, bool) {
+// StripPrefix returns the modified line and true if it can strip the prefix
+func StripPrefix(l string, p string, rx *regx.RGX) (string, bool) {
 	switch {
 	case p == "http":
 		if !rx.HTTP.MatchString(l) {

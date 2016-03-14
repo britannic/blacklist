@@ -1,6 +1,6 @@
 
 # check
-    import "./check/"
+    import "github.com/britannic/blacklist/check"
 
 Package check provides routines to sanity check blacklist is working correctly
 
@@ -13,8 +13,8 @@ Package check provides routines to sanity check blacklist is working correctly
 ## type Args
 ``` go
 type Args struct {
-    Fname   string
-    Ex, Dex config.Dict
+    Template string
+    Ex, Dex  config.Dict
 }
 ```
 Args is a struct of check function parameters
@@ -49,7 +49,7 @@ LiveCfg type of config.Blacklist
 ``` go
 func (l LiveCfg) ConfBlacklistings(a Args) (b bool, err error)
 ```
-ConfBlacklistings checks that only configured blacklisted includes are present in {domains,hostsreturn}pre-configured.blacklist.conf
+ConfBlacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
 
 
 

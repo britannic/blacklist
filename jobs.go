@@ -10,10 +10,13 @@ import (
 	log "github.com/Sirupsen/logrus"
 
 	c "github.com/britannic/blacklist/config"
+	"github.com/britannic/blacklist/data"
+	g "github.com/britannic/blacklist/global"
+	"github.com/britannic/blacklist/utils"
 )
 
 // getBlacklists assembles the http download jobs
-func getBlacklists(timeout time.Duration, d c.Dict, e c.Dict, a areaURLs) {
+func getBlacklists(timeout time.Duration, d c.Dict, e c.Dict, a data.AreaURLs) {
 
 	for k := range a {
 		jobs := make(chan Job, cores)
@@ -43,10 +46,10 @@ func processResults(timeout time.Duration, d c.Dict, e c.Dict, done <-chan struc
 	for working := cores; working > 0; {
 		select {
 		case result := <-results:
-			data := process(result.Src, d, e, string(result.Data))
-			fn := fmt.Sprintf(fStr, dmsqDir, result.Src.Type, result.Src.Name)
+			d := data.Process(result.Src, d, e, string(result.Data))
+			fn := fmt.Sprintf(g.FStr, g.DmsqDir, result.Src.Type, result.Src.Name)
 			log.Printf("[Select 1] writing job[%v] %v\n", result.Src.No, fn)
-			if err := writeFile(fn, getList(data)); err != nil {
+			if err := utils.WriteFile(fn, data.GetList(d)); err != nil {
 				fmt.Println(err)
 			}
 		case <-finish:
@@ -59,10 +62,10 @@ func processResults(timeout time.Duration, d c.Dict, e c.Dict, done <-chan struc
 	for {
 		select {
 		case result := <-results:
-			data := process(result.Src, d, e, string(result.Data))
-			fn := fmt.Sprintf(fStr, dmsqDir, result.Src.Type, result.Src.Name)
+			d := data.Process(result.Src, d, e, string(result.Data))
+			fn := fmt.Sprintf(g.FStr, g.DmsqDir, result.Src.Type, result.Src.Name)
 			log.Printf("[Select 2] writing job[%v] %v\n", result.Src.No, fn)
-			if err := writeFile(fn, getList(data)); err != nil {
+			if err := utils.WriteFile(fn, data.GetList(d)); err != nil {
 				log.Println("Error: ", err)
 			}
 		case <-finish:
@@ -143,7 +146,7 @@ func doJobs(done chan<- struct{}, jobs <-chan Job) {
 }
 
 func debug(data []byte, err error) {
-	if dbg == false {
+	if g.Dbg == false {
 		return
 	}
 	if err == nil {

@@ -9,16 +9,22 @@ import "github.com/britannic/blacklist/config"
 
 // Args is a struct of check function parameters
 type Args struct {
-	Fname   string
-	Ex, Dex config.Dict
+	Template string
+	Ex, Dex  config.Dict
 }
 
 // LiveCfg type of config.Blacklist
 type LiveCfg config.Blacklist
 
-// ConfBlacklistings checks that only configured blacklisted includes are present in {domains,hostsreturn}pre-configured.blacklist.conf
+// ConfBlacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
 func (l LiveCfg) ConfBlacklistings(a Args) (b bool, err error) {
+	for k := range l {
+		if len(l[k].Include) > 0 {
+			for inc := range l[k].Include {
 
+			}
+		}
+	}
 	return
 }
 
