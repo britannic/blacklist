@@ -61,7 +61,7 @@ func Regex() *RGX {
 		MISC: regexp.MustCompile(`^([\w-]+)$`),
 		MLTI: regexp.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`),
 		MPTY: regexp.MustCompile(`^$`),
-		NAME: regexp.MustCompile(`^([\w-]+)\s(.*)$`),
+		NAME: regexp.MustCompile(`^([\w-]+)\s["']{0,1}(.*?)["']{0,1}$`),
 		NODE: regexp.MustCompile(`^([\w-]+)\s[{]{1}$`),
 		RBRC: regexp.MustCompile(`[}]`),
 		SUFX: regexp.MustCompile(`(?:#.*|\{.*|[/[].*)\z`),

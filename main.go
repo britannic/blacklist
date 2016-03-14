@@ -77,7 +77,7 @@ func main() {
 		switch whatOS {
 		case "darwin":
 			{
-				b, err = c.Get(c.Testdata2, root)
+				b, err = c.Get(c.Testdata, root)
 				if err != nil {
 					return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
 				}
@@ -106,6 +106,7 @@ func main() {
 		}
 
 		ex := getExcludes(*blist)
-		getBlacklists(timeout, ex, areas)
+		dex := make(c.Dict)
+		getBlacklists(timeout, dex, ex, areas)
 	}
 }

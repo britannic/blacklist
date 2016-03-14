@@ -19,13 +19,13 @@ import (
 
 // diffArray returns the delta of two arrays
 func diffArray(a, b []string) (diff []string) {
-	dmap := make(map[string]int)
+	dmap := make(c.Dict)
 	for _, d := range b {
 		dmap[d] = 0
 	}
 
 	for _, key := range a {
-		if _, ok := dmap[key]; !ok {
+		if !dmap.KeyExists(key) {
 			diff = append(diff, key)
 		}
 	}
@@ -38,12 +38,9 @@ func disabled(d c.Blacklist, root string) bool {
 	return r
 }
 
-// excludes stores fqdns that mustn't be blacklisted
-type excludes map[string]int
-
 // getExcludes returns a map[string]int of excludes
-func getExcludes(b c.Blacklist) (e excludes) {
-	e = make(excludes)
+func getExcludes(b c.Blacklist) (e c.Dict) {
+	e = make(c.Dict)
 	for pkey := range b {
 		for _, skey := range b[pkey].Exclude {
 			e[skey] = 0
@@ -52,12 +49,9 @@ func getExcludes(b c.Blacklist) (e excludes) {
 	return
 }
 
-// includes stores fqdns that should be blacklisted
-type includes map[string]int
-
 // getIncludes returns a map[string]int of includes
-func getIncludes(n *c.Node) (i includes) {
-	i = make(includes)
+func getIncludes(n *c.Node) (i c.Dict) {
+	i = make(c.Dict)
 	for _, skey := range n.Include {
 		i[skey] = 0
 	}
@@ -96,7 +90,7 @@ type areaURLs map[string][]*c.Src
 
 // getURLs returns an array of config.Src structs with active urls
 func getURLs(b c.Blacklist) (a areaURLs) {
-	var inc includes
+	var inc c.Dict
 	a = make(areaURLs)
 
 	for pkey := range b {
@@ -120,9 +114,9 @@ func getURLs(b c.Blacklist) (a areaURLs) {
 }
 
 // process extracts hosts/domains from downloaded raw content
-func process(s *c.Src, exc excludes, d string) *c.Src {
+func process(s *c.Src, dex c.Dict, ex c.Dict, d string) *c.Src {
 	rx := regx.Regex()
-	s.List = make(map[string]int)
+	s.List = make(c.Dict)
 
 NEXT:
 	for _, line := range strings.Split(d, "\n") {
@@ -144,37 +138,40 @@ NEXT:
 					switch {
 					case i == 1:
 						{
-							if _, exists := exc[fqdn]; !exists {
-								exc[fqdn] = 0
-								s.List[fqdn] = 0
-							} else {
-								exc[fqdn]++
-								if _, exists := s.List[fqdn]; exists {
-									s.List[fqdn]++
+							switch {
+							case dex.SubKeyExists(fqdn), ex.KeyExists(fqdn):
+								continue NEXT
+							case s.Type == "domains":
+								if !dex.KeyExists(fqdn) {
+									dex[fqdn] = 0
+									ex[fqdn] = 0
+									s.List[fqdn] = 0
+								}
+							default:
+								if !dex.KeyExists(fqdn) {
+									if !ex.KeyExists(fqdn) {
+										ex[fqdn] = 0
+										s.List[fqdn] = 0
+									} else {
+										ex[fqdn]++
+										if s.List.KeyExists(fqdn) {
+											s.List[fqdn]++
+										}
+									}
 								}
 							}
 						}
 					case i > 1:
-						{
-							keys := strings.Split(fqdn, ".")
-							for i := 0; i < len(keys)-1; i++ {
-								key := strings.Join(keys[i:], ".")
-								if _, exists := exc[key]; !exists {
-									// if len(key) > 5 && s.Type == "domains" {
-									// fmt.Printf("fqdn: %v - keys: %v - key: %v\n", fqdn, keys, key)
-									// 	exc[key] = 0
-									// }
-									exc[fqdn] = 0
-									s.List[fqdn] = 0
-								} else {
-									// exc[key]++
-									// exc[fqdn]++
-									if _, exists := s.List[fqdn]; exists {
-										s.List[fqdn]++
-									} else {
-										s.List[fqdn] = 0
-									}
-								}
+						switch {
+						case dex.SubKeyExists(fqdn), ex.KeyExists(fqdn):
+							continue NEXT
+						case s.List.KeyExists(fqdn):
+							s.List[fqdn]++
+						default:
+							ex[fqdn] = 0
+							s.List[fqdn] = 0
+							if s.Type == "domains" {
+								dex[fqdn] = 0
 							}
 						}
 					default:
@@ -191,7 +188,6 @@ NEXT:
 		delete(s.List, "localhost")
 	}
 
-	fmt.Println(s)
 	return s
 }
 
@@ -204,6 +200,7 @@ type purgeFileError struct {
 // purgeErrors is a []*purgeFileError type
 type purgeErrors []*purgeFileError
 
+// String returns a purgeErrors result string
 func (p purgeErrors) String() (result string) {
 	for _, e := range p {
 		result += fmt.Sprintf("Error removing: %v: %v\n", e.file, e.err)

@@ -84,13 +84,13 @@ func ExampleCfg() {
 	//       ],
 	//       "Source": {
 	//          "malc0de": {
-	//             "Desc": "\"List of zones serving malicious executables observed by malc0de.com/database/\"",
+	//             "Desc": "List of zones serving malicious executables observed by malc0de.com/database/",
 	//             "Disable": false,
 	//             "IP": "",
 	//             "List": null,
 	//             "Name": "malc0de",
 	//             "No": 0,
-	//             "Prfx": "\"zone \"",
+	//             "Prfx": "zone ",
 	//             "Type": "domains",
 	//             "URL": "http://malc0de.com/bl/ZONES"
 	//          }
@@ -105,29 +105,29 @@ func ExampleCfg() {
 	//       ],
 	//       "Source": {
 	//          "adaway": {
-	//             "Desc": "\"Blocking mobile ad providers and some analytics providers\"",
+	//             "Desc": "Blocking mobile ad providers and some analytics providers",
 	//             "Disable": false,
 	//             "IP": "",
 	//             "List": null,
 	//             "Name": "adaway",
 	//             "No": 0,
-	//             "Prfx": "\"127.0.0.1 \"",
+	//             "Prfx": "127.0.0.1 ",
 	//             "Type": "hosts",
 	//             "URL": "http://adaway.org/hosts.txt"
 	//          },
 	//          "malwaredomainlist": {
-	//             "Desc": "\"127.0.0.1 based host and domain list\"",
+	//             "Desc": "127.0.0.1 based host and domain list",
 	//             "Disable": false,
 	//             "IP": "",
 	//             "List": null,
 	//             "Name": "malwaredomainlist",
 	//             "No": 0,
-	//             "Prfx": "\"127.0.0.1 \"",
+	//             "Prfx": "127.0.0.1 ",
 	//             "Type": "hosts",
 	//             "URL": "http://www.malwaredomainlist.com/hostslist/hosts.txt"
 	//          },
 	//          "openphish": {
-	//             "Desc": "\"OpenPhish automatic phishing detection\"",
+	//             "Desc": "OpenPhish automatic phishing detection",
 	//             "Disable": false,
 	//             "IP": "",
 	//             "List": null,
@@ -138,7 +138,7 @@ func ExampleCfg() {
 	//             "URL": "https://openphish.com/feed.txt"
 	//          },
 	//          "someonewhocares": {
-	//             "Desc": "\"Zero based host and domain list\"",
+	//             "Desc": "Zero based host and domain list",
 	//             "Disable": false,
 	//             "IP": "",
 	//             "List": null,
@@ -149,7 +149,7 @@ func ExampleCfg() {
 	//             "URL": "http://someonewhocares.org/hosts/zero/"
 	//          },
 	//          "volkerschatz": {
-	//             "Desc": "\"Ad server blacklists\"",
+	//             "Desc": "Ad server blacklists",
 	//             "Disable": false,
 	//             "IP": "",
 	//             "List": null,
@@ -160,24 +160,24 @@ func ExampleCfg() {
 	//             "URL": "http://www.volkerschatz.com/net/adpaths"
 	//          },
 	//          "winhelp2002": {
-	//             "Desc": "\"Zero based host and domain list\"",
+	//             "Desc": "Zero based host and domain list",
 	//             "Disable": false,
 	//             "IP": "",
 	//             "List": null,
 	//             "Name": "winhelp2002",
 	//             "No": 0,
-	//             "Prfx": "\"0.0.0.0 \"",
+	//             "Prfx": "0.0.0.0 ",
 	//             "Type": "hosts",
 	//             "URL": "http://winhelp2002.mvps.org/hosts.txt"
 	//          },
 	//          "yoyo": {
-	//             "Desc": "\"Fully Qualified Domain Names only - no prefix to strip\"",
+	//             "Desc": "Fully Qualified Domain Names only - no prefix to strip",
 	//             "Disable": false,
 	//             "IP": "",
 	//             "List": null,
 	//             "Name": "yoyo",
 	//             "No": 0,
-	//             "Prfx": "\"\"",
+	//             "Prfx": "",
 	//             "Type": "hosts",
 	//             "URL": "http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml\u0026showintro=1\u0026mimetype=plaintext"
 	//          }

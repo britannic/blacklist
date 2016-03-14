@@ -17,7 +17,7 @@ import (
 )
 
 // getBlacklists assembles the http download jobs
-func getBlacklists(timeout time.Duration, e excludes, a areaURLs) {
+func getBlacklists(timeout time.Duration, d c.Dict, e c.Dict, a areaURLs) {
 
 	for k := range a {
 		jobs := make(chan Job, cores)
@@ -28,7 +28,7 @@ func getBlacklists(timeout time.Duration, e excludes, a areaURLs) {
 		for i := 0; i < cores; i++ {
 			go doJobs(done, jobs)
 		}
-		processResults(timeout, e, done, results)
+		processResults(timeout, d, e, done, results)
 	}
 }
 
@@ -40,14 +40,14 @@ type Result struct {
 }
 
 // processResults mills the http content and writes it to its corresponding file
-func processResults(timeout time.Duration, e excludes, done <-chan struct{},
+func processResults(timeout time.Duration, d c.Dict, e c.Dict, done <-chan struct{},
 	results <-chan Result) {
 	finish := time.After(time.Duration(timeout))
 
 	for working := cores; working > 0; {
 		select {
 		case result := <-results:
-			data := process(result.Src, e, string(result.Data))
+			data := process(result.Src, d, e, string(result.Data))
 			fn := fmt.Sprintf(fStr, dmsqDir, result.Src.Type, result.Src.Name)
 			log.Printf("[Select 1] writing job[%v] %v\n", result.Src.No, fn)
 			if err := writeFile(fn, getList(data)); err != nil {
@@ -63,7 +63,7 @@ func processResults(timeout time.Duration, e excludes, done <-chan struct{},
 	for {
 		select {
 		case result := <-results:
-			data := process(result.Src, e, string(result.Data))
+			data := process(result.Src, d, e, string(result.Data))
 			fn := fmt.Sprintf(fStr, dmsqDir, result.Src.Type, result.Src.Name)
 			log.Printf("[Select 2] writing job[%v] %v\n", result.Src.No, fn)
 			if err := writeFile(fn, getList(data)); err != nil {

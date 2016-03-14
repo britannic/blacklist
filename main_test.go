@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/user"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/britannic/blacklist/config"
@@ -17,37 +18,6 @@ func compare(t *testing.T, want, got *user.User) {
 	}
 }
 
-func TestBasename(t *testing.T) {
-	dirPath := "/usr/root/testing.txt"
-	dir := basename(dirPath)
-	if dir != "testing" {
-		t.Error(dir)
-	}
-}
-
-func TestIsAdmin(t *testing.T) {
-	want, err := user.Current()
-	if err != nil {
-		t.Fatalf("Current: %v", err)
-	}
-
-	got, err := user.Lookup(want.Username)
-	if err != nil {
-		t.Fatalf("Lookup: %v", err)
-	}
-
-	compare(t, want, got)
-
-	osAdmin := false
-	if got.Uid == "0" {
-		osAdmin = true
-	}
-
-	if isAdmin() != osAdmin {
-		t.Error(osAdmin)
-	}
-}
-
 // cmpHash compares the hashes of a to b and returns true if they're identical
 func cmpHash(a, b []byte) bool {
 	if md5.Sum(a) == md5.Sum(b) {
@@ -56,13 +26,29 @@ func cmpHash(a, b []byte) bool {
 	return false
 }
 
-func TestProcess(t *testing.T) {
+func TestBasename(t *testing.T) {
+	dirPath := "/usr/root/testing.txt"
+	dir := basename(dirPath)
+	if dir != "testing" {
+		t.Error(dir)
+	}
+}
+
+func TestExclusions(t *testing.T) {
+	b, err := config.Get(config.Testdata, root)
+	if err != nil {
+		t.Error("Couldn't load config.Testdata")
+	}
+
+	globex := getExcludes(*b)
+	ex := getExcludes(*b)
+	dex := make(config.Dict)
+
 	for _, s := range src {
-		e := make(excludes)
 		f := fmt.Sprintf("./tdata.%v.%v", s.Type, s.Name)
 		testdata, err := getfile(f)
 		if err != nil {
-			t.Fatalf("Cannot open %v", f)
+			t.Errorf("Cannot open %v", f)
 		}
 
 		var tdata string
@@ -72,83 +58,63 @@ func TestProcess(t *testing.T) {
 			}
 		}
 
-		f = fmt.Sprintf("./sdata.%v.%v", s.Type, s.Name)
-		staticdata, err := getfile(f)
-		if err != nil {
-			t.Fatalf("Cannot open %v", f)
-		}
+		gdata := process(s, globex, dex, tdata)
 
-		var wdata string
-		for _, l := range staticdata {
-			if len(l) > 0 {
-				wdata += l + "\n"
-			}
-		}
-
-		gdata := string(getList(process(s, e, tdata))[:])
-
-		if !cmpHash([]byte(wdata), []byte(gdata)) {
-			mismatch := []*struct {
-				d string
-				f string
-			}{
-				{
-					d: wdata,
-					f: fmt.Sprintf("/tmp/want.%v.%v", s.Type, s.Name),
-				},
-				{
-					d: gdata,
-					f: fmt.Sprintf("/tmp/got.%v.%v", s.Type, s.Name),
-				},
+		for k := range gdata.List {
+			i := strings.Count(k, ".")
+			if i < 1 {
+				t.Errorf("key: %v has . count of %v", k, i)
 			}
 
-			for _, m := range mismatch {
-				writeFile(m.f, []byte(m.d))
+			switch {
+			case i == 1:
+				if ex.KeyExists(k) {
+					t.Errorf("Exclusion failure, found matching key: %v", k)
+				}
+			case i > 1:
+				if ex.SubKeyExists(k) {
+					t.Errorf("Exclusion failure, found submatch for key: %v", k)
+				}
 			}
-			t.Errorf("data mismatch between standard and processed data for %q.", s.Name)
 		}
 	}
 }
 
-func TestWriteAndReadFile(t *testing.T) {
-	fname := "/tmp/delete.me"
-	data := []byte{}
-	data = append(data, `This is a test file. Delete it!`...)
-	err := writeFile(fname, data)
-	if err != nil {
-		t.Error(err)
+func TestGetHTTP(t *testing.T) {
+	type data struct {
+		body  []byte
+		err   error
+		prcsd *config.Src
 	}
 
-	fdata, err := getfile(fname)
-	fdata = append(fdata, string(data[:]))
-	switch {
-	case err != nil:
-		t.Error(err)
-	case fdata[0] != fdata[1]:
-		t.Error("data mismatch between writeFile and getFile")
-	}
-}
-
-func TestStripPrefix(t *testing.T) {
+	h := &data{}
+	d := []*data{}
 	rx := regx.Regex()
-	tline := `[This line should be delimited by "[]" only.]`
 
-	for _, s := range src {
-		var l string
-		switch s.Prfx {
-		case "http":
-			l = s.Prfx + "://" + tline
-		default:
-			l = s.Prfx + tline
+	b, err := config.Get(config.Testdata, root)
+	if err != nil {
+		t.Errorf("unable to get configuration data, error code: %v\n", err)
+	}
+
+	a := getURLs(*b)
+	ex := make(config.Dict)
+	dex := make(config.Dict)
+	for k := range a {
+		for _, u := range a[k] {
+			if len(u.URL) > 0 {
+				h.body, h.err = getHTTP(u.URL)
+				d = append(d, h)
+				h.prcsd = process(u, ex, dex, string(h.body[:]))
+			}
 		}
+	}
 
-		r, ok := stripPrefix(l, s.Prfx, rx)
-		switch {
-		case tline != r:
-			t.Errorf("stripPrefix() failed for %v", s.Name)
-			fmt.Printf("Want: %v\nGot: %v\n", tline, r)
-		case !ok:
-			t.Errorf("stripPrefix() failed for %v", s.Name)
+	for _, z := range d {
+		for got := range z.prcsd.List {
+			want := rx.FQDN.FindString(got)
+			if strings.Compare(got, want) != 0 {
+				t.Errorf("wanted: %v - got: %v", want, got)
+			}
 		}
 	}
 }
@@ -176,6 +142,84 @@ func TestGetUrls(t *testing.T) {
 	}
 }
 
+func TestIsAdmin(t *testing.T) {
+	want, err := user.Current()
+	if err != nil {
+		t.Errorf("Current: %v", err)
+	}
+
+	got, err := user.Lookup(want.Username)
+	if err != nil {
+		t.Errorf("Lookup: %v", err)
+	}
+
+	compare(t, want, got)
+
+	osAdmin := false
+	if got.Uid == "0" {
+		osAdmin = true
+	}
+
+	if isAdmin() != osAdmin {
+		t.Error(osAdmin)
+	}
+}
+
+func TestProcess(t *testing.T) {
+	for _, s := range src {
+		ex := make(config.Dict)
+		dex := make(config.Dict)
+		f := fmt.Sprintf("./tdata.%v.%v", s.Type, s.Name)
+		testdata, err := getfile(f)
+		if err != nil {
+			t.Errorf("Cannot open %v", f)
+		}
+
+		var tdata string
+		for _, l := range testdata {
+			if len(l) > 0 {
+				tdata += l + "\n"
+			}
+		}
+
+		f = fmt.Sprintf("./sdata.%v.%v", s.Type, s.Name)
+		staticdata, err := getfile(f)
+		if err != nil {
+			t.Errorf("Cannot open %v", f)
+		}
+
+		var wdata string
+		for _, l := range staticdata {
+			if len(l) > 0 {
+				wdata += l + "\n"
+			}
+		}
+
+		gdata := string(getList(process(s, ex, dex, tdata))[:])
+
+		if !cmpHash([]byte(wdata), []byte(gdata)) {
+			mismatch := []*struct {
+				d string
+				f string
+			}{
+				{
+					d: wdata,
+					f: fmt.Sprintf("/tmp/want.%v.%v", s.Type, s.Name),
+				},
+				{
+					d: gdata,
+					f: fmt.Sprintf("/tmp/got.%v.%v", s.Type, s.Name),
+				},
+			}
+
+			for _, m := range mismatch {
+				writeFile(m.f, []byte(m.d))
+			}
+			t.Errorf("data mismatch between standard and processed data for %q.", s.Name)
+		}
+	}
+}
+
 func TestPurgeFiles(t *testing.T) {
 	whatOS := runtime.GOOS
 	if whatOS == "darwin" {
@@ -194,33 +238,46 @@ func TestPurgeFiles(t *testing.T) {
 	}
 }
 
-func TestGetHTTP(t *testing.T) {
-	type data struct {
-		body []byte
-		err  error
-	}
+func TestStripPrefix(t *testing.T) {
+	rx := regx.Regex()
+	tline := `[This line should be delimited by "[]" only.]`
 
-	h := &data{}
-	d := []*data{}
+	for _, s := range src {
+		var l string
+		switch s.Prfx {
+		case "http":
+			l = s.Prfx + "://" + tline
+		default:
+			l = s.Prfx + tline
+		}
 
-	b, err := config.Get(config.Testdata2, root)
-	if err != nil {
-		t.Errorf("unable to get configuration data, error code: %v\n", err)
-	}
-
-	a := getURLs(*b)
-	for k := range a {
-		for _, u := range a[k] {
-			fmt.Println(u.URL)
-			if len(u.URL) > 0 {
-				h.body, h.err = getHTTP(u.URL)
-				d = append(d, h)
-			}
+		r, ok := stripPrefix(l, s.Prfx, rx)
+		switch {
+		case tline != r:
+			t.Errorf("stripPrefix() failed for %v", s.Name)
+			fmt.Printf("Want: %v\nGot: %v\n", tline, r)
+		case !ok:
+			t.Errorf("stripPrefix() failed for %v", s.Name)
 		}
 	}
+}
 
-	for _, z := range d {
-		fmt.Println(string(z.body[:]))
+func TestWriteAndReadFile(t *testing.T) {
+	fname := "/tmp/delete.me"
+	data := []byte{}
+	data = append(data, `This is a test file. Delete it!`...)
+	err := writeFile(fname, data)
+	if err != nil {
+		t.Error(err)
+	}
+
+	fdata, err := getfile(fname)
+	fdata = append(fdata, string(data[:]))
+	switch {
+	case err != nil:
+		t.Error(err)
+	case fdata[0] != fdata[1]:
+		t.Error("data mismatch between writeFile and getFile")
 	}
 }
 
