@@ -1,8 +1,6 @@
-[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)
-[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)
 
 # config
-    import "github.com/britannic/blacklist/config"
+    import "./config"
 
 Package config provides methods and data structures for loading
 an EdgeOS/VyOS configuration
@@ -128,6 +126,11 @@ var Testdata2 = `blacklist {
             include free-counter.co.uk
             include intellitxt.com
             include kiosked.com
+            source malc0de {
+                description "List of zones serving malicious executables observed by malc0de.com/database/"
+                prefix "zone "
+                url http://malc0de.com/bl/ZONES
+            }
         }
         exclude 122.2o7.net
         exclude 1e100.net
@@ -173,21 +176,6 @@ var Testdata2 = `blacklist {
         exclude ytimg.com
         hosts {
             include beap.gemini.yahoo.com
-            source openphish {
-                description "OpenPhish automatic phishing detection"
-                prefix http
-                url https://openphish.com/feed.txt
-            }
-            source volkerschatz {
-                description "Ad server blacklists"
-                prefix http
-                url http://www.volkerschatz.com/net/adpaths
-            }
-            source yoyo {
-                description "Fully Qualified Domain Names only - no prefix to strip"
-                prefix ""
-                url http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext
-            }
         }
     }`
 ```
@@ -223,25 +211,6 @@ ToBool converts a string ("true" or "false") to it's boolean equivalent
 
 
 
-## type Area
-``` go
-type Area struct {
-    Cntr, Dupe, Rcrd, Uniq int
-    Trgt                   map[string]string
-}
-```
-Area struct holds data on downloaded hosts and domains
-
-
-
-
-
-
-
-
-
-
-
 ## type Blacklist
 ``` go
 type Blacklist map[string]*Node
@@ -270,6 +239,45 @@ Get extracts nodes from a EdgeOS/VyOS configuration structure
 func (b Blacklist) String() (result string)
 ```
 String returns pretty print for the Blacklist struct
+
+
+
+## type Dict
+``` go
+type Dict map[string]int
+```
+Dict is a common string key map of ints
+
+
+
+
+
+
+
+
+
+### func GetSubdomains
+``` go
+func GetSubdomains(s string) (d Dict)
+```
+GetSubdomains returns a map of subdomains
+
+
+
+
+### func (Dict) KeyExists
+``` go
+func (d Dict) KeyExists(s string) bool
+```
+KeyExists returns true if the key exists
+
+
+
+### func (Dict) SubKeyExists
+``` go
+func (d Dict) SubKeyExists(s string) bool
+```
+SubKeyExists returns true if part of the key matches
 
 
 
@@ -356,8 +364,9 @@ type Src struct {
     Desc    string
     Disable bool
     IP      string
-    List    map[string]int
+    List    Dict
     Name    string
+    No      int
     Prfx    string
     Type    string
     URL     string

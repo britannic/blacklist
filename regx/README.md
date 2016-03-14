@@ -1,6 +1,6 @@
 
 # regx
-    import "github.com/britannic/blacklist/regx"
+    import "./regx/"
 
 Package regx provides regex objects for processing data in files and web content
 
@@ -9,11 +9,11 @@ Package regx provides regex objects for processing data in files and web content
 
 
 
-## func Prefix
+## func Get
 ``` go
-func Prefix(p string) (rx *regexp.Regexp, err error)
+func Get(t, s string) (r []string)
 ```
-Prefix compiles user supplied prefixes into regex objects
+Get returns an array of the string and submatch
 
 
 
