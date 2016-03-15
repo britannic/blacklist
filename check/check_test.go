@@ -14,6 +14,12 @@ var (
 	live           = &check.Cfg{Blacklist: blacklist}
 )
 
+func init() {
+	if global.WhatOS == "darwin" {
+		global.DmsqDir = "../testdata"
+	}
+}
+
 func TestConfBlacklistings(t *testing.T) {
 	if err != nil {
 		t.Error("Couldn't load config.Testdata")

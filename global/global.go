@@ -6,6 +6,7 @@
 package global
 
 import (
+	"log"
 	"os"
 	"runtime"
 
@@ -42,8 +43,12 @@ func init() {
 	WhatOS = runtime.GOOS
 	switch WhatOS {
 	case "darwin":
-		DmsqDir = "/Users/Neil/go/src/github.com/britannic/blacklist/testdata"
-		Logfile = "/Users/Neil/go/src/github.com/britannic/blacklist/testdata/blacklist.log"
+		cwd, err := os.Getwd()
+		if err != nil {
+			log.Fatal("Cannot determine current directory - exiting")
+		}
+		DmsqDir = cwd + "/testdata"
+		Logfile = cwd + "/testdata/blacklist.log"
 	default:
 		DmsqDir = "/etc/dnsmasq.d"
 		FStr = "%v/%v.%v" + Fext
