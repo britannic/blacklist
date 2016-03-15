@@ -12,7 +12,7 @@ import (
 
 var (
 	blacklist, err = config.Get(config.Testdata, global.Root)
-	live           = &check.Cfg{blacklist}
+	live           = &check.Cfg{Blacklist: blacklist}
 )
 
 func init() {
