@@ -7,6 +7,8 @@ UBNT EdgeMax dnsmasq Blacklist and Adware Blocking
 community.ubnt.com
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
+[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)
+[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)
 
 ### Overview
 EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at (<a href="https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX">https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX</a>)
