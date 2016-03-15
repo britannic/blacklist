@@ -8,6 +8,8 @@ community.ubnt.com
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
+<a href="https://badge.fury.io/gh/britannic%2FBlacklist.svg">https://badge.fury.io/gh/britannic%2FBlacklist.svg</a>
+
 <a href="https://godoc.org/github.com/britannic/blacklist">https://godoc.org/github.com/britannic/blacklist</a>
 
 <a href="https://travis-ci.org/britannic/blacklist">https://travis-ci.org/britannic/blacklist</a>

@@ -15,7 +15,7 @@ var (
     Dbg = false
 
     // DmsqDir defines dnsmasq directory location
-    DmsqDir = "/etc/dnsmasq.d"
+    DmsqDir string
 
     // Fext defines the blacklist filename extension
     Fext = ".blacklist.conf"
@@ -24,13 +24,16 @@ var (
     FStr = "%v/%v.%v" + Fext
 
     // Logfile set the log path and filename
-    Logfile = "/var/log/blacklist.log"
+    Logfile string
 
     // Program is the current binary's filename
     Program = utils.Basename(os.Args[0])
 
     // Root is the top level configuration Node
     Root = "blacklist"
+
+    // WhatOS is the current operating system
+    WhatOS = runtime.GOOS
 )
 ```
 

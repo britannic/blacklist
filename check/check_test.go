@@ -1,7 +1,6 @@
 package check_test
 
 import (
-	"runtime"
 	"testing"
 
 	"github.com/britannic/blacklist/check"
@@ -14,14 +13,6 @@ var (
 	blacklist, err = config.Get(config.Testdata, global.Root)
 	live           = &check.Cfg{Blacklist: blacklist}
 )
-
-func init() {
-	whatOS := runtime.GOOS
-	if whatOS == "darwin" {
-		global.DmsqDir = "/tmp"
-		global.Logfile = "/tmp/blacklist.log"
-	}
-}
 
 func TestConfBlacklistings(t *testing.T) {
 	if err != nil {

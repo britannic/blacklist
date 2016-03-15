@@ -14,7 +14,7 @@ import (
 )
 
 func TestExclusions(t *testing.T) {
-	b, err := config.Get(config.Testdata, global.Root)
+	b, err := config.Get(config.Testdata2, global.Root)
 	if err != nil {
 		t.Error("Couldn't load config.Testdata")
 	}

@@ -31,12 +31,6 @@ func main() {
 		timeout = time.Minute * 30
 	)
 
-	whatOS := runtime.GOOS
-	if whatOS == "darwin" {
-		g.DmsqDir = "/tmp"
-		g.Logfile = "/tmp/blacklist.log"
-	}
-
 	f, err := os.OpenFile(g.Logfile, os.O_WRONLY|os.O_CREATE, 0755)
 	if err == nil {
 		log.SetFormatter(&log.TextFormatter{DisableColors: true})
@@ -71,7 +65,7 @@ func main() {
 	log.Info("CPU Cores: ", cores)
 
 	blist, err := func() (b *c.Blacklist, err error) {
-		switch whatOS {
+		switch g.WhatOS {
 		case "darwin":
 			{
 				b, err = c.Get(c.Testdata, g.Root)
