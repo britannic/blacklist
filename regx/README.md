@@ -20,7 +20,7 @@ Get returns an array of the string and submatch
 ## type RGX
 ``` go
 type RGX struct {
-    CMNT, DESC, DSBL, FQDN, HTTP, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
+    CMNT, DESC, DSBL, FLIP, FQDN, HTTP, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
 }
 ```
 RGX is a struct of regex precompiled objects

@@ -9,19 +9,26 @@ Package check provides routines to sanity check blacklist is working correctly
 
 
 
-## func Extract
+## func ExtractFQDN
 ``` go
-func Extract(s []string) (r []string)
+func ExtractFQDN(s []string) (r []string)
 ```
-Extract removes a prefix and suffix
+ExtractFQDN returns just the FQDN in a []string
+
+
+## func ExtractIP
+``` go
+func ExtractIP(s []string) (r config.Dict)
+```
+ExtractIP returns a map of unique IPs in []string
 
 
 
 ## type Args
 ``` go
 type Args struct {
-    Fname   string
-    Ex, Dex config.Dict
+    Fname, IP string
+    Ex, Dex   config.Dict
 }
 ```
 Args is a struct of check function parameters
@@ -39,7 +46,7 @@ Args is a struct of check function parameters
 ## type Cfg
 ``` go
 type Cfg struct {
-    *config.Blacklist
+    Blacklist *config.Blacklist
 }
 ```
 Cfg type of config.Blacklist
@@ -88,7 +95,7 @@ ConfFiles checks that all blacklist sources have generated dnsmasq conf files an
 
 ### func (\*Cfg) ConfIP
 ``` go
-func (c *Cfg) ConfIP(a *Args) (err error)
+func (c *Cfg) ConfIP() (err error)
 ```
 ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
 

@@ -24,7 +24,7 @@ type Args struct {
 
 // Cfg type of config.Blacklist
 type Cfg struct {
-	*config.Blacklist
+	Blacklist *config.Blacklist
 }
 
 // ConfBlacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
