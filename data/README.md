@@ -23,6 +23,13 @@ func GetExcludes(b c.Blacklist) (e c.Dict)
 GetExcludes returns a map[string]int of excludes
 
 
+## func GetHTTP
+``` go
+func GetHTTP(URL string) (body []byte, err error)
+```
+GetHTTP creates http requests to download data
+
+
 ## func GetIncludes
 ``` go
 func GetIncludes(n *c.Node) (i c.Dict)

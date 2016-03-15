@@ -2,6 +2,7 @@
 package utils
 
 import (
+	"crypto/md5"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -26,6 +27,14 @@ func Basename(s string) string {
 		}
 	}
 	return s
+}
+
+// CmpHash compares the hashes of a to b and returns true if they're identical
+func CmpHash(a, b []byte) bool {
+	if md5.Sum(a) == md5.Sum(b) {
+		return true
+	}
+	return false
 }
 
 // Getfile reads a file returns a []string array

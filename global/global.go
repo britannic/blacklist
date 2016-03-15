@@ -18,11 +18,11 @@ var (
 	// DmsqDir defines dnsmasq directory location
 	DmsqDir = "/etc/dnsmasq.d"
 
-	// FSfx defines the blacklist filename extension
-	FSfx = ".blacklist.conf"
+	// Fext defines the blacklist filename extension
+	Fext = ".blacklist.conf"
 
 	// FStr provides a blacklist filename/path template
-	FStr = "%v/%v.%v" + FSfx
+	FStr = "%v/%v.%v" + Fext
 
 	// Logfile set the log path and filename
 	Logfile = "/var/log/blacklist.log"

@@ -27,6 +27,11 @@ func TestGet(t *testing.T) {
 			input:  `disabled false`,
 			result: `false`,
 		},
+		"flip": test{
+			index:  1,
+			input:  `address=/.xunlei.com/0.0.0.0`,
+			result: `0.0.0.0`,
+		},
 		"fqdn": test{
 			index:  1,
 			input:  `http:/123pagerank.com/*=UUID:272`,

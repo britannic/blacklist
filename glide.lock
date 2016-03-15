@@ -1,10 +1,10 @@
 hash: c43e442024990f9903ad0ecaad72b090be39cada2f96e7fc00bf77af94cc22f0
-updated: 2016-03-04T18:33:21.125568883-08:00
+updated: 2016-03-14T11:37:12.882959571-07:00
 imports:
 - name: github.com/Sirupsen/logrus
-  version: 219c8cb75c258c552e999735be6df753ffc7afdc
+  version: a26f43589d737684363ff856c5a0f9f24b946510
 - name: golang.org/x/crypto
-  version: 1f22c0103821b9390939b6776727195525381532
+  version: de93d05161db39bcbd84d3da2e54c4a18f37f0b1
   subpackages:
   - /ssh/terminal
 - name: gopkg.in/airbrake/gobrake.v2

@@ -16,6 +16,13 @@ func Basename(s string) string
 Basename removes directory components and file extensions.
 
 
+## func CmpHash
+``` go
+func CmpHash(a, b []byte) bool
+```
+CmpHash compares the hashes of a to b and returns true if they're identical
+
+
 ## func Getfile
 ``` go
 func Getfile(f string) (data []string, err error)

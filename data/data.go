@@ -8,6 +8,8 @@ package data
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
+	"net/http/httputil"
 	"os"
 	"sort"
 	"strings"
@@ -18,6 +20,17 @@ import (
 	g "github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/regx"
 )
+
+func debug(data []byte, err error) {
+	if g.Dbg == false {
+		return
+	}
+	if err == nil {
+		fmt.Printf("%s\n\n", data)
+	} else {
+		log.Fatalf("%s\n\n", err)
+	}
+}
 
 // DiffArray returns the delta of two arrays
 func DiffArray(a, b []string) (diff []string) {
@@ -47,6 +60,32 @@ func GetExcludes(b c.Blacklist) (e c.Dict) {
 		for _, skey := range b[pkey].Exclude {
 			e[skey] = 0
 		}
+	}
+	return
+}
+
+// GetHTTP creates http requests to download data
+func GetHTTP(URL string) (body []byte, err error) {
+	const agent = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/601.4.4 (KHTML, like Gecko) Version/9.0.3 Safari/601.4.4`
+	var (
+		resp *http.Response
+		req  *http.Request
+	)
+
+	req, err = http.NewRequest("GET", URL, nil)
+	if err == nil {
+		req.Header.Set("User-Agent", agent)
+		// req.Header.Add("Content-Type", "application/json")
+		debug(httputil.DumpRequestOut(req, true))
+		resp, err = (&http.Client{}).Do(req)
+	} else {
+		log.Printf("Unable to form request for %s, error: %v", URL, err)
+	}
+
+	if err == nil {
+		defer resp.Body.Close()
+		debug(httputil.DumpResponse(resp, true))
+		body, err = ioutil.ReadAll(resp.Body)
 	}
 	return
 }
@@ -218,7 +257,7 @@ func ListFiles(d string) (files []string) {
 	}
 
 	for _, f := range dlist {
-		if strings.Contains(f.Name(), g.FSfx) {
+		if strings.Contains(f.Name(), g.Fext) {
 			files = append(files, g.DmsqDir+"/"+f.Name())
 		}
 	}
