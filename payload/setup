@@ -1,0 +1,1102 @@
+#!/usr/bin/env perl
+#
+# **** License ****
+# COPYRIGHT AND LICENCE
+#
+# Copyright (C) 2016 by Neil Beadle
+#
+# This script is free software; you can redistribute it and/or modify
+# it under the same terms as Perl itself, either Perl version 5.23.4 or,
+# at your option, any later version of Perl 5 you may have available.
+#
+# Author: Neil Beadle
+# Date:   March 2016
+# Description: Script for creating dnsmasq configuration files to redirect dns
+# look ups to alternative IPs (blackholes, pixel servers etc.)
+#
+# **** End License ****
+# Install dnsmasq blacklist blocking onto an EdgeMax router
+# Use at your own risk
+#
+use feature qw(switch);
+use File::Basename;
+use Getopt::Long;
+use IO::Select;
+use IPC::Open3;
+use lib q{/opt/vyatta/share/perl5};
+use lib q{./lib};
+use Term::ReadKey qw(GetTerminalSize);
+use Sys::Syslog qw(:standard :macros);
+use threads;
+use v5.14;
+use strict;
+use warnings;
+use EdgeOS::DNS::Blacklist (
+  qw{
+    $c
+    $FALSE
+    $TRUE
+    get_cfg_actv
+    get_file
+    get_url
+    get_user
+    is_admin
+    is_build
+    is_configure
+    is_version
+    log_msg
+    process_data
+    set_dev_grp
+    }
+);
+
+chomp( my $version = qx{cat version} );
+my ($cols) = qx{tput cols};
+my $prg     = { errors => 0, calls => 0, };
+my $program = basename($0);
+my $edgeOS  = is_version();
+my $name    = q{dnsmasq blacklist};
+my $begin   = q{/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin};
+my $commit  = q{/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit};
+my $delete  = q{/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete};
+my $end     = q{/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper end};
+my $save    = q{sudo /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save};
+my $set     = q{/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set};
+my $cfg     = {
+  actv      => q{/opt/vyatta/config/active/service/dns/forwarding/},
+  cnf_ext   => q{.conf},
+  disabled  => 0,
+  dmasq_d   => q{/etc/dnsmasq.d},
+  flg_lvl   => 5,
+  dnsmasq   => q{/etc/dnsmasq.d},
+  EdgeOS    => q{EdgeOS},
+  file      => q{./blacklist.cmds},
+  flg_file  => q{/var/log/update-dnsmasq-flagged.cmds},
+  no_op     => q{/tmp/.update-dnsmasq.no-op},
+  oldconf   => qq{{domai*,hos*,zon*}.blacklist.conf},
+  oldscrpt  => q{update-blacklists-dnsmasq.pl},
+  old_lib   => q{/opt/vyatta/share/perl5},
+  lib       => q{/config/lib/perl},
+  script    => q{update-dnsmasq.pl},
+  scrpt_d   => q{/config/scripts},
+  tmplts    => q{/opt/vyatta/share/vyatta-cfg/templates/service/dns/forwarding},
+  tstscrpt  => q{blacklist.t},
+  utility   => q{ubnt-cln-cfg-orphans.sh},
+  group     => q{users},
+  domains   => {
+    duplicates => 0,
+    icount     => 0,
+    records    => 0,
+    target     => q{address},
+    type       => q{domains},
+    unique     => 0,
+  },
+  hosts => {
+    duplicates => 0,
+    icount     => 0,
+    records    => 0,
+    target     => q{address},
+    type       => q{hosts},
+    unique     => 0,
+  },
+  zones => {
+    duplicates => 0,
+    icount     => 0,
+    records    => 0,
+    target     => q{server},
+    type       => q{zones},
+    unique     => 0,
+  },
+};
+############################### script runs here ###############################
+exit if &main();
+exit 1;
+################################################################################
+
+# Remove previous configuration files
+sub delete_file {
+  my $input = shift;
+  my $cmd   = qq{sudo rm $input->{file} 2>&1};
+
+  if ( -f $input->{file} ) {
+    log_msg(
+      {
+        show    => $TRUE,
+        cols    => $cols,
+        eof     => qq{\n},
+        msg_typ => q{info},
+        msg_str => sprintf q{Deleting file %s},
+        $input->{file},
+      }
+    );
+    qx{$cmd};
+    $prg->{calls}++;
+  }
+
+  if ( -f $input->{file} ) {
+    $prg->{fail}->{ $prg->{errors}++ } = $cmd;
+    log_msg(
+      {
+        cols    => $cols,
+        eof     => qq{\n},
+        msg_str => sprintf( q{Unable to delete %s}, $input->{file} ),
+        msg_typ => q{warning},
+        show    => $TRUE,
+      }
+    );
+    return;
+  }
+  return $TRUE;
+}
+
+# Error handler
+sub error_handler {
+  my $input = shift;
+  $prg->{calls}++;
+  if ( $input->{exit_code} >> 8 != 0 ) {
+    $prg->{fail}->{ $prg->{errors}++ } = $input->{cmd};
+    return;
+  }
+  else {
+    return $TRUE;
+  }
+}
+
+# Exec a command using qx
+sub exec_command {
+  my $input = shift;
+  $prg->{calls}++;
+
+  log_msg(
+    {
+      cols    => $cols,
+      eof     => qq{\n},
+      msg_str => $input->{exec_msg},
+      msg_typ => q{info},
+      show    => $TRUE,
+    }
+  );
+
+  my $output = qx{sudo $input->{cmd} 2>&1};
+
+  if ( !error_handler( { exit_code => $?, cmd => $input->{cmd} } ) ) {
+    log_msg(
+      {
+        cols    => $cols,
+        eof     => qq{\n},
+        msg_str => $input->{fail_msg} . qq{\n$output\n},
+        msg_typ => q{error},
+        show    => $TRUE,
+      }
+    );
+    $prg->{fail}->{ $prg->{errors}++ } = $input->{cmd};
+    return;
+  }
+  return $TRUE;
+}
+
+# Run configure and execute the commands
+sub exec_shell {
+  my $input = shift;
+  my ( %cmd_errs, %cmds_out, $cmd_err, $cmd_out, $in, $pid )
+    = ( (), (), q{}, q{}, q{}, undef );
+
+  eval { $pid = open3 $in, $cmd_out, $cmd_err, qq{@{$input->{commands}}}; };
+  if ($@) {
+    if ( $@ =~ m/^ open3/ ) {
+      warn qq{open3 failed: $!\ n $@\ n};
+      return;
+    }
+    say qq{FATAL: Unable to open a shell!} && return;
+  }
+
+  waitpid( $pid, 0 );
+  close $in;
+
+  my $selector = IO::Select->new();
+  $selector->add( $cmd_err, $cmd_out );
+  while ( my @ready = $selector->can_read ) {
+    for my $fh (@ready) {
+      if ( defined $cmd_err ) {
+        if ( fileno $fh == fileno $cmd_err ) {
+          %cmd_errs = map { my $key = $_; $key => 1; } <$cmd_err>;
+        }
+      }
+      else {
+        %cmds_out = map { my $key = $_; $key => 1; } <$cmd_out>;
+      }
+      $selector->remove($fh) if eof $fh;
+    }
+  }
+  close $cmd_out if $cmd_out;
+  close $cmd_err if $cmd_err;
+
+  my $re = {
+    info => qr{(?:Nothing to delete)},
+    warnings =>
+      qr{(?:The specified configuration node is not valid\n|Delete failed\n)},
+    errors => qr{(?:aborted|error|failed|failure)}i,
+  };
+
+  for my $feed ( \%cmds_out, \%cmd_errs ) {
+    while ( my ( $cli_out, $cli_err ) = each %{$feed} ) {
+      $prg->{calls}++;
+      if ($cli_out) {
+        for ($cli_out) {
+          when (/$re->{warnings}/) { }
+          when (/$re->{info}/)     { }
+          when (/$re->{errors}/) {
+            $prg->{fail}->{ $prg->{errors}++ } = $cli_out;
+            log_msg(
+              {
+                cols    => $cols,
+                eof     => qq{\n},
+                msg_str => $cli_out,
+                msg_typ => q{error},
+                show    => $TRUE,
+              }
+            );
+          }
+          default { print $cli_out; }
+        }
+      }
+      elsif ($cli_err) {
+        for ($cli_err) {
+          when (/$re->{warnings}/) { }
+          when (/$re->{info}/)     { }
+          when (/$re->{errors}/) {
+            $prg->{fail}->{ $prg->{errors}++ } = $cli_err;
+            log_msg(
+              {
+                cols    => $cols,
+                eof     => qq{\n},
+                msg_str => $cli_err,
+                msg_typ => q{error},
+                show    => $TRUE,
+              }
+            );
+          }
+          default { print $cli_err; }
+        }
+      }
+    }
+  }
+  return $TRUE;
+}
+
+# Runs the subs to process the blacklist
+sub get_blacklist {
+  my $dnsmasq_svc = q{/etc/init.d/dnsmasq};
+
+  # Make sure localhost is always in the exclusions whitelist
+  $cfg->{hosts}->{exclude}->{localhost} = 1;
+
+  my $success = get_cfg_actv( { config => $cfg, show => $TRUE } );
+  die qq{FATAL: Unable to get configuration} if !$success;
+  $prg->{calls}++;
+
+  # Now proceed if blacklist is enabled
+  if ($success) {
+    my @areas;
+
+    # Add areas to process only if they contain sources and copy global excludes
+    for my $area (qw{domains hosts zones}) {
+      push @areas => $area if scalar keys %{ $cfg->{$area}->{src} };
+    }
+
+    # Process each area
+    my $area_count = (@areas);
+    for my $area (@areas) {
+      my ( $prefix, @threads );
+      my $max_thrds = 8;
+      my @sources   = keys %{ $cfg->{$area}->{src} };
+      while ( my ( $key, $value ) = each %{ $cfg->{exclude} } ) {
+        $cfg->{$area}->{exclude}->{$key} = $value;
+      }
+      $cfg->{$area}->{icount} = scalar keys %{ $cfg->{$area}->{blklst} } // 0;
+      @{ $cfg->{$area} }{qw{records unique}}
+        = @{ $cfg->{$area} }{ q{icount}, q{icount} };
+
+      # Remove any files that no longer have configured sources
+      my $sources_ref = {
+        map {
+          my $key = $_;
+          qq{$cfg->{dmasq_d}/$area.$key.blacklist.conf} => 1;
+          } @sources
+      };
+      my $files_ref = { map { my $key = $_; $key => 1; }
+          glob qq{$cfg->{dmasq_d}/$area.*blacklist.conf} };
+
+      for my $file ( keys $files_ref ) {
+        delete_file( { file => $file } ) if !exists $sources_ref->{$file};
+      }
+
+      # write each configured areas includes into individual dnsmasq files
+      if ( $cfg->{$area}->{icount} > 0 ) {
+        my $equals = $area ne q{domains} ? q{=/} : q{=/.};
+        write_file(
+          {
+            data => [
+              map {
+                my $value = $_;
+                sprintf qq{%s%s%s/%s\n}, $cfg->{$area}->{target}, $equals,
+                  $value, $cfg->{$area}->{dns_redirect_ip};
+                } sort keys %{ $cfg->{$area}->{blklst} }
+            ],
+            file => qq{$cfg->{dmasq_d}/$area.pre-configured.blacklist.conf},
+          }
+        );
+      }
+
+      for my $source (@sources) {
+        my ( $file, $url ) = @{ $cfg->{$area}->{src}->{$source} }{qw{file url}};
+        my $uri  = new URI($url);
+        my $host = $uri->host;
+
+        # Initialize the sources counters
+        @{ $cfg->{$area}->{src}->{$source} }
+          {qw(duplicates icount records unique)} = ( 0, 0, 0, 0 );
+
+        $prefix
+          = $cfg->{$area}->{src}->{$source}->{prefix} ~~ q{http}
+          ? qr{(?:^(?:http:|https:){1}[/]{1,2})}o
+          : $cfg->{$area}->{src}->{$source}->{prefix};
+
+        if ( scalar $url ) {
+          log_msg(
+            {
+              cols => $cols,
+              eof  => qq{\n},
+              msg_str =>
+                sprintf( q{Downloading %s blacklist from %s}, $area, $host ),
+              msg_typ => q{info},
+              show    => $TRUE,
+            }
+          );
+          push @threads,
+            threads->create(
+            { context => q{list}, exit => q{thread_only} },
+            \&get_url,
+            {
+              area   => $area,
+              host   => $host,
+              prefix => $prefix,
+              src    => $source,
+              url    => $url
+            }
+            );
+        }
+        elsif ($file) {    # get file data
+          push @threads,
+            threads->create(
+            { context => q{list}, exit => q{thread_only} },
+            \&get_file, { file => $file, src => $source }
+            );
+        }
+        sleep 1 while ( scalar threads->list(threads::running) >= $max_thrds );
+      }
+
+      for my $thread (@threads) {
+        my $data = $thread->join();
+        my $rec_count = scalar keys %{ $data->{data} } // 0;
+
+        $cfg->{$area}->{src}->{ $data->{src} }->{records} += $rec_count;
+
+        if ( exists $data->{host} && scalar $rec_count ) {
+          log_msg(
+            {
+              cols    => $cols,
+              eof     => qq{\n},
+              msg_str => sprintf(
+                q{%s lines received from: %s },
+                $rec_count, $data->{host}
+              ),
+              msg_typ => q{info},
+              show    => $TRUE,
+            }
+          );
+
+          # Now process what we have received from the web host
+          $success = process_data(
+            {
+              area   => $area,
+              cols   => $cols,
+              config => $cfg,
+              data   => \%{ $data->{data} },
+              prefix => $data->{prefix},
+              show   => $TRUE,
+              src    => $data->{src}
+            }
+          );
+          $prg->{calls}++;
+          if ( !$success ) {
+            $prg->{fail}->{ $prg->{errors}++ }
+              = qq{process_data $area $data->{src}};
+          }
+
+          # Delete $data->{data} key and data
+          delete $data->{data};
+
+          if ( $cfg->{$area}->{src}->{ $data->{src} }->{icount} > 0 ) {
+            my $equals = $area ne q{domains} ? q{=/} : q{=/.};
+            write_file(
+              {
+                data => [
+                  map {
+                    my $value = $_;
+                    sprintf qq{%s%s%s/%s\n} => $cfg->{$area}->{target},
+                      $equals, $value, $cfg->{$area}->{dns_redirect_ip};
+                    } sort
+                    keys %{ $cfg->{$area}->{src}->{ $data->{src} }->{blklst} }
+                ],
+                file => qq{$cfg->{dmasq_d}/$area.$data->{src}.blacklist.conf},
+              }
+            );
+
+            $cfg->{$area}->{unique}
+              += scalar
+              keys %{ $cfg->{$area}->{src}->{ $data->{src} }->{blklst} };
+            $cfg->{$area}->{duplicates}
+              += $cfg->{$area}->{src}->{ $data->{src} }->{duplicates};
+            $cfg->{$area}->{icount}
+              += $cfg->{$area}->{src}->{ $data->{src} }->{icount};
+            $cfg->{$area}->{records}
+              += $cfg->{$area}->{src}->{ $data->{src} }->{records};
+
+            # Discard the data now its written to file
+            delete $cfg->{$area}->{src}->{ $data->{src} };
+          }
+          else {
+            log_msg(
+              {
+                cols    => $cols,
+                eof     => qq{\n},
+                msg_str => qq{Zero records processed from $data->{src}!},
+                msg_typ => q{warning},
+                show    => $TRUE,
+              }
+            );
+          }
+        }
+      }
+
+      log_msg(
+        {
+          cols    => $cols,
+          eof     => qq{\n},
+          msg_str => sprintf(
+            qq{Processed $c->{grn}%s$c->{clr} %s ($c->{red}%s$c->{clr} }
+              . qq{discarded) from $c->{mag}%s$c->{clr} records (%s orig.)%s}
+              => @{ $cfg->{$area} }{qw(unique type duplicates icount records)},
+            qq{\n}
+          ),
+          msg_typ => q{info},
+          show    => $TRUE,
+        }
+      );
+
+      # Now lets report the domains that were seen more than $cfg->{'flg_lvl'}
+      my @flagged_domains;
+      for my $key (
+        sort {
+          $cfg->{hosts}->{exclude}->{$b} <=> $cfg->{hosts}->{exclude}->{$a}
+        } sort keys %{ $cfg->{hosts}->{exclude} }
+        )
+      {
+        my $value = $cfg->{hosts}->{exclude}->{$key};
+        if ( $value >= $cfg->{flg_lvl} && length $key > 5 ) {
+          log_msg(
+            {
+              cols    => $cols,
+              eof     => qq{\n},
+              msg_str => sprintf(
+                qq{$area blacklisted: domain %s %s times} => $key,
+                $value
+              ),
+              msg_typ => q{info},
+              show    => $TRUE,
+            }
+          );
+          push @flagged_domains => qq{$key # $value times};
+        }
+      }
+
+      if (@flagged_domains) {
+        $prg->{calls}++;
+        $success = write_file(
+          {
+            data => [
+              map {
+                my $value = $_;
+                sprintf
+                  qq{set service dns forwarding blacklist domains include %s\n}
+                  => $value;
+                } @flagged_domains
+            ],
+            file => $cfg->{flg_file},
+          }
+        );
+        if ( !$success ) {
+          $prg->{fail}->{ $prg->{errors}++ } = qq{write_file $cfg->{flg_file}};
+        }
+
+        log_msg(
+          {
+            cols => $cols,
+            eof  => qq{\n},
+            msg_str =>
+              qq{Flagged domains command set written to:\n $cfg->{flg_file}},
+            msg_typ => q{info},
+            show    => $TRUE,
+          }
+        );
+      }
+
+      $area_count--;
+      say q{} if ( $area_count == 1 );    # print a final line feed
+    }
+  }
+  elsif ( $cfg->{disabled} ) {
+    for
+      my $file ( glob qq{$cfg->{dmasq_d}/{domains,hosts,zones}*blacklist.conf} )
+    {
+      delete_file( { file => $file } ) if $file;
+    }
+  }
+  else {
+    $prg->{fail}->{ $prg->{errors}++ } = qq{get_blacklist};
+  }
+
+  # Clean up the status line
+  say $c->{off}, qq{\r}, qq{ } x $cols, qq{\r};
+}
+
+# Main function
+sub main {
+
+  # Exit if we're not admin
+  if ( is_admin() && $program ne q{remove} ) {
+    say qq{$name $program must be executed as the admin user - not root!};
+    exit 1;
+  }
+
+  # Start logging
+  my $log_name = qq{$program};
+  openlog( $program, q{}, LOG_DAEMON );
+
+  log_msg(
+    {
+      cols    => $cols,
+      eof     => qq{\n},
+      msg_str => qq{---+++ $name $program $version +++--- },
+      msg_typ => q{info},
+      show    => $TRUE,
+    }
+  );
+
+  for ($program) {
+    when (m/setup/) {
+      if ( is_build() ) {
+        log_msg(
+          {
+            cols => $cols,
+            eof  => qq{\n},
+            msg_str =>
+              qq{Installing $name version $version blocking dnsmasq support},
+            msg_typ => q{info},
+            show    => $TRUE,
+          }
+        );
+        if ( setup() ) {
+          log_msg(
+            {
+              cols    => $cols,
+              eof     => qq{\n},
+              msg_str => qq{$name version $version installation successful},
+              msg_typ => q{info},
+              show    => $TRUE,
+            }
+          );
+        }
+        else {
+          for my $key ( sort keys %{ $prg->{fail} } ) {
+            log_msg(
+              {
+                cols    => $cols,
+                eof     => qq{\n},
+                msg_str => qq{$prg->{fail}->{$key} failed!},
+                msg_typ => q{error},
+                show    => $TRUE,
+              }
+            );
+          }
+          log_msg(
+            {
+              cols    => $cols,
+              eof     => qq{\n},
+              msg_str => qq{$name version $version installation failed!}
+                . qq{\nReview /var/log/messages\n}
+                . qq{$prg->{errors}/$prg->{errors} calls failed},
+              msg_typ => q{error},
+              show    => $TRUE,
+            }
+          );
+          say q{};
+          exit 1;
+        }
+      }
+      else {
+        log_msg(
+          {
+            cols => $cols,
+            eof  => qq{\n},
+            msg_str =>
+              qq{Edgemax $edgeOS->{version} is not supported, upgrade!},
+            msg_typ => q{error},
+            show    => $TRUE,
+          }
+        );
+        say q{};
+        exit 1;
+      }
+    }
+    when (m/remove/) {
+      if ( remove() ) {
+        log_msg(
+          {
+            cols    => $cols,
+            eof     => qq{\n},
+            msg_str => qq{$name version $version removal successful},
+            msg_typ => q{info},
+            show    => $TRUE,
+          }
+        );
+      }
+      else {
+        for my $key ( sort keys %{ $prg->{fail} } ) {
+          log_msg(
+            {
+              cols    => $cols,
+              eof     => qq{\n},
+              msg_str => qq{$prg->{fail}->{$key} failed!},
+              msg_typ => q{error},
+              show    => $TRUE,
+            }
+          );
+        }
+        log_msg(
+          {
+            cols    => $cols,
+            eof     => qq{\n},
+            msg_str => qq{$name version $version removal failed!}
+              . qq{\nReview /var/log/messages\n}
+              . qq{$prg->{errors}/$prg->{errors} calls failed},
+            msg_typ => q{error},
+            show    => $TRUE,
+          }
+        );
+        say q{};
+        exit 1;
+      }
+    }
+  }
+
+  say q{};
+  print $c->{on};
+
+  closelog();
+  if ( $prg->{errors} ) {
+    return;
+  }
+  else {
+    return $TRUE;
+  }
+}
+
+# Remove blacklist support
+sub remove {
+  my @files = (
+    $cfg->{flg_file},
+    $cfg->{no_op},
+    qq{$cfg->{scrpt_d}/$cfg->{oldscrpt}},
+    qq{$cfg->{scrpt_d}/$cfg->{script}},
+    qq{$cfg->{scrpt_d}/$cfg->{tstscrpt}},
+    glob(qq{/var/log/update*.cmds}),
+    glob(qq{$cfg->{dmasq_d}/$cfg->{oldconf}})
+  );
+
+  log_msg(
+    {
+      cols    => $cols,
+      eof     => qq{\n},
+      msg_str => qq{Removing blacklist support files and scripts...},
+      msg_typ => q{info},
+      show    => $TRUE,
+    }
+  );
+
+  for my $file (@files) {
+    delete_file( { file => $file } ) if -f $file;
+  }
+
+  log_msg(
+    {
+      cols    => $cols,
+      eof     => qq{\n},
+      msg_str => qq{Checking active configuration directory permissions},
+      msg_typ => q{info},
+      show    => $TRUE,
+    }
+  );
+
+  set_dev_grp(
+    {
+      dir_handle => $cfg->{actv}, dir_grp => $cfg->{group},
+      grps => get_user( { attribute => q{grps} } )
+    }
+    )
+    or die qq{Unable to repair active configuration directory permissions!};
+
+  log_msg(
+    {
+      cols    => $cols,
+      eof     => qq{\n},
+      msg_str => qq{Removing $name sources and task scheduler entries},
+      msg_typ => q{info},
+      show    => $TRUE,
+    }
+  );
+
+  my @commands = (
+    qq{$begin\n},
+    qq{$delete service dns forwarding blacklist\n},
+    qq{$delete system task-scheduler task update_blacklists\n},
+    qq{$commit\n},
+    qq{$save\n},
+    qq{$end\n},
+  );
+
+  # Run configure and execute the commands
+  exec_shell( { commands => \@commands } )
+    or die qq{Unable to execute removal commands!};
+
+
+  # Remove configuration templates
+  if ( -d qq{$cfg->{tmplts}/blacklist/} ) {
+    exec_command(
+      {
+        cmd      => qq{rm -rf "$cfg->{tmplts}/blacklist/"},
+        exec_msg => qq{Removing $name configuration templates},
+        fail_msg => qq{Unable to remove $name configuration templates},
+      }
+    );
+    if ( -d qq{$cfg->{tmplts}/blacklist/} ) {
+      $prg->{fail}->{ $prg->{errors}++ }
+        = qq{rm -rf "$cfg->{tmplts}/blacklist/"};
+      log_msg(
+        {
+          cols    => $cols,
+          eof     => qq{\n},
+          msg_str => qq{Unable to remove $name configuration templates},
+          msg_typ => q{error},
+          show    => $TRUE,
+        }
+      );
+    }
+  }
+
+  # Remove Blacklist.pm module and lib directories
+  if ( -d qq{$cfg->{lib}/$cfg->{EdgeOS}/} ) {
+    exec_command(
+      {
+        cmd      => qq{rm -rf "$cfg->{lib}/$cfg->{EdgeOS}/"},
+        exec_msg => qq{Removing $name perl library},
+        fail_msg => qq{Unable to remove $name perl library},
+      }
+    );
+    if ( -d qq{$cfg->{lib}/$cfg->{EdgeOS}/} ) {
+      $prg->{fail}->{ $prg->{errors}++ }
+        = qq{rm -rf "$cfg->{lib}/$cfg->{EdgeOS}/"};
+      log_msg(
+        {
+          cols    => $cols,
+          eof     => qq{\n},
+          msg_str => qq{Unable to remove $name perl library},
+          msg_typ => q{error},
+          show    => $TRUE,
+        }
+      );
+    }
+  }
+
+  # Remove old version Blacklist.pm module and lib directories
+  if ( -d qq{$cfg->{old_lib}/$cfg->{EdgeOS}/} ) {
+    exec_command(
+      {
+        cmd      => qq{rm -rf "$cfg->{old_lib}/$cfg->{EdgeOS}/"},
+        exec_msg => qq{Removing $name perl library},
+        fail_msg => qq{Unable to remove $name perl library},
+      }
+    );
+    if ( -d qq{$cfg->{old_lib}/$cfg->{EdgeOS}/} ) {
+      $prg->{fail}->{ $prg->{errors}++ }
+        = qq{rm -rf "$cfg->{old_lib}/$cfg->{EdgeOS}/"};
+      log_msg(
+        {
+          cols    => $cols,
+          eof     => qq{\n},
+          msg_str => qq{Unable to remove $name perl library},
+          msg_typ => q{error},
+          show    => $TRUE,
+        }
+      );
+    }
+  }
+
+  # Restart dnsmasq
+  exec_command(
+    {
+      cmd      => qq{service dnsmasq restart},
+      exec_msg => qq{Reloading dnsmasq configuration},
+      fail_msg => qq{Unable reload dnsmasq configuration!},
+    }
+  );
+
+  if ( !$prg->{errors} ) {
+    return $TRUE;
+  }
+  else {
+    return;
+  }
+}
+
+# Install blacklist support
+sub setup {
+
+  # Create a no op file to stop the CLI automatically running update-dnsmasq.pl
+  open my $NO_OP => q{>}, qq{$cfg->{no_op}};
+  close $NO_OP;
+
+  my @directory = glob qq{$cfg->{dmasq_d}/$cfg->{oldconf}};
+
+  # Remove previous version files
+  if (@directory) {
+    log_msg(
+      {
+        cols => $cols,
+        eof  => qq{\n},
+        msg_str =>
+          qq{Removing previous version blacklist files from directory: $cfg->{dnsmasq}/},
+        msg_typ => q{info},
+        show    => $TRUE,
+      }
+    );
+
+    for my $file (@directory) {
+      if ( -f $file ) {
+        delete_file( { file => $file } ) if $file;
+      }
+    }
+  }
+
+  if ( -f qq{$cfg->{scrpt_d}/$cfg->{oldscrpt}} ) {
+    delete_file( { file => qq{$cfg->{scrpt_d}/$cfg->{oldscrpt}} } );
+  }
+
+  # Create script directory in upgrade persistent /config/scripts
+  if ( !-d $cfg->{scrpt_d} ) {
+    exec_command(
+      {
+        cmd => qq{install -d -o root -g root -m 0755 directory $cfg->{scrpt_d}},
+        exec_msg => qq{Creating $name script directory $cfg->{scrpt_d}},
+        fail_msg => qq{Unable to create $name script $cfg->{scrpt_d}},
+      }
+    );
+  }
+
+  # Install update-dnsmasq.pl script
+  exec_command(
+    {
+      cmd =>
+        qq{install -o root -g root -m 0755 $cfg->{script} "$cfg->{scrpt_d}/$cfg->{script}"},
+      exec_msg =>
+        qq{Installing $name $cfg->{script} script to $cfg->{scrpt_d}/},
+      fail_msg =>
+        qq{Unable to install $name $cfg->{script} script to $cfg->{scrpt_d}/},
+    }
+  );
+
+  # Install blacklist.t test script
+  exec_command(
+    {
+      cmd =>
+        qq{install -o root -g root -m 0755 $cfg->{tstscrpt} "$cfg->{scrpt_d}/$cfg->{tstscrpt}"},
+      exec_msg =>
+        qq{Installing $name $cfg->{tstscrpt} script to $cfg->{scrpt_d}/},
+      fail_msg =>
+        qq{Unable to install $name $cfg->{tstscrpt} script to $cfg->{scrpt_d}/},
+    }
+  );
+
+  # Copy the template directories and files to /opt/vyatta/share/vyatta-cfg/
+  exec_command(
+    {
+      cmd      => qq{cp -rf blacklist/ "$cfg->{tmplts}/"},
+      exec_msg => qq{Installing $name configuration templates},
+      fail_msg =>
+        qq{Unable to install $name configuration templates to $cfg->{tmplts}/blacklist/},
+    }
+  );
+
+  log_msg(
+    {
+      cols    => $cols,
+      eof     => qq{\n},
+      msg_str => qq{Checking active configuration directory permissions},
+      msg_typ => q{info},
+      show    => $TRUE,
+    }
+  );
+
+  # Fix permissions on the active configuration directory
+  set_dev_grp(
+    {
+      dir_handle => $cfg->{actv}, dir_grp => $cfg->{group},
+      grps => get_user( { attribute => q{grps} } )
+    }
+    )
+    or die qq{Unable to repair active configuration directory permissions!};
+
+  # Install lib directory and Blacklist.pm module
+  exec_command(
+    {
+      cmd      => qq{install -o root -g root -m 0755 -d "$cfg->{lib}/"},
+      exec_msg => qq{Creating $name "$cfg->{lib}/" lib directory},
+      fail_msg => qq{Unable to create $name "$cfg->{lib}/" lib directory},
+    }
+  );
+
+  exec_command(
+    {
+      cmd      => qq{cp -rf "lib/$cfg->{EdgeOS}" "$cfg->{lib}/"},
+      exec_msg => qq{Installing Blacklist.pm module},
+      fail_msg =>
+        qq{Unable to install Blacklist.pm module to $cfg->{lib}/$cfg->{EdgeOS}},
+    }
+  );
+
+  log_msg(
+    {
+      cols    => $cols,
+      eof     => qq{\n},
+      msg_str => qq{Creating default $name sources and task scheduler entries},
+      msg_typ => q{info},
+      show    => $TRUE,
+    }
+  );
+
+  open my $CF => q{<}, $cfg->{file}
+    or die qq{error: Unable to open $cfg->{file}: $!};
+
+  my @commands = (qq{$begin\n});
+
+LINE:
+  while ( my $line = <$CF> ) {
+    chomp $line;
+    for ($line) {
+      when (/^set/) { $line =~ s/\Aset(?<SET>.*)\z/$set$+{SET}/ms; }
+      when (/^del/) {
+        $line =~ s/\Adelete(?<DEL>.*)\z/$delete$+{DEL}/ms;
+      }
+      default { next LINE }
+    }
+    push @commands => qq{$line\n};
+  }
+  close $CF;
+
+  push @commands => qq{$commit\n};
+  push @commands => qq{$save\n};
+  push @commands => qq{$end\n};
+
+  log_msg(
+    {
+      cols    => $cols,
+      eof     => qq{\n},
+      msg_str => qq{Checking active configuration directory permissions},
+      msg_typ => q{info},
+      show    => $TRUE,
+    }
+  );
+
+  # Run configure and execute the commands
+  exec_shell( { commands => \@commands } )
+    or die q{Unable to execute blacklist configuration commands!};
+
+  get_blacklist();
+
+  delete_file( { file => $cfg->{no_op} } );
+
+  exec_command(
+    {
+      cmd      => qq{service dnsmasq restart},
+      exec_msg => qq{Reloading dnsmasq configuration},
+      fail_msg => qq{Unable reload dnsmasq configuration!},
+    }
+  );
+
+  if ( !$prg->{errors} ) {
+    return $TRUE;
+  }
+  else {
+    return;
+  }
+}
+
+# Write the data to file
+sub write_file {
+  my $input = shift;
+
+  return if !@{ $input->{data} };
+
+  exec_command(
+    {
+      cmd      => qq{touch $input->{file}},
+      exec_msg => qq{Creating $input->{file}},
+      fail_msg => qq{Unable to create $input->{file} permissions},
+    }
+  );
+
+  exec_command(
+    {
+      cmd      => qq{chmod 0666 $input->{file}},
+      exec_msg => qq{Setting $input->{file} permissions},
+      fail_msg => qq{Unable to set $input->{file} permissions},
+    }
+  );
+
+  open my $FH => q{>}, $input->{file} or return;
+  log_msg(
+    {
+      cols    => $cols,
+      eof     => qq{\n},
+      msg_str => sprintf( q{Saving %s} => basename( $input->{file} ) ),
+      msg_typ => q{info},
+      show    => $TRUE,
+    }
+  );
+
+  print {$FH} @{ $input->{data} };
+
+  close $FH;
+
+  exec_command(
+    {
+      cmd      => qq{chmod 0755 $input->{file}},
+      exec_msg => qq{Resetting $input->{file} permissions},
+      fail_msg => qq{Unable to reset $input->{file} permissions},
+    }
+  );
+
+  return $TRUE;
+}
+

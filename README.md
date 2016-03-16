@@ -8,11 +8,10 @@ community.ubnt.com
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
-<a href="https://badge.fury.io/gh/britannic%2FBlacklist.svg">https://badge.fury.io/gh/britannic%2FBlacklist.svg</a>
+[![GitHub version](https://badge.fury.io/gh/britannic%2FBlacklist.svg)](https://badge.fury.io/gh/britannic%2FBlacklist)
 
-<a href="https://godoc.org/github.com/britannic/blacklist">https://godoc.org/github.com/britannic/blacklist</a>
-
-<a href="https://travis-ci.org/britannic/blacklist">https://travis-ci.org/britannic/blacklist</a>
+[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)
+[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)
 
 ### Overview
 EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at (<a href="https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX">https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX</a>)

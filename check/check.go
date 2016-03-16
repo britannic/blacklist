@@ -7,7 +7,10 @@ package check
 
 import (
 	"fmt"
+	"net"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
@@ -18,8 +21,8 @@ import (
 
 // Args is a struct of check function parameters
 type Args struct {
-	Fname, IP string
-	Ex, Dex   config.Dict
+	Fname, Data, Dir, IP string
+	Ex, Dex              config.Dict
 }
 
 // Cfg type of config.Blacklist
@@ -65,7 +68,7 @@ func (c *Cfg) ConfExclusions(a *Args) (err error) {
 	for k := range l {
 		for sk := range l[k].Source {
 			s := *l[k].Source[sk]
-			f := fmt.Sprintf(global.FStr, global.DmsqDir, s.Type, s.Name)
+			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
 			got, err = utils.Getfile(f)
 			if err != nil {
 				return err
@@ -95,7 +98,7 @@ func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 	for k := range l {
 		for sk := range l[k].Source {
 			s := *l[k].Source[sk]
-			f := fmt.Sprintf(global.FStr, global.DmsqDir, s.Type, s.Name)
+			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
 
 			switch s.Type {
 			case "domains":
@@ -144,7 +147,7 @@ func (c *Cfg) ConfFiles(a *Args) (err error) {
 	for k := range l {
 		for sk := range l[k].Source {
 			s := *l[k].Source[sk]
-			want = append(want, fmt.Sprintf(global.FStr, global.DmsqDir, s.Type, s.Name))
+			want = append(want, fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name))
 		}
 	}
 
@@ -158,7 +161,7 @@ func (c *Cfg) ConfFiles(a *Args) (err error) {
 }
 
 // ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
-func (c *Cfg) ConfIP() (err error) {
+func (c *Cfg) ConfIP(a *Args) (err error) {
 	var (
 		e   string
 		got []string
@@ -169,7 +172,7 @@ func (c *Cfg) ConfIP() (err error) {
 	for k := range l {
 		for sk := range l[k].Source {
 			s := *l[k].Source[sk]
-			f := fmt.Sprintf(global.FStr, global.DmsqDir, s.Type, s.Name)
+			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
 			got, err = utils.Getfile(f)
 			if err != nil {
 				return err
@@ -191,10 +194,25 @@ func (c *Cfg) ConfIP() (err error) {
 	return err
 }
 
-// ConfTemplates checks that existence/non-existence (governed by installation state) of the blacklist configure templates
-func (c *Cfg) ConfTemplates(a *Args) (err error) {
+// ConfTemplates checks for existence/non-existence (governed by installation state) of the blacklist configuration templates
+func ConfTemplates(a *Args) (b bool, err error) {
+	cmd := exec.Command("/bin/bash")
+	find := "/usr/bin/find"
+	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v", find, a.Dir))
 
-	return
+	got, err := cmd.Output()
+	if err != nil {
+		return b, err
+	}
+
+	var want []byte
+	want = append(want, a.Data...)
+
+	if b = utils.CmpHash(got, want); !b {
+		fmt.Printf("Got: %v\nWant:%v\n", string(got[:]), a.Data)
+	}
+
+	return b, err
 }
 
 // ExtractFQDN returns just the FQDN in a []string
@@ -209,7 +227,7 @@ func ExtractFQDN(s []string) (r []string) {
 	return r
 }
 
-// ExtractIP returns a map of unique IPs in []string
+// ExtractIP returns a map of unique IPs in []string of dnsmasq formatted entries
 func ExtractIP(s []string) (r config.Dict) {
 	rx := regx.Regex()
 	r = make(config.Dict)
@@ -225,8 +243,49 @@ func ExtractIP(s []string) (r config.Dict) {
 
 // IPRedirection checks that each domain or host dnsmasq conf entry is redirected to the configured blackhole IP
 func (c *Cfg) IPRedirection(a *Args) (err error) {
+	var (
+		e string
+		// fqdns     = make(config.Dict)
+		l   = *c.Blacklist
+		rIP = l[global.Root].IP
+		got []string
+	)
 
-	return
+	for k := range l {
+		for sk := range l[k].Source {
+			s := *l[k].Source[sk]
+			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
+
+			got, err = utils.Getfile(f)
+			if err != nil {
+				return err
+			}
+			got = ExtractFQDN(got)
+
+		HOST:
+			for _, host := range got {
+				if s.Type == "domains" {
+					host = "www." + host
+				}
+				lIPs, err := net.LookupHost(host)
+				switch {
+				case err != nil:
+					continue HOST
+				default:
+					for _, ip := range lIPs {
+						if ip != rIP {
+							e += fmt.Sprintf("Host %v found in %v, resolves to %v - should be %v\n", host, f, ip, rIP)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if len(e) > 0 {
+		err = fmt.Errorf(e)
+	}
+	return err
 }
 
 // IsDisabled checks that blacklist is actually disabled when the flag is true

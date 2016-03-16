@@ -6,11 +6,11 @@ community.ubnt.com
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
-https://badge.fury.io/gh/britannic%2FBlacklist.svg
+[![GitHub version](https://badge.fury.io/gh/britannic%2FBlacklist.svg)](https://badge.fury.io/gh/britannic%2FBlacklist)
 
-https://godoc.org/github.com/britannic/blacklist
+[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)
 
-https://travis-ci.org/britannic/blacklist
+[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)
 
 Overview
 

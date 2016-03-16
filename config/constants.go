@@ -1,7 +1,8 @@
 package config
 
-// Testdata2 contains a valid partial EdgeOS blacklist configuration
-var Testdata2 = `blacklist {
+var (
+	// Testdata2 contains a valid partial EdgeOS blacklist configuration
+	Testdata2 = `blacklist {
         disabled false
         dns-redirect-ip 0.0.0.0
         domains {
@@ -66,8 +67,8 @@ var Testdata2 = `blacklist {
         }
     }`
 
-// Testdata contains a valid full EdgeOS blacklist configuration
-var Testdata = `blacklist {
+	// Testdata contains a valid full EdgeOS blacklist configuration
+	Testdata = `blacklist {
             disabled false
             dns-redirect-ip 0.0.0.0
             domains {
@@ -166,3 +167,48 @@ var Testdata = `blacklist {
                 }
             }
         }`
+
+	// FileManifest is complete list of the blacklist config node templates
+	FileManifest = `blacklist
+blacklist/disabled
+blacklist/disabled/node.def
+blacklist/dns-redirect-ip
+blacklist/dns-redirect-ip/node.def
+blacklist/domains
+blacklist/domains/dns-redirect-ip
+blacklist/domains/dns-redirect-ip/node.def
+blacklist/domains/exclude
+blacklist/domains/exclude/node.def
+blacklist/domains/include
+blacklist/domains/include/node.def
+blacklist/domains/node.def
+blacklist/domains/source
+blacklist/domains/source/node.def
+blacklist/domains/source/node.tag
+blacklist/domains/source/node.tag/description
+blacklist/domains/source/node.tag/description/node.def
+blacklist/domains/source/node.tag/prefix
+blacklist/domains/source/node.tag/prefix/node.def
+blacklist/domains/source/node.tag/url
+blacklist/domains/source/node.tag/url/node.def
+blacklist/exclude
+blacklist/exclude/node.def
+blacklist/hosts
+blacklist/hosts/dns-redirect-ip
+blacklist/hosts/dns-redirect-ip/node.def
+blacklist/hosts/exclude
+blacklist/hosts/exclude/node.def
+blacklist/hosts/include
+blacklist/hosts/include/node.def
+blacklist/hosts/node.def
+blacklist/hosts/source
+blacklist/hosts/source/node.def
+blacklist/hosts/source/node.tag
+blacklist/hosts/source/node.tag/description
+blacklist/hosts/source/node.tag/description/node.def
+blacklist/hosts/source/node.tag/prefix
+blacklist/hosts/source/node.tag/prefix/node.def
+blacklist/hosts/source/node.tag/url
+blacklist/hosts/source/node.tag/url/node.def
+blacklist/node.def`
+)

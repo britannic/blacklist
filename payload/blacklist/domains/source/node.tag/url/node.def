@@ -1,0 +1,8 @@
+type: txt
+help: A blacklist source url that provides a list of domain names to block
+
+val_help: http; Example: http://malc0de.com/bl/ZONES
+comp_help: Example: http://malc0de.com/bl/ZONES
+
+commit:expression: $VAR(../prefix) != ""; "A source prefix search string must be set"
+
