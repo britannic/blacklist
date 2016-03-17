@@ -37,6 +37,11 @@ func TestGet(t *testing.T) {
 			input:  `http:/123pagerank.com/*=UUID:272`,
 			result: `123pagerank.com`,
 		},
+		"host": test{
+			index:  1,
+			input:  `address=/.xunlei.com/0.0.0.0`,
+			result: `xunlei.com`,
+		},
 		"http": test{
 			index:  1,
 			input:  `https:/123pagerank.com/*=UUID:272`,

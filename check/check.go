@@ -45,7 +45,7 @@ func (c *Cfg) ConfBlacklistings(a *Args) (err error) {
 				return
 			}
 
-			got = ExtractFQDN(got)
+			got = ExtractHost(got)
 			want := l[k].Include
 
 			if len(data.DiffArray(want, got)) != 0 {
@@ -73,7 +73,7 @@ func (c *Cfg) ConfExclusions(a *Args) (err error) {
 			if err != nil {
 				return err
 			}
-			got = ExtractFQDN(got)
+			got = ExtractHost(got)
 			for _, ex := range got {
 				if _, ok := a.Ex[ex]; ok {
 					e += fmt.Sprintf("Found excluded entry %v, in %v\n", ex, f)
@@ -106,7 +106,7 @@ func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 				if err != nil {
 					return err
 				}
-				want = ExtractFQDN(want)
+				want = ExtractHost(want)
 				for _, fqdn := range want {
 					a.Dex[fqdn] = 0
 				}
@@ -116,7 +116,7 @@ func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 				if err != nil {
 					return err
 				}
-				got = ExtractFQDN(got)
+				got = ExtractHost(got)
 			}
 			for _, ex := range got {
 				if _, ok := a.Dex[ex]; ok {
@@ -215,13 +215,13 @@ func ConfTemplates(a *Args) (b bool, err error) {
 	return b, err
 }
 
-// ExtractFQDN returns just the FQDN in a []string
-func ExtractFQDN(s []string) (r []string) {
+// ExtractHost returns just the FQDN in a []string
+func ExtractHost(s []string) (r []string) {
 	rx := regx.Regex()
-	for i := range s {
-		d := rx.FQDN.FindString(s[i])
+	for _, line := range s {
+		d := rx.HOST.FindStringSubmatch(line)
 		if len(d) > 0 {
-			r = append(r, d)
+			r = append(r, d[1])
 		}
 	}
 	return r
@@ -232,10 +232,10 @@ func ExtractIP(s []string) (r config.Dict) {
 	rx := regx.Regex()
 	r = make(config.Dict)
 
-	for _, d := range s {
-		k := rx.FLIP.FindString(d)
+	for _, line := range s {
+		k := rx.FLIP.FindStringSubmatch(line)
 		if len(k) > 0 {
-			r[k] = 0
+			r[k[1]] = 0
 		}
 	}
 	return r
@@ -244,11 +244,10 @@ func ExtractIP(s []string) (r config.Dict) {
 // IPRedirection checks that each domain or host dnsmasq conf entry is redirected to the configured blackhole IP
 func (c *Cfg) IPRedirection(a *Args) (err error) {
 	var (
-		e string
-		// fqdns     = make(config.Dict)
-		l   = *c.Blacklist
-		rIP = l[global.Root].IP
-		got []string
+		e         string
+		l         = *c.Blacklist
+		rIP       = l[global.Root].IP
+		got, lIPs []string
 	)
 
 	for k := range l {
@@ -260,14 +259,14 @@ func (c *Cfg) IPRedirection(a *Args) (err error) {
 			if err != nil {
 				return err
 			}
-			got = ExtractFQDN(got)
+			got = ExtractHost(got)
 
 		HOST:
 			for _, host := range got {
 				if s.Type == "domains" {
 					host = "www." + host
 				}
-				lIPs, err := net.LookupHost(host)
+				lIPs, err = net.LookupHost(host)
 				switch {
 				case err != nil:
 					continue HOST

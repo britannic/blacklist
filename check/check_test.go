@@ -79,16 +79,15 @@ func TestConfFiles(t *testing.T) {
 	}
 }
 
-//TODO find and fix the bug check.ExtractIP
-// func TestConfIP(t *testing.T) {
-// 	a := &check.Args{
-// 		Dir: dmsqdir,
-// 	}
-//
-// 	if err := live.ConfIP(a); err != nil {
-// 		t.Errorf("Problems with IP: %v", err)
-// 	}
-// }
+func TestConfIP(t *testing.T) {
+	a := &check.Args{
+		Dir: dmsqdir,
+	}
+
+	if err := live.ConfIP(a); err != nil {
+		t.Errorf("Problems with IP: %v", err)
+	}
+}
 
 func TestConfTemplates(t *testing.T) {
 	a := &check.Args{
@@ -105,7 +104,6 @@ func TestConfTemplates(t *testing.T) {
 	}
 }
 
-//TODO find and fix the bug check.ExtractFQDN
 // func TestIPRedirection(t *testing.T) {
 // 	a := &check.Args{
 // 		Dir: dmsqdir,

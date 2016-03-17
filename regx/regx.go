@@ -9,7 +9,7 @@ import "regexp"
 
 // RGX is a struct of regex precompiled objects
 type RGX struct {
-	CMNT, DESC, DSBL, FLIP, FQDN, HTTP, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
+	CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
 }
 
 // Get returns an array of the string and submatch
@@ -26,6 +26,8 @@ func Get(t, s string) (r []string) {
 		r = rx.FLIP.FindStringSubmatch(s)
 	case "fqdn":
 		r = rx.FQDN.FindStringSubmatch(s)
+	case "host":
+		r = rx.HOST.FindStringSubmatch(s)
 	case "http":
 		r = rx.HTTP.FindStringSubmatch(s)
 	case "lbrc":
@@ -56,8 +58,9 @@ func Regex() *RGX {
 		CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
 		DESC: regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
 		DSBL: regexp.MustCompile(`^(?:disabled)+\s([\S]+)$`),
-		FLIP: regexp.MustCompile(`(?:address=[/][.]{0,1}.*[/])(.*)`),
+		FLIP: regexp.MustCompile(`^(?:address=[/][.]{0,1}.*[/])(.*)$`),
 		FQDN: regexp.MustCompile(`\b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\b`),
+		HOST: regexp.MustCompile(`^(?:address=[/][.]{0,1})(.*)(?:[/].*)$`),
 		HTTP: regexp.MustCompile(`(?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)`),
 		LBRC: regexp.MustCompile(`[{]`),
 		LEAF: regexp.MustCompile(`^(source)+\s([\S]+)\s[{]{1}$`),
