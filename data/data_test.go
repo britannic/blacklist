@@ -90,7 +90,7 @@ func TestGetHTTP(t *testing.T) {
 
 	for _, z := range d {
 		for got := range z.prcsd.List {
-			want := rx.FQDN.FindString(got)
+			want := rx.FQDN.FindStringSubmatch(got)[1]
 			if strings.Compare(got, want) != 0 {
 				t.Errorf("wanted: %v - got: %v", want, got)
 			}
