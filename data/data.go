@@ -102,7 +102,7 @@ func GetIncludes(n *c.Node) (i c.Dict) {
 // GetList returns a sorted []byte of blacklist entries
 func GetList(cf *c.Src) (b []byte) {
 	eq := "/"
-	if cf.Type == "domains" {
+	if cf.Type == g.Area.Domains {
 		eq = "/."
 	}
 	var lines []string
@@ -176,21 +176,23 @@ NEXT:
 				for _, fqdn := range fqdns {
 					fqdn = strings.TrimSpace(fqdn)
 					i := strings.Count(fqdn, ".")
+					isDEX := dex.SubKeyExists(fqdn)
+					isEX := ex.KeyExists(fqdn)
 					switch {
 					case i == 1:
 						{
 							switch {
-							case dex.SubKeyExists(fqdn), ex.KeyExists(fqdn):
+							case isDEX, isEX:
 								continue NEXT
-							case s.Type == "domains":
-								if !dex.KeyExists(fqdn) {
+							case s.Type == g.Area.Domains:
+								if !isDEX {
 									dex[fqdn] = 0
 									ex[fqdn] = 0
 									s.List[fqdn] = 0
 								}
 							default:
-								if !dex.KeyExists(fqdn) {
-									if !ex.KeyExists(fqdn) {
+								if !isDEX {
+									if !isEX {
 										ex[fqdn] = 0
 										s.List[fqdn] = 0
 									} else {
@@ -204,14 +206,14 @@ NEXT:
 						}
 					case i > 1:
 						switch {
-						case dex.SubKeyExists(fqdn), ex.KeyExists(fqdn):
+						case isDEX, isEX:
 							continue NEXT
 						case s.List.KeyExists(fqdn):
 							s.List[fqdn]++
 						default:
 							ex[fqdn] = 0
 							s.List[fqdn] = 0
-							if s.Type == "domains" {
+							if s.Type == g.Area.Domains {
 								dex[fqdn] = 0
 							}
 						}

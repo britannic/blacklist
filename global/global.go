@@ -13,7 +13,20 @@ import (
 	"github.com/britannic/blacklist/utils"
 )
 
+// Areas type string of configuration tree nodes
+type Areas struct {
+	Domains,
+	Hosts,
+	Root string
+}
+
 var (
+	// Area defines top nodes for the configuration tree
+	Area = &Areas{
+		Domains: "domains",
+		Hosts:   "hosts",
+		Root:    "blacklist",
+	}
 	// Dbg sets the Debug flag
 	Dbg = false
 

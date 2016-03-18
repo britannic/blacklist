@@ -14,7 +14,7 @@ import (
 )
 
 func TestExclusions(t *testing.T) {
-	b, err := config.Get(config.Testdata2, global.Root)
+	b, err := config.Get(config.Testdata2, global.Area.Root)
 	if err != nil {
 		t.Error("Couldn't load config.Testdata")
 	}
@@ -70,7 +70,7 @@ func TestGetHTTP(t *testing.T) {
 	d := []*tdata{}
 	rx := regx.Regex()
 
-	b, err := config.Get(config.Testdata, global.Root)
+	b, err := config.Get(config.Testdata, global.Area.Root)
 	if err != nil {
 		t.Errorf("unable to get configuration data, error code: %v\n", err)
 	}
@@ -99,7 +99,7 @@ func TestGetHTTP(t *testing.T) {
 }
 
 func TestGetUrls(t *testing.T) {
-	blist, err := config.Get(config.Testdata, global.Root)
+	blist, err := config.Get(config.Testdata, global.Area.Root)
 	if err != nil {
 		t.Errorf("unable to get configuration data, error code: %v\n", err)
 	}
@@ -183,7 +183,7 @@ func TestPurgeFiles(t *testing.T) {
 		global.Logfile = "/tmp/blacklist.log"
 	}
 
-	b, err := config.Get(config.Testdata, global.Root)
+	b, err := config.Get(config.Testdata, global.Area.Root)
 	if err != nil {
 		t.Errorf("unable to get configuration data, error code: %v\n", err)
 	}

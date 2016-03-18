@@ -9,26 +9,33 @@ Package check provides routines to sanity check blacklist is working correctly
 
 
 
-## func ExtractFQDN
+## func ConfTemplates
 ``` go
-func ExtractFQDN(s []string) (r []string)
+func ConfTemplates(a *Args) (b bool, err error)
 ```
-ExtractFQDN returns just the FQDN in a []string
+ConfTemplates checks for existence/non-existence (governed by installation state) of the blacklist configuration templates
+
+
+## func ExtractHost
+``` go
+func ExtractHost(s []string) (r []string)
+```
+ExtractHost returns just the FQDN in a []string
 
 
 ## func ExtractIP
 ``` go
 func ExtractIP(s []string) (r config.Dict)
 ```
-ExtractIP returns a map of unique IPs in []string
+ExtractIP returns a map of unique IPs in []string of dnsmasq formatted entries
 
 
 
 ## type Args
 ``` go
 type Args struct {
-    Fname, IP string
-    Ex, Dex   config.Dict
+    Fname, Data, Dir, IP string
+    Ex, Dex              config.Dict
 }
 ```
 Args is a struct of check function parameters
@@ -95,17 +102,9 @@ ConfFiles checks that all blacklist sources have generated dnsmasq conf files an
 
 ### func (\*Cfg) ConfIP
 ``` go
-func (c *Cfg) ConfIP() (err error)
+func (c *Cfg) ConfIP(a *Args) (err error)
 ```
 ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
-
-
-
-### func (\*Cfg) ConfTemplates
-``` go
-func (c *Cfg) ConfTemplates(a *Args) (err error)
-```
-ConfTemplates checks that existence/non-existence (governed by installation state) of the blacklist configure templates
 
 
 

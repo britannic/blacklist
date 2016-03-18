@@ -25,7 +25,7 @@ func init() {
 		dmsqdir = global.DmsqDir
 	}
 
-	live.Blacklist, err = config.Get(config.Testdata, global.Root)
+	live.Blacklist, err = config.Get(config.Testdata, global.Area.Root)
 	if err != nil {
 		log.Fatal("Couldn't load config.Testdata")
 	}

@@ -17,7 +17,7 @@ func TestGlobalVars(t *testing.T) {
 		dmsqdir: global.DmsqDir,
 		fsfx:    global.Fext,
 		fstr:    global.FStr,
-		root:    global.Root,
+		root:    global.Area.Root,
 		whatOS:  global.WhatOS,
 	}
 
@@ -33,6 +33,6 @@ func TestGlobalVars(t *testing.T) {
 	case glob.fstr != `%v/%v.%v.blacklist.conf`:
 		t.Errorf(`%+v should be = %q not %v`, global.FStr, `%v/%v.%v.blacklist.conf`, glob.fstr)
 	case glob.root != "blacklist":
-		t.Errorf(`%+v should be = "blacklist"  not %v`, global.Root, glob.root)
+		t.Errorf(`%+v should be = "blacklist"  not %v`, global.Area.Root, glob.root)
 	}
 }

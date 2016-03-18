@@ -181,7 +181,7 @@ func (c *Cfg) ConfIP(a *Args) (err error) {
 			IPs = ExtractIP(got)
 
 			for ip := range IPs {
-				if ip != l[global.Root].IP {
+				if ip != l[global.Area.Root].IP {
 					e += fmt.Sprintf("Found incorrect redirection IP %v, in %v\n", ip, f)
 				}
 			}
@@ -246,7 +246,7 @@ func (c *Cfg) IPRedirection(a *Args) (err error) {
 	var (
 		e         string
 		l         = *c.Blacklist
-		rIP       = l[global.Root].IP
+		rIP       = l[global.Area.Root].IP
 		got, lIPs []string
 	)
 
@@ -263,7 +263,7 @@ func (c *Cfg) IPRedirection(a *Args) (err error) {
 
 		HOST:
 			for _, host := range got {
-				if s.Type == "domains" {
+				if s.Type == global.Area.Domains {
 					host = "www." + host
 				}
 				lIPs, err = net.LookupHost(host)
