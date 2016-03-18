@@ -6,11 +6,17 @@ community.ubnt.com
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)
+
+[![GitHub release](https://img.shields.io/github/release/britannic/blacklist.svg)](https://github.com/britannic/blacklist)
+
 [![GitHub version](https://badge.fury.io/gh/britannic%2FBlacklist.svg)](https://badge.fury.io/gh/britannic%2FBlacklist)
 
 [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)
 
 [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)
+
+[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)
 
 Overview
 
