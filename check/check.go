@@ -10,6 +10,7 @@ import (
 	"net"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/britannic/blacklist/config"
@@ -93,13 +94,21 @@ func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 		l    = *c.Blacklist
 	)
 
-	for k := range l {
+	sortKeys := func() (pkeys config.Keys) {
+		for pkey := range l {
+			pkeys = append(pkeys, pkey)
+		}
+		sort.Sort(config.Keys(pkeys))
+		return
+	}
+
+	for _, k := range sortKeys() {
 		for sk := range l[k].Source {
 			s := *l[k].Source[sk]
 			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
 
 			switch s.Type {
-			case "domains":
+			case global.Area.Domains:
 				want, err = utils.Getfile(f)
 				if err != nil {
 					return err
@@ -116,6 +125,7 @@ func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 				}
 				got = ExtractHost(got)
 			}
+
 			for _, ex := range got {
 				if _, ok := a.Dex[ex]; ok {
 					e += fmt.Sprintf("Found excluded entry %v, in %v\n", ex, f)

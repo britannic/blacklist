@@ -195,7 +195,7 @@ func TestPurgeFiles(t *testing.T) {
 }
 
 func TestStripPrefix(t *testing.T) {
-	rx := regx.Regex()
+	rx := regx.Regex
 	tline := `[This line should be delimited by "[]" only.]`
 
 	for _, s := range src {
