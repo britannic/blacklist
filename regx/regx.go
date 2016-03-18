@@ -5,7 +5,11 @@
 // Package regx provides regex objects for processing data in files and web content
 package regx
 
-import "regexp"
+import (
+	"fmt"
+	"reflect"
+	"regexp"
+)
 
 // RGX is a struct of regex precompiled objects
 type RGX struct {
@@ -14,7 +18,7 @@ type RGX struct {
 
 // Get returns an array of the string and submatch
 func Get(t, s string) (r []string) {
-	rx := Regex()
+	rx := Regex
 	switch t {
 	case "cmnt":
 		r = rx.CMNT.FindStringSubmatch(s)
@@ -52,24 +56,34 @@ func Get(t, s string) (r []string) {
 	return
 }
 
-// Regex returns a map of struct *re populated with precompiled regex objects
-func Regex() *RGX {
-	return &RGX{
-		CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
-		DESC: regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
-		DSBL: regexp.MustCompile(`^(?:disabled)+\s([\S]+)$`),
-		FLIP: regexp.MustCompile(`^(?:address=[/][.]{0,1}.*[/])(.*)$`),
-		FQDN: regexp.MustCompile(`\b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\b`),
-		HOST: regexp.MustCompile(`^(?:address=[/][.]{0,1})(.*)(?:[/].*)$`),
-		HTTP: regexp.MustCompile(`(?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)`),
-		LBRC: regexp.MustCompile(`[{]`),
-		LEAF: regexp.MustCompile(`^(source)+\s([\S]+)\s[{]{1}$`),
-		MISC: regexp.MustCompile(`^([\w-]+)$`),
-		MLTI: regexp.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`),
-		MPTY: regexp.MustCompile(`^$`),
-		NAME: regexp.MustCompile(`^([\w-]+)\s["']{0,1}(.*?)["']{0,1}$`),
-		NODE: regexp.MustCompile(`^([\w-]+)\s[{]{1}$`),
-		RBRC: regexp.MustCompile(`[}]`),
-		SUFX: regexp.MustCompile(`(?:#.*|\{.*|[/[].*)\z`),
+func (rx *RGX) String() (result string) {
+	v := reflect.ValueOf(rx).Elem()
+	// values := make([]interface{}, v.NumField())
+
+	for i := 0; i < v.NumField(); i++ {
+		// values[i] = v.Field(i).Interface()
+
+		result += fmt.Sprintf("%v: %v\n", v.Type().Field(i).Name, v.Field(i).Interface())
 	}
+	return
+}
+
+// Regex is a struct of *re populated with precompiled regex objects
+var Regex = &RGX{
+	CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
+	DESC: regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
+	DSBL: regexp.MustCompile(`^(?:disabled)+\s([\S]+)$`),
+	FLIP: regexp.MustCompile(`^(?:address=[/][.]{0,1}.*[/])(.*)$`),
+	FQDN: regexp.MustCompile(`\b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\b`),
+	HOST: regexp.MustCompile(`^(?:address=[/][.]{0,1})(.*)(?:[/].*)$`),
+	HTTP: regexp.MustCompile(`(?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)`),
+	LBRC: regexp.MustCompile(`[{]`),
+	LEAF: regexp.MustCompile(`^(source)+\s([\S]+)\s[{]{1}$`),
+	MISC: regexp.MustCompile(`^([\w-]+)$`),
+	MLTI: regexp.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`),
+	MPTY: regexp.MustCompile(`^$`),
+	NAME: regexp.MustCompile(`^([\w-]+)\s["']{0,1}(.*?)["']{0,1}$`),
+	NODE: regexp.MustCompile(`^([\w-]+)\s[{]{1}$`),
+	RBRC: regexp.MustCompile(`[}]`),
+	SUFX: regexp.MustCompile(`(?:#.*|\{.*|[/[].*)\z`),
 }

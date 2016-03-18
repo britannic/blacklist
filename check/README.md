@@ -25,7 +25,7 @@ ExtractHost returns just the FQDN in a []string
 
 ## func ExtractIP
 ``` go
-func ExtractIP(s []string) (r config.Dict)
+func ExtractIP(s []string) (r []string)
 ```
 ExtractIP returns a map of unique IPs in []string of dnsmasq formatted entries
 

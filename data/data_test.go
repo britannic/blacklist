@@ -68,7 +68,7 @@ func TestGetHTTP(t *testing.T) {
 
 	h := &tdata{}
 	d := []*tdata{}
-	rx := regx.Regex()
+	rx := regx.Regex
 
 	b, err := config.Get(config.Testdata, global.Area.Root)
 	if err != nil {

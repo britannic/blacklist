@@ -32,7 +32,7 @@ GetHTTP creates http requests to download data
 
 ## func GetIncludes
 ``` go
-func GetIncludes(n *c.Node) (i c.Dict)
+func GetIncludes(n *c.Node) (r c.Dict)
 ```
 GetIncludes returns a map[string]int of includes
 

@@ -33,7 +33,7 @@ type Cfg struct {
 var (
 	e   string
 	got []string
-	rx  = regx.Regex()
+	rx  = regx.Regex
 )
 
 // ConfBlacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf

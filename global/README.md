@@ -11,6 +11,12 @@ Package global sets project scoped variables and constants
 ## Variables
 ``` go
 var (
+    // Area defines top nodes for the configuration tree
+    Area = &Areas{
+        Domains: "domains",
+        Hosts:   "hosts",
+        Root:    "blacklist",
+    }
     // Dbg sets the Debug flag
     Dbg = false
 
@@ -36,6 +42,26 @@ var (
     WhatOS = runtime.GOOS
 )
 ```
+
+
+## type Areas
+``` go
+type Areas struct {
+    Domains,
+    Hosts,
+    Root string
+}
+```
+Areas type string of configuration tree nodes
+
+
+
+
+
+
+
+
+
 
 
 

@@ -8,7 +8,7 @@ import (
 	c "github.com/britannic/blacklist/config"
 )
 
-func ExampleCfg() {
+func ExampleGet() {
 	b, e := c.Get(c.Testdata, "blacklist")
 	if e != nil {
 		os.Exit(1)

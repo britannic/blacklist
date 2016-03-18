@@ -6,8 +6,23 @@ import (
 	"github.com/britannic/blacklist/regx"
 )
 
-func ExampleCompile() {
-	rx := regx.Regex()
+func ExampleRegex() {
+	rx := regx.Regex
 	fmt.Println(rx)
-	// Output: &{^(?:[\/*]+)(.*?)(?:[*\/]+)$ ^(?:description)+\s"?([^"]+)?"?$ ^(?:disabled)+\s([\S]+)$ ^(?:address=[/][.]{0,1}.*[/])(.*)$ \b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\b ^(?:address=[/][.]{0,1})(.*)(?:[/].*)$ (?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*) ^(source)+\s([\S]+)\s[{]{1}$ [{] ^([\w-]+)$ ^((?:include|exclude)+)\s([\S]+)$ ^$ ^([\w-]+)\s["']{0,1}(.*?)["']{0,1}$ ^([\w-]+)\s[{]{1}$ [}] (?:#.*|\{.*|[/[].*)\z}
+	// Output: CMNT: ^(?:[\/*]+)(.*?)(?:[*\/]+)$
+	// DESC: ^(?:description)+\s"?([^"]+)?"?$
+	// DSBL: ^(?:disabled)+\s([\S]+)$
+	// FLIP: ^(?:address=[/][.]{0,1}.*[/])(.*)$
+	// FQDN: \b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\b
+	// HOST: ^(?:address=[/][.]{0,1})(.*)(?:[/].*)$
+	// HTTP: (?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)
+	// LEAF: ^(source)+\s([\S]+)\s[{]{1}$
+	// LBRC: [{]
+	// MISC: ^([\w-]+)$
+	// MLTI: ^((?:include|exclude)+)\s([\S]+)$
+	// MPTY: ^$
+	// NAME: ^([\w-]+)\s["']{0,1}(.*?)["']{0,1}$
+	// NODE: ^([\w-]+)\s[{]{1}$
+	// RBRC: [}]
+	// SUFX: (?:#.*|\{.*|[/[].*)\z
 }

@@ -170,7 +170,7 @@ func Get(cfg string, root string) (b *Blacklist, err error) {
 	var leaf, tnode string
 	cfgtree := make(Blacklist)
 	nodes := make([]string, 5)
-	rx := r.Regex()
+	rx := r.Regex
 
 LINE:
 	for _, line := range strings.Split(cfg, "\n") {

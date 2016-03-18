@@ -155,7 +155,7 @@ func GetURLs(b c.Blacklist) (a AreaURLs) {
 
 // Process extracts hosts/domains from downloaded raw content
 func Process(s *c.Src, dex c.Dict, ex c.Dict, d string) *c.Src {
-	rx := regx.Regex()
+	rx := regx.Regex
 	s.List = make(c.Dict)
 	d = strings.ToLower(d)
 
