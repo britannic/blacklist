@@ -8,7 +8,7 @@ community.ubnt.com
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
-[![GitHub version](https://badge.fury.io/gh/britannic%2FBlacklist.svg)](https://badge.fury.io/gh/britannic%2FBlacklist)
+[![GitHub version](https://badge.fury.io/gh/britannic%2Fblacklist.svg)](https://badge.fury.io/gh/britannic%2Fblacklist)
 
 [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)
 

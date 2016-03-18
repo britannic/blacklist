@@ -30,12 +30,16 @@ type Cfg struct {
 	Blacklist *config.Blacklist
 }
 
+var (
+	e   string
+	got []string
+	rx  = regx.Regex()
+)
+
 // ConfBlacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
 func (c *Cfg) ConfBlacklistings(a *Args) (err error) {
 	l := *c.Blacklist
-
 	for k := range l {
-		var got []string
 		if len(l[k].Include) > 0 {
 
 			f := fmt.Sprintf(a.Fname, k)
@@ -59,12 +63,7 @@ func (c *Cfg) ConfBlacklistings(a *Args) (err error) {
 
 // ConfExclusions checks that configured exclusions are excluded from dnsmasq conf files
 func (c *Cfg) ConfExclusions(a *Args) (err error) {
-	var (
-		e   string
-		got []string
-		l   = *c.Blacklist
-	)
-
+	l := *c.Blacklist
 	for k := range l {
 		for sk := range l[k].Source {
 			s := *l[k].Source[sk]
@@ -90,9 +89,8 @@ func (c *Cfg) ConfExclusions(a *Args) (err error) {
 // ConfExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
 func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 	var (
-		e         string
-		want, got []string
-		l         = *c.Blacklist
+		want []string
+		l    = *c.Blacklist
 	)
 
 	for k := range l {
@@ -165,7 +163,7 @@ func (c *Cfg) ConfIP(a *Args) (err error) {
 	var (
 		e   string
 		got []string
-		IPs config.Dict
+		IPs []string
 		l   = *c.Blacklist
 	)
 
@@ -180,7 +178,7 @@ func (c *Cfg) ConfIP(a *Args) (err error) {
 
 			IPs = ExtractIP(got)
 
-			for ip := range IPs {
+			for _, ip := range IPs {
 				if ip != l[global.Area.Root].IP {
 					e += fmt.Sprintf("Found incorrect redirection IP %v, in %v\n", ip, f)
 				}
@@ -217,37 +215,33 @@ func ConfTemplates(a *Args) (b bool, err error) {
 
 // ExtractHost returns just the FQDN in a []string
 func ExtractHost(s []string) (r []string) {
-	rx := regx.Regex()
 	for _, line := range s {
 		d := rx.HOST.FindStringSubmatch(line)
 		if len(d) > 0 {
 			r = append(r, d[1])
 		}
 	}
-	return r
+	return
 }
 
 // ExtractIP returns a map of unique IPs in []string of dnsmasq formatted entries
-func ExtractIP(s []string) (r config.Dict) {
-	rx := regx.Regex()
-	r = make(config.Dict)
+func ExtractIP(s []string) (r []string) {
 
 	for _, line := range s {
 		k := rx.FLIP.FindStringSubmatch(line)
 		if len(k) > 0 {
-			r[k[1]] = 0
+			r = append(r, k[1])
 		}
 	}
-	return r
+	return
 }
 
 // IPRedirection checks that each domain or host dnsmasq conf entry is redirected to the configured blackhole IP
 func (c *Cfg) IPRedirection(a *Args) (err error) {
 	var (
-		e         string
-		l         = *c.Blacklist
-		rIP       = l[global.Area.Root].IP
-		got, lIPs []string
+		l    = *c.Blacklist
+		rIP  = l[global.Area.Root].IP
+		lIPs []string
 	)
 
 	for k := range l {
