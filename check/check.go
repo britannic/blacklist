@@ -143,8 +143,8 @@ func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 // ConfFiles checks that all blacklist sources have generated dnsmasq conf files and there aren't any orphans
 func (c *Cfg) ConfFiles(a *Args) (err error) {
 	var (
-		want, got []string
-		l         = *c.Blacklist
+		want []string
+		l    = *c.Blacklist
 	)
 
 	got, err = filepath.Glob(a.Fname)
@@ -171,8 +171,6 @@ func (c *Cfg) ConfFiles(a *Args) (err error) {
 // ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
 func (c *Cfg) ConfIP(a *Args) (err error) {
 	var (
-		e   string
-		got []string
 		IPs []string
 		l   = *c.Blacklist
 	)
