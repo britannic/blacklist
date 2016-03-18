@@ -15,8 +15,7 @@ func cmpID(t *testing.T, want, got *user.User) {
 }
 
 func TestBasename(t *testing.T) {
-	dirPath := "/usr/global.Area.Root/testing.txt"
-	dir := utils.Basename(dirPath)
+	dir := utils.Basename("/usr/blacklist/testing.txt")
 	if dir != "testing" {
 		t.Error(dir)
 	}

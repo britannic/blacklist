@@ -91,10 +91,10 @@ func GetHTTP(URL string) (body []byte, err error) {
 }
 
 // GetIncludes returns a map[string]int of includes
-func GetIncludes(n *c.Node) (i c.Dict) {
-	i = make(c.Dict)
+func GetIncludes(n *c.Node) (r c.Dict) {
+	r = make(c.Dict)
 	for _, skey := range n.Include {
-		i[skey] = 0
+		r[skey] = 0
 	}
 	return
 }
@@ -131,15 +131,14 @@ type AreaURLs map[string][]*c.Src
 
 // GetURLs returns an array of config.Src structs with active urls
 func GetURLs(b c.Blacklist) (a AreaURLs) {
-	var inc c.Dict
+	inc := make(c.Dict)
 	a = make(AreaURLs)
 
 	for pkey := range b {
 		var urls []*c.Src
 		if pkey != g.Root {
-			if len(GetIncludes(b[pkey])) > 0 {
-				inc = GetIncludes(b[pkey])
-			}
+			inc = GetIncludes(b[pkey])
+
 			b[pkey].Source["pre"] = &c.Src{List: inc, Name: "pre-configured", Type: pkey}
 			if b[pkey].IP == "" {
 				b[pkey].IP = b[g.Root].IP
@@ -158,6 +157,7 @@ func GetURLs(b c.Blacklist) (a AreaURLs) {
 func Process(s *c.Src, dex c.Dict, ex c.Dict, d string) *c.Src {
 	rx := regx.Regex()
 	s.List = make(c.Dict)
+	d = strings.ToLower(d)
 
 NEXT:
 	for _, line := range strings.Split(d, "\n") {
@@ -168,13 +168,12 @@ NEXT:
 			var ok bool // We have to declare ok here, to fix var line shadow bug
 			line, ok = StripPrefix(line, s.Prfx, rx)
 			if ok {
-				line = strings.ToLower(line)
 				line = rx.SUFX.ReplaceAllString(line, "")
 				line = strings.TrimSpace(line)
 				fqdns := rx.FQDN.FindAllString(line, -1)
 			FQDN:
 				for _, fqdn := range fqdns {
-					fqdn = strings.TrimSpace(fqdn)
+					// fqdn = strings.TrimSpace(fqdn)
 					i := strings.Count(fqdn, ".")
 					isDEX := dex.SubKeyExists(fqdn)
 					isEX := ex.KeyExists(fqdn)
