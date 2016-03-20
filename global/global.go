@@ -27,6 +27,7 @@ var (
 		Hosts:   "hosts",
 		Root:    "blacklist",
 	}
+
 	// Dbg sets the Debug flag
 	Dbg = false
 
@@ -42,6 +43,9 @@ var (
 	// Logfile set the log path and filename
 	Logfile string
 
+	// TestOS sets a global value for the test environment
+	TestOS = "darwin"
+
 	// Program is the current binary's filename
 	Program = utils.Basename(os.Args[0])
 
@@ -49,13 +53,13 @@ var (
 	Root = "blacklist"
 
 	// WhatOS is the current operating system
-	WhatOS = runtime.GOOS
+	WhatOS string
 )
 
 func init() {
 	WhatOS = runtime.GOOS
 	switch WhatOS {
-	case "darwin":
+	case TestOS:
 		cwd, err := os.Getwd()
 		if err != nil {
 			log.Fatal("Cannot determine current directory - exiting")

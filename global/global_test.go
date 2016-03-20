@@ -25,7 +25,7 @@ func TestGlobalVars(t *testing.T) {
 	case glob.debug:
 		t.Errorf("%+v shouldn't be %v", global.Dbg, glob.debug)
 	case glob.dmsqdir != "/etc/dnsmasq.d":
-		if global.WhatOS != "darwin" {
+		if global.WhatOS != global.TestOS {
 			t.Errorf(`%+v should be = "/etc/dnsmasq.d"  not %v`, global.DmsqDir, glob.dmsqdir)
 		}
 	case glob.fsfx != ".blacklist.conf":

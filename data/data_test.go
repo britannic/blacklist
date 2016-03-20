@@ -2,19 +2,29 @@ package data_test
 
 import (
 	"fmt"
-	"runtime"
 	"strings"
 	"testing"
 
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
-	"github.com/britannic/blacklist/global"
+	g "github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/regx"
 	"github.com/britannic/blacklist/utils"
 )
 
+var dmsqDir string
+
+func init() {
+	switch g.WhatOS {
+	case g.TestOS:
+		dmsqDir = "../testdata"
+	default:
+		dmsqDir = g.DmsqDir
+	}
+}
+
 func TestExclusions(t *testing.T) {
-	b, err := config.Get(config.Testdata2, global.Area.Root)
+	b, err := config.Get(config.Testdata2, g.Area.Root)
 	if err != nil {
 		t.Error("Couldn't load config.Testdata")
 	}
@@ -70,7 +80,7 @@ func TestGetHTTP(t *testing.T) {
 	d := []*tdata{}
 	rx := regx.Regex
 
-	b, err := config.Get(config.Testdata, global.Area.Root)
+	b, err := config.Get(config.Testdata, g.Area.Root)
 	if err != nil {
 		t.Errorf("unable to get configuration data, error code: %v\n", err)
 	}
@@ -92,14 +102,14 @@ func TestGetHTTP(t *testing.T) {
 		for got := range z.prcsd.List {
 			want := rx.FQDN.FindStringSubmatch(got)[1]
 			if strings.Compare(got, want) != 0 {
-				t.Errorf("wanted: %v - got: %v", want, got)
+				t.Errorf("wanted: %v, got: %v", want, got)
 			}
 		}
 	}
 }
 
 func TestGetUrls(t *testing.T) {
-	blist, err := config.Get(config.Testdata, global.Area.Root)
+	blist, err := config.Get(config.Testdata, g.Area.Root)
 	if err != nil {
 		t.Errorf("unable to get configuration data, error code: %v\n", err)
 	}
@@ -125,7 +135,7 @@ func TestProcess(t *testing.T) {
 	for _, s := range src {
 		ex := make(config.Dict)
 		dex := make(config.Dict)
-		f := fmt.Sprintf("../testdata/tdata.%v.%v", s.Type, s.Name)
+		f := fmt.Sprintf("%v/tdata.%v.%v", dmsqDir, s.Type, s.Name)
 		testdata, err := utils.Getfile(f)
 		if err != nil {
 			t.Errorf("Cannot open %v", f)
@@ -138,7 +148,7 @@ func TestProcess(t *testing.T) {
 			}
 		}
 
-		f = fmt.Sprintf("../testdata/sdata.%v.%v", s.Type, s.Name)
+		f = fmt.Sprintf("%v/sdata.%v.%v", dmsqDir, s.Type, s.Name)
 		staticdata, err := utils.Getfile(f)
 		if err != nil {
 			t.Errorf("Cannot open %v", f)
@@ -177,20 +187,34 @@ func TestProcess(t *testing.T) {
 }
 
 func TestPurgeFiles(t *testing.T) {
-	whatOS := runtime.GOOS
-	if whatOS == "darwin" {
-		global.DmsqDir = "/tmp"
-		global.Logfile = "/tmp/blacklist.log"
-	}
 
-	b, err := config.Get(config.Testdata, global.Area.Root)
+	b, err := config.Get(config.Testdata, g.Area.Root)
 	if err != nil {
 		t.Errorf("unable to get configuration data, error code: %v\n", err)
 	}
 
 	urls := data.GetURLs(*b)
-	if err := data.PurgeFiles(urls); err != nil {
+
+	var want, got []string
+
+	for k := range urls {
+		for _, s := range urls[k] {
+			want = append(want, fmt.Sprintf(g.FStr, dmsqDir, s.Type, s.Name))
+			for i := 0; i < 5; i++ {
+				data := []byte{84, 104, 101, 32, 114, 101, 115, 116, 32, 105, 115, 32, 104, 105, 115, 116, 111, 114, 121, 33}
+				utils.WriteFile(fmt.Sprintf("%v/%v.%v[%v]%v", dmsqDir, s.Type, s.Name, i, g.Fext), data)
+			}
+		}
+	}
+
+	if err := data.PurgeFiles(urls, dmsqDir); err != nil {
 		t.Errorf("Error removing unused conf files: %v", err)
+	}
+
+	got = data.ListFiles(dmsqDir)
+	delta := data.DiffArray(want, got)
+	if len(delta) > 0 {
+		t.Errorf("Issue purging files, difference: %v\nGot: %v\nWant: %v\n", delta, got, want)
 	}
 }
 

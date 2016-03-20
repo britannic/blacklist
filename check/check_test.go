@@ -19,7 +19,7 @@ var (
 
 func init() {
 	switch global.WhatOS {
-	case "darwin":
+	case global.TestOS:
 		dmsqdir = "../testdata"
 	default:
 		dmsqdir = global.DmsqDir

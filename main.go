@@ -31,7 +31,7 @@ func main() {
 		timeout = time.Minute * 30
 	)
 
-	f, err := os.OpenFile(g.Logfile, os.O_WRONLY|os.O_CREATE, 0755)
+	f, err := os.OpenFile(g.Logfile, os.O_WRONLY|os.O_APPEND, 0755)
 	if err == nil {
 		log.SetFormatter(&log.TextFormatter{DisableColors: true})
 		log.SetOutput(f)
@@ -66,7 +66,7 @@ func main() {
 
 	blist, err := func() (b *c.Blacklist, err error) {
 		switch g.WhatOS {
-		case "darwin":
+		case g.TestOS:
 			{
 				b, err = c.Get(c.Testdata, g.Root)
 				if err != nil {
@@ -92,7 +92,7 @@ func main() {
 	if !data.IsDisabled(*blist, g.Root) {
 		areas := data.GetURLs(*blist)
 
-		if err = data.PurgeFiles(areas); err != nil {
+		if err = data.PurgeFiles(areas, g.DmsqDir); err != nil {
 			log.Error("Error removing unused conf files", "error", err)
 		}
 

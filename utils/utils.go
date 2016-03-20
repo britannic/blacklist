@@ -41,13 +41,8 @@ func CmpHash(a, b []byte) bool {
 // Getfile reads a file returns a []string array
 func Getfile(f string) (data []string, err error) {
 	b, err := ioutil.ReadFile(f)
-	if err != nil {
-		return
-	}
 	if len(string(b)) > 0 {
 		data = strings.Split(string(b), "\n")
-	} else {
-		data = []string{}
 	}
 	return
 }

@@ -22,12 +22,12 @@ import (
 )
 
 func debug(data []byte, err error) {
-	if g.Dbg == false {
+	switch {
+	case g.Dbg == false:
 		return
-	}
-	if err == nil {
+	case err == nil:
 		fmt.Printf("%s\n\n", data)
-	} else {
+	default:
 		log.Fatalf("%s\n\n", err)
 	}
 }
@@ -173,7 +173,6 @@ NEXT:
 				fqdns := rx.FQDN.FindAllString(line, -1)
 			FQDN:
 				for _, fqdn := range fqdns {
-					// fqdn = strings.TrimSpace(fqdn)
 					i := strings.Count(fqdn, ".")
 					isDEX := dex.SubKeyExists(fqdn)
 					isEX := ex.KeyExists(fqdn)
@@ -251,30 +250,30 @@ func (p purgeErrors) String() (result string) {
 }
 
 // ListFiles returns a list of blacklist files
-func ListFiles(d string) (files []string) {
-	dlist, err := ioutil.ReadDir(d)
+func ListFiles(dir string) (files []string) {
+	dlist, err := ioutil.ReadDir(dir)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, f := range dlist {
 		if strings.Contains(f.Name(), g.Fext) {
-			files = append(files, g.DmsqDir+"/"+f.Name())
+			files = append(files, dir+"/"+f.Name())
 		}
 	}
 	return
 }
 
 // PurgeFiles removes any files that are no longer configured
-func PurgeFiles(a AreaURLs) error {
+func PurgeFiles(a AreaURLs, d string) error {
 	var clist []string
 	for k := range a {
 		for _, s := range a[k] {
-			clist = append(clist, fmt.Sprintf(g.FStr, g.DmsqDir, s.Type, s.Name))
+			clist = append(clist, fmt.Sprintf(g.FStr, d, s.Type, s.Name))
 		}
 	}
 
-	dlist := ListFiles(g.DmsqDir)
+	dlist := ListFiles(d)
 
 	errors := make(purgeErrors, 0)
 	for _, f := range DiffArray(dlist, clist) {
