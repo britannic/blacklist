@@ -62,7 +62,8 @@ func TestConfExcludedDomains(t *testing.T) {
 
 	err := live.ConfExcludedDomains(a)
 	if err != nil {
-		t.Errorf("Excluded domains failure: %v", err)
+		// t.Errorf("Excluded domains failure: %v", err)
+		t.Error("Excluded domains failure")
 	}
 }
 
