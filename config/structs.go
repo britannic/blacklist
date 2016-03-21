@@ -30,6 +30,9 @@ func (d Dict) SubKeyExists(s string) bool {
 			return true
 		}
 	}
+	if d.KeyExists(s) {
+		return true
+	}
 	return false
 }
 

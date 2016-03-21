@@ -48,8 +48,8 @@ func DiffArray(a, b []string) (diff []string) {
 }
 
 // IsDisabled returns true if blacklist is disabled
-func IsDisabled(d c.Blacklist, root string) bool {
-	r := d[root].Disable
+func IsDisabled(c c.Blacklist, root string) bool {
+	r := c[root].Disable
 	return r
 }
 
@@ -153,6 +153,21 @@ func GetURLs(b c.Blacklist) (a AreaURLs) {
 	return
 }
 
+// ListFiles returns a list of blacklist files
+func ListFiles(dir string) (files []string) {
+	dlist, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, f := range dlist {
+		if strings.Contains(f.Name(), g.Fext) {
+			files = append(files, dir+"/"+f.Name())
+		}
+	}
+	return
+}
+
 // Process extracts hosts/domains from downloaded raw content
 func Process(s *c.Src, dex c.Dict, ex c.Dict, d string) *c.Src {
 	rx := regx.Regex
@@ -166,57 +181,34 @@ NEXT:
 			continue NEXT
 		case strings.HasPrefix(line, s.Prfx):
 			var ok bool // We have to declare ok here, to fix var line shadow bug
-			line, ok = StripPrefix(line, s.Prfx, rx)
+			line, ok = StripPrefixAndSuffix(line, s.Prfx, rx)
 			if ok {
-				line = rx.SUFX.ReplaceAllString(line, "")
-				line = strings.TrimSpace(line)
 				fqdns := rx.FQDN.FindAllString(line, -1)
-			FQDN:
+				// FQDN:
 				for _, fqdn := range fqdns {
-					i := strings.Count(fqdn, ".")
 					isDEX := dex.SubKeyExists(fqdn)
 					isEX := ex.KeyExists(fqdn)
+					isList := s.List.KeyExists(fqdn)
 					switch {
-					case i == 1:
-						{
-							switch {
-							case isDEX, isEX:
-								continue NEXT
-							case s.Type == g.Area.Domains:
-								if !isDEX {
-									dex[fqdn] = 0
-									ex[fqdn] = 0
-									s.List[fqdn] = 0
-								}
-							default:
-								if !isDEX {
-									if !isEX {
-										ex[fqdn] = 0
-										s.List[fqdn] = 0
-									} else {
-										ex[fqdn]++
-										if s.List.KeyExists(fqdn) {
-											s.List[fqdn]++
-										}
-									}
-								}
-							}
-						}
-					case i > 1:
-						switch {
-						case isDEX, isEX:
-							continue NEXT
-						case s.List.KeyExists(fqdn):
-							s.List[fqdn]++
-						default:
-							ex[fqdn] = 0
-							s.List[fqdn] = 0
-							if s.Type == g.Area.Domains {
-								dex[fqdn] = 0
-							}
-						}
-					default:
-						continue FQDN
+					case isDEX, isEX:
+						ex[fqdn]++
+
+					case isList:
+						s.List[fqdn]++
+
+					case s.Type == g.Area.Domains:
+						// if !isDEX {
+						dex[fqdn] = 0
+						ex[fqdn] = 0
+						s.List[fqdn] = 0
+						// }
+
+					case !isEX:
+						ex[fqdn] = 0
+						s.List[fqdn] = 0
+
+						// case len(fqdns) > 1:
+						// 	continue FQDN
 					}
 				}
 			}
@@ -249,21 +241,6 @@ func (p purgeErrors) String() (result string) {
 	return
 }
 
-// ListFiles returns a list of blacklist files
-func ListFiles(dir string) (files []string) {
-	dlist, err := ioutil.ReadDir(dir)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, f := range dlist {
-		if strings.Contains(f.Name(), g.Fext) {
-			files = append(files, dir+"/"+f.Name())
-		}
-	}
-	return
-}
-
 // PurgeFiles removes any files that are no longer configured
 func PurgeFiles(a AreaURLs, d string) error {
 	var clist []string
@@ -289,18 +266,26 @@ func PurgeFiles(a AreaURLs, d string) error {
 	return nil
 }
 
-// StripPrefix returns the modified line and true if it can strip the prefix
-func StripPrefix(l string, p string, rx *regx.RGX) (string, bool) {
+// StripPrefixAndSuffix strips prefix and StripPrefixAndSuffix
+func StripPrefixAndSuffix(l string, p string, rx *regx.RGX) (string, bool) {
+	var b bool
 	switch {
 	case p == "http":
 		if !rx.HTTP.MatchString(l) {
-			return l, false
+			return l, b
 		}
-		return rx.HTTP.FindStringSubmatch(l)[1], true
+		l = rx.HTTP.FindStringSubmatch(l)[1]
+		b = true
+
 	case p == "":
-		return l, true
+		b = true
+
 	case strings.HasPrefix(l, p):
-		return strings.TrimPrefix(l, p), true
+		b = true
+		l = strings.TrimPrefix(l, p)
 	}
-	return l, false
+
+	l = rx.SUFX.ReplaceAllString(l, "")
+	l = strings.TrimSpace(l)
+	return l, b
 }

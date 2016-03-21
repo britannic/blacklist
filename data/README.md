@@ -72,11 +72,11 @@ func PurgeFiles(a AreaURLs, d string) error
 PurgeFiles removes any files that are no longer configured
 
 
-## func StripPrefix
+## func StripPrefixAndSuffix
 ``` go
-func StripPrefix(l string, p string, rx *regx.RGX) (string, bool)
+func StripPrefixAndSuffix(l string, p string, rx *regx.RGX) (string, bool)
 ```
-StripPrefix returns the modified line and true if it can strip the prefix
+StripPrefixAndSuffix strips prefix and StripPrefixAndSuffix
 
 
 

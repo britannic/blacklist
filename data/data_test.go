@@ -102,7 +102,7 @@ func TestGetHTTP(t *testing.T) {
 		for got := range z.prcsd.List {
 			want := rx.FQDN.FindStringSubmatch(got)[1]
 			if strings.Compare(got, want) != 0 {
-				t.Errorf("wanted: %v, got: %v", want, got)
+				t.Errorf("wanted: %q, got: %q", want, got)
 			}
 		}
 	}
@@ -128,6 +128,19 @@ func TestGetUrls(t *testing.T) {
 				}
 			}
 		}
+	}
+}
+
+func TestIsDisabled(t *testing.T) {
+	c := make(config.Blacklist)
+	c[g.Root] = &config.Node{}
+	c[g.Root].Disable = true
+	if data.IsDisabled(c, g.Root) != true {
+		t.Error("Should be true")
+	}
+	c[g.Root].Disable = false
+	if data.IsDisabled(c, g.Root) != false {
+		t.Error("Should be false")
 	}
 }
 
@@ -218,9 +231,9 @@ func TestPurgeFiles(t *testing.T) {
 	}
 }
 
-func TestStripPrefix(t *testing.T) {
+func TestStripPrefixAndSuffix(t *testing.T) {
 	rx := regx.Regex
-	tline := `[This line should be delimited by "[]" only.]`
+	tline := `This is a complete sentence and should not have a comment.`
 
 	for _, s := range src {
 		var l string
@@ -231,7 +244,9 @@ func TestStripPrefix(t *testing.T) {
 			l = s.Prfx + tline
 		}
 
-		r, ok := data.StripPrefix(l, s.Prfx, rx)
+		l += ` # Comment.`
+
+		r, ok := data.StripPrefixAndSuffix(l, s.Prfx, rx)
 		switch {
 		case tline != r:
 			t.Errorf("stripPrefix() failed for %v", s.Name)

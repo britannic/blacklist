@@ -12,7 +12,6 @@ import (
 
 var (
 	blacklist *config.Blacklist
-	err       error
 	live      = &check.Cfg{Blacklist: blacklist}
 	dmsqdir   string
 )
@@ -24,7 +23,7 @@ func init() {
 	default:
 		dmsqdir = global.DmsqDir
 	}
-
+	var err error
 	live.Blacklist, err = config.Get(config.Testdata, global.Area.Root)
 	if err != nil {
 		log.Fatal("Couldn't load config.Testdata")
