@@ -72,6 +72,7 @@ var (
             disabled false
             dns-redirect-ip 0.0.0.0
             domains {
+                dns-redirect-ip
                 include adsrvr.org
                 include adtechus.net
                 include advertising.com
@@ -129,6 +130,7 @@ var (
             exclude yimg.com
             exclude ytimg.com
             hosts {
+                dns-redirect-ip
                 include beap.gemini.yahoo.com
                 source adaway {
                     description "Blocking mobile ad providers and some analytics providers"

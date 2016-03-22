@@ -101,8 +101,6 @@ func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 			case global.Area.Domains, global.Area.Hosts:
 				inc := data.GetIncludes(l[pkey])
 				l[pkey].Source["pre"] = &config.Src{List: inc, Name: "pre-configured", Type: pkey}
-				// copy(pkeys[i+1:], pkeys[i:])
-				// pkeys[i] = "pre"
 			}
 		}
 		sort.Sort(config.Keys(pkeys))
