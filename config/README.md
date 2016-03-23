@@ -8,6 +8,14 @@ an EdgeOS/VyOS configuration
 
 
 
+## Constants
+``` go
+const (
+    API = "/bin/cli-shell-api"
+)
+```
+API sets the path and executable for the EdgeOS shell API
+
 
 ## Variables
 ``` go
@@ -83,6 +91,7 @@ var (
             disabled false
             dns-redirect-ip 0.0.0.0
             domains {
+                dns-redirect-ip
                 include adsrvr.org
                 include adtechus.net
                 include advertising.com
@@ -140,6 +149,7 @@ var (
             exclude yimg.com
             exclude ytimg.com
             hosts {
+                dns-redirect-ip
                 include beap.gemini.yahoo.com
                 source adaway {
                     description "Blocking mobile ad providers and some analytics providers"
@@ -246,9 +256,16 @@ func Load(action string, level string) (r string, err error)
 Load reads the config using the EdgeOS/VyOS cli-shell-api
 
 
+## func SHcmd
+``` go
+func SHcmd(a string) (action string)
+```
+SHcmd returns the appropriate command for non-tty or tty context
+
+
 ## func ToBool
 ``` go
-func ToBool(s string) (b bool)
+func ToBool(s string) (b bool, err error)
 ```
 ToBool converts a string ("true" or "false") to it's boolean equivalent
 
@@ -270,10 +287,26 @@ Blacklist type is a map of Nodes with string keys
 
 ### func Get
 ``` go
-func Get(cfg string, root string) (b *Blacklist, err error)
+func Get(cfg string, root string) (*Blacklist, error)
 ```
 Get extracts nodes from a EdgeOS/VyOS configuration structure
 
+
+
+
+### func (Blacklist) SortKeys
+``` go
+func (b Blacklist) SortKeys() (pkeys Keys)
+```
+SortKeys returns an array of sorted strings
+
+
+
+### func (Blacklist) SortSKeys
+``` go
+func (b Blacklist) SortSKeys() (skeys Keys)
+```
+SortSKeys returns an array of sorted strings
 
 
 

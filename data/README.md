@@ -46,7 +46,7 @@ GetList returns a sorted []byte of blacklist entries
 
 ## func IsDisabled
 ``` go
-func IsDisabled(d c.Blacklist, root string) bool
+func IsDisabled(c c.Blacklist, root string) bool
 ```
 IsDisabled returns true if blacklist is disabled
 

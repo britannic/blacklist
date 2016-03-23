@@ -31,14 +31,11 @@ type Cfg struct {
 	Blacklist *config.Blacklist
 }
 
-var (
-	e   string
-	got []string
-	rx  = regx.Regex
-)
+var rx = regx.Regex
 
 // ConfBlacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
 func (c *Cfg) ConfBlacklistings(a *Args) (err error) {
+	var got []string
 	l := *c.Blacklist
 	for k := range l {
 		if len(l[k].Include) > 0 {
@@ -64,6 +61,10 @@ func (c *Cfg) ConfBlacklistings(a *Args) (err error) {
 
 // ConfExclusions checks that configured exclusions are excluded from dnsmasq conf files
 func (c *Cfg) ConfExclusions(a *Args) (err error) {
+	var (
+		e   string
+		got []string
+	)
 	l := *c.Blacklist
 	for k := range l {
 		for sk := range l[k].Source {
@@ -71,7 +72,7 @@ func (c *Cfg) ConfExclusions(a *Args) (err error) {
 			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
 			got, err = utils.Getfile(f)
 			if err != nil {
-				return err
+				return fmt.Errorf("Error getting file: %v, error: %v\n", f, err)
 			}
 			got = ExtractHost(got)
 			for _, ex := range got {
@@ -90,8 +91,9 @@ func (c *Cfg) ConfExclusions(a *Args) (err error) {
 // ConfExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
 func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 	var (
-		want []string
-		l    = *c.Blacklist
+		e         string
+		got, want []string
+		l         = *c.Blacklist
 	)
 
 	sortKeys := func() (pkeys config.Keys) {
@@ -116,7 +118,7 @@ func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 			case global.Area.Domains:
 				want, err = utils.Getfile(f)
 				if err != nil {
-					return err
+					return fmt.Errorf("Error getting file: %v, error: %v\n", f, err)
 				}
 				want = ExtractHost(want)
 				for _, fqdn := range want {
@@ -126,7 +128,7 @@ func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 			default:
 				got, err = utils.Getfile(f)
 				if err != nil {
-					return err
+					return fmt.Errorf("Error getting file: %v, error: %v\n", f, err)
 				}
 				got = ExtractHost(got)
 			}
@@ -139,17 +141,15 @@ func (c *Cfg) ConfExcludedDomains(a *Args) (err error) {
 		}
 	}
 
-	if len(e) > 0 {
-		err = fmt.Errorf(e)
-	}
-	return err
+	err = fmt.Errorf(e)
+	return
 }
 
 // ConfFiles checks that all blacklist sources have generated dnsmasq conf files and there aren't any orphans
 func (c *Cfg) ConfFiles(a *Args) (err error) {
 	var (
-		want []string
-		l    = *c.Blacklist
+		got, want []string
+		l         = *c.Blacklist
 	)
 
 	got, err = filepath.Glob(a.Fname)
@@ -176,8 +176,9 @@ func (c *Cfg) ConfFiles(a *Args) (err error) {
 // ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
 func (c *Cfg) ConfIP(a *Args) (err error) {
 	var (
-		IPs []string
-		l   = *c.Blacklist
+		e        string
+		got, IPs []string
+		l        = *c.Blacklist
 	)
 
 	for k := range l {
@@ -186,6 +187,7 @@ func (c *Cfg) ConfIP(a *Args) (err error) {
 			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
 			got, err = utils.Getfile(f)
 			if err != nil {
+				fmt.Println("Error in Getfile")
 				return err
 			}
 
@@ -252,9 +254,10 @@ func ExtractIP(s []string) (r []string) {
 // IPRedirection checks that each domain or host dnsmasq conf entry is redirected to the configured blackhole IP
 func (c *Cfg) IPRedirection(a *Args) (err error) {
 	var (
-		l    = *c.Blacklist
-		rIP  = l[global.Area.Root].IP
-		lIPs []string
+		e         string
+		l         = *c.Blacklist
+		rIP       = l[global.Area.Root].IP
+		got, lIPs []string
 	)
 
 	for k := range l {
