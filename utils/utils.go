@@ -2,12 +2,11 @@
 package utils
 
 import (
+	"bufio"
 	"crypto/md5"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/user"
-	"strings"
 )
 
 // Basename removes directory components and file extensions.
@@ -38,14 +37,37 @@ func CmpHash(a, b []byte) bool {
 	return false
 }
 
-// Getfile reads a file returns a []string array
-func Getfile(f string) (data []string, err error) {
-	b, err := ioutil.ReadFile(f)
-	if len(string(b)) > 0 {
-		data = strings.Split(string(b), "\n")
+// GetByteArray returns an array of []byte from a *bufio.Scanner
+func GetByteArray(b *bufio.Scanner, s []byte) []byte {
+	for b.Scan() {
+		s = append(s, b.Bytes()...)
 	}
-	return
+	return s
 }
+
+// GetStringArray returns an array of []string from a *bufio.Scanner
+func GetStringArray(b *bufio.Scanner, s []string) []string {
+	for b.Scan() {
+		s = append(s, b.Text())
+	}
+	return s
+}
+
+// GetFile reads a file and returns a *bufio.Scanner instance
+func GetFile(fname string) (b *bufio.Scanner, err error) {
+	f, err := os.Open(fname)
+	b = bufio.NewScanner(f)
+	return b, err
+}
+
+// Getfile reads a file returns a []string array
+// func Getfile(f string) (data []string, err error) {
+// 	b, err := ioutil.ReadFile(f)
+// 	if len(string(b)) > 0 {
+// 		data = strings.Split(string(b), "\n")
+// 	}
+// 	return
+// }
 
 // IsAdmin returns true if user has superuser privileges
 func IsAdmin() bool {
@@ -59,7 +81,7 @@ func IsAdmin() bool {
 }
 
 // WriteFile writes blacklist data to storage
-func WriteFile(fname string, data []byte) (err error) {
+func WriteFile(fname string, data []byte) error {
 	f, err := os.OpenFile(fname, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
 		return fmt.Errorf("Unable to open file: %v for writing, error: %v", fname, err)
@@ -70,5 +92,5 @@ func WriteFile(fname string, data []byte) (err error) {
 	if err != nil {
 		return fmt.Errorf("Unable to write to file, bytes written: %v, error: %v", b, err)
 	}
-	return
+	return err
 }

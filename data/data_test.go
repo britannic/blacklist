@@ -1,6 +1,7 @@
 package data_test
 
 import (
+	"bufio"
 	"fmt"
 	"strings"
 	"testing"
@@ -29,25 +30,21 @@ func TestExclusions(t *testing.T) {
 		t.Error("Couldn't load config.Testdata")
 	}
 
-	globex := data.GetExcludes(*b)
-	ex := data.GetExcludes(*b)
-	dex := make(config.Dict)
+	var (
+		// tdata  string
+		dex    = make(config.Dict)
+		ex     = data.GetExcludes(*b)
+		globex = data.GetExcludes(*b)
+	)
 
 	for _, s := range src {
 		f := fmt.Sprintf("../testdata/tdata.%v.%v", s.Type, s.Name)
-		testdata, err := utils.Getfile(f)
+		testdata, err := utils.GetFile(f)
 		if err != nil {
 			t.Errorf("Cannot open %v", f)
 		}
 
-		var tdata string
-		for _, l := range testdata {
-			if len(l) > 0 {
-				tdata += l + "\n"
-			}
-		}
-
-		gdata := data.Process(s, globex, dex, tdata)
+		gdata := data.Process(s, globex, dex, testdata)
 
 		for k := range gdata.List {
 			i := strings.Count(k, ".")
@@ -88,12 +85,14 @@ func TestGetHTTP(t *testing.T) {
 	a := data.GetURLs(*b)
 	ex := make(config.Dict)
 	dex := make(config.Dict)
+
 	for k := range a {
 		for _, u := range a[k] {
 			if len(u.URL) > 0 {
 				h.body, h.err = data.GetHTTP(u.URL)
 				d = append(d, h)
-				h.prcsd = data.Process(u, ex, dex, string(h.body[:]))
+				bdata := bufio.NewScanner(strings.NewReader(string(h.body[:])))
+				h.prcsd = data.Process(u, ex, dex, bdata)
 			}
 		}
 	}
@@ -149,32 +148,23 @@ func TestProcess(t *testing.T) {
 		ex := make(config.Dict)
 		dex := make(config.Dict)
 		f := fmt.Sprintf("%v/tdata.%v.%v", dmsqDir, s.Type, s.Name)
-		testdata, err := utils.Getfile(f)
+		testdata, err := utils.GetFile(f)
 		if err != nil {
 			t.Errorf("Cannot open %v", f)
 		}
 
-		var tdata string
-		for _, l := range testdata {
-			if len(l) > 0 {
-				tdata += l + "\n"
-			}
-		}
-
 		f = fmt.Sprintf("%v/sdata.%v.%v", dmsqDir, s.Type, s.Name)
-		staticdata, err := utils.Getfile(f)
+		staticdata, err := utils.GetFile(f)
 		if err != nil {
 			t.Errorf("Cannot open %v", f)
 		}
 
 		var wdata string
-		for _, l := range staticdata {
-			if len(l) > 0 {
-				wdata += l + "\n"
-			}
+		for staticdata.Scan() {
+			wdata += staticdata.Text() + "\n"
 		}
-
-		gdata := string(data.GetList(data.Process(s, ex, dex, tdata))[:])
+		// wdata = utils.GetByteArray(staticdata, wdata)
+		gdata := string(data.GetList(data.Process(s, ex, dex, testdata))[:])
 
 		if !utils.CmpHash([]byte(wdata), []byte(gdata)) {
 			mismatch := []*struct {
@@ -182,7 +172,7 @@ func TestProcess(t *testing.T) {
 				f string
 			}{
 				{
-					d: wdata,
+					d: string(wdata[:]),
 					f: fmt.Sprintf("/tmp/want.%v.%v", s.Type, s.Name),
 				},
 				{

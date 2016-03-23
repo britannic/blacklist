@@ -48,7 +48,7 @@ func TestConfExclusions(t *testing.T) {
 	}
 
 	err := live.ConfExclusions(a)
-	if err != nil {
+	if err.Error() != "" {
 		t.Errorf("Exclusions failure: %v", err)
 	}
 }
@@ -71,8 +71,7 @@ func TestConfFiles(t *testing.T) {
 		Fname: dmsqdir + `/*` + global.Fext,
 	}
 
-	err := live.ConfFiles(a)
-	if err != nil {
+	if err := live.ConfFiles(a); err != nil {
 		t.Errorf("Problems with dnsmasq configuration files: %v", err)
 	}
 }
@@ -82,7 +81,7 @@ func TestConfIP(t *testing.T) {
 		Dir: dmsqdir,
 	}
 
-	if err := live.ConfIP(a); err != nil {
+	if err := live.ConfIP(a); err.Error() != "" {
 		t.Errorf("Problems with IP: %v", err)
 	}
 }

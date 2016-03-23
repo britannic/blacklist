@@ -2,8 +2,12 @@ package main
 
 import (
 	"testing"
+	"time"
 
+	"github.com/britannic/blacklist/check"
 	"github.com/britannic/blacklist/config"
+	"github.com/britannic/blacklist/data"
+	"github.com/britannic/blacklist/global"
 )
 
 // func TestBuild(t *testing.T) {
@@ -23,6 +27,56 @@ import (
 func TestVarSrc(t *testing.T) {
 	if len(src) == 0 {
 		t.Errorf("Src should not be empty: %v", src)
+	}
+}
+
+func TestGetBlacklists(t *testing.T) {
+	timeout := time.Minute * 30
+	b, err := config.Get(config.Testdata, global.Root)
+	if err != nil {
+		t.Errorf("unable to get configuration data, error code: %v\n", err)
+	}
+
+	if !data.IsDisabled(*b, global.Root) {
+		areas := data.GetURLs(*b)
+		ex := data.GetExcludes(*b)
+		dex := make(config.Dict)
+		getBlacklists(timeout, dex, ex, areas)
+
+		var (
+			blacklist = b
+			live      = &check.Cfg{Blacklist: blacklist}
+			a         = &check.Args{
+				Fname: global.DmsqDir + "/%v" + ".pre-configured" + global.Fext,
+				Dex:   make(config.Dict),
+				Dir:   global.DmsqDir,
+				Ex:    data.GetExcludes(*live.Blacklist),
+				Data:  "",
+				IP:    "",
+			}
+		)
+
+		err = live.ConfBlacklistings(a)
+		if err != nil {
+			t.Errorf("check.ConfBlacklistings returned an error: %v ", err)
+		}
+
+		if err = live.ConfExclusions(a); err.Error() != "" {
+			t.Errorf("Exclusions failure: %v", err)
+		}
+
+		if err = live.ConfExcludedDomains(a); err.Error() != "" {
+			t.Errorf("Excluded domains failure: %#v", err)
+		}
+
+		a.Fname = global.DmsqDir + `/*` + global.Fext
+		if err = live.ConfFiles(a); err != nil {
+			t.Errorf("Problems with dnsmasq configuration files: %v", err)
+		}
+
+		if err = live.ConfIP(a); err.Error() != "" {
+			t.Errorf("Problems with IP: %v", err)
+		}
 	}
 }
 

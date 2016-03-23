@@ -2,15 +2,17 @@ package utils_test
 
 import (
 	"fmt"
+	"os"
 	"os/user"
+	"reflect"
 	"testing"
 
-	"github.com/britannic/blacklist/data"
 	"github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/utils"
 )
 
 var (
+	// d.String() = "The rest is history!"
 	d       = []byte{84, 104, 101, 32, 114, 101, 115, 116, 32, 105, 115, 32, 104, 105, 115, 116, 111, 114, 121, 33}
 	dmsqDir string
 )
@@ -53,21 +55,76 @@ func TestCmpHash(t *testing.T) {
 	}
 }
 
-func TestGetFile(t *testing.T) {
-	want := []string{"The rest is history!"}
+func TestByteArray(t *testing.T) {
+	var (
+		want = d
+		got  []byte
+	)
 
 	f := fmt.Sprintf("%v/delete.txt", dmsqDir)
 	if err := utils.WriteFile(f, d); err != nil {
 		t.Errorf("Error writing file: %v", err)
 	}
 
-	got, err := utils.Getfile(f)
+	b, err := utils.GetFile(f)
 	if err != nil {
 		t.Errorf("Failed with error: %v", err)
 	}
 
-	if delta := data.DiffArray(want, got); len(delta) > 0 {
-		t.Errorf("Data not the same - difference: %v", delta)
+	_ = os.Remove(f)
+
+	got = utils.GetByteArray(b, got)
+
+	if !utils.CmpHash(want, got) {
+		t.Errorf("Data not the same - Got: %v\nWant: %v\n", string(got[:]), string(want[:]))
+	}
+}
+
+func TestGetFile(t *testing.T) {
+	var (
+		want = d
+		got  []byte
+	)
+
+	f := fmt.Sprintf("%v/delete.txt", dmsqDir)
+	if err := utils.WriteFile(f, d); err != nil {
+		t.Errorf("Error writing file: %v", err)
+	}
+
+	b, err := utils.GetFile(f)
+	if err != nil {
+		t.Errorf("Failed with error: %v", err)
+	}
+
+	_ = os.Remove(f)
+
+	got = utils.GetByteArray(b, got)
+	if !utils.CmpHash(want, got) {
+		t.Errorf("Data not the same - Got: %v\nWant: %v\n", string(got[:]), string(want[:]))
+	}
+}
+
+func TestStringArray(t *testing.T) {
+	var (
+		got  []string
+		want = []string{"The rest is history!"}
+	)
+
+	f := fmt.Sprintf("%v/delete.txt", dmsqDir)
+	if err := utils.WriteFile(f, d); err != nil {
+		t.Errorf("Error writing file: %v", err)
+	}
+
+	b, err := utils.GetFile(f)
+	if err != nil {
+		t.Errorf("Failed with error: %v", err)
+	}
+
+	_ = os.Remove(f)
+
+	got = utils.GetStringArray(b, got)
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("Data not the same - Got: %v\nWant: %v\n", got, want)
 	}
 }
 

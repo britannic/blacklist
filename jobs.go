@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -43,7 +45,8 @@ func processResults(timeout time.Duration, d c.Dict, e c.Dict, done <-chan struc
 	for working := cores; working > 0; {
 		select {
 		case result := <-results:
-			d := data.Process(result.Src, d, e, string(result.Data))
+			bdata := bufio.NewScanner(strings.NewReader(string(result.Data)))
+			d := data.Process(result.Src, d, e, bdata)
 			fn := fmt.Sprintf(g.FStr, g.DmsqDir, result.Src.Type, result.Src.Name)
 			log.Printf("Writing job[%v] %v\n", result.Src.No, fn)
 			if err := utils.WriteFile(fn, data.GetList(d)); err != nil {
@@ -59,7 +62,8 @@ func processResults(timeout time.Duration, d c.Dict, e c.Dict, done <-chan struc
 	for {
 		select {
 		case result := <-results:
-			d := data.Process(result.Src, d, e, string(result.Data))
+			bdata := bufio.NewScanner(strings.NewReader(string(result.Data)))
+			d := data.Process(result.Src, d, e, bdata)
 			fn := fmt.Sprintf(g.FStr, g.DmsqDir, result.Src.Type, result.Src.Name)
 			log.Printf("Writing job[%v] %v\n", result.Src.No, fn)
 			if err := utils.WriteFile(fn, data.GetList(d)); err != nil {

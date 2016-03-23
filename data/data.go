@@ -6,6 +6,7 @@
 package data
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -169,13 +170,14 @@ func ListFiles(dir string) (files []string) {
 }
 
 // Process extracts hosts/domains from downloaded raw content
-func Process(s *c.Src, dex c.Dict, ex c.Dict, d string) *c.Src {
+func Process(s *c.Src, dex c.Dict, ex c.Dict, b *bufio.Scanner) *c.Src {
 	rx := regx.Regex
 	s.List = make(c.Dict)
-	d = strings.ToLower(d)
+	// d = strings.ToLower(d)
 
 NEXT:
-	for _, line := range strings.Split(d, "\n") {
+	for b.Scan() {
+		line := strings.ToLower(b.Text())
 		switch {
 		case strings.HasPrefix(line, "#"), strings.HasPrefix(line, "//"):
 			continue NEXT
