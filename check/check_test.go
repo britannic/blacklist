@@ -30,37 +30,37 @@ func init() {
 	}
 }
 
-func TestConfBlacklistings(t *testing.T) {
+func TestBlacklistings(t *testing.T) {
 	a := &check.Args{
 		Fname: dmsqdir + "/%v" + ".pre-configured" + global.Fext,
 	}
 
-	err := live.ConfBlacklistings(a)
+	err := live.Blacklistings(a)
 	if err != nil {
-		t.Errorf("check.ConfBlacklistings returned an error: %v ", err)
+		t.Errorf("check.Blacklistings returned an error: %v ", err)
 	}
 }
 
-func TestConfExclusions(t *testing.T) {
+func TestExclusions(t *testing.T) {
 	a := &check.Args{
 		Ex:  data.GetExcludes(*live.Blacklist),
 		Dir: dmsqdir,
 	}
 
-	err := live.ConfExclusions(a)
+	err := live.Exclusions(a)
 	if err.Error() != "" {
 		t.Errorf("Exclusions failure: %v", err)
 	}
 }
 
-func TestConfExcludedDomains(t *testing.T) {
+func TestExcludedDomains(t *testing.T) {
 	a := &check.Args{
 		Ex:  data.GetExcludes(*live.Blacklist),
 		Dex: make(config.Dict),
 		Dir: dmsqdir,
 	}
 
-	if err := live.ConfExcludedDomains(a); err.Error() != "" {
+	if err := live.ExcludedDomains(a); err.Error() != "" {
 		t.Errorf("Excluded domains failure: %#v", err)
 	}
 }

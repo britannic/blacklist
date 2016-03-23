@@ -1,9 +1,11 @@
 package main
 
 import (
+	"os"
 	"testing"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/check"
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
@@ -23,6 +25,14 @@ import (
 // 		}
 // 	}
 // }
+
+func init() {
+	f, err := os.OpenFile(global.Logfile, os.O_WRONLY|os.O_APPEND, 0755)
+	if err == nil {
+		log.SetFormatter(&log.TextFormatter{DisableColors: true})
+		log.SetOutput(f)
+	}
+}
 
 func TestVarSrc(t *testing.T) {
 	if len(src) == 0 {
@@ -56,16 +66,16 @@ func TestGetBlacklists(t *testing.T) {
 			}
 		)
 
-		err = live.ConfBlacklistings(a)
+		err = live.Blacklistings(a)
 		if err != nil {
-			t.Errorf("check.ConfBlacklistings returned an error: %v ", err)
+			t.Errorf("check.Blacklistings returned an error: %v ", err)
 		}
 
-		if err = live.ConfExclusions(a); err.Error() != "" {
+		if err = live.Exclusions(a); err.Error() != "" {
 			t.Errorf("Exclusions failure: %v", err)
 		}
 
-		if err = live.ConfExcludedDomains(a); err.Error() != "" {
+		if err = live.ExcludedDomains(a); err.Error() != "" {
 			t.Errorf("Excluded domains failure: %#v", err)
 		}
 

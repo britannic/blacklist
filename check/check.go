@@ -33,8 +33,8 @@ type Cfg struct {
 
 var rx = regx.Regex
 
-// ConfBlacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
-func (c *Cfg) ConfBlacklistings(a *Args) (err error) {
+// Blacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
+func (c *Cfg) Blacklistings(a *Args) (err error) {
 	var got []string
 	l := *c.Blacklist
 	for k := range l {
@@ -63,8 +63,8 @@ func (c *Cfg) ConfBlacklistings(a *Args) (err error) {
 	return
 }
 
-// ConfExclusions checks that configured exclusions are excluded from dnsmasq conf files
-func (c *Cfg) ConfExclusions(a *Args) error {
+// Exclusions checks that configured exclusions are excluded from dnsmasq conf files
+func (c *Cfg) Exclusions(a *Args) error {
 	var (
 		e   string
 		got []string
@@ -97,8 +97,8 @@ func (c *Cfg) ConfExclusions(a *Args) error {
 	return fmt.Errorf(e)
 }
 
-// ConfExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
-func (c *Cfg) ConfExcludedDomains(a *Args) error {
+// ExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
+func (c *Cfg) ExcludedDomains(a *Args) error {
 	var (
 		e         string
 		got, want []string

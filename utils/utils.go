@@ -3,8 +3,10 @@ package utils
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/md5"
 	"fmt"
+	"io"
 	"os"
 	"os/user"
 )
@@ -60,15 +62,6 @@ func GetFile(fname string) (b *bufio.Scanner, err error) {
 	return b, err
 }
 
-// Getfile reads a file returns a []string array
-// func Getfile(f string) (data []string, err error) {
-// 	b, err := ioutil.ReadFile(f)
-// 	if len(string(b)) > 0 {
-// 		data = strings.Split(string(b), "\n")
-// 	}
-// 	return
-// }
-
 // IsAdmin returns true if user has superuser privileges
 func IsAdmin() bool {
 	u, _ := user.Current()
@@ -86,11 +79,40 @@ func WriteFile(fname string, data []byte) error {
 	if err != nil {
 		return fmt.Errorf("Unable to open file: %v for writing, error: %v", fname, err)
 	}
-	defer f.Close()
 
-	b, err := f.Write(data)
-	if err != nil {
-		return fmt.Errorf("Unable to write to file, bytes written: %v, error: %v", b, err)
+	defer func() error {
+		if err = f.Close(); err != nil {
+			return err
+		}
+		return err
+	}()
+
+	r := bytes.NewReader(data)
+	w := bufio.NewWriter(f)
+	buf := make([]byte, 1024)
+	for {
+		n, err := r.Read(buf)
+		if err != nil && err != io.EOF {
+			return err
+		}
+
+		if n == 0 {
+			break
+		}
+
+		if _, err := w.Write(buf[:n]); err != nil {
+			return err
+		}
+
+		if err = w.Flush(); err != nil {
+			return err
+		}
 	}
+	// defer f.Close()
+
+	// b, err := f.Write(data)
+	// if err != nil {
+	// 	return fmt.Errorf("Unable to write to file, bytes written: %v, error: %v", b, err)
+	// }
 	return err
 }
