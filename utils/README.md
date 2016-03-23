@@ -23,11 +23,25 @@ func CmpHash(a, b []byte) bool
 CmpHash compares the hashes of a to b and returns true if they're identical
 
 
-## func Getfile
+## func GetByteArray
 ``` go
-func Getfile(f string) (data []string, err error)
+func GetByteArray(b *bufio.Scanner, s []byte) []byte
 ```
-Getfile reads a file returns a []string array
+GetByteArray returns an array of []byte from a *bufio.Scanner
+
+
+## func GetFile
+``` go
+func GetFile(fname string) (b *bufio.Scanner, err error)
+```
+GetFile reads a file and returns a *bufio.Scanner instance
+
+
+## func GetStringArray
+``` go
+func GetStringArray(b *bufio.Scanner, s []string) []string
+```
+GetStringArray returns an array of []string from a *bufio.Scanner
 
 
 ## func IsAdmin
@@ -39,7 +53,7 @@ IsAdmin returns true if user has superuser privileges
 
 ## func WriteFile
 ``` go
-func WriteFile(fname string, data []byte) (err error)
+func WriteFile(fname string, data []byte) error
 ```
 WriteFile writes blacklist data to storage
 

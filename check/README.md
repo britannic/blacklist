@@ -78,7 +78,7 @@ ConfBlacklistings checks that only configured blacklisted includes are present i
 
 ### func (\*Cfg) ConfExcludedDomains
 ``` go
-func (c *Cfg) ConfExcludedDomains(a *Args) (err error)
+func (c *Cfg) ConfExcludedDomains(a *Args) error
 ```
 ConfExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
 
@@ -86,7 +86,7 @@ ConfExcludedDomains checks that domains are excluded from dnsmasq hosts conf fil
 
 ### func (\*Cfg) ConfExclusions
 ``` go
-func (c *Cfg) ConfExclusions(a *Args) (err error)
+func (c *Cfg) ConfExclusions(a *Args) error
 ```
 ConfExclusions checks that configured exclusions are excluded from dnsmasq conf files
 
@@ -102,7 +102,7 @@ ConfFiles checks that all blacklist sources have generated dnsmasq conf files an
 
 ### func (\*Cfg) ConfIP
 ``` go
-func (c *Cfg) ConfIP(a *Args) (err error)
+func (c *Cfg) ConfIP(a *Args) error
 ```
 ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
 
@@ -110,7 +110,7 @@ ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
 
 ### func (\*Cfg) IPRedirection
 ``` go
-func (c *Cfg) IPRedirection(a *Args) (err error)
+func (c *Cfg) IPRedirection(a *Args) error
 ```
 IPRedirection checks that each domain or host dnsmasq conf entry is redirected to the configured blackhole IP
 

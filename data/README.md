@@ -60,7 +60,7 @@ ListFiles returns a list of blacklist files
 
 ## func Process
 ``` go
-func Process(s *c.Src, dex c.Dict, ex c.Dict, d string) *c.Src
+func Process(s *c.Src, dex c.Dict, ex c.Dict, b *bufio.Scanner) *c.Src
 ```
 Process extracts hosts/domains from downloaded raw content
 
