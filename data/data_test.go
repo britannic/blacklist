@@ -132,13 +132,13 @@ func TestGetUrls(t *testing.T) {
 
 func TestIsDisabled(t *testing.T) {
 	c := make(config.Blacklist)
-	c[g.Root] = &config.Node{}
-	c[g.Root].Disable = true
-	if data.IsDisabled(c, g.Root) != true {
+	c[g.Area.Root] = &config.Node{}
+	c[g.Area.Root].Disable = true
+	if data.IsDisabled(c, g.Area.Root) != true {
 		t.Error("Should be true")
 	}
-	c[g.Root].Disable = false
-	if data.IsDisabled(c, g.Root) != false {
+	c[g.Area.Root].Disable = false
+	if data.IsDisabled(c, g.Area.Root) != false {
 		t.Error("Should be false")
 	}
 }

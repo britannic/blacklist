@@ -49,9 +49,6 @@ var (
 	// Program is the current binary's filename
 	Program = utils.Basename(os.Args[0])
 
-	// Root is the top level configuration Node
-	Root = "blacklist"
-
 	// WhatOS is the current operating system
 	WhatOS string
 )

@@ -145,11 +145,6 @@ func (c *Cfg) ExcludedDomains(a *Args) error {
 					return fmt.Errorf("Error getting file: %v, error: %v\n", f, err)
 				}
 
-				// utils.GetArray(b, got)
-				// for b.Scan() {
-				// 	got = append(got, b.Text())
-				// }
-
 				got = ExtractHost(utils.GetStringArray(b, got))
 			}
 

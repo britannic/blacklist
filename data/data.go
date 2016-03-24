@@ -62,7 +62,7 @@ func GetExcludes(b c.Blacklist) (e c.Dict) {
 			e[skey] = 0
 		}
 	}
-	return
+	return e
 }
 
 // GetHTTP creates http requests to download data
@@ -88,7 +88,7 @@ func GetHTTP(URL string) (body []byte, err error) {
 		debug(httputil.DumpResponse(resp, true))
 		body, err = ioutil.ReadAll(resp.Body)
 	}
-	return
+	return body, err
 }
 
 // GetIncludes returns a map[string]int of includes
@@ -97,7 +97,7 @@ func GetIncludes(n *c.Node) (r c.Dict) {
 	for _, skey := range n.Include {
 		r[skey] = 0
 	}
-	return
+	return r
 }
 
 // GetList returns a sorted []byte of blacklist entries
@@ -137,12 +137,12 @@ func GetURLs(b c.Blacklist) (a AreaURLs) {
 
 	for pkey := range b {
 		var urls []*c.Src
-		if pkey != g.Root {
+		if pkey != g.Area.Root {
 			inc = GetIncludes(b[pkey])
 
 			b[pkey].Source["pre"] = &c.Src{List: inc, Name: "pre-configured", Type: pkey}
 			if b[pkey].IP == "" {
-				b[pkey].IP = b[g.Root].IP
+				b[pkey].IP = b[g.Area.Root].IP
 			}
 			for skey := range b[pkey].Source {
 				b[pkey].Source[skey].IP = b[pkey].IP
@@ -173,11 +173,13 @@ func ListFiles(dir string) (files []string) {
 func Process(s *c.Src, dex c.Dict, ex c.Dict, b *bufio.Scanner) *c.Src {
 	rx := regx.Regex
 	s.List = make(c.Dict)
-	// d = strings.ToLower(d)
 
 NEXT:
 	for b.Scan() {
 		line := strings.ToLower(b.Text())
+		// if s.Name == "pre-configured" {
+		// 	fmt.Println("Inside Scan:", s.Name, line)
+		// }
 		switch {
 		case strings.HasPrefix(line, "#"), strings.HasPrefix(line, "//"):
 			continue NEXT
@@ -192,20 +194,26 @@ NEXT:
 					isEX := ex.KeyExists(fqdn)
 					isList := s.List.KeyExists(fqdn)
 					switch {
+					case s.Name == "pre-configured":
+						switch {
+						case s.Type == g.Area.Domains:
+							// if !isDEX {
+							dex[fqdn] = 0
+							ex[fqdn] = 0
+							s.List[fqdn] = 0
+							// }
+						default:
+							ex[fqdn] = 0
+							s.List[fqdn] = 0
+						}
+
 					case isDEX, isEX:
 						ex[fqdn]++
 
 					case isList:
 						s.List[fqdn]++
 
-					case s.Type == g.Area.Domains:
-						// if !isDEX {
-						dex[fqdn] = 0
-						ex[fqdn] = 0
-						s.List[fqdn] = 0
-						// }
-
-					case !isEX:
+					default:
 						ex[fqdn] = 0
 						s.List[fqdn] = 0
 
@@ -219,10 +227,12 @@ NEXT:
 		}
 	}
 
-	if _, ok := s.List["localhost"]; ok {
-		delete(s.List, "localhost")
-	}
-
+	// if _, ok := s.List["localhost"]; ok {
+	// 	delete(s.List, "localhost")
+	// }
+	// if s.Name == "pre-configured" {
+	// 	fmt.Println("Process return:", s)
+	// }
 	return s
 }
 

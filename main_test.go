@@ -42,29 +42,35 @@ func TestVarSrc(t *testing.T) {
 
 func TestGetBlacklists(t *testing.T) {
 	timeout := time.Minute * 30
-	b, err := config.Get(config.Testdata, global.Root)
+	b, err := config.Get(config.Testdata, global.Area.Root)
 	if err != nil {
 		t.Errorf("unable to get configuration data, error code: %v\n", err)
 	}
 
-	if !data.IsDisabled(*b, global.Root) {
+	if !data.IsDisabled(*b, global.Area.Root) {
 		areas := data.GetURLs(*b)
 		ex := data.GetExcludes(*b)
 		dex := make(config.Dict)
 		getBlacklists(timeout, dex, ex, areas)
 
 		var (
-			blacklist = b
+			blacklist *config.Blacklist
 			live      = &check.Cfg{Blacklist: blacklist}
 			a         = &check.Args{
 				Fname: global.DmsqDir + "/%v" + ".pre-configured" + global.Fext,
 				Dex:   make(config.Dict),
 				Dir:   global.DmsqDir,
-				Ex:    data.GetExcludes(*live.Blacklist),
 				Data:  "",
 				IP:    "",
 			}
 		)
+
+		live.Blacklist, err = config.Get(config.Testdata, global.Area.Root)
+		if err != nil {
+			log.Fatal("Couldn't load config.Testdata")
+		}
+
+		a.Ex = data.GetExcludes(*live.Blacklist)
 
 		err = live.Blacklistings(a)
 		if err != nil {

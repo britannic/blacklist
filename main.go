@@ -68,7 +68,7 @@ func main() {
 		switch g.WhatOS {
 		case g.TestOS:
 			{
-				b, err = c.Get(c.Testdata, g.Root)
+				b, err = c.Get(c.Testdata, g.Area.Root)
 				if err != nil {
 					return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
 				}
@@ -80,7 +80,7 @@ func main() {
 				if err != nil {
 					return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
 				}
-				b, err = c.Get(cfg, g.Root)
+				b, err = c.Get(cfg, g.Area.Root)
 				return b, err
 			}
 		}
@@ -89,7 +89,7 @@ func main() {
 		log.Fatal("Critical issue, exiting, error: ", err)
 	}
 
-	if !data.IsDisabled(*blist, g.Root) {
+	if !data.IsDisabled(*blist, g.Area.Root) {
 		areas := data.GetURLs(*blist)
 
 		if err = data.PurgeFiles(areas, g.DmsqDir); err != nil {
