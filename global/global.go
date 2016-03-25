@@ -6,7 +6,6 @@
 package global
 
 import (
-	"log"
 	"os"
 	"runtime"
 
@@ -19,6 +18,19 @@ type Areas struct {
 	Hosts,
 	Root string
 }
+
+const (
+	cwd = "/Users/Neil/go/src/github.com/britannic/blacklist"
+
+	// DNSRestart defines the dnsmasq restart command
+	DNSRestart = "service dnsmasq restart"
+
+	// Fext defines the blacklist filename extension
+	Fext = ".blacklist.conf"
+
+	// TestOS sets a global value for the test environment
+	TestOS = "darwin"
+)
 
 var (
 	// Area defines top nodes for the configuration tree
@@ -34,17 +46,11 @@ var (
 	// DmsqDir defines dnsmasq directory location
 	DmsqDir string
 
-	// Fext defines the blacklist filename extension
-	Fext = ".blacklist.conf"
-
 	// FStr provides a blacklist filename/path template
 	FStr = "%v/%v.%v" + Fext
 
 	// Logfile set the log path and filename
 	Logfile string
-
-	// TestOS sets a global value for the test environment
-	TestOS = "darwin"
 
 	// Program is the current binary's filename
 	Program = utils.Basename(os.Args[0])
@@ -57,10 +63,10 @@ func init() {
 	WhatOS = runtime.GOOS
 	switch WhatOS {
 	case TestOS:
-		cwd, err := os.Getwd()
-		if err != nil {
-			log.Fatal("Cannot determine current directory - exiting")
-		}
+		// cwd, err := os.Getwd()
+		// if err != nil {
+		// 	log.Fatal("Cannot determine current directory - exiting")
+		// }
 		DmsqDir = cwd + "/testdata"
 		Logfile = cwd + "/testdata/blacklist.log"
 	default:

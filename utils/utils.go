@@ -8,7 +8,9 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"os/user"
+	"strings"
 )
 
 // Basename removes directory components and file extensions.
@@ -73,6 +75,15 @@ func IsAdmin() bool {
 	}
 }
 
+// ReloadDNS reloads the dnsmasq configuration
+func ReloadDNS(d string) (string, error) {
+	cmd := exec.Command("/bin/bash")
+	cmd.Stdin = strings.NewReader(d)
+	stdout, err := cmd.Output()
+
+	return string(stdout), err
+}
+
 // WriteFile writes blacklist data to storage
 func WriteFile(fname string, data []byte) error {
 	f, err := os.OpenFile(fname, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
@@ -100,7 +111,7 @@ func WriteFile(fname string, data []byte) error {
 			break
 		}
 
-		if _, err := w.Write(buf[:n]); err != nil {
+		if _, err = w.Write(buf[:n]); err != nil {
 			return err
 		}
 
@@ -108,11 +119,6 @@ func WriteFile(fname string, data []byte) error {
 			return err
 		}
 	}
-	// defer f.Close()
 
-	// b, err := f.Write(data)
-	// if err != nil {
-	// 	return fmt.Errorf("Unable to write to file, bytes written: %v, error: %v", b, err)
-	// }
 	return err
 }

@@ -51,7 +51,10 @@ func TestGetBlacklists(t *testing.T) {
 		areas := data.GetURLs(*b)
 		ex := data.GetExcludes(*b)
 		dex := make(config.Dict)
-		getBlacklists(timeout, dex, ex, areas)
+
+		for _, k := range []string{global.Area.Domains, global.Area.Hosts} {
+			getBlacklists(timeout, dex, ex, areas[k])
+		}
 
 		var (
 			blacklist *config.Blacklist
@@ -77,20 +80,20 @@ func TestGetBlacklists(t *testing.T) {
 			t.Errorf("check.Blacklistings returned an error: %v ", err)
 		}
 
-		if err = live.Exclusions(a); err.Error() != "" {
+		if err = live.Exclusions(a); err != nil {
 			t.Errorf("Exclusions failure: %v", err)
 		}
 
-		if err = live.ExcludedDomains(a); err.Error() != "" {
-			t.Errorf("Excluded domains failure: %#v", err)
+		if err = live.ExcludedDomains(a); err != nil {
+			t.Errorf("Excluded domains failure: %v", err)
 		}
 
 		a.Fname = global.DmsqDir + `/*` + global.Fext
-		if err = live.ConfFiles(a); err != nil {
+		if _, err = live.ConfFiles(a); err != nil {
 			t.Errorf("Problems with dnsmasq configuration files: %v", err)
 		}
 
-		if err = live.ConfIP(a); err.Error() != "" {
+		if err = live.ConfIP(a); err != nil {
 			t.Errorf("Problems with IP: %v", err)
 		}
 	}

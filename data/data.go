@@ -55,14 +55,14 @@ func IsDisabled(c c.Blacklist, root string) bool {
 }
 
 // GetExcludes returns a map[string]int of excludes
-func GetExcludes(b c.Blacklist) (e c.Dict) {
-	e = make(c.Dict)
+func GetExcludes(b c.Blacklist) (ex c.Dict) {
+	ex = make(c.Dict)
 	for pkey := range b {
 		for _, skey := range b[pkey].Exclude {
-			e[skey] = 0
+			ex[skey] = 0
 		}
 	}
-	return e
+	return ex
 }
 
 // GetHTTP creates http requests to download data
@@ -113,7 +113,7 @@ func GetList(cf *c.Src) (b []byte) {
 			pkeys = append(pkeys, pkey)
 		}
 		sort.Sort(c.Keys(pkeys))
-		return
+		return pkeys
 	}
 
 	for _, key := range sortKeys() {
@@ -124,7 +124,7 @@ func GetList(cf *c.Src) (b []byte) {
 	for _, line := range lines {
 		b = append(b, line...)
 	}
-	return
+	return b
 }
 
 // AreaURLs is a map of c.Src
@@ -132,13 +132,12 @@ type AreaURLs map[string][]*c.Src
 
 // GetURLs returns an array of config.Src structs with active urls
 func GetURLs(b c.Blacklist) (a AreaURLs) {
-	inc := make(c.Dict)
 	a = make(AreaURLs)
 
 	for pkey := range b {
 		var urls []*c.Src
 		if pkey != g.Area.Root {
-			inc = GetIncludes(b[pkey])
+			inc := GetIncludes(b[pkey])
 
 			b[pkey].Source["pre"] = &c.Src{List: inc, Name: "pre-configured", Type: pkey}
 			if b[pkey].IP == "" {
@@ -151,7 +150,7 @@ func GetURLs(b c.Blacklist) (a AreaURLs) {
 			a[pkey] = urls
 		}
 	}
-	return
+	return a
 }
 
 // ListFiles returns a list of blacklist files
@@ -166,7 +165,7 @@ func ListFiles(dir string) (files []string) {
 			files = append(files, dir+"/"+f.Name())
 		}
 	}
-	return
+	return files
 }
 
 // Process extracts hosts/domains from downloaded raw content
@@ -177,48 +176,49 @@ func Process(s *c.Src, dex c.Dict, ex c.Dict, b *bufio.Scanner) *c.Src {
 NEXT:
 	for b.Scan() {
 		line := strings.ToLower(b.Text())
-		// if s.Name == "pre-configured" {
-		// 	fmt.Println("Inside Scan:", s.Name, line)
-		// }
+
 		switch {
 		case strings.HasPrefix(line, "#"), strings.HasPrefix(line, "//"):
 			continue NEXT
+
 		case strings.HasPrefix(line, s.Prfx):
 			var ok bool // We have to declare ok here, to fix var line shadow bug
 			line, ok = StripPrefixAndSuffix(line, s.Prfx, rx)
 			if ok {
 				fqdns := rx.FQDN.FindAllString(line, -1)
-				// FQDN:
+
+			FQDN:
 				for _, fqdn := range fqdns {
 					isDEX := dex.SubKeyExists(fqdn)
 					isEX := ex.KeyExists(fqdn)
 					isList := s.List.KeyExists(fqdn)
-					switch {
-					case s.Name == "pre-configured":
-						switch {
-						case s.Type == g.Area.Domains:
-							// if !isDEX {
-							dex[fqdn] = 0
-							ex[fqdn] = 0
-							s.List[fqdn] = 0
-							// }
-						default:
-							ex[fqdn] = 0
-							s.List[fqdn] = 0
-						}
 
-					case isDEX, isEX:
+					switch {
+					case isDEX:
+						continue FQDN
+
+					case isEX:
 						ex[fqdn]++
 
 					case isList:
 						s.List[fqdn]++
 
-					default:
+					case s.Name == "pre-configured":
+						switch {
+						case s.Type == g.Area.Domains:
+							dex[fqdn] = 0
+							ex[fqdn] = 0
+							s.List[fqdn] = 0
+
+						default:
+							ex[fqdn] = 0
+							s.List[fqdn] = 0
+						}
+
+					case !isEX:
 						ex[fqdn] = 0
 						s.List[fqdn] = 0
 
-						// case len(fqdns) > 1:
-						// 	continue FQDN
 					}
 				}
 			}
@@ -227,12 +227,6 @@ NEXT:
 		}
 	}
 
-	// if _, ok := s.List["localhost"]; ok {
-	// 	delete(s.List, "localhost")
-	// }
-	// if s.Name == "pre-configured" {
-	// 	fmt.Println("Process return:", s)
-	// }
 	return s
 }
 
@@ -246,11 +240,11 @@ type purgeFileError struct {
 type purgeErrors []*purgeFileError
 
 // String returns a purgeErrors result string
-func (p purgeErrors) String() (result string) {
+func (p purgeErrors) String() (r string) {
 	for _, e := range p {
-		result += fmt.Sprintf("Error removing: %v: %v\n", e.file, e.err)
+		r += fmt.Sprintf("Error removing: %v: %v\n", e.file, e.err)
 	}
-	return
+	return r
 }
 
 // PurgeFiles removes any files that are no longer configured
@@ -279,25 +273,27 @@ func PurgeFiles(a AreaURLs, d string) error {
 }
 
 // StripPrefixAndSuffix strips prefix and StripPrefixAndSuffix
-func StripPrefixAndSuffix(l string, p string, rx *regx.RGX) (string, bool) {
+func StripPrefixAndSuffix(s string, p string, rx *regx.RGX) (string, bool) {
 	var b bool
+
 	switch {
 	case p == "http":
-		if !rx.HTTP.MatchString(l) {
-			return l, b
+		if !rx.HTTP.MatchString(s) {
+			return s, b
 		}
-		l = rx.HTTP.FindStringSubmatch(l)[1]
+		s = rx.HTTP.FindStringSubmatch(s)[1]
 		b = true
 
 	case p == "":
 		b = true
 
-	case strings.HasPrefix(l, p):
+	case strings.HasPrefix(s, p):
 		b = true
-		l = strings.TrimPrefix(l, p)
+		s = strings.TrimPrefix(s, p)
 	}
 
-	l = rx.SUFX.ReplaceAllString(l, "")
-	l = strings.TrimSpace(l)
-	return l, b
+	s = rx.SUFX.ReplaceAllString(s, "")
+	s = strings.TrimSpace(s)
+	s = strings.Replace(s, `"`, "", -1)
+	return s, b
 }

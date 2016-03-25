@@ -6,6 +6,7 @@
 package check
 
 import (
+	"bufio"
 	"fmt"
 	"net"
 	"os/exec"
@@ -34,15 +35,20 @@ type Cfg struct {
 var rx = regx.Regex
 
 // Blacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
-func (c *Cfg) Blacklistings(a *Args) (err error) {
-	var got []string
-	l := *c.Blacklist
+func (c *Cfg) Blacklistings(a *Args) error {
+	var (
+		b   *bufio.Scanner
+		err error
+		got []string
+		l   = *c.Blacklist
+	)
+
 	for k := range l {
 		if len(l[k].Include) > 0 {
 
 			f := fmt.Sprintf(a.Fname, k)
 
-			b, err := utils.GetFile(f)
+			b, err = utils.GetFile(f)
 			if err != nil {
 				return err
 			}
@@ -60,13 +66,15 @@ func (c *Cfg) Blacklistings(a *Args) (err error) {
 			}
 		}
 	}
-	return
+	return err
 }
 
 // Exclusions checks that configured exclusions are excluded from dnsmasq conf files
 func (c *Cfg) Exclusions(a *Args) error {
 	var (
+		b   *bufio.Scanner
 		e   string
+		err error
 		got []string
 	)
 	l := *c.Blacklist
@@ -75,7 +83,7 @@ func (c *Cfg) Exclusions(a *Args) error {
 			s := *l[k].Source[sk]
 			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
 
-			b, err := utils.GetFile(f)
+			b, err = utils.GetFile(f)
 			if err != nil {
 				err = fmt.Errorf("Error getting file: %v, error: %v\n", f, err)
 				return err
@@ -94,13 +102,19 @@ func (c *Cfg) Exclusions(a *Args) error {
 		}
 	}
 
-	return fmt.Errorf(e)
+	if e != "" {
+		return fmt.Errorf(e)
+	}
+
+	return nil
 }
 
 // ExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
 func (c *Cfg) ExcludedDomains(a *Args) error {
 	var (
+		b         *bufio.Scanner
 		e         string
+		err       error
 		got, want []string
 		l         = *c.Blacklist
 	)
@@ -115,7 +129,7 @@ func (c *Cfg) ExcludedDomains(a *Args) error {
 			}
 		}
 		sort.Sort(config.Keys(pkeys))
-		return
+		return pkeys
 	}
 
 	for _, k := range sortKeys() {
@@ -125,7 +139,7 @@ func (c *Cfg) ExcludedDomains(a *Args) error {
 
 			switch s.Type {
 			case global.Area.Domains:
-				b, err := utils.GetFile(f)
+				b, err = utils.GetFile(f)
 				if err != nil {
 					return fmt.Errorf("Error getting file: %v, error: %v\n", f, err)
 				}
@@ -140,7 +154,7 @@ func (c *Cfg) ExcludedDomains(a *Args) error {
 				}
 
 			default:
-				b, err := utils.GetFile(f)
+				b, err = utils.GetFile(f)
 				if err != nil {
 					return fmt.Errorf("Error getting file: %v, error: %v\n", f, err)
 				}
@@ -156,19 +170,25 @@ func (c *Cfg) ExcludedDomains(a *Args) error {
 		}
 	}
 
-	return fmt.Errorf(e)
+	if e != "" {
+		return fmt.Errorf(e)
+	}
+
+	return nil
 }
 
 // ConfFiles checks that all blacklist sources have generated dnsmasq conf files and there aren't any orphans
-func (c *Cfg) ConfFiles(a *Args) (err error) {
+func (c *Cfg) ConfFiles(a *Args) (bool, error) {
 	var (
+		b         bool
+		err       error
 		got, want []string
 		l         = *c.Blacklist
 	)
 
 	got, err = filepath.Glob(a.Fname)
 	if err != nil {
-		return
+		return b, err
 	}
 
 	for k := range l {
@@ -180,17 +200,18 @@ func (c *Cfg) ConfFiles(a *Args) (err error) {
 
 	diff := data.DiffArray(want, got)
 	if len(diff) != 0 {
-		err = fmt.Errorf("Issues with files in %v/\n\tGot: %v\n\tWant: %v\nDiff: %v\n", global.DmsqDir, got, want, diff)
-		return
+		return b, fmt.Errorf("Issues with files in %v/\n\tGot: %v\n\tWant: %v\nDiff: %v\n", global.DmsqDir, got, want, diff)
 	}
 
-	return err
+	return true, err
 }
 
 // ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
 func (c *Cfg) ConfIP(a *Args) error {
 	var (
+		b        *bufio.Scanner
 		e        string
+		err      error
 		got, IPs []string
 		l        = *c.Blacklist
 	)
@@ -199,7 +220,7 @@ func (c *Cfg) ConfIP(a *Args) error {
 		for sk := range l[k].Source {
 			s := *l[k].Source[sk]
 			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
-			b, err := utils.GetFile(f)
+			b, err = utils.GetFile(f)
 			if err != nil {
 				fmt.Println("Error in Getfile")
 				return err
@@ -215,7 +236,11 @@ func (c *Cfg) ConfIP(a *Args) error {
 		}
 	}
 
-	return fmt.Errorf(e)
+	if e != "" {
+		return fmt.Errorf(e)
+	}
+
+	return nil
 }
 
 // ConfTemplates checks for existence/non-existence (governed by installation state) of the blacklist configuration templates
@@ -233,7 +258,7 @@ func ConfTemplates(a *Args) (b bool, err error) {
 	want = append(want, a.Data...)
 
 	if b = utils.CmpHash(got, want); !b {
-		fmt.Printf("Got: %v\nWant:%v\n", string(got[:]), a.Data)
+		fmt.Printf("Got: %v\nWant:%v\n", string(got), a.Data)
 	}
 
 	return b, err
@@ -247,7 +272,7 @@ func ExtractHost(s []string) (r []string) {
 			r = append(r, d[1])
 		}
 	}
-	return
+	return r
 }
 
 // ExtractIP returns a map of unique IPs in []string of dnsmasq formatted entries
@@ -259,13 +284,15 @@ func ExtractIP(s []string) (r []string) {
 			r = append(r, k[1])
 		}
 	}
-	return
+	return r
 }
 
 // IPRedirection checks that each domain or host dnsmasq conf entry is redirected to the configured blackhole IP
 func (c *Cfg) IPRedirection(a *Args) error {
 	var (
+		b         *bufio.Scanner
 		e         string
+		err       error
 		l         = *c.Blacklist
 		rIP       = l[global.Area.Root].IP
 		got, lIPs []string
@@ -276,7 +303,7 @@ func (c *Cfg) IPRedirection(a *Args) error {
 			s := *l[k].Source[sk]
 			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
 
-			b, err := utils.GetFile(f)
+			b, err = utils.GetFile(f)
 			if err != nil {
 				return err
 			}
@@ -302,11 +329,21 @@ func (c *Cfg) IPRedirection(a *Args) error {
 		}
 	}
 
-	return fmt.Errorf(e)
+	if e != "" {
+		return fmt.Errorf(e)
+	}
+
+	return nil
 }
 
 // IsDisabled checks that blacklist is actually disabled when the flag is true
-func (c *Cfg) IsDisabled(a *Args) (err error) {
-
-	return
-}
+// func (c *Cfg) IsDisabled(a *Args) error {
+// 	var (
+// 		b   bool
+// 		e   string
+// 		err error
+// 		l   = *c.Blacklist
+// 	)
+//
+// 	return fmt.Errorf(e)
+// }

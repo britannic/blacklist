@@ -120,7 +120,15 @@ func GetSubdomains(s string) (d Dict) {
 // Dict is a common string key map of ints
 type Dict map[string]int
 
-// SubKeyExists returns true if part of the key matches
+// KeyExists returns true if the key exists
+func (d Dict) KeyExists(s string) bool {
+	if _, exist := d[s]; exist {
+		return true
+	}
+	return false
+}
+
+// SubKeyExists returns true if part of all of the key matches
 func (d Dict) SubKeyExists(s string) bool {
 	keys := GetSubdomains(s)
 	for k := range keys {
@@ -128,17 +136,11 @@ func (d Dict) SubKeyExists(s string) bool {
 			return true
 		}
 	}
+
 	if d.KeyExists(s) {
 		return true
 	}
-	return false
-}
 
-// KeyExists returns true if the key exists
-func (d Dict) KeyExists(s string) bool {
-	if _, exist := d[s]; exist {
-		return true
-	}
 	return false
 }
 
@@ -234,7 +236,7 @@ func Load(action string, level string) (r string, err error) {
 	}
 
 	r = string(stdout)
-	return
+	return r, err
 }
 
 // Insession returns true if VyOS/EdgeOS configuration is in session

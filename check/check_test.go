@@ -48,7 +48,7 @@ func TestExclusions(t *testing.T) {
 	}
 
 	err := live.Exclusions(a)
-	if err.Error() != "" {
+	if err != nil {
 		t.Errorf("Exclusions failure: %v", err)
 	}
 }
@@ -60,7 +60,7 @@ func TestExcludedDomains(t *testing.T) {
 		Dir: dmsqdir,
 	}
 
-	if err := live.ExcludedDomains(a); err.Error() != "" {
+	if err := live.ExcludedDomains(a); err != nil {
 		t.Errorf("Excluded domains failure: %#v", err)
 	}
 }
@@ -71,7 +71,7 @@ func TestConfFiles(t *testing.T) {
 		Fname: dmsqdir + `/*` + global.Fext,
 	}
 
-	if err := live.ConfFiles(a); err != nil {
+	if b, err := live.ConfFiles(a); !b {
 		t.Errorf("Problems with dnsmasq configuration files: %v", err)
 	}
 }
@@ -81,7 +81,7 @@ func TestConfIP(t *testing.T) {
 		Dir: dmsqdir,
 	}
 
-	if err := live.ConfIP(a); err.Error() != "" {
+	if err := live.ConfIP(a); err != nil {
 		t.Errorf("Problems with IP: %v", err)
 	}
 }
@@ -100,6 +100,14 @@ func TestConfTemplates(t *testing.T) {
 		t.Error("Configuration template nodes do not match")
 	}
 }
+
+// func TestIsDisabled(t *testing.T) {
+// 	a := &Args{
+// 		Dir:   dmsqdir,
+// 		Fname: dmsqdir + `/*` + global.Fext,
+// 	}
+//
+// }
 
 // func TestIPRedirection(t *testing.T) {
 // 	a := &check.Args{

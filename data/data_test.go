@@ -163,7 +163,7 @@ func TestProcess(t *testing.T) {
 		for staticdata.Scan() {
 			wdata += staticdata.Text() + "\n"
 		}
-		// wdata = utils.GetByteArray(staticdata, wdata)
+
 		gdata := string(data.GetList(data.Process(s, ex, dex, testdata))[:])
 
 		if !utils.CmpHash([]byte(wdata), []byte(gdata)) {

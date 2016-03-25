@@ -14,6 +14,7 @@ import (
 	c "github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	g "github.com/britannic/blacklist/global"
+	"github.com/britannic/blacklist/utils"
 )
 
 var (
@@ -24,9 +25,11 @@ var (
 )
 
 func main() {
+	// defer profile.Start(profile.CPUProfile, profile.MemProfile).Stop()
 	runtime.GOMAXPROCS(cores)
 
 	var (
+		dnsmasq = g.DNSRestart
 		poll    = time.Second * 2 // poll
 		timeout = time.Minute * 30
 	)
@@ -67,22 +70,21 @@ func main() {
 	blist, err := func() (b *c.Blacklist, err error) {
 		switch g.WhatOS {
 		case g.TestOS:
-			{
-				b, err = c.Get(c.Testdata, g.Area.Root)
-				if err != nil {
-					return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
-				}
-				return
+			dnsmasq = "echo -n dnsmasq not implemented."
+			b, err = c.Get(c.Testdata, g.Area.Root)
+			if err != nil {
+				return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
 			}
+			return b, err
+
 		default:
-			{
-				cfg, err := c.Load("showCfg", "service dns forwarding")
-				if err != nil {
-					return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
-				}
-				b, err = c.Get(cfg, g.Area.Root)
-				return b, err
+
+			cfg, err := c.Load("showCfg", "service dns forwarding")
+			if err != nil {
+				return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
 			}
+			b, err = c.Get(cfg, g.Area.Root)
+			return b, err
 		}
 	}()
 	if err != nil {
@@ -90,14 +92,25 @@ func main() {
 	}
 
 	if !data.IsDisabled(*blist, g.Area.Root) {
+
 		areas := data.GetURLs(*blist)
 
 		if err = data.PurgeFiles(areas, g.DmsqDir); err != nil {
-			log.Error("Error removing unused conf files", "error", err)
+			log.Error("Error removing unused conf files: ", err)
 		}
 
 		ex := data.GetExcludes(*blist)
 		dex := make(c.Dict)
-		getBlacklists(timeout, dex, ex, areas)
+
+		for _, k := range []string{g.Area.Domains, g.Area.Hosts} {
+			if err = getBlacklists(timeout, dex, ex, areas[k]); err != nil {
+				fmt.Printf("Error: %#v", err)
+				log.Error("Error getting blacklist: ", err)
+			}
+		}
+	}
+
+	if s, err := utils.ReloadDNS(dnsmasq); err != nil {
+		log.Error(fmt.Sprintf("Error reloading dnsmasq configuration: %v", s), "error", err)
 	}
 }
