@@ -6,6 +6,7 @@
 package global
 
 import (
+	"log"
 	"os"
 	"runtime"
 
@@ -20,7 +21,6 @@ type Areas struct {
 }
 
 const (
-	cwd = "/Users/Neil/go/src/github.com/britannic/blacklist"
 
 	// DNSRestart defines the dnsmasq restart command
 	DNSRestart = "service dnsmasq restart"
@@ -39,6 +39,8 @@ var (
 		Hosts:   "hosts",
 		Root:    "blacklist",
 	}
+
+	cwd string
 
 	// Dbg sets the Debug flag
 	Dbg = false
@@ -63,10 +65,10 @@ func init() {
 	WhatOS = runtime.GOOS
 	switch WhatOS {
 	case TestOS:
-		// cwd, err := os.Getwd()
-		// if err != nil {
-		// 	log.Fatal("Cannot determine current directory - exiting")
-		// }
+		cwd, err := os.Getwd()
+		if err != nil {
+			log.Fatal("Cannot determine current directory - exiting")
+		}
 		DmsqDir = cwd + "/testdata"
 		Logfile = cwd + "/testdata/blacklist.log"
 	default:
