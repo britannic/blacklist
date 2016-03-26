@@ -1,9 +1,16 @@
 language: go
 sudo: false
-
+before_install:
+- go get github.com/mattn/goveralls
+- go get golang.org/x/tools/cmd/cover
 before_script:
-  - go vet ./...
+- go vet ./...
 os:
-  - osx
+- osx
 go:
-  - tip
+- tip
+script:
+- $GOBIN/goveralls -service=travis-ci
+env:
+  global:
+    secure: G3UiGqYPq7glBPwB24G5tadI8dpkKt3m2xa7aH7weFVWrRbqRc1YgerRNYulDXuOjHyR3IUc4QpLUKrVm+11pm2m03+xmSQOc4PtosFEi9f1hpD4ei4n5aODQvGPPbnjMaef3FOtsiG3vMPQhm6Od1gWulqnBPVesY0L2zzKdVem/y5HE97XoEb7pHAWk5bNTLR8yhHvHVqI7L2nUq5SwgNg+c3QsSZ0E4ppYPiD13fifO7kUGBsZqOeeI4pKP/KxMoFkUI0iTBkewxnj0Ug3kMhvEfnf9pUG3ZAeXDLEgHwY1YjGBL6qaZZ3mvT1p2fA+K9l0X9POmGiIWymun4Ralw6aZTMsIzFk35+cajCWrCzdJo/UIm1kzuJVAhkMrNdGzLMKAEhpLf/HaavDXm/tA6hQEhj+miQzs8AZlJsIn9QY3LawtBdWDT30Rdo1mw+n5bLmfH/HApfu/G1Jc7bDhi+IIWJF1VFCwmnRh2dsHyPp8ruMfPSSUdlgsXk/L5lz5s08U3+2BNFc7RGxgquMh/yaY7u5lcJegB/lAHTfyZGzTDdJAIOTO0IVf8pfQeJyGwIwSNNELxz/XhczCSQV+5J5SErbnpaK4S56zTnN2bhfmOgnO7vEbTZsUpmjMOFhTc4GKjzCIXCCZ3CxcJjYS+LkBmhQ572SSWfbM+Z5k=
