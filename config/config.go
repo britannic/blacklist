@@ -184,19 +184,12 @@ type Src struct {
 }
 
 // ToBool converts a string ("true" or "false") to it's boolean equivalent
-func ToBool(s string) (b bool, err error) {
-	s = strings.ToLower(s)
-	if len(s) == 0 {
-		err = errors.New("ERROR: variable empty, cannot convert to boolean")
-		return b, err
+func ToBool(s string) bool {
+
+	if strings.ToLower(s) == "true" {
+		return true
 	}
-	switch s {
-	case "false":
-		b = false
-	case "true":
-		b = true
-	}
-	return
+	return false
 }
 
 // SHcmd returns the appropriate command for non-tty or tty context
@@ -299,7 +292,7 @@ LINE:
 			}
 
 		case rx.DSBL.MatchString(line):
-			cfgtree[tnode].Disable, err = ToBool(r.Get("dsbl", line)[1])
+			cfgtree[tnode].Disable = ToBool(r.Get("dsbl", line)[1])
 
 		case rx.NAME.MatchString(line):
 			name := r.Get("name", line)

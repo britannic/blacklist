@@ -18,7 +18,7 @@ DiffArray returns the delta of two arrays
 
 ## func GetExcludes
 ``` go
-func GetExcludes(b c.Blacklist) (e c.Dict)
+func GetExcludes(b c.Blacklist) (ex c.Dict)
 ```
 GetExcludes returns a map[string]int of excludes
 
@@ -74,7 +74,7 @@ PurgeFiles removes any files that are no longer configured
 
 ## func StripPrefixAndSuffix
 ``` go
-func StripPrefixAndSuffix(l string, p string, rx *regx.RGX) (string, bool)
+func StripPrefixAndSuffix(s string, p string, rx *regx.RGX) (string, bool)
 ```
 StripPrefixAndSuffix strips prefix and StripPrefixAndSuffix
 

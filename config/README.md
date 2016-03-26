@@ -265,7 +265,7 @@ SHcmd returns the appropriate command for non-tty or tty context
 
 ## func ToBool
 ``` go
-func ToBool(s string) (b bool, err error)
+func ToBool(s string) bool
 ```
 ToBool converts a string ("true" or "false") to it's boolean equivalent
 
@@ -353,7 +353,7 @@ KeyExists returns true if the key exists
 ``` go
 func (d Dict) SubKeyExists(s string) bool
 ```
-SubKeyExists returns true if part of the key matches
+SubKeyExists returns true if part of all of the key matches
 
 
 

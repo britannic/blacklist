@@ -70,7 +70,7 @@ func main() {
 	blist, err := func() (b *c.Blacklist, err error) {
 		switch g.WhatOS {
 		case g.TestOS:
-			dnsmasq = "echo -n dnsmasq not implemented."
+			dnsmasq = "echo -n dnsmasq not implemented on " + g.WhatOS
 			b, err = c.Get(c.Testdata, g.Area.Root)
 			if err != nil {
 				return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
@@ -103,14 +103,14 @@ func main() {
 		dex := make(c.Dict)
 
 		for _, k := range []string{g.Area.Domains, g.Area.Hosts} {
-			if err = getBlacklists(timeout, dex, ex, areas[k]); err != nil {
-				fmt.Printf("Error: %#v", err)
-				log.Error("Error getting blacklist: ", err)
-			}
+			getBlacklists(timeout, dex, ex, areas[k])
 		}
 	}
 
-	if s, err := utils.ReloadDNS(dnsmasq); err != nil {
-		log.Error(fmt.Sprintf("Error reloading dnsmasq configuration: %v", s), "error", err)
+	log.Info("Reloading dnsmasq configuration...")
+	s, err := utils.ReloadDNS(dnsmasq)
+	if err != nil {
+		log.Errorf("Error reloading dnsmasq configuration: %v", err)
 	}
+	log.Infof("dnsmasq command output: %v", s)
 }

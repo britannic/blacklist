@@ -6,7 +6,7 @@ community.ubnt.com
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)
 
 [![GitHub release](https://img.shields.io/github/release/britannic/blacklist.svg)](https://github.com/britannic/blacklist)
 
@@ -20,7 +20,7 @@ NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDO
 
 Overview
 
-EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at (https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
+EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at [Ubiquiti Community](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
 
 Features
 

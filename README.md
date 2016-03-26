@@ -8,11 +8,11 @@ community.ubnt.com
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)
 
 [![GitHub release](https://img.shields.io/github/release/britannic/blacklist.svg)](https://github.com/britannic/blacklist)
 
-[![GitHub version](https://badge.fury.io/gh/britannic%2FBlacklist.svg)](https://badge.fury.io/gh/britannic%2FBlacklist)
+[![GitHub version](https://badge.fury.io/gh/britannic%2Fblacklist.svg)](https://badge.fury.io/gh/britannic%2Fblacklist)
 
 [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)
 
@@ -21,7 +21,7 @@ NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDO
 [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)
 
 ### Overview
-EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at (<a href="https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX">https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX</a>)
+EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at [Ubiquiti Community](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
 
 ### Features
 Generates configuration files used directly by dnsmasq to redirect dns lookups

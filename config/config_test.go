@@ -277,9 +277,9 @@ func TestToBool(t *testing.T) {
 	tests := map[string]string{"false": "false", "true": "true", "fail": ""}
 
 	for k := range tests {
-		b, err := config.ToBool(tests[k])
-		if k == "fail" && err == nil {
-			t.Errorf("ToBool(%q) failed with %v\n", tests[k], err)
+		b := config.ToBool(tests[k])
+		if k == "fail" && b {
+			t.Errorf("ToBool(%q) failed\n", tests[k])
 		}
 		switch {
 		case tests[k] == "true" && !b:

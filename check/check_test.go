@@ -47,9 +47,8 @@ func TestExclusions(t *testing.T) {
 		Dir: dmsqdir,
 	}
 
-	err := live.Exclusions(a)
-	if err != nil {
-		t.Errorf("Exclusions failure: %v", err)
+	if !live.Exclusions(a) {
+		t.Error("Exclusions failure.")
 	}
 }
 
@@ -60,8 +59,8 @@ func TestExcludedDomains(t *testing.T) {
 		Dir: dmsqdir,
 	}
 
-	if err := live.ExcludedDomains(a); err != nil {
-		t.Errorf("Excluded domains failure: %#v", err)
+	if !live.ExcludedDomains(a) {
+		t.Error("Excluded domains failure.")
 	}
 }
 
@@ -71,8 +70,8 @@ func TestConfFiles(t *testing.T) {
 		Fname: dmsqdir + `/*` + global.Fext,
 	}
 
-	if b, err := live.ConfFiles(a); !b {
-		t.Errorf("Problems with dnsmasq configuration files: %v", err)
+	if !live.ConfFiles(a) {
+		t.Error("Problems with dnsmasq configuration files.")
 	}
 }
 
@@ -81,8 +80,8 @@ func TestConfIP(t *testing.T) {
 		Dir: dmsqdir,
 	}
 
-	if err := live.ConfIP(a); err != nil {
-		t.Errorf("Problems with IP: %v", err)
+	if !live.ConfIP(a) {
+		t.Errorf("DNS redirect IP configuration failed")
 	}
 }
 
@@ -92,11 +91,7 @@ func TestConfTemplates(t *testing.T) {
 		Dir:  `../payload/blacklist`,
 	}
 
-	b, err := check.ConfTemplates(a)
-	switch {
-	case err != nil:
-		t.Errorf("ConfTemplates returned an error: %v", err)
-	case !b:
+	if !check.ConfTemplates(a) {
 		t.Error("Configuration template nodes do not match")
 	}
 }

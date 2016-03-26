@@ -80,20 +80,20 @@ func TestGetBlacklists(t *testing.T) {
 			t.Errorf("check.Blacklistings returned an error: %v ", err)
 		}
 
-		if err = live.Exclusions(a); err != nil {
-			t.Errorf("Exclusions failure: %v", err)
+		if !live.Exclusions(a) {
+			t.Error("Exclusions failure")
 		}
 
-		if err = live.ExcludedDomains(a); err != nil {
-			t.Errorf("Excluded domains failure: %v", err)
+		if !live.ExcludedDomains(a) {
+			t.Error("Excluded domains failure")
 		}
 
 		a.Fname = global.DmsqDir + `/*` + global.Fext
-		if _, err = live.ConfFiles(a); err != nil {
-			t.Errorf("Problems with dnsmasq configuration files: %v", err)
+		if !live.ConfFiles(a) {
+			t.Error("Problems with dnsmasq configuration files")
 		}
 
-		if err = live.ConfIP(a); err != nil {
+		if !live.ConfIP(a) {
 			t.Errorf("Problems with IP: %v", err)
 		}
 	}

@@ -78,10 +78,16 @@ func IsAdmin() bool {
 // ReloadDNS reloads the dnsmasq configuration
 func ReloadDNS(d string) (string, error) {
 	cmd := exec.Command("/bin/bash")
-	cmd.Stdin = strings.NewReader(d)
-	stdout, err := cmd.Output()
+	cmd.Stdin = strings.NewReader(d + "")
+	// stdout, err := cmd.StdoutPipe()
+	// stderr, err := cmd.StderrPipe()
+	// cmd.Stdout = os.Stdout
+	// cmd.Stderr = os.Stderr
+	// cmd.Run()
 
-	return string(stdout), err
+	out, err := cmd.CombinedOutput()
+
+	return string(out), err
 }
 
 // WriteFile writes blacklist data to storage

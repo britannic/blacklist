@@ -14,6 +14,7 @@ import (
 	"sort"
 	"strings"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	"github.com/britannic/blacklist/global"
@@ -48,8 +49,7 @@ func (c *Cfg) Blacklistings(a *Args) error {
 
 			f := fmt.Sprintf(a.Fname, k)
 
-			b, err = utils.GetFile(f)
-			if err != nil {
+			if b, err = utils.GetFile(f); err != nil {
 				return err
 			}
 
@@ -70,10 +70,9 @@ func (c *Cfg) Blacklistings(a *Args) error {
 }
 
 // Exclusions checks that configured exclusions are excluded from dnsmasq conf files
-func (c *Cfg) Exclusions(a *Args) error {
+func (c *Cfg) Exclusions(a *Args) (pass bool) {
 	var (
 		b   *bufio.Scanner
-		e   string
 		err error
 		got []string
 	)
@@ -83,10 +82,9 @@ func (c *Cfg) Exclusions(a *Args) error {
 			s := *l[k].Source[sk]
 			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
 
-			b, err = utils.GetFile(f)
-			if err != nil {
-				err = fmt.Errorf("Error getting file: %v, error: %v\n", f, err)
-				return err
+			if b, err = utils.GetFile(f); err != nil {
+				log.Errorf("Error getting file: %v, error: %v\n", f, err)
+				return pass
 			}
 
 			for b.Scan() {
@@ -94,26 +92,24 @@ func (c *Cfg) Exclusions(a *Args) error {
 			}
 
 			got = ExtractHost(got)
+			pass = true
+
 			for _, ex := range got {
 				if _, ok := a.Ex[ex]; ok {
-					e += fmt.Sprintf("Found excluded entry %v, in %v\n", ex, f)
+					pass = false
+					log.Errorf("Found excluded entry %v, in %v\n", ex, f)
 				}
 			}
 		}
 	}
 
-	if e != "" {
-		return fmt.Errorf(e)
-	}
-
-	return nil
+	return pass
 }
 
 // ExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
-func (c *Cfg) ExcludedDomains(a *Args) error {
+func (c *Cfg) ExcludedDomains(a *Args) (pass bool) {
 	var (
 		b         *bufio.Scanner
-		e         string
 		err       error
 		got, want []string
 		l         = *c.Blacklist
@@ -139,9 +135,9 @@ func (c *Cfg) ExcludedDomains(a *Args) error {
 
 			switch s.Type {
 			case global.Area.Domains:
-				b, err = utils.GetFile(f)
-				if err != nil {
-					return fmt.Errorf("Error getting file: %v, error: %v\n", f, err)
+				if b, err = utils.GetFile(f); err != nil {
+					log.Errorf("Error getting file: %v, error: %v\n", f, err)
+					return pass
 				}
 
 				for b.Scan() {
@@ -154,41 +150,38 @@ func (c *Cfg) ExcludedDomains(a *Args) error {
 				}
 
 			default:
-				b, err = utils.GetFile(f)
-				if err != nil {
-					return fmt.Errorf("Error getting file: %v, error: %v\n", f, err)
+				if b, err = utils.GetFile(f); err != nil {
+					log.Errorf("Error getting file: %v, error: %v\n", f, err)
+					return pass
 				}
 
 				got = ExtractHost(utils.GetStringArray(b, got))
 			}
 
+			pass = true
 			for _, ex := range got {
 				if _, ok := a.Dex[ex]; ok {
-					e += fmt.Sprintf("Found excluded entry %v, in %v\n", ex, f)
+					pass = false
+					log.Errorf("Found excluded entry %v, in %v\n", ex, f)
 				}
 			}
 		}
 	}
 
-	if e != "" {
-		return fmt.Errorf(e)
-	}
-
-	return nil
+	return pass
 }
 
 // ConfFiles checks that all blacklist sources have generated dnsmasq conf files and there aren't any orphans
-func (c *Cfg) ConfFiles(a *Args) (bool, error) {
+func (c *Cfg) ConfFiles(a *Args) bool {
 	var (
-		b         bool
 		err       error
 		got, want []string
 		l         = *c.Blacklist
 	)
 
-	got, err = filepath.Glob(a.Fname)
-	if err != nil {
-		return b, err
+	if got, err = filepath.Glob(a.Fname); err != nil {
+		log.Error(err)
+		return false
 	}
 
 	for k := range l {
@@ -198,77 +191,78 @@ func (c *Cfg) ConfFiles(a *Args) (bool, error) {
 		}
 	}
 
-	diff := data.DiffArray(want, got)
-	if len(diff) != 0 {
-		return b, fmt.Errorf("Issues with files in %v/\n\tGot: %v\n\tWant: %v\nDiff: %v\n", global.DmsqDir, got, want, diff)
+	if diff := len(data.DiffArray(want, got)); diff != 0 {
+		log.Errorf("Issues with files in %v/\n\tGot: %v\n\tWant: %v\nDiff: %v\n", global.DmsqDir, got, want, diff)
+		return false
 	}
 
-	return true, err
+	return true
 }
 
 // ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
-func (c *Cfg) ConfIP(a *Args) error {
+func (c *Cfg) ConfIP(a *Args) bool {
 	var (
 		b        *bufio.Scanner
-		e        string
 		err      error
 		got, IPs []string
 		l        = *c.Blacklist
+		pass     = true
 	)
 
 	for k := range l {
 		for sk := range l[k].Source {
 			s := *l[k].Source[sk]
 			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
-			b, err = utils.GetFile(f)
-			if err != nil {
-				fmt.Println("Error in Getfile")
-				return err
+			if b, err = utils.GetFile(f); err != nil {
+				log.Errorf("Error returned by Getfile(): %v", err)
+				return false
 			}
 
 			IPs = ExtractIP(utils.GetStringArray(b, got))
 
 			for _, ip := range IPs {
 				if ip != l[global.Area.Root].IP {
-					e += fmt.Sprintf("Found incorrect redirection IP %v, in %v\n", ip, f)
+					log.Errorf("Found incorrect redirection IP %v, in %v\n", ip, f)
+					pass = false
 				}
 			}
 		}
 	}
 
-	if e != "" {
-		return fmt.Errorf(e)
-	}
-
-	return nil
+	return pass
 }
 
 // ConfTemplates checks for existence/non-existence (governed by installation state) of the blacklist configuration templates
-func ConfTemplates(a *Args) (b bool, err error) {
+func ConfTemplates(a *Args) bool {
+	var (
+		err error
+		got []byte
+	)
+
 	cmd := exec.Command("/bin/bash")
 	find := "/usr/bin/find"
 	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v", find, a.Dir))
 
-	got, err := cmd.Output()
-	if err != nil {
-		return b, err
+	if got, err = cmd.Output(); err != nil {
+		log.Error(err)
+		return false
 	}
 
 	var want []byte
 	want = append(want, a.Data...)
 
-	if b = utils.CmpHash(got, want); !b {
+	if !utils.CmpHash(got, want) {
 		fmt.Printf("Got: %v\nWant:%v\n", string(got), a.Data)
+		return false
 	}
 
-	return b, err
+	return true
 }
 
 // ExtractHost returns just the FQDN in a []string
 func ExtractHost(s []string) (r []string) {
 	for _, line := range s {
-		d := rx.HOST.FindStringSubmatch(line)
-		if len(d) > 0 {
+		if d := rx.HOST.FindStringSubmatch(line); len(d) > 0 {
 			r = append(r, d[1])
 		}
 	}
@@ -279,8 +273,7 @@ func ExtractHost(s []string) (r []string) {
 func ExtractIP(s []string) (r []string) {
 
 	for _, line := range s {
-		k := rx.FLIP.FindStringSubmatch(line)
-		if len(k) > 0 {
+		if k := rx.FLIP.FindStringSubmatch(line); len(k) > 0 {
 			r = append(r, k[1])
 		}
 	}
@@ -288,12 +281,12 @@ func ExtractIP(s []string) (r []string) {
 }
 
 // IPRedirection checks that each domain or host dnsmasq conf entry is redirected to the configured blackhole IP
-func (c *Cfg) IPRedirection(a *Args) error {
+func (c *Cfg) IPRedirection(a *Args) bool {
 	var (
 		b         *bufio.Scanner
-		e         string
 		err       error
 		l         = *c.Blacklist
+		pass      = true
 		rIP       = l[global.Area.Root].IP
 		got, lIPs []string
 	)
@@ -303,9 +296,9 @@ func (c *Cfg) IPRedirection(a *Args) error {
 			s := *l[k].Source[sk]
 			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
 
-			b, err = utils.GetFile(f)
-			if err != nil {
-				return err
+			if b, err = utils.GetFile(f); err != nil {
+				log.Error(err)
+				return false
 			}
 			got = ExtractHost(utils.GetStringArray(b, got))
 
@@ -314,14 +307,18 @@ func (c *Cfg) IPRedirection(a *Args) error {
 				if s.Type == global.Area.Domains {
 					host = "www." + host
 				}
+
 				lIPs, err = net.LookupHost(host)
+
 				switch {
 				case err != nil:
 					continue HOST
+
 				default:
 					for _, ip := range lIPs {
 						if ip != rIP {
-							e += fmt.Sprintf("Host %v found in %v, resolves to %v - should be %v\n", host, f, ip, rIP)
+							log.Errorf("Host %v found in %v, resolves to %v - should be %v\n", host, f, ip, rIP)
+							pass = false
 						}
 					}
 				}
@@ -329,11 +326,7 @@ func (c *Cfg) IPRedirection(a *Args) error {
 		}
 	}
 
-	if e != "" {
-		return fmt.Errorf(e)
-	}
-
-	return nil
+	return pass
 }
 
 // IsDisabled checks that blacklist is actually disabled when the flag is true

@@ -7,6 +7,20 @@ Package global sets project scoped variables and constants
 
 
 
+## Constants
+``` go
+const (
+
+    // DNSRestart defines the dnsmasq restart command
+    DNSRestart = "service dnsmasq restart"
+
+    // Fext defines the blacklist filename extension
+    Fext = ".blacklist.conf"
+
+    // TestOS sets a global value for the test environment
+    TestOS = "darwin"
+)
+```
 
 ## Variables
 ``` go
@@ -24,23 +38,14 @@ var (
     // DmsqDir defines dnsmasq directory location
     DmsqDir string
 
-    // Fext defines the blacklist filename extension
-    Fext = ".blacklist.conf"
-
     // FStr provides a blacklist filename/path template
     FStr = "%v/%v.%v" + Fext
 
     // Logfile set the log path and filename
     Logfile string
 
-    // TestOS sets a global value for the test environment
-    TestOS = "darwin"
-
     // Program is the current binary's filename
     Program = utils.Basename(os.Args[0])
-
-    // Root is the top level configuration Node
-    Root = "blacklist"
 
     // WhatOS is the current operating system
     WhatOS string

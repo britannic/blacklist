@@ -51,6 +51,13 @@ func IsAdmin() bool
 IsAdmin returns true if user has superuser privileges
 
 
+## func ReloadDNS
+``` go
+func ReloadDNS(d string) (string, error)
+```
+ReloadDNS reloads the dnsmasq configuration
+
+
 ## func WriteFile
 ``` go
 func WriteFile(fname string, data []byte) error

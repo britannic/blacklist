@@ -11,7 +11,7 @@ Package check provides routines to sanity check blacklist is working correctly
 
 ## func ConfTemplates
 ``` go
-func ConfTemplates(a *Args) (b bool, err error)
+func ConfTemplates(a *Args) bool
 ```
 ConfTemplates checks for existence/non-existence (governed by installation state) of the blacklist configuration templates
 
@@ -70,7 +70,7 @@ Cfg type of config.Blacklist
 
 ### func (\*Cfg) Blacklistings
 ``` go
-func (c *Cfg) Blacklistings(a *Args) (err error)
+func (c *Cfg) Blacklistings(a *Args) error
 ```
 Blacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
 
@@ -78,7 +78,7 @@ Blacklistings checks that only configured blacklisted includes are present in {d
 
 ### func (\*Cfg) ConfFiles
 ``` go
-func (c *Cfg) ConfFiles(a *Args) (err error)
+func (c *Cfg) ConfFiles(a *Args) bool
 ```
 ConfFiles checks that all blacklist sources have generated dnsmasq conf files and there aren't any orphans
 
@@ -86,7 +86,7 @@ ConfFiles checks that all blacklist sources have generated dnsmasq conf files an
 
 ### func (\*Cfg) ConfIP
 ``` go
-func (c *Cfg) ConfIP(a *Args) error
+func (c *Cfg) ConfIP(a *Args) bool
 ```
 ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
 
@@ -94,7 +94,7 @@ ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
 
 ### func (\*Cfg) ExcludedDomains
 ``` go
-func (c *Cfg) ExcludedDomains(a *Args) error
+func (c *Cfg) ExcludedDomains(a *Args) (pass bool)
 ```
 ExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
 
@@ -102,7 +102,7 @@ ExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
 
 ### func (\*Cfg) Exclusions
 ``` go
-func (c *Cfg) Exclusions(a *Args) error
+func (c *Cfg) Exclusions(a *Args) (pass bool)
 ```
 Exclusions checks that configured exclusions are excluded from dnsmasq conf files
 
@@ -110,17 +110,9 @@ Exclusions checks that configured exclusions are excluded from dnsmasq conf file
 
 ### func (\*Cfg) IPRedirection
 ``` go
-func (c *Cfg) IPRedirection(a *Args) error
+func (c *Cfg) IPRedirection(a *Args) bool
 ```
 IPRedirection checks that each domain or host dnsmasq conf entry is redirected to the configured blackhole IP
-
-
-
-### func (\*Cfg) IsDisabled
-``` go
-func (c *Cfg) IsDisabled(a *Args) (err error)
-```
-IsDisabled checks that blacklist is actually disabled when the flag is true
 
 
 

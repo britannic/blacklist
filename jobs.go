@@ -15,7 +15,7 @@ import (
 )
 
 // getBlacklists assembles the http download jobs
-func getBlacklists(timeout time.Duration, dex c.Dict, ex c.Dict, src []*c.Src) error {
+func getBlacklists(timeout time.Duration, dex c.Dict, ex c.Dict, src []*c.Src) {
 
 	jobs := make(chan Job, cores)
 	results := make(chan Result, len(src))
@@ -25,8 +25,8 @@ func getBlacklists(timeout time.Duration, dex c.Dict, ex c.Dict, src []*c.Src) e
 	for i := 0; i < cores; i++ {
 		go doJobs(done, jobs)
 	}
-	err := getResults(timeout, dex, ex, done, results)
-	return err
+	getResults(timeout, dex, ex, done, results)
+	return
 }
 
 // Result holds returned data
@@ -38,8 +38,7 @@ type Result struct {
 
 // getResults collects the HTTP content and sends it to processResults
 func getResults(timeout time.Duration, dex c.Dict, ex c.Dict, done <-chan struct{},
-	results <-chan Result) error {
-	var e string
+	results <-chan Result) {
 
 	finish := time.After(time.Duration(timeout))
 
@@ -47,12 +46,12 @@ func getResults(timeout time.Duration, dex c.Dict, ex c.Dict, done <-chan struct
 		select {
 		case result := <-results:
 			if err := processResults(&result, dex, ex); err != nil {
-				e += fmt.Sprintf("Error: %v", err)
+				log.Errorf("processResults(): %v\n", err)
 			}
 
 		case <-finish:
-			e += fmt.Sprint("timed out")
-			return fmt.Errorf(e)
+			log.Error("getResults() timed out\n")
+
 		case <-done:
 			working--
 		}
@@ -61,14 +60,14 @@ func getResults(timeout time.Duration, dex c.Dict, ex c.Dict, done <-chan struct
 		select {
 		case result := <-results:
 			if err := processResults(&result, dex, ex); err != nil {
-				e += fmt.Sprintf("Error: %v", err)
+				log.Errorf("processResults(): %v\n", err)
 			}
 
 		case <-finish:
-			e += fmt.Sprintf("timed out")
-			return fmt.Errorf(e)
+			log.Errorf("getResults() timed out\n")
+
 		default:
-			return nil
+			return
 		}
 	}
 }
@@ -77,8 +76,20 @@ func getResults(timeout time.Duration, dex c.Dict, ex c.Dict, done <-chan struct
 func processResults(result *Result, dex c.Dict, ex c.Dict) (err error) {
 	b := bufio.NewScanner(strings.NewReader(string(result.Data)))
 	pdata := data.Process(result.Src, dex, ex, b)
+
 	fn := fmt.Sprintf(g.FStr, g.DmsqDir, result.Src.Type, result.Src.Name)
-	log.Printf("Writing job[%v] %v\n", result.Src.No, fn)
+	if len(pdata.List) < 1 {
+		var errStr []byte
+
+		errStr = append(errStr, fmt.Sprintf("# %v\n# No usable data received for %v.\n# Investigate!\n", result.Src.URL, result.Src.Name)...)
+
+		log.Errorf("No data to write for job[%v] %v", result.Src.No, fn)
+
+		err = utils.WriteFile(fn, errStr)
+		return err
+	}
+
+	log.Printf("Writing job[%v] %v", result.Src.No, fn)
 
 	err = utils.WriteFile(fn, data.GetList(pdata))
 	return err
@@ -101,10 +112,10 @@ func (job Job) do() {
 		}
 
 	default:
-		body, err = data.GetHTTP(job.src.URL)
-		if err != nil {
-			log.Fatalf("ERROR: %s", err)
-		}
+		// body, err = data.GetHTTP(job.src.URL)
+		// if err != nil {
+		// 	log.Fatalf("ERROR: %s", err)
+		// }
 	}
 
 	job.results <- Result{Src: job.src, Data: body, Error: err}
