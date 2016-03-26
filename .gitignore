@@ -25,3 +25,5 @@ vendor/github.com/Sirupsen/logrus/
 vendor/github.com/mattn/go-colorable/
 
 testdata/blacklist.log
+
+.coveralls.yml
