@@ -3,12 +3,11 @@
 
 © 2016 NJ Software. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE.txt file.
 
-UBNT EdgeMax dnsmasq Blacklist and Adware Blocking
-community.ubnt.com
+[UBNT EdgeMax](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX) dnsmasq Blacklist and Adware Blocking
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt) [![GitHub release](https://img.shields.io/github/release/britannic/blacklist.svg)](https://github.com/britannic/blacklist) [![GitHub version](https://badge.fury.io/gh/britannic%2Fblacklist.svg)](https://badge.fury.io/gh/britannic%2Fblacklist) [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist) [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist) [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt) [![GitHub release](https://img.shields.io/github/release/britannic/blacklist.svg)](https://github.com/britannic/blacklist) [![GitHub version](https://badge.fury.io/gh/britannic/blacklist.svg)](https://badge.fury.io/gh/britannic/blacklist) [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist) [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist) [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)
 
 ### Overview
 EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at [Ubiquiti Community](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
@@ -16,6 +15,7 @@ EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdo
 ### Features
 Generates configuration files used directly by dnsmasq to redirect dns lookups
 Integrated with the EdgeMax OS CLI
+
 Any FQDN in the blacklist will force dnsmasq to return the configured dns redirect IP address
 
 ### Compatibility
