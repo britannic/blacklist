@@ -1,0 +1,6 @@
+mode: count
+github.com/britannic/blacklist/global/global.go:64.13,66.16 2 1
+github.com/britannic/blacklist/global/global.go:67.2,69.17 2 1
+github.com/britannic/blacklist/global/global.go:72.3,73.44 2 1
+github.com/britannic/blacklist/global/global.go:74.2,77.37 3 0
+github.com/britannic/blacklist/global/global.go:69.17,71.4 1 0

@@ -1,6 +1,7 @@
 language: go
 sudo: false
 before_install:
+- go get github.com/go-playground/overalls
 - go get github.com/mattn/goveralls
 - go get golang.org/x/tools/cmd/cover
 before_script:
@@ -10,7 +11,8 @@ os:
 go:
 - tip
 script:
-- $HOME/gopath/bin/goveralls -service=travis-ci
+- $HOME/gopath/bin/overalls -project=github.com/britannic/blacklist -covermode=count -ignore=vendor
+- $HOME/gopath/bin/goveralls -coverprofile=overalls.coverprofile -service=travis-ci
 env:
   global:
     secure: DBI3Um6R/06s2pN68ITPQjwJKhu3SduGAAbMO2ICEATVvARreZq4tLF7enKuIj9uqQ1GVjIrX5PfjMqMKehcXgtk9UD19Ucy32LXDu4HnJK8+Rwhjn3Vg7n1ydHc/BQsjuy0utihPszNTLbJzHz71kcmE/dX8iKY+K3m2AOZ+N2T+kFVDGlHBJxEBSUMtkF4xqM7UQSMB+5EwVEGgQ1wZpg8RwuyNJ1v61YgfLGCcCrgecCkGrNk2fEntsFMvJ189ZS4PgVmVhrk++xYJmwpAXsdy7kgN7hA7nA5FtGUSlLX2ajn2SMZWoh6c38tUmUKFV4OKYYcCx4HIuyANVvt4kTL5MHp+MZoM57Sl0IRg2XPla8w4cEE/iNQcCRs4RH3KIflNwyX3J0WY90TL6b4UX4UIgMpedHFxODbE2+xExIGK6o+48nYQOL/jIKrTGuq26DgHnQuAtgqpBl06ShGJP7pieUZw3FJYgoUSr3B53XAeSPHEssyrWZosMMzXt4kYUnPUj5v1vtyE2p+BhI9gKfXbGF9SrxeOEWWyVR3MlAGrpbnEnA5eJnk5A/bPvHxR6qhyZxtS5HzuFZ7NEV8go3N11CB+X6MMCSYqAAyfVhDt12Mp0xHfgvKyHBnGg3v8q35q2ob8bsBmXw/WjKZ5N7Di6Y0woNqQVTIDu+Khd8=

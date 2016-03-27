@@ -22,5 +22,5 @@ func getopts() (options opts) {
 	options.version = flag.Bool("version", false, "# show program version number")
 	flag.Parse()
 
-	return
+	return options
 }

@@ -2,11 +2,13 @@ package utils_test
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/user"
 	"reflect"
 	"testing"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/utils"
 )
@@ -104,6 +106,54 @@ func TestGetFile(t *testing.T) {
 	}
 }
 
+func TestReloadDNS(t *testing.T) {
+	tests := []struct {
+		test   string
+		expect bool
+		want   string
+	}{
+		{
+			test:   "echo Testing",
+			expect: true,
+			want:   "Testing\n",
+		},
+		{
+			test:   "ztaswerkjlkjsdflkjsdf Testing",
+			expect: false,
+			want:   "/bin/bash: line 1: ztaswerkjlkjsdflkjsdf: command not found\n",
+		},
+		{
+			test:   "which cd",
+			expect: true,
+			want:   "/usr/bin/cd\n",
+		},
+		{
+			test:   "file /etc/services",
+			expect: true,
+			want:   "/etc/services: ASCII English text\n",
+		},
+	}
+
+	for _, run := range tests {
+		s, err := utils.ReloadDNS(run.test)
+		switch run.expect {
+		case false:
+			if err == nil {
+				t.Errorf("Test should fail, so ReloadDNS() error shouldn't be nil!")
+			}
+		case true:
+			if err != nil {
+				t.Errorf("Test should pass, so ReloadDNS() error should be nil! Error: %v", err)
+			}
+		}
+
+		if s != run.want {
+			t.Errorf("Want: %q, Got: %q", run.want, s)
+		}
+	}
+
+}
+
 func TestStringArray(t *testing.T) {
 	var (
 		got  []string
@@ -151,6 +201,38 @@ func TestIsAdmin(t *testing.T) {
 		t.Errorf("Standard user: %v", got)
 	case osAdmin && !utils.IsAdmin():
 		t.Errorf("Root: %v", got)
+	}
+}
+
+func TestWriteFile(t *testing.T) {
+	tFile := struct {
+		badfile string
+		tdata   []byte
+		tdir    string
+		tfile   string
+	}{
+		badfile: "/tmp/z/d/c/r/c:reallybadfile.zfts",
+		tdata:   d,
+		tdir:    "/tmp",
+		tfile:   "Test.util.WriteFile",
+	}
+
+	f, err := ioutil.TempFile(tFile.tdir, tFile.tfile)
+	if err != nil {
+		log.Errorf("open %s file: %s", f.Name(), err)
+	}
+
+	defer os.Remove(f.Name())
+	defer f.Close()
+
+	err = utils.WriteFile(f.Name(), d)
+	if err != nil {
+		t.Errorf("Error writing %s file: %s", f.Name(), err)
+	}
+
+	err = utils.WriteFile(tFile.badfile, d)
+	if err == nil {
+		t.Errorf("Should not be able to write %s file: %v", tFile.badfile, err)
 	}
 
 }
