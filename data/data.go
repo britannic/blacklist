@@ -137,12 +137,14 @@ func GetURLs(b c.Blacklist) (a AreaURLs) {
 	for pkey := range b {
 		var urls []*c.Src
 		if pkey != g.Area.Root {
-			inc := GetIncludes(b[pkey])
+			if inc := GetIncludes(b[pkey]); len(inc) > 0 {
+				b[pkey].Source["pre"] = &c.Src{List: inc, Name: "pre-configured", Type: pkey}
+			}
 
-			b[pkey].Source["pre"] = &c.Src{List: inc, Name: "pre-configured", Type: pkey}
 			if b[pkey].IP == "" {
 				b[pkey].IP = b[g.Area.Root].IP
 			}
+
 			for skey := range b[pkey].Source {
 				b[pkey].Source[skey].IP = b[pkey].IP
 				urls = append(urls, b[pkey].Source[skey])

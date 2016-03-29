@@ -8,7 +8,7 @@ import (
 
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/global"
-	"github.com/britannic/blacklist/utils"
+	. "github.com/britannic/blacklist/testutils"
 )
 
 func check(t *testing.T) {
@@ -41,47 +41,39 @@ func TestAPICmd(t *testing.T) {
 
 	got := config.APICmd()
 
-	if len(got) != len(want) {
-		t.Errorf("Got:\n%v\nWant:\n%v\n", got, want)
-	}
+	Equals(t, want, got)
 
 	for k := range got {
 		v, ok := want[k]
 		switch ok {
 		case true:
-			if v != got[k] {
-				t.Errorf("Got:\n%v\nWant:\n%v\n", got[k], want[k])
-			}
+			Equals(t, v, got[k])
+
 		default:
-			t.Errorf("Got:\n%v\nWant:\n%v\n", got[k], want[k])
+			Equals(t, want[k], got[k])
+
 		}
 	}
 }
 
 func TestGet(t *testing.T) {
-	b, e := config.Get(config.Testdata, global.Area.Root)
-	if e != nil {
-		t.Error(b)
-	}
+	b, err := config.Get(config.Testdata, global.Area.Root)
+	OK(t, err)
+	Equals(t, blist, fmt.Sprint(b.String()))
+
+	want := errors.New("Configuration data is empty, cannot continue")
 
 	b, got := config.Get("", global.Area.Root)
-	switch {
-	case got == nil:
-		t.Error(b)
-	default:
-		want := errors.New("Configuration data is empty, cannot continue")
-		if got.Error() != want.Error() {
-			t.Errorf("Want: %q, Got: %q", e, got)
-		}
-	}
+
+	NotEquals(t, nil, got)
+	Equals(t, want.Error(), got.Error())
+	Equals(t, &config.Blacklist{}, b)
 }
 
 func TestGetSubdomains(t *testing.T) {
 	d := config.GetSubdomains("top.one.two.three.four.five.six.com")
 	for key := range d {
-		if !d.KeyExists(key) {
-			t.Errorf("%v key doesn't exist", key)
-		}
+		Assert(t, d.KeyExists(key), fmt.Sprintf("%v key doesn't exist", key), d)
 	}
 }
 
@@ -89,9 +81,7 @@ func TestKeyExists(t *testing.T) {
 	full := "top.one.two.three.four.five.six.com"
 	d := config.GetSubdomains(full)
 	for key := range d {
-		if !d.KeyExists(key) {
-			t.Errorf("%v key doesn't exist", key)
-		}
+		Assert(t, d.KeyExists(key), fmt.Sprintf("%v key doesn't exist", key), d)
 	}
 }
 
@@ -128,25 +118,54 @@ func TestSHcmd(t *testing.T) {
 		got := config.SHcmd(rq.q)
 		switch inSession {
 		case false:
-			if got != rq.r {
-				t.Errorf("Want: %v, Got: %v", got, rq.r)
-			}
+			Equals(t, rq.r, got)
+
 		default:
-			if got != rq.q {
-				t.Errorf("Want: %v, Got: %v", got, rq.q)
-			}
+			Equals(t, rq.q, got)
 		}
 	}
 }
 
 func TestString(t *testing.T) {
-	b, e := config.Get(config.Testdata, global.Area.Root)
-	if e != nil {
-		t.Error(b)
+	b, err := config.Get(config.Testdata, global.Area.Root)
+	OK(t, err)
+
+	Equals(t, blist, fmt.Sprint(b))
+}
+
+func TestSubKeyExists(t *testing.T) {
+	full := "top.one.two.three.four.five.six.com"
+	d := config.GetSubdomains(full)
+	got := len(d)
+	want := strings.Count(full, ".")
+
+	Equals(t, want, got)
+
+	for key := range d {
+		Assert(t, d.SubKeyExists(key), fmt.Sprintf("%v sub key doesn't exist", key), d)
+	}
+}
+
+func TestToBool(t *testing.T) {
+	tests := map[string]bool{"false": false, "true": true, "fail": false}
+
+	for k := range tests {
+		Equals(t, tests[k], config.ToBool(k))
+	}
+}
+
+var (
+	keys = []string{
+		"six.com",
+		"five.six.com",
+		"four.five.six.com",
+		"three.four.five.six.com",
+		"two.three.four.five.six.com",
+		"one.two.three.four.five.six.com",
+		"top.one.two.three.four.five.six.com",
 	}
 
-	got := []byte(fmt.Sprint(b))
-	want := []byte(`Node: blacklist
+	blist = `Node: blacklist
 	Disabled: false
 	Redirect IP: 0.0.0.0
 	Exclude(s):
@@ -248,55 +267,5 @@ Node: hosts
 		Prefix: ""
 		URL: http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext
 
-`)
-
-	if !utils.CmpHash(got, want) {
-		// utils.WriteFile("/tmp/got.txt", got)
-		// utils.WriteFile("/tmp/want.txt", want)
-		t.Errorf("Got:\n%v\nWant:\n%v\n", string(got), string(want))
-	}
-}
-
-func TestSubKeyExists(t *testing.T) {
-	full := "top.one.two.three.four.five.six.com"
-	d := config.GetSubdomains(full)
-	got := len(d)
-	want := strings.Count(full, ".")
-
-	if got != want {
-		t.Errorf("Want: %v keys, Got: %v keys", want, got)
-	}
-	for key := range d {
-		if !d.SubKeyExists(key) {
-			t.Errorf("%v sub key doesn't exist", key)
-		}
-	}
-}
-
-func TestToBool(t *testing.T) {
-	tests := map[string]string{"false": "false", "true": "true", "fail": ""}
-
-	for k := range tests {
-		b := config.ToBool(tests[k])
-		if k == "fail" && b {
-			t.Errorf("ToBool(%q) failed\n", tests[k])
-		}
-		switch {
-		case tests[k] == "true" && !b:
-			t.Errorf("ToBool(%q) failed with %v\n", tests[k], b)
-		case tests[k] == "false" && b:
-			t.Errorf("ToBool(%q) failed with %v\n", tests[k], b)
-
-		}
-	}
-}
-
-var keys = []string{
-	"six.com",
-	"five.six.com",
-	"four.five.six.com",
-	"three.four.five.six.com",
-	"two.three.four.five.six.com",
-	"one.two.three.four.five.six.com",
-	"top.one.two.three.four.five.six.com",
-}
+`
+)

@@ -88,7 +88,7 @@ ConfFiles checks that all blacklist sources have generated dnsmasq conf files an
 ``` go
 func (c *Cfg) ConfIP(a *Args) bool
 ```
-ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
+ConfIP checks configured IP matches redirected blackhole IP in dnsmasq conf files
 
 
 

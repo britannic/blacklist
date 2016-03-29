@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"os"
 	"testing"
 	"time"
@@ -10,23 +11,27 @@ import (
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	"github.com/britannic/blacklist/global"
+	. "github.com/britannic/blacklist/testutils"
 )
 
-// func TestBuild(t *testing.T) {
-// 	build := map[string]string{
-// 		"build":   build,
-// 		"githash": githash,
-// 		"version": version,
-// 	}
-//
-// 	for k := range build {
-// 		if build[k] == "UNKNOWN" {
-// 			t.Errorf("k is %v", build[k])
-// 		}
-// 	}
-// }
+var systemTest *bool
+
+func TestBuild(t *testing.T) {
+	build := map[string]string{
+		"build":   build,
+		"githash": githash,
+		"version": version,
+	}
+
+	for k := range build {
+		if build[k] != "UNKNOWN" {
+			t.Errorf("%v is %v", k, build[k])
+		}
+	}
+}
 
 func init() {
+	systemTest = flag.Bool("systemTest", false, "Set to true when running system tests")
 	f, err := os.OpenFile(global.Logfile, os.O_WRONLY|os.O_APPEND, 0755)
 	if err == nil {
 		log.SetFormatter(&log.TextFormatter{DisableColors: true})
@@ -34,18 +39,86 @@ func init() {
 	}
 }
 
+// Test started when the test binary is started. Only calls main.
+func TestSystem(t *testing.T) {
+	if *systemTest {
+		global.Args = []string{"-version"}
+		main()
+	}
+}
+
 func TestVarSrc(t *testing.T) {
-	if len(src) == 0 {
-		t.Errorf("Src should not be empty: %v", src)
+	NotEquals(t, 0, len(src))
+}
+
+func TestGetOpts(t *testing.T) {
+	// global.Args = []string{"-debug", "-i", "8", "-test", "-v", "-version", "-help"}
+
+	o := getopts()
+
+	want := `Debug
+Poll
+Test
+Verb
+Version
+`
+	Equals(t, want, o.String())
+
+	tests := []struct {
+		name string
+		test interface{}
+		exp  interface{}
+	}{
+		{
+			name: "o.Debug",
+			test: o.Debug,
+			exp:  true,
+		},
+		// {
+		// 	name:   "o.file",
+		// 	test:   o.file,
+		// 	exp: "",
+		// },
+		{
+			name: "o.Poll",
+			test: o.Poll,
+			exp:  8,
+		},
+		{
+			name: "o.Test",
+			test: o.Test,
+			exp:  true,
+		},
+		{
+			name: "o.Verb",
+			test: o.Verb,
+			exp:  true,
+		},
+		{
+			name: "o.Version",
+			test: o.Version,
+			exp:  true,
+		},
+	}
+
+	for _, run := range tests {
+		switch run.test.(type) {
+		case bool:
+			Equals(t, run.exp.(bool), run.test.(bool))
+
+		case string:
+			Equals(t, run.exp.(string), run.test.(string))
+
+		case int:
+			Equals(t, run.exp.(int), run.test.(int))
+		}
 	}
 }
 
 func TestGetBlacklists(t *testing.T) {
 	timeout := time.Minute * 30
 	b, err := config.Get(config.Testdata, global.Area.Root)
-	if err != nil {
-		t.Errorf("unable to get configuration data, error code: %v\n", err)
-	}
+	OK(t, err)
 
 	if !data.IsDisabled(*b, global.Area.Root) {
 		areas := data.GetURLs(*b)
@@ -69,33 +142,22 @@ func TestGetBlacklists(t *testing.T) {
 		)
 
 		live.Blacklist, err = config.Get(config.Testdata, global.Area.Root)
-		if err != nil {
-			log.Fatal("Couldn't load config.Testdata")
-		}
+		OK(t, err)
 
 		a.Ex = data.GetExcludes(*live.Blacklist)
 
-		err = live.Blacklistings(a)
-		if err != nil {
-			t.Errorf("check.Blacklistings returned an error: %v ", err)
-		}
+		OK(t, live.Blacklistings(a))
 
-		if !live.Exclusions(a) {
-			t.Error("Exclusions failure")
-		}
+		Assert(t, true, "Exclusions failure", live.Exclusions(a))
 
-		if !live.ExcludedDomains(a) {
-			t.Error("Excluded domains failure")
-		}
+		Assert(t, true, "Excluded domains failure", live.ExcludedDomains(a))
 
 		a.Fname = global.DmsqDir + `/*` + global.Fext
-		if !live.ConfFiles(a) {
-			t.Error("Problems with dnsmasq configuration files")
-		}
+		Assert(t, true, "Problems with dnsmasq configuration files", live.ConfFiles(a))
 
-		if !live.ConfIP(a) {
-			t.Errorf("Problems with IP: %v", err)
-		}
+		Assert(t, true, "Problems with dnsmasq configuration files content", live.ConfFilesContent(a))
+
+		Assert(t, true, "Problems with IP redirection", live.ConfIP(a))
 	}
 }
 

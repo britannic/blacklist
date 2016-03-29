@@ -1,38 +1,64 @@
 package global_test
 
 import (
+	"fmt"
+	"os"
+	"runtime"
 	"testing"
 
-	"github.com/britannic/blacklist/global"
+	g "github.com/britannic/blacklist/global"
+	. "github.com/britannic/blacklist/testutils"
 )
 
-func TestGlobalVars(t *testing.T) {
-	type globals struct {
-		debug                             bool
-		dmsqdir, fsfx, fstr, root, whatOS string
+type testTable struct {
+	test interface{}
+	exp  interface{}
+	alt  interface{}
+}
+
+func TestSetVars(t *testing.T) {
+	cwd, err := os.Getwd()
+	OK(t, err)
+	platforms := []string{"darwin", "linux"}
+
+	tests := []testTable{
+		{test: &g.Area.Domains, exp: "domains", alt: "domains"},
+		{test: &g.Area.Hosts, exp: "hosts", alt: "hosts"},
+		{test: &g.Area.Root, exp: "blacklist", alt: "blacklist"},
+		{test: &g.Args, exp: []string{""}, alt: []string{""}},
+		{test: &g.Dbg, exp: false, alt: false},
+		{test: &g.DmsqDir, exp: "/etc/dnsmasq.d", alt: cwd + "/testdata"},
+		{test: &g.DNSRestart, exp: "service dnsmasq restart", alt: fmt.Sprintf("echo -n dnsmasq not implemented on %v", g.TestOS)},
+		{test: g.Fext, exp: ".blacklist.conf", alt: ".blacklist.conf"},
+		{test: &g.FStr, exp: `%v/%v.%v` + g.Fext, alt: `%v/%v.%v` + g.Fext},
+		{test: &g.Logfile, exp: "/var/log/blacklist.log", alt: fmt.Sprintf("%v/blacklist.log", g.DmsqDir)},
+		{test: g.TestOS, exp: "darwin", alt: "darwin"},
 	}
 
-	glob := &globals{
-		debug:   global.Dbg,
-		dmsqdir: global.DmsqDir,
-		fsfx:    global.Fext,
-		fstr:    global.FStr,
-		root:    global.Area.Root,
-		whatOS:  global.WhatOS,
-	}
+	g.WhatOS = runtime.GOOS
+	OS := g.WhatOS
+	for _, OS = range platforms {
+		g.SetVars(OS)
+		fmt.Println(OS)
+		for _, run := range tests {
+			expect := run.exp
+			if OS == g.TestOS {
+				expect = run.alt
+			}
 
-	switch {
-	case glob.debug:
-		t.Errorf("%+v shouldn't be %v", global.Dbg, glob.debug)
-	case glob.dmsqdir != "/etc/dnsmasq.d":
-		if global.WhatOS != global.TestOS {
-			t.Errorf(`%+v should be = "/etc/dnsmasq.d"  not %v`, global.DmsqDir, glob.dmsqdir)
+			switch run.test.(type) {
+			case bool:
+				Equals(t, expect.(bool), run.test.(bool))
+
+			case string:
+				Equals(t, expect.(string), run.test.(string))
+
+			case int:
+				Equals(t, expect.(int), run.test.(int))
+
+			case nil:
+				fmt.Println("Test not properly defined! ", run)
+			}
 		}
-	case glob.fsfx != ".blacklist.conf":
-		t.Errorf(`%+v should be = ".blacklist.conf"  not %v`, global.FStr, glob.fsfx)
-	case glob.fstr != `%v/%v.%v.blacklist.conf`:
-		t.Errorf(`%+v should be = %q not %v`, global.FStr, `%v/%v.%v.blacklist.conf`, glob.fstr)
-	case glob.root != "blacklist":
-		t.Errorf(`%+v should be = "blacklist"  not %v`, global.Area.Root, glob.root)
 	}
 }

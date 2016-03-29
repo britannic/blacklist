@@ -8,6 +8,7 @@ import (
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	"github.com/britannic/blacklist/global"
+	. "github.com/britannic/blacklist/testutils"
 )
 
 var (
@@ -25,6 +26,7 @@ func init() {
 	}
 	var err error
 	live.Blacklist, err = config.Get(config.Testdata, global.Area.Root)
+
 	if err != nil {
 		log.Fatal("Couldn't load config.Testdata")
 	}
@@ -36,9 +38,7 @@ func TestBlacklistings(t *testing.T) {
 	}
 
 	err := live.Blacklistings(a)
-	if err != nil {
-		t.Errorf("check.Blacklistings returned an error: %v ", err)
-	}
+	OK(t, err)
 }
 
 func TestExclusions(t *testing.T) {
@@ -47,9 +47,8 @@ func TestExclusions(t *testing.T) {
 		Dir: dmsqdir,
 	}
 
-	if !live.Exclusions(a) {
-		t.Error("Exclusions failure.")
-	}
+	Assert(t, live.Exclusions(a), "Exclusions failure.", a)
+
 }
 
 func TestExcludedDomains(t *testing.T) {
@@ -59,9 +58,7 @@ func TestExcludedDomains(t *testing.T) {
 		Dir: dmsqdir,
 	}
 
-	if !live.ExcludedDomains(a) {
-		t.Error("Excluded domains failure.")
-	}
+	Assert(t, live.ExcludedDomains(a), "Excluded domains failure.", a)
 }
 
 func TestConfFiles(t *testing.T) {
@@ -70,9 +67,15 @@ func TestConfFiles(t *testing.T) {
 		Fname: dmsqdir + `/*` + global.Fext,
 	}
 
-	if !live.ConfFiles(a) {
-		t.Error("Problems with dnsmasq configuration files.")
+	Assert(t, live.ConfFiles(a), "Problems with dnsmasq configuration files.", a)
+}
+
+func TestConfFilesContent(t *testing.T) {
+	a := &check.Args{
+		Dir:   dmsqdir,
+		Fname: dmsqdir + `/*` + global.Fext,
 	}
+	Assert(t, live.ConfFilesContent(a), "Problems with dnsmasq configuration files.", a)
 }
 
 func TestConfIP(t *testing.T) {
@@ -80,9 +83,7 @@ func TestConfIP(t *testing.T) {
 		Dir: dmsqdir,
 	}
 
-	if !live.ConfIP(a) {
-		t.Errorf("DNS redirect IP configuration failed")
-	}
+	Assert(t, live.ConfIP(a), "DNS redirect IP configuration failed", a)
 }
 
 func TestConfTemplates(t *testing.T) {
@@ -91,9 +92,7 @@ func TestConfTemplates(t *testing.T) {
 		Dir:  `../payload/blacklist`,
 	}
 
-	if !check.ConfTemplates(a) {
-		t.Error("Configuration template nodes do not match")
-	}
+	Assert(t, check.ConfTemplates(a), "Configuration template nodes do not match", a)
 }
 
 // func TestIsDisabled(t *testing.T) {

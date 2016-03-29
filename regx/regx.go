@@ -65,7 +65,7 @@ func (rx *RGX) String() (result string) {
 
 		result += fmt.Sprintf("%v: %v\n", v.Type().Field(i).Name, v.Field(i).Interface())
 	}
-	return
+	return result
 }
 
 // Regex is a struct of *re populated with precompiled regex objects

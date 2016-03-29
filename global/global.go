@@ -22,9 +22,6 @@ type Areas struct {
 
 const (
 
-	// DNSRestart defines the dnsmasq restart command
-	DNSRestart = "service dnsmasq restart"
-
 	// Fext defines the blacklist filename extension
 	Fext = ".blacklist.conf"
 
@@ -40,10 +37,16 @@ var (
 		Root:    "blacklist",
 	}
 
+	// Args provides a way to set flags within the unit test
+	Args []string
+
 	cwd string
 
 	// Dbg sets the Debug flag
 	Dbg = false
+
+	// DNSRestart defines the dnsmasq restart command
+	DNSRestart = "service dnsmasq restart"
 
 	// DmsqDir defines dnsmasq directory location
 	DmsqDir string
@@ -63,14 +66,23 @@ var (
 
 func init() {
 	WhatOS = runtime.GOOS
-	switch WhatOS {
+	SetVars(WhatOS)
+}
+
+// SetVars conditionally sets global variables based on the current OS
+func SetVars(OS string) {
+
+	switch OS {
 	case TestOS:
 		cwd, err := os.Getwd()
 		if err != nil {
 			log.Fatal("Cannot determine current directory - exiting")
 		}
 		DmsqDir = cwd + "/testdata"
-		Logfile = cwd + "/testdata/blacklist.log"
+
+		DNSRestart = "echo -n dnsmasq not implemented on " + WhatOS
+		Logfile = DmsqDir + "/blacklist.log"
+
 	default:
 		DmsqDir = "/etc/dnsmasq.d"
 		FStr = "%v/%v.%v" + Fext

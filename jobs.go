@@ -81,7 +81,7 @@ func processResults(result *Result, dex c.Dict, ex c.Dict) (err error) {
 	if len(pdata.List) < 1 {
 		var errStr []byte
 
-		errStr = append(errStr, fmt.Sprintf("# %v\n# No usable data received for %v.\n# Investigate!\n", result.Src.URL, result.Src.Name)...)
+		errStr = append(errStr, fmt.Sprintf("# %v\n# Investigate!\n# No usable data received for %v.\n", result.Src.URL, result.Src.Name)...)
 
 		log.Errorf("No data to write for job[%v] %v", result.Src.No, fn)
 
@@ -112,10 +112,10 @@ func (job Job) do() {
 		}
 
 	default:
-		// body, err = data.GetHTTP(job.src.URL)
-		// if err != nil {
-		// 	log.Fatalf("ERROR: %s", err)
-		// }
+		body, err = data.GetHTTP(job.src.URL)
+		if err != nil {
+			log.Fatalf("ERROR: %s", err)
+		}
 	}
 
 	job.results <- Result{Src: job.src, Data: body, Error: err}

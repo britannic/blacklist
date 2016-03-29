@@ -3,6 +3,7 @@ package data_test
 import (
 	"bufio"
 	"fmt"
+	"sort"
 	"strings"
 	"testing"
 
@@ -10,6 +11,7 @@ import (
 	"github.com/britannic/blacklist/data"
 	g "github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/regx"
+	. "github.com/britannic/blacklist/testutils"
 	"github.com/britannic/blacklist/utils"
 )
 
@@ -26,9 +28,7 @@ func init() {
 
 func TestExclusions(t *testing.T) {
 	b, err := config.Get(config.Testdata, g.Area.Root)
-	if err != nil {
-		t.Error("Couldn't load config.Testdata")
-	}
+	OK(t, err)
 
 	var (
 		// tdata  string
@@ -40,27 +40,20 @@ func TestExclusions(t *testing.T) {
 	for _, s := range src {
 		f := fmt.Sprintf("../testdata/tdata.%v.%v", s.Type, s.Name)
 		testdata, err := utils.GetFile(f)
-		if err != nil {
-			t.Errorf("Cannot open %v", f)
-		}
+		OK(t, err)
 
 		gdata := data.Process(s, globex, dex, testdata)
 
 		for k := range gdata.List {
 			i := strings.Count(k, ".")
-			if i < 1 {
-				t.Errorf("key: %v has . count of %v", k, i)
-			}
+			Assert(t, i >= 1, fmt.Sprintf(`key: %v has "." count of %v`, k, i), k)
 
 			switch {
 			case i == 1:
-				if ex.KeyExists(k) {
-					t.Errorf("Exclusion failure, found matching key: %v", k)
-				}
+				Assert(t, !ex.KeyExists(k), fmt.Sprintf("Exclusion failure, found matching key: %v", k), k)
+
 			case i > 1:
-				if ex.SubKeyExists(k) {
-					t.Errorf("Exclusion failure, found submatch for key: %v", k)
-				}
+				Assert(t, !ex.SubKeyExists(k), fmt.Sprintf("Exclusion failure, found submatch for key: %v", k), k)
 			}
 		}
 	}
@@ -78,9 +71,7 @@ func TestGetHTTP(t *testing.T) {
 	rx := regx.Regex
 
 	b, err := config.Get(config.Testdata, g.Area.Root)
-	if err != nil {
-		t.Errorf("unable to get configuration data, error code: %v\n", err)
-	}
+	OK(t, err)
 
 	a := data.GetURLs(*b)
 	ex := make(config.Dict)
@@ -100,18 +91,17 @@ func TestGetHTTP(t *testing.T) {
 	for _, z := range d {
 		for got := range z.prcsd.List {
 			want := rx.FQDN.FindStringSubmatch(got)[1]
-			if strings.Compare(got, want) != 0 {
-				t.Errorf("wanted: %q, got: %q", want, got)
-			}
+			Equals(t, want, got)
 		}
 	}
 }
 
 func TestGetUrls(t *testing.T) {
 	blist, err := config.Get(config.Testdata, g.Area.Root)
-	if err != nil {
-		t.Errorf("unable to get configuration data, error code: %v\n", err)
-	}
+	OK(t, err)
+	// if err != nil {
+	// 	t.Errorf("unable to get configuration data, error code: %v\n", err)
+	// }
 
 	b := *blist
 	a := data.GetURLs(b)
@@ -120,11 +110,12 @@ func TestGetUrls(t *testing.T) {
 		for _, url := range a[k] {
 			if g, ok := b[k].Source[url.Name]; ok {
 				want := g.URL
-				got := url.URL
-				if want != url.URL {
-					t.Errorf("%v URL mismatch:", url.Name)
-					fmt.Printf("Wanted %v\nGot: %v", want, got)
-				}
+				// got := url.URL
+				Assert(t, want == url.URL, fmt.Sprintf("%v URL mismatch:", url.Name), url)
+				// if want != url.URL {
+				// 	t.Errorf("%v URL mismatch:", url.Name)
+				// 	fmt.Printf("Wanted %v\nGot: %v", want, got)
+				// }
 			}
 		}
 	}
@@ -134,13 +125,13 @@ func TestIsDisabled(t *testing.T) {
 	c := make(config.Blacklist)
 	c[g.Area.Root] = &config.Node{}
 	c[g.Area.Root].Disable = true
-	if data.IsDisabled(c, g.Area.Root) != true {
-		t.Error("Should be true")
-	}
+
+	Equals(t, true, c[g.Area.Root].Disable)
+
 	c[g.Area.Root].Disable = false
-	if data.IsDisabled(c, g.Area.Root) != false {
-		t.Error("Should be false")
-	}
+
+	Equals(t, false, c[g.Area.Root].Disable)
+
 }
 
 func TestProcess(t *testing.T) {
@@ -149,15 +140,17 @@ func TestProcess(t *testing.T) {
 		dex := make(config.Dict)
 		f := fmt.Sprintf("%v/tdata.%v.%v", dmsqDir, s.Type, s.Name)
 		testdata, err := utils.GetFile(f)
-		if err != nil {
-			t.Errorf("Cannot open %v", f)
-		}
+		OK(t, err)
+		// if err != nil {
+		// 	t.Errorf("Cannot open %v", f)
+		// }
 
 		f = fmt.Sprintf("%v/sdata.%v.%v", dmsqDir, s.Type, s.Name)
 		staticdata, err := utils.GetFile(f)
-		if err != nil {
-			t.Errorf("Cannot open %v", f)
-		}
+		OK(t, err)
+		// if err != nil {
+		// 	t.Errorf("Cannot open %v", f)
+		// }
 
 		var wdata string
 		for staticdata.Scan() {
@@ -166,41 +159,28 @@ func TestProcess(t *testing.T) {
 
 		gdata := string(data.GetList(data.Process(s, ex, dex, testdata))[:])
 
-		if !utils.CmpHash([]byte(wdata), []byte(gdata)) {
-			mismatch := []*struct {
-				d string
-				f string
-			}{
-				{
-					d: string(wdata[:]),
-					f: fmt.Sprintf("/tmp/want.%v.%v", s.Type, s.Name),
-				},
-				{
-					d: gdata,
-					f: fmt.Sprintf("/tmp/got.%v.%v", s.Type, s.Name),
-				},
-			}
-
-			for _, m := range mismatch {
-				utils.WriteFile(m.f, []byte(m.d))
-			}
-			t.Errorf("data mismatch between standard and data.Processed data for %q.", s.Name)
-		}
+		Equals(t, wdata[:], gdata)
 	}
 }
 
 func TestPurgeFiles(t *testing.T) {
 
 	b, err := config.Get(config.Testdata, g.Area.Root)
-	if err != nil {
-		t.Errorf("unable to get configuration data, error code: %v\n", err)
+	OK(t, err)
+
+	sortKeys := func(urls data.AreaURLs) (pkeys config.Keys) {
+		for pkey := range urls {
+			pkeys = append(pkeys, pkey)
+		}
+		sort.Sort(config.Keys(pkeys))
+		return pkeys
 	}
 
 	urls := data.GetURLs(*b)
 
-	var want, got []string
+	var want []string
 
-	for k := range urls {
+	for _, k := range sortKeys(urls) {
 		for _, s := range urls[k] {
 			want = append(want, fmt.Sprintf(g.FStr, dmsqDir, s.Type, s.Name))
 			for i := 0; i < 5; i++ {
@@ -210,15 +190,12 @@ func TestPurgeFiles(t *testing.T) {
 		}
 	}
 
-	if err := data.PurgeFiles(urls, dmsqDir); err != nil {
-		t.Errorf("Error removing unused conf files: %v", err)
-	}
+	sort.Strings(want)
 
-	got = data.ListFiles(dmsqDir)
-	delta := data.DiffArray(want, got)
-	if len(delta) > 0 {
-		t.Errorf("Issue purging files, difference: %v\nGot: %v\nWant: %v\n", delta, got, want)
-	}
+	err = data.PurgeFiles(urls, dmsqDir)
+	OK(t, err)
+
+	Equals(t, want, data.ListFiles(dmsqDir))
 }
 
 func TestStripPrefixAndSuffix(t *testing.T) {
@@ -237,13 +214,8 @@ func TestStripPrefixAndSuffix(t *testing.T) {
 		l += ` # Comment.`
 
 		r, ok := data.StripPrefixAndSuffix(l, s.Prfx, rx)
-		switch {
-		case tline != r:
-			t.Errorf("stripPrefix() failed for %v", s.Name)
-			fmt.Printf("Want: %v\nGot: %v\n", tline, r)
-		case !ok:
-			t.Errorf("stripPrefix() failed for %v", s.Name)
-		}
+		Assert(t, tline == r, fmt.Sprintf("stripPrefix() failed for %v", s.Name), r)
+		Assert(t, ok, fmt.Sprintf("stripPrefix() failed for %v", s.Name), ok)
 	}
 }
 

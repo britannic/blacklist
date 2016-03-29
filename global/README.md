@@ -32,6 +32,9 @@ var (
         Root:    "blacklist",
     }
 
+    // Args provides a way to set flags within the unit test
+    Args []string
+
     // Dbg sets the Debug flag
     Dbg = false
 
@@ -51,6 +54,13 @@ var (
     WhatOS string
 )
 ```
+
+## func SetVars
+``` go
+func SetVars(WhatOS string)
+```
+SetVars conditionally sets global variables based on the current OS
+
 
 
 ## type Areas

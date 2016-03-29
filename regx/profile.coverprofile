@@ -18,5 +18,5 @@ github.com/britannic/blacklist/regx/regx.go:49.2,50.36 1 0
 github.com/britannic/blacklist/regx/regx.go:51.2,52.36 1 1
 github.com/britannic/blacklist/regx/regx.go:53.2,54.36 1 1
 github.com/britannic/blacklist/regx/regx.go:59.41,63.36 2 2
-github.com/britannic/blacklist/regx/regx.go:68.2,68.8 1 2
+github.com/britannic/blacklist/regx/regx.go:68.2,68.15 1 2
 github.com/britannic/blacklist/regx/regx.go:63.36,67.3 1 32

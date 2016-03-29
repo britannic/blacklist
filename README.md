@@ -7,18 +7,19 @@
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt) [![GitHub Release](https://img.shields.io/github/release/britannic/blacklist.svg)](https://github.com/britannic/blacklist)  [![Alpha  Version](https://img.shields.io/badge/version-v0.03--alpha-red.svg)](https://github.com/britannic/blacklist)  [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist) [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist) [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt) [![Alpha  Version](https://img.shields.io/badge/version-v0.03--alpha-red.svg)](https://github.com/britannic/blacklist) [![GitHub Release](https://img.shields.io/github/release/britannic/blacklist.svg)](https://github.com/britannic/blacklist)  [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist) [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist) [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master) [![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+
 
 ### Overview
 EdgeMax dnsmasq Blacklist and Adware Blocking is derived from the received wisdom found at [Ubiquiti Community](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
 
 ### Features
-Generates configuration files used directly by dnsmasq to redirect dns lookups
+Generates configuration files used directly by dnsmasq to redirect DNS lookups
 Integrated with the EdgeMax OS CLI
 
-Any FQDN in the blacklist will force dnsmasq to return the configured dns redirect IP address
+### Any FQDN in the blacklist will force dnsmasq to return the configured DNS redirect IP address
+Compatibility
 
-### Compatibility
 blacklist has been tested on the EdgeRouter Lite family of routers, versions v1.6.0-v1.8.0.
 
 The script will also install a default blacklist setup, here is the stanza (show service dns forwarding):

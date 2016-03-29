@@ -120,8 +120,9 @@ func (c *Cfg) ExcludedDomains(a *Args) (pass bool) {
 			pkeys = append(pkeys, pkey)
 			switch pkey {
 			case global.Area.Domains, global.Area.Hosts:
-				inc := data.GetIncludes(l[pkey])
-				l[pkey].Source["pre"] = &config.Src{List: inc, Name: "pre-configured", Type: pkey}
+				if inc := data.GetIncludes(l[pkey]); len(inc) > 0 {
+					l[pkey].Source["pre"] = &config.Src{List: inc, Name: "pre-configured", Type: pkey}
+				}
 			}
 		}
 		sort.Sort(config.Keys(pkeys))
@@ -185,6 +186,9 @@ func (c *Cfg) ConfFiles(a *Args) bool {
 	}
 
 	for k := range l {
+		if inc := data.GetIncludes(l[k]); len(inc) != 0 {
+			l[k].Source["pre"] = &config.Src{List: inc, Name: "pre-configured", Type: k}
+		}
 		for sk := range l[k].Source {
 			s := *l[k].Source[sk]
 			want = append(want, fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name))
@@ -199,7 +203,42 @@ func (c *Cfg) ConfFiles(a *Args) bool {
 	return true
 }
 
-// ConfIP checks configure IP matches redirected blackhole IP in dnsmasq conf files
+// ConfFilesContent checks that all blacklist sources have generated dnsmasq conf files and there aren't any orphans
+func (c *Cfg) ConfFilesContent(a *Args) bool {
+	var (
+		b    *bufio.Scanner
+		err  error
+		got  []string
+		fail = []string{"# Investigate!"}
+		l    = *c.Blacklist
+		pass = true
+	)
+
+	for k := range l {
+		if inc := data.GetIncludes(l[k]); len(inc) != 0 {
+			l[k].Source["pre"] = &config.Src{List: inc, Name: "pre-configured", Type: k}
+		}
+
+		for sk := range l[k].Source {
+			s := *l[k].Source[sk]
+			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
+			if b, err = utils.GetFile(f); err != nil {
+				log.Errorf("Error returned by Getfile(): %v", err)
+				pass = false
+			}
+
+			got = utils.GetStringArray(b, got)
+			if diff := len(data.DiffArray(fail, got[1:])); diff == 0 {
+				log.Errorf("No data found in: %v", f)
+				pass = false
+			}
+		}
+	}
+
+	return pass
+}
+
+// ConfIP checks configured IP matches redirected blackhole IP in dnsmasq conf files
 func (c *Cfg) ConfIP(a *Args) bool {
 	var (
 		b        *bufio.Scanner

@@ -5,6 +5,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"runtime"
@@ -41,25 +42,30 @@ func main() {
 	}
 
 	o := getopts()
+	a := os.Args[1:]
+	if g.Args != nil {
+		a = g.Args
+	}
+	flag.CommandLine.Parse(a)
 
 	switch {
-	case *o.debug == true:
+	case *o.Debug == true:
 		g.Dbg = true
 
-	case *o.poll != 5:
-		poll = time.Duration(*o.poll) * time.Second
+	case *o.Poll != 5:
+		poll = time.Duration(*o.Poll) * time.Second
 		log.Info("Poll duration", poll)
 
-	case *o.test:
+	case *o.Test:
 		code := 0
 		os.Exit(code)
 
-	case *o.version:
+	case *o.Version:
 
 		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n", version, build, githash)
 		os.Exit(0)
 
-	case *o.verb:
+	case *o.Verb:
 		log.SetFormatter(&log.TextFormatter{DisableColors: false})
 		log.SetOutput(os.Stderr)
 
@@ -70,7 +76,6 @@ func main() {
 	blist, err := func() (b *c.Blacklist, err error) {
 		switch g.WhatOS {
 		case g.TestOS:
-			dnsmasq = "echo -n dnsmasq not implemented on " + g.WhatOS
 			b, err = c.Get(c.Testdata, g.Area.Root)
 			if err != nil {
 				return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
