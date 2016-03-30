@@ -36,8 +36,8 @@ github.com/britannic/blacklist/config/config.go:134.22,135.21 1 7
 github.com/britannic/blacklist/config/config.go:135.21,137.4 1 7
 github.com/britannic/blacklist/config/config.go:140.20,142.3 1 0
 github.com/britannic/blacklist/config/config.go:151.25,151.42 1 14
-github.com/britannic/blacklist/config/config.go:154.30,154.57 1 50
-github.com/britannic/blacklist/config/config.go:157.35,157.57 1 107
+github.com/britannic/blacklist/config/config.go:154.30,154.57 1 42
+github.com/britannic/blacklist/config/config.go:157.35,157.57 1 100
 github.com/britannic/blacklist/config/config.go:187.28,189.34 1 6
 github.com/britannic/blacklist/config/config.go:192.2,192.14 1 5
 github.com/britannic/blacklist/config/config.go:189.34,191.3 1 1
