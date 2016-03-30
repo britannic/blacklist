@@ -70,7 +70,7 @@ Cfg type of config.Blacklist
 
 ### func (\*Cfg) Blacklistings
 ``` go
-func (c *Cfg) Blacklistings(a *Args) error
+func (c *Cfg) Blacklistings(a *Args) bool
 ```
 Blacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
 
@@ -81,6 +81,14 @@ Blacklistings checks that only configured blacklisted includes are present in {d
 func (c *Cfg) ConfFiles(a *Args) bool
 ```
 ConfFiles checks that all blacklist sources have generated dnsmasq conf files and there aren't any orphans
+
+
+
+### func (\*Cfg) ConfFilesContent
+``` go
+func (c *Cfg) ConfFilesContent(a *Args) bool
+```
+ConfFilesContent checks that all blacklist sources have generated dnsmasq conf files and there aren't any orphans
 
 
 

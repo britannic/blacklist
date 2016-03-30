@@ -36,21 +36,21 @@ type Cfg struct {
 var rx = regx.Regex
 
 // Blacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
-func (c *Cfg) Blacklistings(a *Args) error {
+func (c *Cfg) Blacklistings(a *Args) bool {
 	var (
-		b   *bufio.Scanner
-		err error
-		got []string
-		l   = *c.Blacklist
+		b    *bufio.Scanner
+		err  error
+		got  []string
+		l    = *c.Blacklist
+		pass = true
 	)
 
 	for k := range l {
 		if len(l[k].Include) > 0 {
-
 			f := fmt.Sprintf(a.Fname, k)
-
 			if b, err = utils.GetFile(f); err != nil {
-				return err
+				log.Errorf("utils.GetFile(%v): %v", f, err)
+				pass = false
 			}
 
 			for b.Scan() {
@@ -61,12 +61,12 @@ func (c *Cfg) Blacklistings(a *Args) error {
 			want := l[k].Include
 
 			if len(data.DiffArray(want, got)) != 0 {
-				err = fmt.Errorf("Includes not correct in %v\n\tGot: %v\n\tWant: %v", f, got, want)
-				return err
+				log.Errorf("Includes not correct in %v\n\tGot: %v\n\tWant: %v", f, got, want)
+				pass = false
 			}
 		}
 	}
-	return err
+	return pass
 }
 
 // Exclusions checks that configured exclusions are excluded from dnsmasq conf files

@@ -1,10 +1,11 @@
-package regx
+package regx_test
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/britannic/blacklist/utils"
+	"github.com/britannic/blacklist/regx"
+	. "github.com/britannic/blacklist/testutils"
 )
 
 type test struct {
@@ -18,25 +19,19 @@ type config map[string]test
 func TestGet(t *testing.T) {
 
 	for k := range c {
-		match := Get(k, c[k].input)
-		if len(match) == 0 {
-			t.Fatalf("%v results fail: %v", k, match)
-		}
-		if match[c[k].index] != c[k].result {
-			t.Errorf("%v match fail: %v", k, match)
-		}
+		got := regx.Get(k, c[k].input)
+		Assert(t, len(got) > 0, fmt.Sprintf("%v results fail: %v", k, got), c[k])
+		Equals(t, c[k].result, got[c[k].index])
 	}
 }
 
 func TestRegex(t *testing.T) {
-	rx := Regex
+	rx := regx.Regex
 	rxtest := make(map[string][]byte)
 	rxtest["want"] = append(rxtest["want"], rxout...)
 	rxtest["got"] = append(rxtest["got"], fmt.Sprint(rx)...)
 
-	if !utils.CmpHash(rxtest["got"], rxtest["want"]) {
-		t.Errorf("Got: %v Want: %v", string(rxtest["got"]), string(rxtest["want"]))
-	}
+	Equals(t, rxtest["want"], rxtest["got"])
 }
 
 var (

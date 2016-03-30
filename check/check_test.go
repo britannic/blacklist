@@ -1,9 +1,10 @@
 package check_test
 
 import (
-	"log"
+	"os"
 	"testing"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/check"
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
@@ -12,19 +13,26 @@ import (
 )
 
 var (
-	blacklist *config.Blacklist
-	live      = &check.Cfg{Blacklist: blacklist}
-	dmsqdir   string
+	blacklist        *config.Blacklist
+	live             = &check.Cfg{Blacklist: blacklist}
+	dmsqdir, logfile string
 )
 
 func init() {
 	switch global.WhatOS {
 	case global.TestOS:
 		dmsqdir = "../testdata"
+		logfile = dmsqdir + "/blacklist.log"
 	default:
 		dmsqdir = global.DmsqDir
 	}
 	var err error
+	f, err := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND, 0755)
+	if err == nil {
+		log.SetFormatter(&log.TextFormatter{DisableColors: true})
+		log.SetOutput(f)
+	}
+
 	live.Blacklist, err = config.Get(config.Testdata, global.Area.Root)
 
 	if err != nil {
@@ -37,8 +45,39 @@ func TestBlacklistings(t *testing.T) {
 		Fname: dmsqdir + "/%v" + ".pre-configured" + global.Fext,
 	}
 
-	err := live.Blacklistings(a)
+	Assert(t, live.Blacklistings(a), "Blacklistings failed.", a)
+
+	badData := `blacklist {
+        disabled false
+        dns-redirect-ip 0.0.0.0
+        domains {
+            include broken.adsrvr.org
+            include broken.adtechus.net
+            include broken.advertising.com
+            include broken.centade.com
+            include broken.doubleclick.net
+            include broken.free-counter.co.uk
+            include broken.intellitxt.com
+            include broken.kiosked.com
+        }
+        hosts {
+            include broken.beap.gemini.yahoo.com
+						include broken.beap.gemini.msn.com
+        }
+    }`
+
+	var err error
+	failed := &check.Cfg{Blacklist: blacklist}
+	failed.Blacklist, err = config.Get(badData, global.Area.Root)
 	OK(t, err)
+
+	Assert(t, !failed.Blacklistings(a), "Blacklistings should have failed.", failed)
+
+	a = &check.Args{
+		Fname: dmsqdir + "/%v" + ".--BROKEN--" + global.Fext,
+	}
+
+	Assert(t, !live.Blacklistings(a), "Blacklistings should have failed.", a)
 }
 
 func TestExclusions(t *testing.T) {

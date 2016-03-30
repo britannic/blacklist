@@ -53,7 +53,7 @@ IsDisabled returns true if blacklist is disabled
 
 ## func ListFiles
 ``` go
-func ListFiles(dir string) (files []string)
+func ListFiles(d string) (files []string, err error)
 ```
 ListFiles returns a list of blacklist files
 
@@ -70,6 +70,13 @@ Process extracts hosts/domains from downloaded raw content
 func PurgeFiles(a AreaURLs, d string) error
 ```
 PurgeFiles removes any files that are no longer configured
+
+
+## func SortKeys
+``` go
+func SortKeys(urls AreaURLs) (pkeys c.Keys)
+```
+SortKeys returns a sorted list of c.Keys
 
 
 ## func StripPrefixAndSuffix

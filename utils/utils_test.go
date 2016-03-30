@@ -1,15 +1,15 @@
 package utils_test
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"os/user"
-	"reflect"
 	"testing"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/global"
+	. "github.com/britannic/blacklist/testutils"
 	"github.com/britannic/blacklist/utils"
 )
 
@@ -37,24 +37,18 @@ func cmpID(t *testing.T, want, got *user.User) {
 
 func TestBasename(t *testing.T) {
 	dir := utils.Basename("/usr/blacklist/testing.txt")
-	if dir != "testing" {
-		t.Error(dir)
-	}
+	Equals(t, "testing", dir)
 }
 
 func TestCmpHash(t *testing.T) {
 	//MD5 ("The rest is history!") = 0ba11c67af902879d20130d9ab414771
 	want := d
-
 	got := want
-	if !utils.CmpHash(want, got) {
-		t.Error("Failed!")
-	}
+
+	Equals(t, want, got)
 
 	got = append(got, "This is different!"...)
-	if utils.CmpHash(want, got) {
-		t.Error("Failed!")
-	}
+	NotEquals(t, want, got)
 }
 
 func TestByteArray(t *testing.T) {
@@ -64,22 +58,16 @@ func TestByteArray(t *testing.T) {
 	)
 
 	f := fmt.Sprintf("%v/delete.txt", dmsqDir)
-	if err := utils.WriteFile(f, d); err != nil {
-		t.Errorf("Error writing file: %v", err)
-	}
+	err := utils.WriteFile(f, d)
+	OK(t, err)
 
 	b, err := utils.GetFile(f)
-	if err != nil {
-		t.Errorf("Failed with error: %v", err)
-	}
+	OK(t, err)
 
 	_ = os.Remove(f)
 
 	got = utils.GetByteArray(b, got)
-
-	if !utils.CmpHash(want, got) {
-		t.Errorf("Data not the same - Got: %v\nWant: %v\n", string(got[:]), string(want[:]))
-	}
+	Equals(t, want, got)
 }
 
 func TestGetFile(t *testing.T) {
@@ -89,21 +77,16 @@ func TestGetFile(t *testing.T) {
 	)
 
 	f := fmt.Sprintf("%v/delete.txt", dmsqDir)
-	if err := utils.WriteFile(f, d); err != nil {
-		t.Errorf("Error writing file: %v", err)
-	}
+	err := utils.WriteFile(f, d)
+	OK(t, err)
 
 	b, err := utils.GetFile(f)
-	if err != nil {
-		t.Errorf("Failed with error: %v", err)
-	}
+	OK(t, err)
 
 	_ = os.Remove(f)
 
 	got = utils.GetByteArray(b, got)
-	if !utils.CmpHash(want, got) {
-		t.Errorf("Data not the same - Got: %v\nWant: %v\n", string(got[:]), string(want[:]))
-	}
+	Equals(t, want, got)
 }
 
 func TestReloadDNS(t *testing.T) {
@@ -138,58 +121,45 @@ func TestReloadDNS(t *testing.T) {
 		s, err := utils.ReloadDNS(run.test)
 		switch run.expect {
 		case false:
-			if err == nil {
-				t.Errorf("Test should fail, so ReloadDNS() error shouldn't be nil!")
-			}
+			Assert(t, err != nil, fmt.Sprint("Test should fail, so ReloadDNS() error shouldn't be nil!"), err)
+
 		case true:
-			if err != nil {
-				t.Errorf("Test should pass, so ReloadDNS() error should be nil! Error: %v", err)
-			}
+			Assert(t, err == nil, fmt.Sprint("Test should pass, so ReloadDNS() error should be nil!"), err)
 		}
 
-		if s != run.want {
-			t.Errorf("Want: %q, Got: %q", run.want, s)
-		}
+		Equals(t, s, run.want)
 	}
 
 }
 
 func TestStringArray(t *testing.T) {
 	var (
+		b    *bufio.Scanner
 		got  []string
 		want = []string{"The rest is history!"}
 	)
 
 	f := fmt.Sprintf("%v/delete.txt", dmsqDir)
-	if err := utils.WriteFile(f, d); err != nil {
-		t.Errorf("Error writing file: %v", err)
-	}
+	err := utils.WriteFile(f, d)
+	OK(t, err)
 
-	b, err := utils.GetFile(f)
-	if err != nil {
-		t.Errorf("Failed with error: %v", err)
-	}
+	b, err = utils.GetFile(f)
+	OK(t, err)
 
 	_ = os.Remove(f)
 
 	got = utils.GetStringArray(b, got)
-	if !reflect.DeepEqual(want, got) {
-		t.Errorf("Data not the same - Got: %v\nWant: %v\n", got, want)
-	}
+	Equals(t, want, got)
 }
 
 func TestIsAdmin(t *testing.T) {
 	want, err := user.Current()
-	if err != nil {
-		t.Errorf("Current: %v", err)
-	}
+	OK(t, err)
 
 	got, err := user.Lookup(want.Username)
-	if err != nil {
-		t.Errorf("Lookup: %v", err)
-	}
+	OK(t, err)
 
-	cmpID(t, want, got)
+	Equals(t, want, got)
 
 	osAdmin := false
 	if got.Uid == "0" {
@@ -197,10 +167,11 @@ func TestIsAdmin(t *testing.T) {
 	}
 
 	switch {
-	case !osAdmin && utils.IsAdmin():
-		t.Errorf("Standard user: %v", got)
-	case osAdmin && !utils.IsAdmin():
-		t.Errorf("Root: %v", got)
+	case !osAdmin:
+		Assert(t, !utils.IsAdmin(), fmt.Sprintf("Should be standard user, got: %v", got.Uid), want)
+
+	case osAdmin:
+		Assert(t, utils.IsAdmin(), fmt.Sprintf("Should be root user, got: %v", got.Uid), want)
 	}
 }
 
@@ -218,21 +189,14 @@ func TestWriteFile(t *testing.T) {
 	}
 
 	f, err := ioutil.TempFile(tFile.tdir, tFile.tfile)
-	if err != nil {
-		log.Errorf("open %s file: %s", f.Name(), err)
-	}
+	OK(t, err)
 
 	defer os.Remove(f.Name())
 	defer f.Close()
 
 	err = utils.WriteFile(f.Name(), d)
-	if err != nil {
-		t.Errorf("Error writing %s file: %s", f.Name(), err)
-	}
+	OK(t, err)
 
 	err = utils.WriteFile(tFile.badfile, d)
-	if err == nil {
-		t.Errorf("Should not be able to write %s file: %v", tFile.badfile, err)
-	}
-
+	NotOK(t, err)
 }

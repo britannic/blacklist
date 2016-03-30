@@ -214,7 +214,7 @@ var (
 
 Node: domains
 	Disabled: false
-		Include(s):
+	Include(s):
 		adsrvr.org
 		adtechus.net
 		advertising.com
@@ -231,7 +231,9 @@ Node: domains
 
 Node: hosts
 	Disabled: false
-		Source: adaway
+	Include(s):
+		beap.gemini.yahoo.com
+	Source: adaway
 		Disabled: false
 		Description: Blocking mobile ad providers and some analytics providers
 		Prefix: "127.0.0.1 "

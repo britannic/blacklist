@@ -39,7 +39,7 @@ func (b Blacklist) SortSKeys() (skeys Keys) {
 		}
 	}
 	sort.Sort(Keys(skeys))
-	return
+	return skeys
 }
 
 // String returns pretty print for the Blacklist struct
@@ -53,15 +53,15 @@ func (b Blacklist) String() (result string) {
 			result += fmt.Sprintf("Redirect IP: %v\n\t", b[pkey].IP)
 		}
 
-		if k := b[pkey].Exclude; len(k) > 1 {
+		if k := b[pkey].Exclude; len(k) > 0 {
 			result += "Exclude(s):\n"
 			for _, exclude := range b[pkey].Exclude {
 				result += fmt.Sprintf("\t\t%v\n", exclude)
 			}
 		}
 
-		if k := b[pkey].Include; len(k) > 1 {
-			result += "\tInclude(s):\n"
+		if k := b[pkey].Include; len(k) > 0 {
+			result += "Include(s):\n"
 			for _, include := range b[pkey].Include {
 				result += fmt.Sprintf("\t\t%v\n", include)
 			}

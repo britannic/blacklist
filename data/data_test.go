@@ -3,10 +3,14 @@ package data_test
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
+	"os"
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	g "github.com/britannic/blacklist/global"
@@ -15,15 +19,51 @@ import (
 	"github.com/britannic/blacklist/utils"
 )
 
-var dmsqDir string
+var dmsqdir, logfile string
 
 func init() {
 	switch g.WhatOS {
 	case g.TestOS:
-		dmsqDir = "../testdata"
+		dmsqdir = "../testdata"
+		logfile = dmsqdir + "/blacklist.log"
+
 	default:
-		dmsqDir = g.DmsqDir
+		dmsqdir = g.DmsqDir
 	}
+	f, err := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND, 0755)
+	if err == nil {
+		log.SetFormatter(&log.TextFormatter{DisableColors: true})
+		log.SetOutput(f)
+	}
+}
+
+func shuffleArray(slice []string) {
+	rand.Seed(time.Now().UnixNano())
+	n := len(slice)
+	for i := n - 1; i > 0; i-- {
+		j := rand.Intn(i + 1)
+		slice[i], slice[j] = slice[j], slice[i]
+	}
+}
+
+func TestDiffArray(t *testing.T) {
+	biggest := []string{"one", "two", "three", "four", "five", "six"}
+	smallest := []string{"one", "two", "three"}
+	want := []string{"five", "four", "six"}
+
+	got := data.DiffArray(biggest, smallest)
+	Equals(t, want, got)
+
+	got = data.DiffArray(smallest, biggest)
+	Equals(t, want, got)
+
+	shuffleArray(biggest)
+	got = data.DiffArray(smallest, biggest)
+	Equals(t, want, got)
+
+	shuffleArray(smallest)
+	got = data.DiffArray(smallest, biggest)
+	Equals(t, want, got)
 }
 
 func TestExclusions(t *testing.T) {
@@ -99,9 +139,6 @@ func TestGetHTTP(t *testing.T) {
 func TestGetUrls(t *testing.T) {
 	blist, err := config.Get(config.Testdata, g.Area.Root)
 	OK(t, err)
-	// if err != nil {
-	// 	t.Errorf("unable to get configuration data, error code: %v\n", err)
-	// }
 
 	b := *blist
 	a := data.GetURLs(b)
@@ -110,12 +147,7 @@ func TestGetUrls(t *testing.T) {
 		for _, url := range a[k] {
 			if g, ok := b[k].Source[url.Name]; ok {
 				want := g.URL
-				// got := url.URL
 				Assert(t, want == url.URL, fmt.Sprintf("%v URL mismatch:", url.Name), url)
-				// if want != url.URL {
-				// 	t.Errorf("%v URL mismatch:", url.Name)
-				// 	fmt.Printf("Wanted %v\nGot: %v", want, got)
-				// }
 			}
 		}
 	}
@@ -124,13 +156,32 @@ func TestGetUrls(t *testing.T) {
 func TestIsDisabled(t *testing.T) {
 	c := make(config.Blacklist)
 	c[g.Area.Root] = &config.Node{}
-	c[g.Area.Root].Disable = true
 
-	Equals(t, true, c[g.Area.Root].Disable)
+	c[g.Area.Root].Disable = true
+	Equals(t, true, data.IsDisabled(c, g.Area.Root))
 
 	c[g.Area.Root].Disable = false
+	Equals(t, false, data.IsDisabled(c, g.Area.Root))
+}
 
-	Equals(t, false, c[g.Area.Root].Disable)
+func TestListFiles(t *testing.T) {
+	b, err := config.Get(config.Testdata, g.Area.Root)
+	OK(t, err)
+
+	urls := data.GetURLs(*b)
+
+	var want []string
+
+	for _, k := range data.SortKeys(urls) {
+		for _, s := range urls[k] {
+			want = append(want, fmt.Sprintf(g.FStr, dmsqdir, s.Type, s.Name))
+		}
+	}
+
+	sort.Strings(want)
+	got, err := data.ListFiles(dmsqdir)
+	OK(t, err)
+	Equals(t, want, got)
 
 }
 
@@ -138,19 +189,13 @@ func TestProcess(t *testing.T) {
 	for _, s := range src {
 		ex := make(config.Dict)
 		dex := make(config.Dict)
-		f := fmt.Sprintf("%v/tdata.%v.%v", dmsqDir, s.Type, s.Name)
+		f := fmt.Sprintf("%v/tdata.%v.%v", dmsqdir, s.Type, s.Name)
 		testdata, err := utils.GetFile(f)
 		OK(t, err)
-		// if err != nil {
-		// 	t.Errorf("Cannot open %v", f)
-		// }
 
-		f = fmt.Sprintf("%v/sdata.%v.%v", dmsqDir, s.Type, s.Name)
+		f = fmt.Sprintf("%v/sdata.%v.%v", dmsqdir, s.Type, s.Name)
 		staticdata, err := utils.GetFile(f)
 		OK(t, err)
-		// if err != nil {
-		// 	t.Errorf("Cannot open %v", f)
-		// }
 
 		var wdata string
 		for staticdata.Scan() {
@@ -168,34 +213,32 @@ func TestPurgeFiles(t *testing.T) {
 	b, err := config.Get(config.Testdata, g.Area.Root)
 	OK(t, err)
 
-	sortKeys := func(urls data.AreaURLs) (pkeys config.Keys) {
-		for pkey := range urls {
-			pkeys = append(pkeys, pkey)
-		}
-		sort.Sort(config.Keys(pkeys))
-		return pkeys
-	}
-
 	urls := data.GetURLs(*b)
 
 	var want []string
 
-	for _, k := range sortKeys(urls) {
+	for _, k := range data.SortKeys(urls) {
 		for _, s := range urls[k] {
-			want = append(want, fmt.Sprintf(g.FStr, dmsqDir, s.Type, s.Name))
+			want = append(want, fmt.Sprintf(g.FStr, dmsqdir, s.Type, s.Name))
 			for i := 0; i < 5; i++ {
 				data := []byte{84, 104, 101, 32, 114, 101, 115, 116, 32, 105, 115, 32, 104, 105, 115, 116, 111, 114, 121, 33}
-				utils.WriteFile(fmt.Sprintf("%v/%v.%v[%v]%v", dmsqDir, s.Type, s.Name, i, g.Fext), data)
+				err := utils.WriteFile(fmt.Sprintf("%v/%v.%v[%v]%v", dmsqdir, s.Type, s.Name, i, g.Fext), data)
+				OK(t, err)
 			}
 		}
 	}
 
-	sort.Strings(want)
-
-	err = data.PurgeFiles(urls, dmsqDir)
+	err = data.PurgeFiles(urls, dmsqdir)
 	OK(t, err)
 
-	Equals(t, want, data.ListFiles(dmsqDir))
+	got, err := data.ListFiles(dmsqdir)
+	OK(t, err)
+
+	sort.Strings(want)
+	Equals(t, want, got)
+
+	err = data.PurgeFiles(urls, "Break it Z...")
+	NotOK(t, err)
 }
 
 func TestStripPrefixAndSuffix(t *testing.T) {
@@ -216,6 +259,10 @@ func TestStripPrefixAndSuffix(t *testing.T) {
 		r, ok := data.StripPrefixAndSuffix(l, s.Prfx, rx)
 		Assert(t, tline == r, fmt.Sprintf("stripPrefix() failed for %v", s.Name), r)
 		Assert(t, ok, fmt.Sprintf("stripPrefix() failed for %v", s.Name), ok)
+
+		r, ok = data.StripPrefixAndSuffix(tline, "http", rx)
+		Assert(t, tline == r, fmt.Sprintf("stripPrefix() failed for %v", s.Name), r)
+		Assert(t, ok == false, fmt.Sprintf("stripPrefix() failed for %v", s.Name), ok)
 	}
 }
 

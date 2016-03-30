@@ -146,7 +146,7 @@ func TestGetBlacklists(t *testing.T) {
 
 		a.Ex = data.GetExcludes(*live.Blacklist)
 
-		OK(t, live.Blacklistings(a))
+		Assert(t, true, "Blacklist failure", live.Blacklistings(a))
 
 		Assert(t, true, "Exclusions failure", live.Exclusions(a))
 

@@ -6,9 +6,10 @@
 package global
 
 import (
-	"log"
 	"os"
 	"runtime"
+
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/britannic/blacklist/utils"
 )

@@ -11,9 +11,6 @@ Package global sets project scoped variables and constants
 ``` go
 const (
 
-    // DNSRestart defines the dnsmasq restart command
-    DNSRestart = "service dnsmasq restart"
-
     // Fext defines the blacklist filename extension
     Fext = ".blacklist.conf"
 
@@ -38,6 +35,9 @@ var (
     // Dbg sets the Debug flag
     Dbg = false
 
+    // DNSRestart defines the dnsmasq restart command
+    DNSRestart = "service dnsmasq restart"
+
     // DmsqDir defines dnsmasq directory location
     DmsqDir string
 
@@ -57,7 +57,7 @@ var (
 
 ## func SetVars
 ``` go
-func SetVars(WhatOS string)
+func SetVars(OS string)
 ```
 SetVars conditionally sets global variables based on the current OS
 

@@ -29,29 +29,42 @@ func debug(data []byte, err error) {
 	case err == nil:
 		fmt.Printf("%s\n\n", data)
 	default:
-		log.Fatalf("%s\n\n", err)
+		log.Errorf("%s\n\n", err)
 	}
 }
 
 // DiffArray returns the delta of two arrays
 func DiffArray(a, b []string) (diff []string) {
-	dmap := make(c.Dict)
-	for _, d := range b {
-		dmap[d] = 0
+	var biggest, smallest []string
+
+	switch {
+	case len(a) > len(b), len(a) == len(b):
+		biggest = a
+		smallest = b
+
+	case len(a) < len(b):
+		biggest = b
+		smallest = a
 	}
 
-	for _, key := range a {
-		if !dmap.KeyExists(key) {
-			diff = append(diff, key)
+	dmap := make(c.Dict)
+	for _, k := range smallest {
+		dmap[k] = 0
+	}
+
+	for _, k := range biggest {
+		if !dmap.KeyExists(k) {
+			diff = append(diff, k)
 		}
 	}
-	return
+
+	sort.Strings(diff)
+	return diff
 }
 
 // IsDisabled returns true if blacklist is disabled
 func IsDisabled(c c.Blacklist, root string) bool {
-	r := c[root].Disable
-	return r
+	return c[root].Disable
 }
 
 // GetExcludes returns a map[string]int of excludes
@@ -80,7 +93,7 @@ func GetHTTP(URL string) (body []byte, err error) {
 		debug(httputil.DumpRequestOut(req, true))
 		resp, err = (&http.Client{}).Do(req)
 	} else {
-		log.Printf("Unable to form request for %s, error: %v", URL, err)
+		log.Errorf("Unable to form request for %s, error: %v", URL, err)
 	}
 
 	if err == nil {
@@ -156,18 +169,19 @@ func GetURLs(b c.Blacklist) (a AreaURLs) {
 }
 
 // ListFiles returns a list of blacklist files
-func ListFiles(dir string) (files []string) {
-	dlist, err := ioutil.ReadDir(dir)
+func ListFiles(d string) (files []string, err error) {
+	dlist, err := ioutil.ReadDir(d)
 	if err != nil {
-		log.Fatal(err)
+		return files, err
 	}
 
 	for _, f := range dlist {
 		if strings.Contains(f.Name(), g.Fext) {
-			files = append(files, dir+"/"+f.Name())
+			files = append(files, d+"/"+f.Name())
 		}
 	}
-	return files
+
+	return files, err
 }
 
 // Process extracts hosts/domains from downloaded raw content
@@ -251,14 +265,24 @@ func (p purgeErrors) String() (r string) {
 
 // PurgeFiles removes any files that are no longer configured
 func PurgeFiles(a AreaURLs, d string) error {
-	var clist []string
+	var (
+		clist, dlist []string
+		err          error
+	)
+
+	if _, err = os.Stat(d); os.IsNotExist(err) {
+		return fmt.Errorf("%v", err)
+	}
+
 	for k := range a {
 		for _, s := range a[k] {
 			clist = append(clist, fmt.Sprintf(g.FStr, d, s.Type, s.Name))
 		}
 	}
 
-	dlist := ListFiles(d)
+	if dlist, err = ListFiles(d); err != nil {
+		return err
+	}
 
 	errors := make(purgeErrors, 0)
 	for _, f := range DiffArray(dlist, clist) {
@@ -268,29 +292,34 @@ func PurgeFiles(a AreaURLs, d string) error {
 	}
 
 	if len(errors) > 0 {
+		fmt.Println(errors)
 		return fmt.Errorf("%v", errors)
 	}
 
 	return nil
 }
 
+// SortKeys returns a sorted list of c.Keys
+func SortKeys(urls AreaURLs) (pkeys c.Keys) {
+	for pkey := range urls {
+		pkeys = append(pkeys, pkey)
+	}
+	sort.Sort(c.Keys(pkeys))
+	return pkeys
+}
+
 // StripPrefixAndSuffix strips prefix and StripPrefixAndSuffix
 func StripPrefixAndSuffix(s string, p string, rx *regx.RGX) (string, bool) {
-	var b bool
+	b := true
 
 	switch {
 	case p == "http":
 		if !rx.HTTP.MatchString(s) {
-			return s, b
+			return s, false
 		}
 		s = rx.HTTP.FindStringSubmatch(s)[1]
-		b = true
-
-	case p == "":
-		b = true
 
 	case strings.HasPrefix(s, p):
-		b = true
 		s = strings.TrimPrefix(s, p)
 	}
 
