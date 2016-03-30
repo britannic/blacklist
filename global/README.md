@@ -50,6 +50,12 @@ var (
     // Program is the current binary's filename
     Program = utils.Basename(os.Args[0])
 
+    // TargetArch is the host platforms CPU
+    TargetArch = "mips64"
+
+    // WhatArch is the current operating system
+    WhatArch string
+
     // WhatOS is the current operating system
     WhatOS string
 )
@@ -57,7 +63,7 @@ var (
 
 ## func SetVars
 ``` go
-func SetVars(OS string)
+func SetVars(ARCH string)
 ```
 SetVars conditionally sets global variables based on the current OS
 

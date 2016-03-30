@@ -61,20 +61,33 @@ var (
 	// Program is the current binary's filename
 	Program = utils.Basename(os.Args[0])
 
+	// TargetArch is the host platforms CPU
+	TargetArch = "mips64"
+
+	// WhatArch is the current operating system
+	WhatArch string
+
 	// WhatOS is the current operating system
 	WhatOS string
 )
 
 func init() {
 	WhatOS = runtime.GOOS
-	SetVars(WhatOS)
+	WhatArch = runtime.GOARCH
+
+	SetVars(WhatArch)
 }
 
 // SetVars conditionally sets global variables based on the current OS
-func SetVars(OS string) {
+func SetVars(ARCH string) {
 
-	switch OS {
-	case TestOS:
+	switch ARCH {
+	case TargetArch:
+		DmsqDir = "/etc/dnsmasq.d"
+		FStr = "%v/%v.%v" + Fext
+		Logfile = "/var/log/blacklist.log"
+
+	default:
 		cwd, err := os.Getwd()
 		if err != nil {
 			log.Fatal("Cannot determine current directory - exiting")
@@ -83,10 +96,5 @@ func SetVars(OS string) {
 
 		DNSRestart = "echo -n dnsmasq not implemented on " + WhatOS
 		Logfile = DmsqDir + "/blacklist.log"
-
-	default:
-		DmsqDir = "/etc/dnsmasq.d"
-		FStr = "%v/%v.%v" + Fext
-		Logfile = "/var/log/blacklist.log"
 	}
 }

@@ -19,7 +19,7 @@ type testTable struct {
 func TestSetVars(t *testing.T) {
 	cwd, err := os.Getwd()
 	OK(t, err)
-	platforms := []string{"darwin", "linux"}
+	platforms := []string{"amd64", "mips64"}
 
 	tests := []testTable{
 		{test: &g.Area.Domains, exp: "domains", alt: "domains"},
@@ -36,13 +36,13 @@ func TestSetVars(t *testing.T) {
 	}
 
 	g.WhatOS = runtime.GOOS
-	OS := g.WhatOS
-	for _, OS = range platforms {
-		g.SetVars(OS)
-		fmt.Println(OS)
+	Arch := g.WhatArch
+	for _, Arch = range platforms {
+		g.SetVars(Arch)
+
 		for _, run := range tests {
 			expect := run.exp
-			if OS == g.TestOS {
+			if Arch == g.TargetArch {
 				expect = run.alt
 			}
 
