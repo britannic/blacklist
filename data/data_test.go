@@ -22,14 +22,15 @@ import (
 var dmsqdir, logfile string
 
 func init() {
-	switch g.WhatOS {
-	case g.TestOS:
-		dmsqdir = "../testdata"
-		logfile = dmsqdir + "/blacklist.log"
+	switch g.WhatArch {
+	case g.TargetArch:
+		dmsqdir = g.DmsqDir
 
 	default:
-		dmsqdir = g.DmsqDir
+		dmsqdir = "../testdata"
+		logfile = dmsqdir + "/blacklist.log"
 	}
+
 	f, err := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND, 0755)
 	if err == nil {
 		log.SetFormatter(&log.TextFormatter{DisableColors: true})

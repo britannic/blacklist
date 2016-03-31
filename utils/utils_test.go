@@ -20,11 +20,11 @@ var (
 )
 
 func init() {
-	switch global.WhatOS {
-	case global.TestOS:
-		dmsqDir = "../testdata"
-	default:
+	switch global.WhatArch {
+	case global.TargetArch:
 		dmsqDir = global.DmsqDir
+	default:
+		dmsqDir = "../testdata"
 	}
 }
 

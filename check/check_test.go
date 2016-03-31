@@ -19,12 +19,13 @@ var (
 )
 
 func init() {
-	switch global.WhatOS {
-	case global.TestOS:
+	switch global.WhatArch {
+	case global.TargetArch:
+		dmsqdir = global.DmsqDir
+
+	default:
 		dmsqdir = "../testdata"
 		logfile = dmsqdir + "/blacklist.log"
-	default:
-		dmsqdir = global.DmsqDir
 	}
 	var err error
 	f, err := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND, 0755)
