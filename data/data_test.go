@@ -15,8 +15,8 @@ import (
 	"github.com/britannic/blacklist/data"
 	g "github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/regx"
-	. "github.com/britannic/blacklist/testutils"
 	"github.com/britannic/blacklist/utils"
+	. "github.com/britannic/testutils"
 )
 
 var dmsqdir, logfile string

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/britannic/blacklist/regx"
-	. "github.com/britannic/blacklist/testutils"
+	. "github.com/britannic/testutils"
 )
 
 type test struct {

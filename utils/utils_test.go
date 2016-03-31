@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	"github.com/britannic/blacklist/global"
-	. "github.com/britannic/blacklist/testutils"
 	"github.com/britannic/blacklist/utils"
+	. "github.com/britannic/testutils"
 )
 
 var (

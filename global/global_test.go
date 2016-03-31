@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	g "github.com/britannic/blacklist/global"
-	. "github.com/britannic/blacklist/testutils"
+	. "github.com/britannic/testutils"
 )
 
 type testTable struct {

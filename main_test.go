@@ -11,7 +11,7 @@ import (
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	"github.com/britannic/blacklist/global"
-	. "github.com/britannic/blacklist/testutils"
+	. "github.com/britannic/testutils"
 )
 
 var systemTest *bool
