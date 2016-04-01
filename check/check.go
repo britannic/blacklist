@@ -292,12 +292,16 @@ func ConfTemplates(a *Args) bool {
 		return pass
 	}
 
+	fmt.Println("=======================\nGot:")
 	for _, k := range strings.Split(string(b), "\n") {
 		got[k] = 0
+		fmt.Println(k)
 	}
 
+	fmt.Println("=======================\nWant:")
 	for _, k := range strings.Split(a.Data, "\n") {
 		want[k] = 0
+		fmt.Println(k)
 	}
 
 	pass = reflect.DeepEqual(got, want)
