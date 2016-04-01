@@ -11,6 +11,7 @@ import (
 	"net"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -275,27 +276,33 @@ func (c *Cfg) ConfIP(a *Args) bool {
 // ConfTemplates checks for existence/non-existence (governed by installation state) of the blacklist configuration templates
 func ConfTemplates(a *Args) bool {
 	var (
-		err       error
-		got, want []byte
+		b    []byte
+		err  error
+		got  = make(map[string]int)
+		want = make(map[string]int)
+		pass bool
 	)
 
 	cmd := exec.Command("/bin/bash")
 	find := "/usr/bin/find -s"
 	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v", find, a.Dir))
 
-	if got, err = cmd.Output(); err != nil {
+	if b, err = cmd.Output(); err != nil {
 		log.Error(err)
-		return false
+		return pass
 	}
 
-	want = append(want, a.Data...)
-
-	if !utils.CmpHash(got, want) {
-		fmt.Printf("Got: %v\nWant: %v\n", string(got), string(want))
-		return false
+	for _, k := range strings.Split(string(b), "\n") {
+		got[k] = 0
 	}
 
-	return true
+	for _, k := range strings.Split(a.Data, "\n") {
+		want[k] = 0
+	}
+
+	pass = reflect.DeepEqual(got, want)
+
+	return pass
 }
 
 // ExtractHost returns just the FQDN in a []string
