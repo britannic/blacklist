@@ -1,103 +1,42 @@
-"Node: blacklist
-	Disabled: false
-	Redirect IP: 0.0.0.0
-	Exclude(s):
-		122.2o7.net
-		1e100.net
-		adobedtm.com
-		akamai.net
-		amazon.com
-		amazonaws.com
-		apple.com
-		ask.com
-		avast.com
-		bitdefender.com
-		cdn.visiblemeasures.com
-		cloudfront.net
-		coremetrics.com
-		edgesuite.net
-		freedns.afraid.org
-		github.com
-		githubusercontent.com
-		google.com
-		googleadservices.com
-		googleapis.com
-		googleusercontent.com
-		gstatic.com
-		gvt1.com
-		gvt1.net
-		hb.disney.go.com
-		hp.com
-		hulu.com
-		images-amazon.com
-		msdn.com
-		paypal.com
-		rackcdn.com
-		schema.org
-		skype.com
-		smacargo.com
-		sourceforge.net
-		ssl-on9.com
-		ssl-on9.net
-		static.chartbeat.com
-		storage.googleapis.com
-		windows.net
-		yimg.com
-		ytimg.com
-
-Node: domains
-	Disabled: false
-		Include(s):
-		adsrvr.org
-		adtechus.net
-		advertising.com
-		centade.com
-		doubleclick.net
-		free-counter.co.uk
-		intellitxt.com
-		kiosked.com
-	Source: malc0de
-		Disabled: false
-		Description: List of zones serving malicious executables observed by malc0de.com/database/
-		Prefix: \"zone \"
-		URL: http://malc0de.com/bl/ZONES
-
-Node: hosts
-	Disabled: false
-		Source: adaway
-		Disabled: false
-		Description: Blocking mobile ad providers and some analytics providers
-		Prefix: \"127.0.0.1 \"
-		URL: http://adaway.org/hosts.txt
-	Source: malwaredomainlist
-		Disabled: false
-		Description: 127.0.0.1 based host and domain list
-		Prefix: \"127.0.0.1 \"
-		URL: http://www.malwaredomainlist.com/hostslist/hosts.txt
-	Source: openphish
-		Disabled: false
-		Description: OpenPhish automatic phishing detection
-		Prefix: \"http\"
-		URL: https://openphish.com/feed.txt
-	Source: someonewhocares
-		Disabled: false
-		Description: Zero based host and domain list
-		Prefix: \"0.0.0.0\"
-		URL: http://someonewhocares.org/hosts/zero/
-	Source: volkerschatz
-		Disabled: false
-		Description: Ad server blacklists
-		Prefix: \"http\"
-		URL: http://www.volkerschatz.com/net/adpaths
-	Source: winhelp2002
-		Disabled: false
-		Description: Zero based host and domain list
-		Prefix: \"0.0.0.0 \"
-		URL: http://winhelp2002.mvps.org/hosts.txt
-	Source: yoyo
-		Disabled: false
-		Description: Fully Qualified Domain Names only - no prefix to strip
-		Prefix: \"\"
-		URL: http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext
-
-"
+../payload/blacklist
+../payload/blacklist/disabled
+../payload/blacklist/disabled/node.def
+../payload/blacklist/dns-redirect-ip
+../payload/blacklist/dns-redirect-ip/node.def
+../payload/blacklist/domains
+../payload/blacklist/domains/dns-redirect-ip
+../payload/blacklist/domains/dns-redirect-ip/node.def
+../payload/blacklist/domains/exclude
+../payload/blacklist/domains/exclude/node.def
+../payload/blacklist/domains/include
+../payload/blacklist/domains/include/node.def
+../payload/blacklist/domains/source
+../payload/blacklist/domains/source/node.tag
+../payload/blacklist/domains/source/node.tag/description
+../payload/blacklist/domains/source/node.tag/description/node.def
+../payload/blacklist/domains/source/node.tag/url
+../payload/blacklist/domains/source/node.tag/url/node.def
+../payload/blacklist/domains/source/node.tag/prefix
+../payload/blacklist/domains/source/node.tag/prefix/node.def
+../payload/blacklist/domains/source/node.def
+../payload/blacklist/domains/node.def
+../payload/blacklist/exclude
+../payload/blacklist/exclude/node.def
+../payload/blacklist/hosts
+../payload/blacklist/hosts/dns-redirect-ip
+../payload/blacklist/hosts/dns-redirect-ip/node.def
+../payload/blacklist/hosts/exclude
+../payload/blacklist/hosts/exclude/node.def
+../payload/blacklist/hosts/include
+../payload/blacklist/hosts/include/node.def
+../payload/blacklist/hosts/source
+../payload/blacklist/hosts/source/node.tag
+../payload/blacklist/hosts/source/node.tag/description
+../payload/blacklist/hosts/source/node.tag/description/node.def
+../payload/blacklist/hosts/source/node.tag/url
+../payload/blacklist/hosts/source/node.tag/url/node.def
+../payload/blacklist/hosts/source/node.tag/prefix
+../payload/blacklist/hosts/source/node.tag/prefix/node.def
+../payload/blacklist/hosts/source/node.def
+../payload/blacklist/hosts/node.def
+../payload/blacklist/node.def

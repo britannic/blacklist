@@ -45,10 +45,10 @@ func TestCmpHash(t *testing.T) {
 	want := d
 	got := want
 
-	Equals(t, want, got)
+	Assert(t, utils.CmpHash(want, got), "Cmphash() failed", got, want)
 
 	got = append(got, "This is different!"...)
-	NotEquals(t, want, got)
+	Assert(t, !utils.CmpHash(want, got), "Cmphash() failed", got, want)
 }
 
 func TestByteArray(t *testing.T) {
@@ -111,9 +111,9 @@ func TestReloadDNS(t *testing.T) {
 			want:   "/usr/bin/cd\n",
 		},
 		{
-			test:   "file /etc/services",
+			test:   "which file",
 			expect: true,
-			want:   "/etc/services: ASCII English text\n",
+			want:   "/usr/bin/file\n",
 		},
 	}
 

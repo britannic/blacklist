@@ -27,6 +27,7 @@ func init() {
 		dmsqdir = "../testdata"
 		logfile = dmsqdir + "/blacklist.log"
 	}
+
 	var err error
 	f, err := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND, 0755)
 	if err == nil {
@@ -82,6 +83,7 @@ func TestBlacklistings(t *testing.T) {
 }
 
 func TestExclusions(t *testing.T) {
+
 	a := &check.Args{
 		Ex:  data.GetExcludes(*live.Blacklist),
 		Dir: dmsqdir,
@@ -89,6 +91,18 @@ func TestExclusions(t *testing.T) {
 
 	Assert(t, live.Exclusions(a), "Exclusions failure.", a)
 
+	a.Dir = "broken directory"
+	Assert(t, !live.Exclusions(a), "Exclusions should have failed.", a)
+
+	a.Ex = make(config.Dict)
+	b := *live.Blacklist
+
+	badexcludes := b[global.Area.Domains].Include
+	for _, k := range badexcludes {
+		a.Ex[k] = 0
+	}
+
+	Assert(t, !live.Exclusions(a), "Exclusions should have failed.", a)
 }
 
 func TestExcludedDomains(t *testing.T) {

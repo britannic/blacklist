@@ -75,8 +75,9 @@ func (c *Cfg) Exclusions(a *Args) (pass bool) {
 		b   *bufio.Scanner
 		err error
 		got []string
+		l   = *c.Blacklist
 	)
-	l := *c.Blacklist
+
 	for k := range l {
 		for sk := range l[k].Source {
 			s := *l[k].Source[sk]
@@ -95,7 +96,7 @@ func (c *Cfg) Exclusions(a *Args) (pass bool) {
 			pass = true
 
 			for _, ex := range got {
-				if _, ok := a.Ex[ex]; ok {
+				if a.Ex.KeyExists(ex) {
 					pass = false
 					log.Errorf("Found excluded entry %v, in %v\n", ex, f)
 				}
@@ -274,12 +275,12 @@ func (c *Cfg) ConfIP(a *Args) bool {
 // ConfTemplates checks for existence/non-existence (governed by installation state) of the blacklist configuration templates
 func ConfTemplates(a *Args) bool {
 	var (
-		err error
-		got []byte
+		err       error
+		got, want []byte
 	)
 
 	cmd := exec.Command("/bin/bash")
-	find := "/usr/bin/find"
+	find := "/usr/bin/find -s"
 	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v", find, a.Dir))
 
 	if got, err = cmd.Output(); err != nil {
@@ -287,11 +288,10 @@ func ConfTemplates(a *Args) bool {
 		return false
 	}
 
-	var want []byte
 	want = append(want, a.Data...)
 
 	if !utils.CmpHash(got, want) {
-		fmt.Printf("Got: %v\nWant:%v\n", string(got), a.Data)
+		fmt.Printf("Got: %v\nWant: %v\n", string(got), string(want))
 		return false
 	}
 
