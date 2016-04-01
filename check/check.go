@@ -9,6 +9,7 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"reflect"
@@ -292,16 +293,16 @@ func ConfTemplates(a *Args) bool {
 		return pass
 	}
 
-	fmt.Println("=======================\nGot:")
+	fmt.Fprintln(os.Stderr, "=======================\nGot:")
 	for _, k := range strings.Split(string(b), "\n") {
 		got[k] = 0
-		fmt.Println(k)
+		fmt.Fprintln(os.Stderr, k)
 	}
 
-	fmt.Println("=======================\nWant:")
+	fmt.Fprintln(os.Stderr, "=======================\nWant:")
 	for _, k := range strings.Split(a.Data, "\n") {
 		want[k] = 0
-		fmt.Println(k)
+		fmt.Fprintln(os.Stderr, k)
 	}
 
 	pass = reflect.DeepEqual(got, want)
