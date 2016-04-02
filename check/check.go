@@ -23,6 +23,10 @@ import (
 	"github.com/britannic/blacklist/utils"
 )
 
+func init() {
+	global.SetVars(global.WhatArch)
+}
+
 // Args is a struct of check function parameters
 type Args struct {
 	Fname, Data, Dir, IP string
@@ -284,7 +288,7 @@ func ConfTemplates(a *Args) bool {
 	)
 
 	cmd := exec.Command("/bin/bash")
-	find := "/usr/bin/find -s"
+	find := "/usr/bin/find"
 	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v", find, a.Dir))
 
 	if b, err = cmd.Output(); err != nil {
