@@ -8,6 +8,7 @@ import (
 	"os/user"
 	"testing"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/utils"
 	. "github.com/britannic/testutils"
@@ -124,6 +125,7 @@ func TestReloadDNS(t *testing.T) {
 			Assert(t, err != nil, fmt.Sprint("Test should fail, so ReloadDNS() error shouldn't be nil!"), err)
 
 		case true:
+			log.Info(run)
 			Assert(t, err == nil, fmt.Sprint("Test should pass, so ReloadDNS() error should be nil!"), err)
 		}
 
