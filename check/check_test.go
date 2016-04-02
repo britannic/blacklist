@@ -18,6 +18,7 @@ var (
 )
 
 func init() {
+	global.SetVars(global.WhatArch)
 	switch global.WhatArch {
 	case global.TargetArch:
 		dmsqdir = global.DmsqDir

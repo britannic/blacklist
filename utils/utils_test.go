@@ -106,16 +106,6 @@ func TestReloadDNS(t *testing.T) {
 			expect: false,
 			want:   "/bin/bash: line 1: ztaswerkjlkjsdflkjsdf: command not found\n",
 		},
-		{
-			test:   "which cd",
-			expect: true,
-			want:   "/usr/bin/cd\n",
-		},
-		{
-			test:   "which which",
-			expect: true,
-			want:   "/usr/bin/which\n",
-		},
 	}
 
 	for _, run := range tests {
