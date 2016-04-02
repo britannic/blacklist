@@ -111,9 +111,9 @@ func TestReloadDNS(t *testing.T) {
 			want:   "/usr/bin/cd\n",
 		},
 		{
-			test:   "which file",
+			test:   "which which",
 			expect: true,
-			want:   "/usr/bin/file\n",
+			want:   "/usr/bin/which\n",
 		},
 	}
 

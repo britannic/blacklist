@@ -1,7 +1,6 @@
 package check_test
 
 import (
-	"os"
 	"testing"
 
 	log "github.com/Sirupsen/logrus"
@@ -25,16 +24,9 @@ func init() {
 
 	default:
 		dmsqdir = "../testdata"
-		logfile = dmsqdir + "/blacklist.log"
 	}
 
 	var err error
-	f, err := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND, 0755)
-	if err == nil {
-		log.SetFormatter(&log.TextFormatter{DisableColors: true})
-		log.SetOutput(f)
-	}
-
 	live.Blacklist, err = config.Get(config.Testdata, global.Area.Root)
 
 	if err != nil {

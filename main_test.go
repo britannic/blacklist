@@ -2,11 +2,10 @@ package main
 
 import (
 	"flag"
-	"os"
+	"runtime"
 	"testing"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/check"
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
@@ -32,11 +31,7 @@ func TestBuild(t *testing.T) {
 
 func init() {
 	systemTest = flag.Bool("systemTest", false, "Set to true when running system tests")
-	f, err := os.OpenFile(global.Logfile, os.O_WRONLY|os.O_APPEND, 0755)
-	if err == nil {
-		log.SetFormatter(&log.TextFormatter{DisableColors: true})
-		log.SetOutput(f)
-	}
+	global.SetVars(runtime.GOARCH)
 }
 
 // Test started when the test binary is started. Only calls main.

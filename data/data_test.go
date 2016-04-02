@@ -4,13 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"math/rand"
-	"os"
 	"sort"
 	"strings"
 	"testing"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	g "github.com/britannic/blacklist/global"
@@ -19,7 +17,7 @@ import (
 	. "github.com/britannic/testutils"
 )
 
-var dmsqdir, logfile string
+var dmsqdir string
 
 func init() {
 	switch g.WhatArch {
@@ -28,13 +26,6 @@ func init() {
 
 	default:
 		dmsqdir = "../testdata"
-		logfile = dmsqdir + "/blacklist.log"
-	}
-
-	f, err := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND, 0755)
-	if err == nil {
-		log.SetFormatter(&log.TextFormatter{DisableColors: true})
-		log.SetOutput(f)
 	}
 }
 

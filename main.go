@@ -35,12 +35,6 @@ func main() {
 		timeout = time.Minute * 30
 	)
 
-	f, err := os.OpenFile(g.Logfile, os.O_WRONLY|os.O_APPEND, 0755)
-	if err == nil {
-		log.SetFormatter(&log.TextFormatter{DisableColors: true})
-		log.SetOutput(f)
-	}
-
 	o := getopts()
 	a := os.Args[1:]
 	if g.Args != nil {

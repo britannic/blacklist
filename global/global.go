@@ -55,7 +55,7 @@ var (
 	// FStr provides a blacklist filename/path template
 	FStr = "%v/%v.%v" + Fext
 
-	// Logfile set the log path and filename
+	// Logfile sets the log path and filename
 	Logfile string
 
 	// Program is the current binary's filename
@@ -76,6 +76,12 @@ func init() {
 	WhatArch = runtime.GOARCH
 
 	SetVars(WhatArch)
+
+	f, err := os.OpenFile(Logfile, os.O_WRONLY|os.O_APPEND, 0755)
+	if err == nil {
+		log.SetFormatter(&log.TextFormatter{DisableColors: true})
+		log.SetOutput(f)
+	}
 }
 
 // SetVars conditionally sets global variables based on the current OS
@@ -92,9 +98,9 @@ func SetVars(ARCH string) {
 		if err != nil {
 			log.Fatal("Cannot determine current directory - exiting")
 		}
+		Logfile = "/tmp/blacklist.log"
 		DmsqDir = cwd + "/testdata"
 
 		DNSRestart = "echo -n dnsmasq not implemented on " + WhatOS
-		Logfile = DmsqDir + "/blacklist.log"
 	}
 }
