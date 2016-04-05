@@ -6,11 +6,11 @@
 package global
 
 import (
+	"log"
 	"os"
 	"runtime"
 
-	log "github.com/Sirupsen/logrus"
-
+	"github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/utils"
 )
 
@@ -55,8 +55,23 @@ var (
 	// FStr provides a blacklist filename/path template
 	FStr = "%v/%v.%v" + Fext
 
-	// Logfile sets the log path and filename
-	Logfile string
+	// Log is a pointer to *log.Inst
+	Log *logrus.Logger
+
+	// LogFile sets the log path and filename
+	LogFile string
+
+	// LogMaxAge sets how old the back up file is before rotation
+	LogMaxAge int
+
+	// LogMaxBackups sets how many log file backups there are before purging
+	LogMaxBackups int
+
+	// LogMaxSize set the maximum log size
+	LogMaxSize int
+
+	// LogOutput sets where to log
+	LogOutput = "file"
 
 	// Program is the current binary's filename
 	Program = utils.Basename(os.Args[0])
@@ -74,14 +89,7 @@ var (
 func init() {
 	WhatOS = runtime.GOOS
 	WhatArch = runtime.GOARCH
-
 	SetVars(WhatArch)
-
-	f, err := os.OpenFile(Logfile, os.O_WRONLY|os.O_APPEND, 0755)
-	if err == nil {
-		log.SetFormatter(&log.TextFormatter{DisableColors: true})
-		log.SetOutput(f)
-	}
 }
 
 // SetVars conditionally sets global variables based on the current OS
@@ -91,14 +99,14 @@ func SetVars(ARCH string) {
 	case TargetArch:
 		DmsqDir = "/etc/dnsmasq.d"
 		FStr = "%v/%v.%v" + Fext
-		Logfile = "/var/log/blacklist.log"
+		LogFile = "/var/log/blacklist.log"
 
 	default:
 		cwd, err := os.Getwd()
 		if err != nil {
 			log.Fatal("Cannot determine current directory - exiting")
 		}
-		Logfile = "/tmp/blacklist.log"
+		LogFile = "/tmp/blacklist.log"
 		DmsqDir = cwd + "/testdata"
 
 		DNSRestart = "echo -n dnsmasq not implemented on " + WhatOS

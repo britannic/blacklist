@@ -15,7 +15,7 @@ import (
 	"sort"
 	"strings"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	"github.com/britannic/blacklist/global"
@@ -23,8 +23,12 @@ import (
 	"github.com/britannic/blacklist/utils"
 )
 
+var (
+	log *logrus.Logger
+)
+
 func init() {
-	global.SetVars(global.WhatArch)
+	log = logrus.New()
 }
 
 // Args is a struct of check function parameters
@@ -187,7 +191,7 @@ func (c *Cfg) ConfFiles(a *Args) bool {
 	)
 
 	if got, err = filepath.Glob(a.Fname); err != nil {
-		log.Error(err)
+		log.Errorf("error: %v", err)
 		return false
 	}
 
@@ -292,7 +296,7 @@ func ConfTemplates(a *Args) bool {
 	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v", find, a.Dir))
 
 	if b, err = cmd.Output(); err != nil {
-		log.Error(err)
+		log.Errorf("error: %v", err)
 		return pass
 	}
 
@@ -347,7 +351,7 @@ func (c *Cfg) IPRedirection(a *Args) bool {
 			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
 
 			if b, err = utils.GetFile(f); err != nil {
-				log.Error(err)
+				log.Errorf("error: %v", err)
 				return false
 			}
 			got = ExtractHost(utils.GetStringArray(b, got))

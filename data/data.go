@@ -15,16 +15,25 @@ import (
 	"sort"
 	"strings"
 
-	log "github.com/Sirupsen/logrus"
-
 	c "github.com/britannic/blacklist/config"
 	g "github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/regx"
 )
 
+var log = g.Log
+
+// func init() {
+// 	l := &logger.Set{
+// 		File:   g.LogFile,
+// 		Level:  logrus.DebugLevel,
+// 		Output: g.LogOutput,
+// 	}
+// 	log.Init(l)
+// }
+
 func debug(data []byte, err error) {
 	switch {
-	case g.Dbg == false:
+	case !g.Dbg:
 		return
 	case err == nil:
 		fmt.Printf("%s\n\n", data)

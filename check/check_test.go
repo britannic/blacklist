@@ -3,11 +3,12 @@ package check_test
 import (
 	"testing"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/check"
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	"github.com/britannic/blacklist/global"
+	"github.com/britannic/blacklist/utils"
 	. "github.com/britannic/testutils"
 )
 
@@ -15,9 +16,15 @@ var (
 	blacklist        *config.Blacklist
 	live             = &check.Cfg{Blacklist: blacklist}
 	dmsqdir, logfile string
+	log              = logrus.New()
 )
 
 func init() {
+	s := &utils.Set{
+		Output: global.LogOutput,
+		Level:  logrus.DebugLevel,
+		Log:    log,
+	}
 	global.SetVars(global.WhatArch)
 	switch global.WhatArch {
 	case global.TargetArch:
@@ -29,10 +36,11 @@ func init() {
 
 	var err error
 	live.Blacklist, err = config.Get(config.Testdata, global.Area.Root)
-
 	if err != nil {
 		log.Fatal("Couldn't load config.Testdata")
 	}
+
+	utils.LogInit(s)
 }
 
 func TestBlacklistings(t *testing.T) {

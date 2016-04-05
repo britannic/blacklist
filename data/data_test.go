@@ -254,7 +254,7 @@ func TestStripPrefixAndSuffix(t *testing.T) {
 
 		r, ok = data.StripPrefixAndSuffix(tline, "http", rx)
 		Assert(t, tline == r, fmt.Sprintf("stripPrefix() failed for %v", s.Name), r)
-		Assert(t, ok == false, fmt.Sprintf("stripPrefix() failed for %v", s.Name), ok)
+		Assert(t, !ok, fmt.Sprintf("stripPrefix() failed for %v", s.Name), ok)
 	}
 }
 

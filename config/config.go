@@ -136,12 +136,7 @@ func (d Dict) SubKeyExists(s string) bool {
 			return true
 		}
 	}
-
-	if d.KeyExists(s) {
-		return true
-	}
-
-	return false
+	return d.KeyExists(s)
 }
 
 // Keys is used for sorting operations on map keys
@@ -185,7 +180,6 @@ type Src struct {
 
 // ToBool converts a string ("true" or "false") to it's boolean equivalent
 func ToBool(s string) bool {
-
 	if strings.ToLower(s) == "true" {
 		return true
 	}

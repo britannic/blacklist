@@ -8,7 +8,8 @@ import (
 	"os/user"
 	"testing"
 
-	log "github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
+	tlog "github.com/Sirupsen/logrus/hooks/test"
 	"github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/utils"
 	. "github.com/britannic/testutils"
@@ -16,17 +17,25 @@ import (
 
 var (
 	// d.String() = "The rest is history!"
-	d       = []byte{84, 104, 101, 32, 114, 101, 115, 116, 32, 105, 115, 32, 104, 105, 115, 116, 111, 114, 121, 33}
-	dmsqDir string
+	d         = []byte{84, 104, 101, 32, 114, 101, 115, 116, 32, 105, 115, 32, 104, 105, 115, 116, 111, 114, 121, 33}
+	dmsqDir   string
+	log, hook = tlog.NewNullLogger()
 )
 
 func init() {
+	global.Log = log
 	switch global.WhatArch {
 	case global.TargetArch:
 		dmsqDir = global.DmsqDir
 	default:
 		dmsqDir = "../testdata"
 	}
+	s := &utils.Set{
+		Output: global.LogOutput,
+		Level:  logrus.DebugLevel,
+		Log:    log,
+	}
+	utils.Log2File(s)
 }
 
 // cmpID compares two UIDS
@@ -90,6 +99,44 @@ func TestGetFile(t *testing.T) {
 	Equals(t, want, got)
 }
 
+func TestLog2Stdout(t *testing.T) {
+	// logger, hook := test.NewNullLogger()
+	s := &utils.Set{
+		Level:  logrus.InfoLevel,
+		Log:    log,
+		Output: "screen",
+	}
+
+	utils.LogInit(s)
+	log.Info("TestLog2Stdout")
+
+	Equals(t, "TestLog2Stdout", hook.LastEntry().Message)
+	Equals(t, log.Level.String(), hook.LastEntry().Level.String())
+	// hook.Reset()
+}
+
+func TestLog2File(t *testing.T) {
+	s := &utils.Set{
+		File:   "/tmp/log_test.log",
+		Level:  logrus.DebugLevel,
+		Log:    log,
+		Output: "file",
+	}
+
+	utils.LogInit(s)
+
+	if _, err := os.Stat(s.File); os.IsNotExist(err) {
+		OK(t, err)
+	}
+
+	log.Info("TestLog2Stdout")
+
+	Equals(t, "TestLog2Stdout", hook.LastEntry().Message)
+	Equals(t, log.Level.String(), hook.LastEntry().Level.String())
+
+	_ = os.Remove(s.File)
+}
+
 func TestReloadDNS(t *testing.T) {
 	tests := []struct {
 		test   string
@@ -115,7 +162,7 @@ func TestReloadDNS(t *testing.T) {
 			Assert(t, err != nil, fmt.Sprint("Test should fail, so ReloadDNS() error shouldn't be nil!"), err)
 
 		case true:
-			log.Info(run)
+			log.Infof("testing: %v", run)
 			Assert(t, err == nil, fmt.Sprint("Test should pass, so ReloadDNS() error should be nil!"), err)
 		}
 

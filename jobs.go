@@ -6,8 +6,6 @@ import (
 	"strings"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
-
 	c "github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	g "github.com/britannic/blacklist/global"
@@ -46,11 +44,11 @@ func getResults(timeout time.Duration, dex c.Dict, ex c.Dict, done <-chan struct
 		select {
 		case result := <-results:
 			if err := processResults(&result, dex, ex); err != nil {
-				log.Errorf("processResults(): %v\n", err)
+				g.Log.Errorf("processResults(): %v\n", err)
 			}
 
 		case <-finish:
-			log.Error("getResults() timed out\n")
+			g.Log.Error("getResults() timed out\n")
 
 		case <-done:
 			working--
@@ -60,11 +58,11 @@ func getResults(timeout time.Duration, dex c.Dict, ex c.Dict, done <-chan struct
 		select {
 		case result := <-results:
 			if err := processResults(&result, dex, ex); err != nil {
-				log.Errorf("processResults(): %v\n", err)
+				g.Log.Errorf("processResults(): %v\n", err)
 			}
 
 		case <-finish:
-			log.Errorf("getResults() timed out\n")
+			g.Log.Errorf("getResults() timed out\n")
 
 		default:
 			return
@@ -83,13 +81,13 @@ func processResults(result *Result, dex c.Dict, ex c.Dict) (err error) {
 
 		errStr = append(errStr, fmt.Sprintf("# %v\n# Investigate!\n# No usable data received for %v.\n", result.Src.URL, result.Src.Name)...)
 
-		log.Errorf("No data to write for job[%v] %v", result.Src.No, fn)
+		g.Log.Errorf("No data to write for job[%v] %v", result.Src.No, fn)
 
 		err = utils.WriteFile(fn, errStr)
 		return err
 	}
 
-	log.Printf("Writing job[%v] %v", result.Src.No, fn)
+	g.Log.Infof("Writing job[%v] %v", result.Src.No, fn)
 
 	err = utils.WriteFile(fn, data.GetList(pdata))
 	return err
@@ -114,7 +112,7 @@ func (job Job) do() {
 	default:
 		body, err = data.GetHTTP(job.src.URL)
 		if err != nil {
-			log.Fatalf("ERROR: %s", err)
+			g.Log.Errorf("Problem retrieving data from %v: %s", job.src.URL, err)
 		}
 	}
 
@@ -126,7 +124,7 @@ func addJobs(jobs chan<- Job, urls []*c.Src, results chan<- Result) {
 	for i, url := range urls {
 		url.No = i + 1
 		jobs <- Job{src: url, results: results}
-		// log.Printf("Adding download: (%v) %v\n", url.Type, url.Name)
+		// g.Log.Printf("Adding download: (%v) %v\n", url.Type, url.Name)
 	}
 	close(jobs)
 }
@@ -135,7 +133,7 @@ func addJobs(jobs chan<- Job, urls []*c.Src, results chan<- Result) {
 func doJobs(done chan<- struct{}, jobs <-chan Job) {
 	for job := range jobs {
 		job.do()
-		// log.Printf("Running job[%v]: (%v) %v\n", job.src.No, job.src.Type, job.src.Name)
+		// g.Log.Printf("Running job[%v]: (%v) %v\n", job.src.No, job.src.Type, job.src.Name)
 	}
 	done <- struct{}{}
 }

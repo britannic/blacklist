@@ -31,7 +31,7 @@ func TestSetVars(t *testing.T) {
 		{test: &g.DNSRestart, exp: "service dnsmasq restart", alt: fmt.Sprintf("echo -n dnsmasq not implemented on %v", g.TestOS)},
 		{test: g.Fext, exp: ".blacklist.conf", alt: ".blacklist.conf"},
 		{test: &g.FStr, exp: `%v/%v.%v` + g.Fext, alt: `%v/%v.%v` + g.Fext},
-		{test: &g.Logfile, exp: "/var/log/blacklist.log", alt: fmt.Sprintf("%v/blacklist.log", g.DmsqDir)},
+		{test: &g.LogFile, exp: "/var/log/blacklist.log", alt: fmt.Sprintf("%v/blacklist.log", g.DmsqDir)},
 		{test: g.TestOS, exp: "darwin", alt: "darwin"},
 	}
 

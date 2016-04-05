@@ -11,7 +11,7 @@ import (
 	"runtime"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
+	logger "github.com/Sirupsen/logrus"
 	c "github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	g "github.com/britannic/blacklist/global"
@@ -19,11 +19,26 @@ import (
 )
 
 var (
+	log     *logger.Logger
 	cores   = runtime.NumCPU()
 	build   = "UNKNOWN"
 	githash = "UNKNOWN"
 	version = "UNKNOWN"
 )
+
+func init() {
+	g.SetVars(g.WhatArch)
+	g.Log = logger.New()
+	s := &utils.Set{
+		File:   g.LogFile,
+		Output: g.LogOutput,
+		Level:  logger.DebugLevel,
+		Log:    g.Log,
+	}
+	utils.LogInit(s)
+	// log.Init(l)
+	// log.Info("main.go")
+}
 
 func main() {
 	// defer profile.Start(profile.CPUProfile, profile.MemProfile).Stop()
@@ -43,12 +58,12 @@ func main() {
 	flag.CommandLine.Parse(a)
 
 	switch {
-	case *o.Debug == true:
+	case *o.Debug:
 		g.Dbg = true
 
 	case *o.Poll != 5:
 		poll = time.Duration(*o.Poll) * time.Second
-		log.Info("Poll duration", poll)
+		log.Infof("Poll duration %v", poll)
 
 	case *o.Test:
 		code := 0
@@ -60,12 +75,17 @@ func main() {
 		os.Exit(0)
 
 	case *o.Verb:
-		log.SetFormatter(&log.TextFormatter{DisableColors: false})
-		log.SetOutput(os.Stderr)
+		g.LogOutput = "screen"
+		s := &utils.Set{
+			Level:  logger.DebugLevel,
+			Output: g.LogOutput,
+			Log:    g.Log,
+		}
 
+		utils.LogInit(s)
 	}
 
-	log.Info("CPU Cores: ", cores)
+	log.Infof("CPU Cores: ", cores)
 
 	blist, err := func() (b *c.Blacklist, err error) {
 		switch g.WhatOS {
@@ -87,7 +107,7 @@ func main() {
 		}
 	}()
 	if err != nil {
-		log.Fatal("Critical issue, exiting, error: ", err)
+		log.Fatalf("Critical issue, exiting, error: %v", err)
 	}
 
 	if !data.IsDisabled(*blist, g.Area.Root) {
@@ -95,7 +115,7 @@ func main() {
 		areas := data.GetURLs(*blist)
 
 		if err = data.PurgeFiles(areas, g.DmsqDir); err != nil {
-			log.Error("Error removing unused conf files: ", err)
+			log.Errorf("Error removing unused conf files: %v", err)
 		}
 
 		ex := data.GetExcludes(*blist)

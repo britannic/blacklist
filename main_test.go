@@ -6,39 +6,45 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Sirupsen/logrus"
+	tlogger "github.com/Sirupsen/logrus/hooks/test"
 	"github.com/britannic/blacklist/check"
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	"github.com/britannic/blacklist/global"
+	"github.com/britannic/blacklist/utils"
 	. "github.com/britannic/testutils"
 )
 
-var systemTest *bool
+var (
+	tlog, hook = tlogger.NewNullLogger()
+	systemTest *bool
+)
+
+func init() {
+	global.Log = tlog
+	global.SetVars(runtime.GOARCH)
+	s := &utils.Set{
+		File:   global.LogFile,
+		Output: global.LogOutput,
+		Level:  logrus.DebugLevel,
+		Log:    global.Log,
+	}
+	systemTest = flag.Bool("systemTest", false, "Set to true when running system tests")
+	utils.LogInit(s)
+}
 
 func TestBuild(t *testing.T) {
-	build := map[string]string{
+	pbuild := map[string]string{
 		"build":   build,
 		"githash": githash,
 		"version": version,
 	}
 
-	for k := range build {
-		if build[k] != "UNKNOWN" {
-			t.Errorf("%v is %v", k, build[k])
+	for k := range pbuild {
+		if pbuild[k] != "UNKNOWN" {
+			t.Errorf("%v is %v", k, pbuild[k])
 		}
-	}
-}
-
-func init() {
-	systemTest = flag.Bool("systemTest", false, "Set to true when running system tests")
-	global.SetVars(runtime.GOARCH)
-}
-
-// Test started when the test binary is started. Only calls main.
-func TestSystem(t *testing.T) {
-	if *systemTest {
-		global.Args = []string{"-version"}
-		main()
 	}
 }
 
