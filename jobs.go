@@ -14,7 +14,6 @@ import (
 
 // getBlacklists assembles the http download jobs
 func getBlacklists(timeout time.Duration, dex c.Dict, ex c.Dict, src []*c.Src) {
-
 	jobs := make(chan Job, cores)
 	results := make(chan Result, len(src))
 	done := make(chan struct{}, cores)

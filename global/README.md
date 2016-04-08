@@ -10,7 +10,6 @@ Package global sets project scoped variables and constants
 ## Constants
 ``` go
 const (
-
     // Fext defines the blacklist filename extension
     Fext = ".blacklist.conf"
 
@@ -44,8 +43,23 @@ var (
     // FStr provides a blacklist filename/path template
     FStr = "%v/%v.%v" + Fext
 
-    // Logfile set the log path and filename
-    Logfile string
+    // Log is a pointer to *log.Inst
+    Log *logrus.Logger
+
+    // LogFile sets the log path and filename
+    LogFile string
+
+    // LogMaxAge sets how old the back up file is before rotation
+    LogMaxAge int
+
+    // LogMaxBackups sets how many log file backups there are before purging
+    LogMaxBackups int
+
+    // LogMaxSize set the maximum log size
+    LogMaxSize int
+
+    // LogOutput sets where to log
+    LogOutput = "file"
 
     // Program is the current binary's filename
     Program = utils.Basename(os.Args[0])
@@ -60,6 +74,27 @@ var (
     WhatOS string
 )
 ```
+
+## func Log2File
+``` go
+func Log2File(s *Set)
+```
+Log2File sets logging to file
+
+
+## func Log2Stdout
+``` go
+func Log2Stdout(s *Set)
+```
+Log2Stdout sets logging to terminal
+
+
+## func LogInit
+``` go
+func LogInit(s *Set) *logrus.Logger
+```
+LogInit initializes where logrus sends output
+
 
 ## func SetVars
 ``` go
@@ -78,6 +113,26 @@ type Areas struct {
 }
 ```
 Areas type string of configuration tree nodes
+
+
+
+
+
+
+
+
+
+
+
+## type Set
+``` go
+type Set struct {
+    File   string
+    Output string
+    Level  logrus.Level
+}
+```
+Set has init parameters for Log2Stdout & Log2File
 
 
 

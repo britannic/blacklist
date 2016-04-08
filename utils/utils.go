@@ -11,8 +11,6 @@ import (
 	"os/exec"
 	"os/user"
 	"strings"
-
-	"github.com/Sirupsen/logrus"
 )
 
 // Basename removes directory components and file extensions.
@@ -71,40 +69,6 @@ func IsAdmin() bool {
 		return true
 	default:
 		return false
-	}
-}
-
-// Set has init parameters for Log2Stdout & Log2File
-type Set struct {
-	File   string
-	Output string
-	Level  logrus.Level
-	Log    *logrus.Logger
-}
-
-// LogInit initializes where logrus sends output
-func LogInit(s *Set) {
-	switch s.Output {
-	case "screen", "dev":
-		Log2Stdout(s)
-
-	case "file", "test":
-		Log2File(s)
-	}
-}
-
-// Log2Stdout sets logging to terminal
-func Log2Stdout(s *Set) {
-	logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true})
-	logrus.SetOutput(os.Stdout)
-}
-
-// Log2File sets logging to file
-func Log2File(s *Set) {
-	f, err := os.OpenFile(s.File, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0755)
-	if err == nil {
-		logrus.SetFormatter(&logrus.TextFormatter{DisableColors: true})
-		logrus.SetOutput(f)
 	}
 }
 

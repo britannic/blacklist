@@ -6,7 +6,6 @@
 package global
 
 import (
-	"log"
 	"os"
 	"runtime"
 
@@ -21,8 +20,14 @@ type Areas struct {
 	Root string
 }
 
-const (
+// Set has init parameters for Log2Stdout & Log2File
+type Set struct {
+	File   string
+	Output string
+	Level  logrus.Level
+}
 
+const (
 	// Fext defines the blacklist filename extension
 	Fext = ".blacklist.conf"
 
@@ -90,11 +95,47 @@ func init() {
 	WhatOS = runtime.GOOS
 	WhatArch = runtime.GOARCH
 	SetVars(WhatArch)
+
+	s := &Set{
+		File:   LogFile,
+		Output: LogOutput,
+		Level:  logrus.DebugLevel,
+	}
+	Log = LogInit(s)
+}
+
+// LogInit initializes where logrus sends output
+func LogInit(s *Set) *logrus.Logger {
+	log := logrus.New()
+	switch s.Output {
+	case "screen", "dev":
+		Log2Stdout(s)
+
+	case "file", "test":
+		Log2File(s)
+	}
+
+	log.Level = s.Level
+	return log
+}
+
+// Log2Stdout sets logging to terminal
+func Log2Stdout(s *Set) {
+	logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true})
+	logrus.SetOutput(os.Stdout)
+}
+
+// Log2File sets logging to file
+func Log2File(s *Set) {
+	f, err := os.OpenFile(s.File, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0755)
+	if err == nil {
+		logrus.SetFormatter(&logrus.TextFormatter{DisableColors: true})
+		logrus.SetOutput(f)
+	}
 }
 
 // SetVars conditionally sets global variables based on the current OS
 func SetVars(ARCH string) {
-
 	switch ARCH {
 	case TargetArch:
 		DmsqDir = "/etc/dnsmasq.d"
@@ -104,7 +145,7 @@ func SetVars(ARCH string) {
 	default:
 		cwd, err := os.Getwd()
 		if err != nil {
-			log.Fatal("Cannot determine current directory - exiting")
+			Log.Fatal("Cannot determine current directory - exiting")
 		}
 		LogFile = "/tmp/blacklist.log"
 		DmsqDir = cwd + "/testdata"

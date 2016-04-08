@@ -34,8 +34,13 @@ ExtractIP returns a map of unique IPs in []string of dnsmasq formatted entries
 ## type Args
 ``` go
 type Args struct {
-    Fname, Data, Dir, IP string
-    Ex, Dex              config.Dict
+    Fname string
+    Data  string
+    Dir   string
+    IP    string
+    Ex    config.Dict
+    Dex   config.Dict
+    Log   *logrus.Logger
 }
 ```
 Args is a struct of check function parameters

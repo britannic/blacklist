@@ -22,15 +22,6 @@ import (
 
 var log = g.Log
 
-// func init() {
-// 	l := &logger.Set{
-// 		File:   g.LogFile,
-// 		Level:  logrus.DebugLevel,
-// 		Output: g.LogOutput,
-// 	}
-// 	log.Init(l)
-// }
-
 func debug(data []byte, err error) {
 	switch {
 	case !g.Dbg:

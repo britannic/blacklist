@@ -24,25 +24,24 @@ import (
 )
 
 var (
-	log *logrus.Logger
+	rx = regx.Regex
 )
-
-func init() {
-	log = logrus.New()
-}
 
 // Args is a struct of check function parameters
 type Args struct {
-	Fname, Data, Dir, IP string
-	Ex, Dex              config.Dict
+	Fname string
+	Data  string
+	Dir   string
+	IP    string
+	Ex    config.Dict
+	Dex   config.Dict
+	Log   *logrus.Logger
 }
 
 // Cfg type of config.Blacklist
 type Cfg struct {
 	Blacklist *config.Blacklist
 }
-
-var rx = regx.Regex
 
 // Blacklistings checks that only configured blacklisted includes are present in {domains,hosts}pre-configured.blacklist.conf
 func (c *Cfg) Blacklistings(a *Args) bool {
@@ -51,6 +50,7 @@ func (c *Cfg) Blacklistings(a *Args) bool {
 		err  error
 		got  []string
 		l    = *c.Blacklist
+		log  = a.Log
 		pass = true
 	)
 
@@ -85,6 +85,7 @@ func (c *Cfg) Exclusions(a *Args) (pass bool) {
 		err error
 		got []string
 		l   = *c.Blacklist
+		log = a.Log
 	)
 
 	for k := range l {
@@ -123,6 +124,7 @@ func (c *Cfg) ExcludedDomains(a *Args) (pass bool) {
 		err       error
 		got, want []string
 		l         = *c.Blacklist
+		log       = a.Log
 	)
 
 	sortKeys := func() (pkeys config.Keys) {
@@ -188,6 +190,7 @@ func (c *Cfg) ConfFiles(a *Args) bool {
 		err       error
 		got, want []string
 		l         = *c.Blacklist
+		log       = a.Log
 	)
 
 	if got, err = filepath.Glob(a.Fname); err != nil {
@@ -221,6 +224,7 @@ func (c *Cfg) ConfFilesContent(a *Args) bool {
 		got  []string
 		fail = []string{"# Investigate!"}
 		l    = *c.Blacklist
+		log  = a.Log
 		pass = true
 	)
 
@@ -255,6 +259,7 @@ func (c *Cfg) ConfIP(a *Args) bool {
 		err      error
 		got, IPs []string
 		l        = *c.Blacklist
+		log      = a.Log
 		pass     = true
 	)
 
@@ -288,6 +293,7 @@ func ConfTemplates(a *Args) bool {
 		err  error
 		got  = make(map[string]int)
 		want = make(map[string]int)
+		log  = a.Log
 		pass bool
 	)
 
@@ -340,6 +346,7 @@ func (c *Cfg) IPRedirection(a *Args) bool {
 		b         *bufio.Scanner
 		err       error
 		l         = *c.Blacklist
+		log       = a.Log
 		pass      = true
 		rIP       = l[global.Area.Root].IP
 		got, lIPs []string

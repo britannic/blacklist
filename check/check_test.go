@@ -1,30 +1,29 @@
 package check_test
 
 import (
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/britannic/blacklist/check"
+	"github.com/Sirupsen/logrus/hooks/test"
+	. "github.com/britannic/blacklist/check"
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	"github.com/britannic/blacklist/global"
-	"github.com/britannic/blacklist/utils"
 	. "github.com/britannic/testutils"
 )
 
 var (
-	blacklist        *config.Blacklist
-	live             = &check.Cfg{Blacklist: blacklist}
-	dmsqdir, logfile string
-	log              = logrus.New()
+	blacklist *config.Blacklist
+	live      = &Cfg{Blacklist: blacklist}
+	dmsqdir   string
+	// logfile   string
+	log  *logrus.Logger
+	hook *test.Hook
 )
 
 func init() {
-	s := &utils.Set{
-		Output: global.LogOutput,
-		Level:  logrus.DebugLevel,
-		Log:    log,
-	}
 	global.SetVars(global.WhatArch)
 	switch global.WhatArch {
 	case global.TargetArch:
@@ -34,18 +33,20 @@ func init() {
 		dmsqdir = "../testdata"
 	}
 
+	log, hook = test.NewNullLogger()
 	var err error
+
 	live.Blacklist, err = config.Get(config.Testdata, global.Area.Root)
 	if err != nil {
-		log.Fatal("Couldn't load config.Testdata")
+		fmt.Print(fmt.Errorf("Couldn't load config.Testdata"))
+		os.Exit(1)
 	}
-
-	utils.LogInit(s)
 }
 
 func TestBlacklistings(t *testing.T) {
-	a := &check.Args{
+	a := &Args{
 		Fname: dmsqdir + "/%v" + ".pre-configured" + global.Fext,
+		Log:   log,
 	}
 
 	Assert(t, live.Blacklistings(a), "Blacklistings failed.", a)
@@ -70,24 +71,42 @@ func TestBlacklistings(t *testing.T) {
     }`
 
 	var err error
-	failed := &check.Cfg{Blacklist: blacklist}
+	failed := &Cfg{Blacklist: blacklist}
 	failed.Blacklist, err = config.Get(badData, global.Area.Root)
 	OK(t, err)
 
 	Assert(t, !failed.Blacklistings(a), "Blacklistings should have failed.", failed)
 
-	a = &check.Args{
+	a = &Args{
 		Fname: dmsqdir + "/%v" + ".--BROKEN--" + global.Fext,
+		Log:   log,
 	}
 
+	badData = `blacklist {
+        disabled false
+        dns-redirect-ip 0.0.0.0
+        hosts {
+            include broken.beap.gemini.yahoo.com
+						include broken.beap.gemini.msn.com
+        }
+    }`
+
+	failed = &Cfg{Blacklist: blacklist}
+	failed.Blacklist, err = config.Get(badData, global.Area.Root)
+	OK(t, err)
+
 	Assert(t, !live.Blacklistings(a), "Blacklistings should have failed.", a)
+
+	Equals(t, "Includes not correct in ../testdata/hosts.--BROKEN--.blacklist.conf\n\tGot: []\n\tWant: [beap.gemini.yahoo.com]", hook.LastEntry().Message)
+	Equals(t, logrus.ErrorLevel.String(), hook.LastEntry().Level.String())
 }
 
 func TestExclusions(t *testing.T) {
 
-	a := &check.Args{
+	a := &Args{
 		Ex:  data.GetExcludes(*live.Blacklist),
 		Dir: dmsqdir,
+		Log: log,
 	}
 
 	Assert(t, live.Exclusions(a), "Exclusions failure.", a)
@@ -107,47 +126,52 @@ func TestExclusions(t *testing.T) {
 }
 
 func TestExcludedDomains(t *testing.T) {
-	a := &check.Args{
+	a := &Args{
 		Ex:  data.GetExcludes(*live.Blacklist),
 		Dex: make(config.Dict),
 		Dir: dmsqdir,
+		Log: log,
 	}
 
 	Assert(t, live.ExcludedDomains(a), "Excluded domains failure.", a)
 }
 
 func TestConfFiles(t *testing.T) {
-	a := &check.Args{
+	a := &Args{
 		Dir:   dmsqdir,
 		Fname: dmsqdir + `/*` + global.Fext,
+		Log:   log,
 	}
 
 	Assert(t, live.ConfFiles(a), "Problems with dnsmasq configuration files.", a)
 }
 
 func TestConfFilesContent(t *testing.T) {
-	a := &check.Args{
+	a := &Args{
 		Dir:   dmsqdir,
 		Fname: dmsqdir + `/*` + global.Fext,
+		Log:   log,
 	}
 	Assert(t, live.ConfFilesContent(a), "Problems with dnsmasq configuration files.", a)
 }
 
 func TestConfIP(t *testing.T) {
-	a := &check.Args{
+	a := &Args{
 		Dir: dmsqdir,
+		Log: log,
 	}
 
 	Assert(t, live.ConfIP(a), "DNS redirect IP configuration failed", a)
 }
 
 func TestConfTemplates(t *testing.T) {
-	a := &check.Args{
+	a := &Args{
 		Data: fileManifest,
 		Dir:  `../payload/blacklist`,
+		Log:  log,
 	}
 
-	Assert(t, check.ConfTemplates(a), "Configuration template nodes do not match", a)
+	Assert(t, ConfTemplates(a), "Configuration template nodes do not match", a)
 }
 
 // func TestIsDisabled(t *testing.T) {
@@ -159,7 +183,7 @@ func TestConfTemplates(t *testing.T) {
 // }
 
 // func TestIPRedirection(t *testing.T) {
-// 	a := &check.Args{
+// 	a := &Args{
 // 		Dir: dmsqdir,
 // 	}
 // 	if live.IPRedirection(a) != nil {

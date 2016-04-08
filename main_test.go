@@ -2,17 +2,14 @@ package main
 
 import (
 	"flag"
-	"runtime"
 	"testing"
 	"time"
 
-	"github.com/Sirupsen/logrus"
 	tlogger "github.com/Sirupsen/logrus/hooks/test"
 	"github.com/britannic/blacklist/check"
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	"github.com/britannic/blacklist/global"
-	"github.com/britannic/blacklist/utils"
 	. "github.com/britannic/testutils"
 )
 
@@ -23,15 +20,7 @@ var (
 
 func init() {
 	global.Log = tlog
-	global.SetVars(runtime.GOARCH)
-	s := &utils.Set{
-		File:   global.LogFile,
-		Output: global.LogOutput,
-		Level:  logrus.DebugLevel,
-		Log:    global.Log,
-	}
 	systemTest = flag.Bool("systemTest", false, "Set to true when running system tests")
-	utils.LogInit(s)
 }
 
 func TestBuild(t *testing.T) {
@@ -54,9 +43,7 @@ func TestVarSrc(t *testing.T) {
 
 func TestGetOpts(t *testing.T) {
 	// global.Args = []string{"-debug", "-i", "8", "-test", "-v", "-version", "-help"}
-
 	o := getopts()
-
 	want := `Debug
 Poll
 Test

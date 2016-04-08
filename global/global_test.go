@@ -6,14 +6,54 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/Sirupsen/logrus"
+	"github.com/Sirupsen/logrus/hooks/test"
 	g "github.com/britannic/blacklist/global"
 	. "github.com/britannic/testutils"
+)
+
+var (
+	log, hook = test.NewNullLogger()
 )
 
 type testTable struct {
 	test interface{}
 	exp  interface{}
 	alt  interface{}
+}
+
+func TestLog2Stdout(t *testing.T) {
+	s := &g.Set{
+		Level:  logrus.InfoLevel,
+		Output: "screen",
+	}
+
+	g.LogInit(s)
+	log.Info("TestLog2Stdout")
+
+	Equals(t, "TestLog2Stdout", hook.LastEntry().Message)
+	Equals(t, log.Level.String(), hook.LastEntry().Level.String())
+}
+
+func TestLog2File(t *testing.T) {
+	s := &g.Set{
+		File:   "/tmp/log_test.log",
+		Level:  logrus.DebugLevel,
+		Output: "file",
+	}
+
+	g.LogInit(s)
+
+	if _, err := os.Stat(s.File); os.IsNotExist(err) {
+		OK(t, err)
+	}
+
+	log.Info("TestLog2Stdout")
+
+	Equals(t, "TestLog2Stdout", hook.LastEntry().Message)
+	Equals(t, log.Level.String(), hook.LastEntry().Level.String())
+
+	_ = os.Remove(s.File)
 }
 
 func TestSetVars(t *testing.T) {

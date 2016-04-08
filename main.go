@@ -27,17 +27,7 @@ var (
 )
 
 func init() {
-	g.SetVars(g.WhatArch)
-	g.Log = logger.New()
-	s := &utils.Set{
-		File:   g.LogFile,
-		Output: g.LogOutput,
-		Level:  logger.DebugLevel,
-		Log:    g.Log,
-	}
-	utils.LogInit(s)
-	// log.Init(l)
-	// log.Info("main.go")
+	log = g.Log
 }
 
 func main() {
@@ -76,13 +66,12 @@ func main() {
 
 	case *o.Verb:
 		g.LogOutput = "screen"
-		s := &utils.Set{
+		s := &g.Set{
 			Level:  logger.DebugLevel,
 			Output: g.LogOutput,
-			Log:    g.Log,
 		}
 
-		utils.LogInit(s)
+		log = g.LogInit(s)
 	}
 
 	log.Infof("CPU Cores: ", cores)
