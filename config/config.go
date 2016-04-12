@@ -28,7 +28,7 @@ func (b Blacklist) SortKeys() (pkeys Keys) {
 		pkeys = append(pkeys, pkey)
 	}
 	sort.Sort(Keys(pkeys))
-	return
+	return pkeys
 }
 
 // SortSKeys returns an array of sorted strings
@@ -44,27 +44,29 @@ func (b Blacklist) SortSKeys() (skeys Keys) {
 
 // String returns pretty print for the Blacklist struct
 func (b Blacklist) String() (result string) {
-	// cols, _, _ := terminal.GetSize(int(os.Stdout.Fd()))
-
 	for _, pkey := range b.SortKeys() {
 		result += fmt.Sprintf("Node: %v\n\tDisabled: %v\n\t", pkey, b[pkey].Disable)
 
-		if k := b[pkey].IP; len(k) > 0 {
+		// if k := b[pkey].IP; len(k) > 0 {
+		if len(b[pkey].IP) > 0 {
 			result += fmt.Sprintf("Redirect IP: %v\n\t", b[pkey].IP)
 		}
 
-		if k := b[pkey].Exclude; len(k) > 0 {
-			result += "Exclude(s):\n"
+		switch {
+		case len(b[pkey].Exclude) > 1:
+			result += "Excludes:\n"
 			for _, exclude := range b[pkey].Exclude {
 				result += fmt.Sprintf("\t\t%v\n", exclude)
 			}
-		}
-
-		if k := b[pkey].Include; len(k) > 0 {
-			result += "Include(s):\n"
+		case len(b[pkey].Exclude) == 1:
+			result += fmt.Sprintf("Exclude:\n\t\t%v\n", strings.Join(b[pkey].Exclude[:], ","))
+		case len(b[pkey].Include) > 1:
+			result += "Includes:\n"
 			for _, include := range b[pkey].Include {
 				result += fmt.Sprintf("\t\t%v\n", include)
 			}
+		case len(b[pkey].Include) == 1:
+			result += fmt.Sprintf("Include:\n\t\t%v\n", strings.Join(b[pkey].Include[:], ","))
 		}
 
 		for _, skey := range b.SortSKeys() {
@@ -74,16 +76,17 @@ func (b Blacklist) String() (result string) {
 		}
 		result += "\n"
 	}
-	return
+	return result
 }
 
 // APICmd returns a map of CLI commands
 func APICmd() (r map[string]string) {
 	r = make(map[string]string)
-	l := []string{
+	c := []string{
 		"cfExists",
 		"cfReturnValue",
 		"cfReturnValues",
+		"echo",
 		"exists",
 		"existsActive",
 		"getNodeType",
@@ -100,10 +103,15 @@ func APICmd() (r map[string]string) {
 		"showCfg",
 		"showConfig",
 	}
-	for _, k := range l {
-		r[k] = fmt.Sprintf("%v %v", API, k)
+	for _, k := range c {
+		switch k {
+		case `echo`:
+			r[k] = k
+		default:
+			r[k] = fmt.Sprintf("%v %v", API, k)
+		}
 	}
-	return
+	return r
 }
 
 // GetSubdomains returns a map of subdomains
@@ -203,7 +211,7 @@ func SHcmd(a string) (action string) {
 			action = "showCfg"
 		}
 	}
-	return
+	return action
 }
 
 // Load reads the config using the EdgeOS/VyOS cli-shell-api
@@ -219,7 +227,7 @@ func Load(action string, level string) (r string, err error) {
 
 	stdout, err := cmd.Output()
 	if err != nil {
-		return
+		return r, err
 	}
 
 	r = string(stdout)
@@ -282,7 +290,7 @@ LINE:
 			nodes = append(nodes, src[1])
 
 			if src[1] == "source" {
-				cfgtree[tnode].Source[leaf] = &Src{Type: tnode, Name: leaf}
+				cfgtree[tnode].Source[leaf] = &Src{Type: tnode, Name: leaf, List: make(Dict)}
 			}
 
 		case rx.DSBL.MatchString(line):

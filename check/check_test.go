@@ -11,6 +11,7 @@ import (
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	"github.com/britannic/blacklist/global"
+	"github.com/britannic/blacklist/tdata"
 	. "github.com/britannic/testutils"
 )
 
@@ -18,9 +19,8 @@ var (
 	blacklist *config.Blacklist
 	live      = &Cfg{Blacklist: blacklist}
 	dmsqdir   string
-	// logfile   string
-	log  *logrus.Logger
-	hook *test.Hook
+	log       *logrus.Logger
+	hook      *test.Hook
 )
 
 func init() {
@@ -30,15 +30,15 @@ func init() {
 		dmsqdir = global.DmsqDir
 
 	default:
-		dmsqdir = "../testdata"
+		dmsqdir = "../tdata"
 	}
 
 	log, hook = test.NewNullLogger()
 	var err error
 
-	live.Blacklist, err = config.Get(config.Testdata, global.Area.Root)
+	live.Blacklist, err = config.Get(tdata.Cfg, global.Area.Root)
 	if err != nil {
-		fmt.Print(fmt.Errorf("Couldn't load config.Testdata"))
+		fmt.Print(fmt.Errorf("Couldn't load tdata.Cfg"))
 		os.Exit(1)
 	}
 }
@@ -77,10 +77,7 @@ func TestBlacklistings(t *testing.T) {
 
 	Assert(t, !failed.Blacklistings(a), "Blacklistings should have failed.", failed)
 
-	a = &Args{
-		Fname: dmsqdir + "/%v" + ".--BROKEN--" + global.Fext,
-		Log:   log,
-	}
+	a.Fname = dmsqdir + "/%v" + ".--BROKEN--" + global.Fext
 
 	badData = `blacklist {
         disabled false
@@ -95,9 +92,9 @@ func TestBlacklistings(t *testing.T) {
 	failed.Blacklist, err = config.Get(badData, global.Area.Root)
 	OK(t, err)
 
-	Assert(t, !live.Blacklistings(a), "Blacklistings should have failed.", a)
+	Assert(t, !failed.Blacklistings(a), "Blacklistings should have failed.", a)
 
-	Equals(t, "Includes not correct in ../testdata/hosts.--BROKEN--.blacklist.conf\n\tGot: []\n\tWant: [beap.gemini.yahoo.com]", hook.LastEntry().Message)
+	Equals(t, "Includes not correct in ../tdata/hosts.--BROKEN--.blacklist.conf\n\tGot: []\n\tWant: [broken.beap.gemini.yahoo.com broken.beap.gemini.msn.com]", hook.LastEntry().Message)
 	Equals(t, logrus.ErrorLevel.String(), hook.LastEntry().Level.String())
 }
 
@@ -109,10 +106,10 @@ func TestExclusions(t *testing.T) {
 		Log: log,
 	}
 
-	Assert(t, live.Exclusions(a), "Exclusions failure.", a)
+	Assert(t, live.Exclusions(a), fmt.Sprintf("Exclusions failure - last log entry: %v", hook.LastEntry().Message))
 
 	a.Dir = "broken directory"
-	Assert(t, !live.Exclusions(a), "Exclusions should have failed.", a)
+	Assert(t, !live.Exclusions(a), fmt.Sprintf("Exclusions should have failed - last log entry: %v", hook.LastEntry().Message))
 
 	a.Ex = make(config.Dict)
 	b := *live.Blacklist
@@ -133,7 +130,37 @@ func TestExcludedDomains(t *testing.T) {
 		Log: log,
 	}
 
-	Assert(t, live.ExcludedDomains(a), "Excluded domains failure.", a)
+	Assert(t, live.ExcludedDomains(a), fmt.Sprintf("Excluded domains failure - last log entry: %v", hook.LastEntry().Message))
+
+	a.Dir = "--BROKEN--"
+	a.Ex = make(config.Dict)
+	a.Dex = make(config.Dict)
+
+	Assert(t, !live.ExcludedDomains(a), fmt.Sprintf("Excluded domains failure - last log entry: %v", hook.LastEntry().Message))
+
+	Equals(t, "Error getting file: --BROKEN--/domains.pre-configured.blacklist.conf, error: open --BROKEN--/domains.pre-configured.blacklist.conf: no such file or directory\n", hook.LastEntry().Message)
+	Equals(t, logrus.ErrorLevel.String(), hook.LastEntry().Level.String())
+
+	var (
+		err     error
+		badData = `blacklist {
+				disabled false
+				dns-redirect-ip 0.0.0.0
+				hosts {
+						include broken.beap.gemini.yahoo.com
+						include broken.beap.gemini.msn.com
+				}
+		}`
+	)
+
+	failed := &Cfg{Blacklist: blacklist}
+	failed.Blacklist, err = config.Get(badData, global.Area.Root)
+	OK(t, err)
+
+	Assert(t, !failed.ExcludedDomains(a), fmt.Sprintf("Excluded domains failure - last log entry: %v", hook.LastEntry().Message))
+
+	Equals(t, "Error getting file: --BROKEN--/hosts.pre-configured.blacklist.conf, error: open --BROKEN--/hosts.pre-configured.blacklist.conf: no such file or directory\n", hook.LastEntry().Message)
+	Equals(t, logrus.ErrorLevel.String(), hook.LastEntry().Level.String())
 }
 
 func TestConfFiles(t *testing.T) {
@@ -166,7 +193,7 @@ func TestConfIP(t *testing.T) {
 
 func TestConfTemplates(t *testing.T) {
 	a := &Args{
-		Data: fileManifest,
+		Data: tdata.FileManifest,
 		Dir:  `../payload/blacklist`,
 		Log:  log,
 	}
@@ -182,55 +209,17 @@ func TestConfTemplates(t *testing.T) {
 //
 // }
 
-// func TestIPRedirection(t *testing.T) {
-// 	a := &Args{
-// 		Dir: dmsqdir,
-// 	}
-// 	if live.IPRedirection(a) != nil {
-// 		t.Errorf("Problems with IP redirection: %v", err)
-// 	}
-// }
+func TestIPRedirection(t *testing.T) {
+	if global.WhatArch != global.TargetArch {
+		t.SkipNow()
+	}
 
-var fileManifest = `../payload/blacklist
-../payload/blacklist/disabled
-../payload/blacklist/disabled/node.def
-../payload/blacklist/dns-redirect-ip
-../payload/blacklist/dns-redirect-ip/node.def
-../payload/blacklist/domains
-../payload/blacklist/domains/dns-redirect-ip
-../payload/blacklist/domains/dns-redirect-ip/node.def
-../payload/blacklist/domains/exclude
-../payload/blacklist/domains/exclude/node.def
-../payload/blacklist/domains/include
-../payload/blacklist/domains/include/node.def
-../payload/blacklist/domains/node.def
-../payload/blacklist/domains/source
-../payload/blacklist/domains/source/node.def
-../payload/blacklist/domains/source/node.tag
-../payload/blacklist/domains/source/node.tag/description
-../payload/blacklist/domains/source/node.tag/description/node.def
-../payload/blacklist/domains/source/node.tag/prefix
-../payload/blacklist/domains/source/node.tag/prefix/node.def
-../payload/blacklist/domains/source/node.tag/url
-../payload/blacklist/domains/source/node.tag/url/node.def
-../payload/blacklist/exclude
-../payload/blacklist/exclude/node.def
-../payload/blacklist/hosts
-../payload/blacklist/hosts/dns-redirect-ip
-../payload/blacklist/hosts/dns-redirect-ip/node.def
-../payload/blacklist/hosts/exclude
-../payload/blacklist/hosts/exclude/node.def
-../payload/blacklist/hosts/include
-../payload/blacklist/hosts/include/node.def
-../payload/blacklist/hosts/node.def
-../payload/blacklist/hosts/source
-../payload/blacklist/hosts/source/node.def
-../payload/blacklist/hosts/source/node.tag
-../payload/blacklist/hosts/source/node.tag/description
-../payload/blacklist/hosts/source/node.tag/description/node.def
-../payload/blacklist/hosts/source/node.tag/prefix
-../payload/blacklist/hosts/source/node.tag/prefix/node.def
-../payload/blacklist/hosts/source/node.tag/url
-../payload/blacklist/hosts/source/node.tag/url/node.def
-../payload/blacklist/node.def
-`
+	a := &Args{
+		Dir: dmsqdir,
+		Log: log,
+	}
+
+	if !live.IPRedirection(a) {
+		t.Errorf("Problems with IP redirection!")
+	}
+}

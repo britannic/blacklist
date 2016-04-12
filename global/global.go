@@ -33,6 +33,9 @@ const (
 
 	// TestOS sets a global value for the test environment
 	TestOS = "darwin"
+
+	// TargetOS sets a global value for the test environment
+	TargetOS = "linux"
 )
 
 var (
@@ -148,8 +151,7 @@ func SetVars(ARCH string) {
 			Log.Fatal("Cannot determine current directory - exiting")
 		}
 		LogFile = "/tmp/blacklist.log"
-		DmsqDir = cwd + "/testdata"
-
+		DmsqDir = cwd + "/tdata"
 		DNSRestart = "echo -n dnsmasq not implemented on " + WhatOS
 	}
 }

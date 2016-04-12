@@ -3,7 +3,6 @@ package global_test
 import (
 	"fmt"
 	"os"
-	"runtime"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
@@ -19,7 +18,11 @@ var (
 type testTable struct {
 	test interface{}
 	exp  interface{}
-	alt  interface{}
+}
+
+type cpu struct {
+	arch  string
+	check []testTable
 }
 
 func TestLog2Stdout(t *testing.T) {
@@ -59,42 +62,53 @@ func TestLog2File(t *testing.T) {
 func TestSetVars(t *testing.T) {
 	cwd, err := os.Getwd()
 	OK(t, err)
-	platforms := []string{"amd64", "mips64"}
 
-	tests := []testTable{
-		{test: &g.Area.Domains, exp: "domains", alt: "domains"},
-		{test: &g.Area.Hosts, exp: "hosts", alt: "hosts"},
-		{test: &g.Area.Root, exp: "blacklist", alt: "blacklist"},
-		{test: &g.Args, exp: []string{""}, alt: []string{""}},
-		{test: &g.Dbg, exp: false, alt: false},
-		{test: &g.DmsqDir, exp: "/etc/dnsmasq.d", alt: cwd + "/testdata"},
-		{test: &g.DNSRestart, exp: "service dnsmasq restart", alt: fmt.Sprintf("echo -n dnsmasq not implemented on %v", g.TestOS)},
-		{test: g.Fext, exp: ".blacklist.conf", alt: ".blacklist.conf"},
-		{test: &g.FStr, exp: `%v/%v.%v` + g.Fext, alt: `%v/%v.%v` + g.Fext},
-		{test: &g.LogFile, exp: "/var/log/blacklist.log", alt: fmt.Sprintf("%v/blacklist.log", g.DmsqDir)},
-		{test: g.TestOS, exp: "darwin", alt: "darwin"},
+	platforms := []cpu{
+		{arch: "amd64",
+			check: []testTable{
+				{test: &g.Area.Domains, exp: "domains"},
+				{test: &g.Area.Hosts, exp: "hosts"},
+				{test: &g.Area.Root, exp: "blacklist"},
+				{test: &g.Args, exp: []string{""}},
+				{test: &g.Dbg, exp: false},
+				{test: &g.DmsqDir, exp: cwd + "/testdata"},
+				{test: &g.DNSRestart, exp: fmt.Sprintf("echo -n dnsmasq not implemented on %v", g.TestOS)},
+				{test: g.Fext, exp: ".blacklist.conf"},
+				{test: &g.FStr, exp: `%v/%v.%v` + g.Fext},
+				{test: &g.LogFile, exp: fmt.Sprintf("%v/blacklist.log", g.DmsqDir)},
+				{test: g.TestOS, exp: "darwin"},
+			},
+		},
+		{arch: "mips64",
+			check: []testTable{
+				{test: &g.Area.Domains, exp: "domains"},
+				{test: &g.Area.Hosts, exp: "hosts"},
+				{test: &g.Area.Root, exp: "blacklist"},
+				{test: &g.Args, exp: []string{""}},
+				{test: &g.Dbg, exp: false},
+				{test: &g.DmsqDir, exp: "/etc/dnsmasq.d"},
+				{test: &g.DNSRestart, exp: "service dnsmasq restart"},
+				{test: g.Fext, exp: ".blacklist.conf"},
+				{test: &g.FStr, exp: `%v/%v.%v` + g.Fext},
+				{test: &g.LogFile, exp: "/var/log/blacklist.log"},
+				{test: g.TargetOS, exp: "linux"},
+			},
+		},
 	}
 
-	g.WhatOS = runtime.GOOS
-	Arch := g.WhatArch
-	for _, Arch = range platforms {
-		g.SetVars(Arch)
+	for _, k := range platforms {
+		g.SetVars(k.arch)
 
-		for _, run := range tests {
-			expect := run.exp
-			if Arch == g.TargetArch {
-				expect = run.alt
-			}
-
+		for _, run := range k.check {
 			switch run.test.(type) {
 			case bool:
-				Equals(t, expect.(bool), run.test.(bool))
+				Equals(t, run.exp.(bool), run.test.(bool))
 
 			case string:
-				Equals(t, expect.(string), run.test.(string))
+				Equals(t, run.exp.(string), run.test.(string))
 
 			case int:
-				Equals(t, expect.(int), run.test.(int))
+				Equals(t, run.exp.(int), run.test.(int))
 
 			case nil:
 				fmt.Println("Test not properly defined! ", run)

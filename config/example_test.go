@@ -6,10 +6,11 @@ import (
 	"os"
 
 	c "github.com/britannic/blacklist/config"
+	"github.com/britannic/blacklist/tdata"
 )
 
 func Example() {
-	b, e := c.Get(c.Testdata, "blacklist")
+	b, e := c.Get(tdata.Cfg, "blacklist")
 	if e != nil {
 		os.Exit(1)
 	}
@@ -87,7 +88,7 @@ func Example() {
 	//             "Desc": "List of zones serving malicious executables observed by malc0de.com/database/",
 	//             "Disable": false,
 	//             "IP": "",
-	//             "List": null,
+	//             "List": {},
 	//             "Name": "malc0de",
 	//             "No": 0,
 	//             "Prfx": "zone ",
@@ -108,7 +109,7 @@ func Example() {
 	//             "Desc": "Blocking mobile ad providers and some analytics providers",
 	//             "Disable": false,
 	//             "IP": "",
-	//             "List": null,
+	//             "List": {},
 	//             "Name": "adaway",
 	//             "No": 0,
 	//             "Prfx": "127.0.0.1 ",
@@ -119,7 +120,7 @@ func Example() {
 	//             "Desc": "127.0.0.1 based host and domain list",
 	//             "Disable": false,
 	//             "IP": "",
-	//             "List": null,
+	//             "List": {},
 	//             "Name": "malwaredomainlist",
 	//             "No": 0,
 	//             "Prfx": "127.0.0.1 ",
@@ -130,7 +131,7 @@ func Example() {
 	//             "Desc": "OpenPhish automatic phishing detection",
 	//             "Disable": false,
 	//             "IP": "",
-	//             "List": null,
+	//             "List": {},
 	//             "Name": "openphish",
 	//             "No": 0,
 	//             "Prfx": "http",
@@ -141,7 +142,7 @@ func Example() {
 	//             "Desc": "Zero based host and domain list",
 	//             "Disable": false,
 	//             "IP": "",
-	//             "List": null,
+	//             "List": {},
 	//             "Name": "someonewhocares",
 	//             "No": 0,
 	//             "Prfx": "0.0.0.0",
@@ -152,7 +153,7 @@ func Example() {
 	//             "Desc": "Ad server blacklists",
 	//             "Disable": false,
 	//             "IP": "",
-	//             "List": null,
+	//             "List": {},
 	//             "Name": "volkerschatz",
 	//             "No": 0,
 	//             "Prfx": "http",
@@ -163,7 +164,7 @@ func Example() {
 	//             "Desc": "Zero based host and domain list",
 	//             "Disable": false,
 	//             "IP": "",
-	//             "List": null,
+	//             "List": {},
 	//             "Name": "winhelp2002",
 	//             "No": 0,
 	//             "Prfx": "0.0.0.0 ",
@@ -174,7 +175,7 @@ func Example() {
 	//             "Desc": "Fully Qualified Domain Names only - no prefix to strip",
 	//             "Disable": false,
 	//             "IP": "",
-	//             "List": null,
+	//             "List": {},
 	//             "Name": "yoyo",
 	//             "No": 0,
 	//             "Prfx": "",

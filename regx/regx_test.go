@@ -91,6 +91,21 @@ var (
 			input:  `include adsrvr.org`,
 			result: `adsrvr.org`,
 		},
+		"mpty": test{
+			index:  0,
+			input:  ``,
+			result: ``,
+		},
+		"name": test{
+			index:  1,
+			input:  `Test "System"`,
+			result: `Test`,
+		},
+		"node": test{
+			index:  1,
+			input:  `hosts {`,
+			result: `hosts`,
+		},
 		"rbrc": test{
 			index:  0,
 			input:  `} blacklist`,

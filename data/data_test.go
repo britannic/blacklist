@@ -13,6 +13,7 @@ import (
 	"github.com/britannic/blacklist/data"
 	g "github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/regx"
+	"github.com/britannic/blacklist/tdata"
 	"github.com/britannic/blacklist/utils"
 	. "github.com/britannic/testutils"
 )
@@ -25,7 +26,7 @@ func init() {
 		dmsqdir = g.DmsqDir
 
 	default:
-		dmsqdir = "../testdata"
+		dmsqdir = "../tdata"
 	}
 }
 
@@ -59,22 +60,22 @@ func TestDiffArray(t *testing.T) {
 }
 
 func TestExclusions(t *testing.T) {
-	b, err := config.Get(config.Testdata, g.Area.Root)
+	b, err := config.Get(tdata.Cfg, g.Area.Root)
 	OK(t, err)
 
 	var (
-		// tdata  string
 		dex    = make(config.Dict)
 		ex     = data.GetExcludes(*b)
 		globex = data.GetExcludes(*b)
 	)
 
 	for _, s := range src {
-		f := fmt.Sprintf("../testdata/tdata.%v.%v", s.Type, s.Name)
-		testdata, err := utils.GetFile(f)
+		s.List = make(config.Dict)
+		f := fmt.Sprintf("../tdata/tdata.%v.%v", s.Type, s.Name)
+		tdata, err := utils.GetFile(f)
 		OK(t, err)
 
-		gdata := data.Process(s, globex, dex, testdata)
+		gdata := data.Process(s, globex, dex, tdata)
 
 		for k := range gdata.List {
 			i := strings.Count(k, ".")
@@ -92,17 +93,17 @@ func TestExclusions(t *testing.T) {
 }
 
 func TestGetHTTP(t *testing.T) {
-	type tdata struct {
+	type httpdata struct {
 		body  []byte
 		err   error
 		prcsd *config.Src
 	}
 
-	h := &tdata{}
-	d := []*tdata{}
+	h := &httpdata{}
+	d := []*httpdata{}
 	rx := regx.Regex
 
-	b, err := config.Get(config.Testdata, g.Area.Root)
+	b, err := config.Get(tdata.Cfg, g.Area.Root)
 	OK(t, err)
 
 	a := data.GetURLs(*b)
@@ -129,7 +130,7 @@ func TestGetHTTP(t *testing.T) {
 }
 
 func TestGetUrls(t *testing.T) {
-	blist, err := config.Get(config.Testdata, g.Area.Root)
+	blist, err := config.Get(tdata.Cfg, g.Area.Root)
 	OK(t, err)
 
 	b := *blist
@@ -157,7 +158,7 @@ func TestIsDisabled(t *testing.T) {
 }
 
 func TestListFiles(t *testing.T) {
-	b, err := config.Get(config.Testdata, g.Area.Root)
+	b, err := config.Get(tdata.Cfg, g.Area.Root)
 	OK(t, err)
 
 	urls := data.GetURLs(*b)
@@ -175,6 +176,8 @@ func TestListFiles(t *testing.T) {
 	OK(t, err)
 	Equals(t, want, got)
 
+	_, err = data.ListFiles("this is broken")
+	NotOK(t, err)
 }
 
 func TestProcess(t *testing.T) {
@@ -182,7 +185,7 @@ func TestProcess(t *testing.T) {
 		ex := make(config.Dict)
 		dex := make(config.Dict)
 		f := fmt.Sprintf("%v/tdata.%v.%v", dmsqdir, s.Type, s.Name)
-		testdata, err := utils.GetFile(f)
+		tdata, err := utils.GetFile(f)
 		OK(t, err)
 
 		f = fmt.Sprintf("%v/sdata.%v.%v", dmsqdir, s.Type, s.Name)
@@ -194,15 +197,47 @@ func TestProcess(t *testing.T) {
 			wdata += staticdata.Text() + "\n"
 		}
 
-		gdata := string(data.GetList(data.Process(s, ex, dex, testdata))[:])
-
+		gdata := string(data.GetList(data.Process(s, ex, dex, tdata))[:])
 		Equals(t, wdata[:], gdata)
 	}
 }
 
+func TestProcessIsList(t *testing.T) {
+	f := fmt.Sprintf("%v/tdata.isList", dmsqdir)
+	tdata, err := utils.GetFile(f)
+	OK(t, err)
+
+	ex := make(config.Dict)
+	dex := make(config.Dict)
+
+	s := &config.Src{
+		Disable: false,
+		IP:      "0.0.0.0",
+		Name:    "adaway",
+		Prfx:    "127.0.0.1 ",
+		Type:    "hosts",
+		URL:     "http://adaway.org/hosts.txt",
+	}
+	s.List = make(config.Dict)
+	s.List["ads.admoda.com"] = 0
+
+	gdata := string(data.GetList(data.Process(s, ex, dex, tdata))[:])
+
+	f = fmt.Sprintf("%v/sdata.isList", dmsqdir)
+	staticdata, err := utils.GetFile(f)
+	OK(t, err)
+
+	var wdata string
+	for staticdata.Scan() {
+		wdata += staticdata.Text() + "\n"
+	}
+
+	Equals(t, wdata[:], gdata)
+}
+
 func TestPurgeFiles(t *testing.T) {
 
-	b, err := config.Get(config.Testdata, g.Area.Root)
+	b, err := config.Get(tdata.Cfg, g.Area.Root)
 	OK(t, err)
 
 	urls := data.GetURLs(*b)

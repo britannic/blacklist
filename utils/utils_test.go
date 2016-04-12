@@ -6,9 +6,11 @@ import (
 	"io/ioutil"
 	"os"
 	"os/user"
+	// "sync"
+	// "syscall"
 	"testing"
+	// "time"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/global"
 	"github.com/britannic/blacklist/utils"
 	. "github.com/britannic/testutils"
@@ -18,16 +20,14 @@ var (
 	// d.String() = "The rest is history!"
 	d       = []byte{84, 104, 101, 32, 114, 101, 115, 116, 32, 105, 115, 32, 104, 105, 115, 116, 111, 114, 121, 33}
 	dmsqDir string
-	log     *logrus.Logger
 )
 
 func init() {
-	log = global.Log
 	switch global.WhatArch {
 	case global.TargetArch:
 		dmsqDir = global.DmsqDir
 	default:
-		dmsqDir = "../testdata"
+		dmsqDir = "../tdata"
 	}
 }
 
@@ -117,7 +117,6 @@ func TestReloadDNS(t *testing.T) {
 			Assert(t, err != nil, fmt.Sprint("Test should fail, so ReloadDNS() error shouldn't be nil!"), err)
 
 		case true:
-			log.Infof("testing: %v", run)
 			Assert(t, err == nil, fmt.Sprint("Test should pass, so ReloadDNS() error should be nil!"), err)
 		}
 
@@ -170,6 +169,12 @@ func TestIsAdmin(t *testing.T) {
 }
 
 func TestWriteFile(t *testing.T) {
+	// type fLock struct {
+	// 	path string
+	// 	file *os.File
+	// 	sync.Mutex
+	// }
+
 	tFile := struct {
 		badfile string
 		tdata   []byte
@@ -185,12 +190,40 @@ func TestWriteFile(t *testing.T) {
 	f, err := ioutil.TempFile(tFile.tdir, tFile.tfile)
 	OK(t, err)
 
-	defer os.Remove(f.Name())
-	defer f.Close()
-
 	err = utils.WriteFile(f.Name(), d)
 	OK(t, err)
 
 	err = utils.WriteFile(tFile.badfile, d)
 	NotOK(t, err)
+
+	// path := tFile.tdir + `/` + tFile.tfile
+	// err = os.Remove(path)
+	// OK(t, err)
+
+	// lock := filelock.Obtain(path, time.Second*10)
+	// f, err = os.Create(path)
+
+	// f, err = os.OpenFile(path, os.O_CREATE+os.O_RDONLY+os.O_EXCL, 0666)
+	// OK(t, err)
+	// lock := &fLock{path: path, file: f}
+
+	// lock.Mutex.
+	// lock.Mutex.Lock()
+
+	// if lock.file == nil {
+	// 	lock.file, err = os.Open(lock.path)
+	// 	OK(t, err)
+	// }
+
+	// err = syscall.Flock(int(lock.file.Fd()), syscall.LOCK_EX+syscall.LOCK_NB)
+	// OK(t, err)
+
+	// if lock.IsLocked() {
+	// 	err = utils.WriteFile(path, d)
+	// 	OK(t, err)
+	// }
+	//
+	// lock.Release()
+	// lock.Mutex.Unlock()
+
 }

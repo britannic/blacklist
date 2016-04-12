@@ -8,12 +8,13 @@ package check
 import (
 	"bufio"
 	"fmt"
+	"math/rand"
 	"net"
 	"os/exec"
 	"path/filepath"
 	"reflect"
-	"sort"
 	"strings"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/britannic/blacklist/config"
@@ -29,12 +30,13 @@ var (
 
 // Args is a struct of check function parameters
 type Args struct {
-	Fname string
 	Data  string
-	Dir   string
-	IP    string
-	Ex    config.Dict
 	Dex   config.Dict
+	Dir   string
+	Ex    config.Dict
+	Fname string
+	IP    string
+	List  config.Dict
 	Log   *logrus.Logger
 }
 
@@ -120,6 +122,8 @@ func (c *Cfg) Exclusions(a *Args) (pass bool) {
 // ExcludedDomains checks that domains are excluded from dnsmasq hosts conf files
 func (c *Cfg) ExcludedDomains(a *Args) (pass bool) {
 	var (
+		addPre    bool
+		areas     []string
 		b         *bufio.Scanner
 		err       error
 		got, want []string
@@ -127,60 +131,77 @@ func (c *Cfg) ExcludedDomains(a *Args) (pass bool) {
 		log       = a.Log
 	)
 
-	sortKeys := func() (pkeys config.Keys) {
-		for pkey := range l {
-			pkeys = append(pkeys, pkey)
-			switch pkey {
-			case global.Area.Domains, global.Area.Hosts:
-				if inc := data.GetIncludes(l[pkey]); len(inc) > 0 {
-					l[pkey].Source["pre"] = &config.Src{List: inc, Name: "pre-configured", Type: pkey}
-				}
-			}
-		}
-		sort.Sort(config.Keys(pkeys))
-		return pkeys
-	}
-
-	for _, k := range sortKeys() {
-		for sk := range l[k].Source {
-			s := *l[k].Source[sk]
-			f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
-
-			switch s.Type {
-			case global.Area.Domains:
-				if b, err = utils.GetFile(f); err != nil {
-					log.Errorf("Error getting file: %v, error: %v\n", f, err)
-					return pass
-				}
-
-				for b.Scan() {
-					want = append(want, b.Text())
-				}
-
-				want = ExtractHost(want)
-				for _, fqdn := range want {
-					a.Dex[fqdn] = 0
-				}
-
-			default:
-				if b, err = utils.GetFile(f); err != nil {
-					log.Errorf("Error getting file: %v, error: %v\n", f, err)
-					return pass
-				}
-
-				got = ExtractHost(utils.GetStringArray(b, got))
-			}
-
-			pass = true
-			for _, ex := range got {
-				if _, ok := a.Dex[ex]; ok {
-					pass = false
-					log.Errorf("Found excluded entry %v, in %v\n", ex, f)
-				}
+	for _, k := range l.SortKeys() {
+		areas = append(areas, k)
+		if inc := data.GetIncludes(l[k]); len(inc) > 0 {
+			l[k].Source[`pre`] = &config.Src{List: inc, Name: `pre-configured`, Type: k}
+			if k == global.Area.Domains {
+				addPre = true
 			}
 		}
 	}
 
+	srcKeys := func() (skeys []*config.Src) {
+		for _, k := range areas {
+
+		NEXT:
+			for sk := range l[k].Source {
+				src := l[k].Source[sk]
+
+				switch {
+				case k == global.Area.Domains && sk != `pre`:
+					skeys = append(skeys, src)
+				case k == global.Area.Hosts:
+					skeys = append(skeys, src)
+				default:
+					continue NEXT
+				}
+			}
+		}
+
+		if addPre {
+			skeys = append([]*config.Src{l[global.Area.Domains].Source[`pre`]}, skeys...)
+		}
+
+		return skeys
+	}
+
+	for _, s := range srcKeys() {
+		f := fmt.Sprintf(global.FStr, a.Dir, s.Type, s.Name)
+
+		switch s.Type {
+		case global.Area.Domains:
+			if b, err = utils.GetFile(f); err != nil {
+				log.Errorf("Error getting file: %v, error: %v\n", f, err)
+				return pass
+			}
+
+			for b.Scan() {
+				want = append(want, b.Text())
+			}
+
+			want = ExtractHost(want)
+			for _, fqdn := range want {
+				a.Dex[fqdn] = 0
+			}
+
+		default:
+			if b, err = utils.GetFile(f); err != nil {
+				log.Errorf("Error getting file: %v, error: %v\n", f, err)
+				return pass
+			}
+
+			got = ExtractHost(utils.GetStringArray(b, got))
+		}
+
+		pass = true
+		for _, ex := range got {
+			if _, ok := a.Dex[ex]; ok {
+				pass = false
+				log.Errorf("Found excluded entry %v, in %v\n", ex, f)
+			}
+		}
+	}
 	return pass
 }
 
@@ -352,6 +373,12 @@ func (c *Cfg) IPRedirection(a *Args) bool {
 		got, lIPs []string
 	)
 
+	// w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
+	// defer w.Flush()
+	// show := func(name string, v1, v2, v3 interface{}) {
+	// 	fmt.Fprintf(w, "%s\t%v\t%v\t%v\n", name, v1, v2, v3)
+	// }
+
 	for k := range l {
 		for sk := range l[k].Source {
 			s := *l[k].Source[sk]
@@ -361,15 +388,23 @@ func (c *Cfg) IPRedirection(a *Args) bool {
 				log.Errorf("error: %v", err)
 				return false
 			}
+
 			got = ExtractHost(utils.GetStringArray(b, got))
+			sample := len(got) - 1
+			rand.Seed(time.Now().UTC().UnixNano())
+			// show("Perm", rand.Perm(sample), rand.Perm(5), rand.Perm(10))
+
+			if sample > 50 {
+				sample = 50
+			}
 
 		HOST:
-			for _, host := range got {
+			for i := range rand.Perm(sample) {
 				if s.Type == global.Area.Domains {
-					host = "www." + host
+					got[i] = "www." + got[i]
 				}
 
-				lIPs, err = net.LookupHost(host)
+				lIPs, err = net.LookupHost(got[i])
 
 				switch {
 				case err != nil:
@@ -378,7 +413,7 @@ func (c *Cfg) IPRedirection(a *Args) bool {
 				default:
 					for _, ip := range lIPs {
 						if ip != rIP {
-							log.Errorf("Host %v found in %v, resolves to %v - should be %v\n", host, f, ip, rIP)
+							log.Errorf("Host %v found in %v, resolves to %v - should be %v\n", got[i], f, ip, rIP)
 							pass = false
 						}
 					}
@@ -386,7 +421,6 @@ func (c *Cfg) IPRedirection(a *Args) bool {
 			}
 		}
 	}
-
 	return pass
 }
 

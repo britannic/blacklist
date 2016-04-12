@@ -150,6 +150,7 @@ func GetURLs(b c.Blacklist) (a AreaURLs) {
 	for pkey := range b {
 		var urls []*c.Src
 		if pkey != g.Area.Root {
+
 			if inc := GetIncludes(b[pkey]); len(inc) > 0 {
 				b[pkey].Source["pre"] = &c.Src{List: inc, Name: "pre-configured", Type: pkey}
 			}
@@ -180,14 +181,12 @@ func ListFiles(d string) (files []string, err error) {
 			files = append(files, d+"/"+f.Name())
 		}
 	}
-
 	return files, err
 }
 
 // Process extracts hosts/domains from downloaded raw content
 func Process(s *c.Src, dex c.Dict, ex c.Dict, b *bufio.Scanner) *c.Src {
 	rx := regx.Regex
-	s.List = make(c.Dict)
 
 NEXT:
 	for b.Scan() {
@@ -242,7 +241,6 @@ NEXT:
 			continue NEXT
 		}
 	}
-
 	return s
 }
 

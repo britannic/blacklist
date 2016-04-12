@@ -15,6 +15,9 @@ const (
 
     // TestOS sets a global value for the test environment
     TestOS = "darwin"
+
+    // TargetOS sets a global value for the test environment
+    TargetOS = "linux"
 )
 ```
 

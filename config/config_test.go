@@ -8,6 +8,7 @@ import (
 
 	"github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/global"
+	"github.com/britannic/blacklist/tdata"
 	. "github.com/britannic/testutils"
 )
 
@@ -22,6 +23,7 @@ func TestAPICmd(t *testing.T) {
 		"cfExists":           fmt.Sprintf("%v cfExists", config.API),
 		"cfReturnValue":      fmt.Sprintf("%v cfReturnValue", config.API),
 		"cfReturnValues":     fmt.Sprintf("%v cfReturnValues", config.API),
+		"echo":               "echo",
 		"exists":             fmt.Sprintf("%v exists", config.API),
 		"existsActive":       fmt.Sprintf("%v existsActive", config.API),
 		"getNodeType":        fmt.Sprintf("%v getNodeType", config.API),
@@ -57,7 +59,7 @@ func TestAPICmd(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	b, err := config.Get(config.Testdata, global.Area.Root)
+	b, err := config.Get(tdata.Cfg, global.Area.Root)
 	OK(t, err)
 	Equals(t, blist, fmt.Sprint(b.String()))
 
@@ -81,8 +83,24 @@ func TestKeyExists(t *testing.T) {
 	full := "top.one.two.three.four.five.six.com"
 	d := config.GetSubdomains(full)
 	for key := range d {
-		Assert(t, d.KeyExists(key), fmt.Sprintf("%v key doesn't exist", key), d)
+		Assert(t, d.KeyExists(key), fmt.Sprintf("%v key doesn't exist", key))
 	}
+
+	key := `zKeyDoesn'tExist`
+	Assert(t, !d.KeyExists(key), fmt.Sprintf("%v key shouldn't exist", key))
+}
+
+func TestLoad(t *testing.T) {
+	cfg, err := config.Load("zBroken", "service dns forwarding")
+	NotOK(t, err)
+
+	cfg, err = config.Load("showConfig", "")
+	NotOK(t, err)
+
+	cfg, err = config.Load("echo", "Test")
+	OK(t, err)
+
+	Equals(t, "Test\n", cfg)
 }
 
 func TestSHcmd(t *testing.T) {
@@ -127,10 +145,12 @@ func TestSHcmd(t *testing.T) {
 }
 
 func TestString(t *testing.T) {
-	b, err := config.Get(config.Testdata, global.Area.Root)
+	b, err := config.Get(tdata.Cfg, global.Area.Root)
 	OK(t, err)
-
 	Equals(t, blist, fmt.Sprint(b))
+	b, err = config.Get(tdata.Cfg3, global.Area.Root)
+	OK(t, err)
+	Equals(t, blist2, fmt.Sprint(b))
 }
 
 func TestSubKeyExists(t *testing.T) {
@@ -144,6 +164,10 @@ func TestSubKeyExists(t *testing.T) {
 	for key := range d {
 		Assert(t, d.SubKeyExists(key), fmt.Sprintf("%v sub key doesn't exist", key), d)
 	}
+
+	key := `zKeyDoesn'tExist`
+	Assert(t, !d.SubKeyExists(key), fmt.Sprintf("%v sub key shouldn't exist", key))
+
 }
 
 func TestToBool(t *testing.T) {
@@ -168,7 +192,7 @@ var (
 	blist = `Node: blacklist
 	Disabled: false
 	Redirect IP: 0.0.0.0
-	Exclude(s):
+	Excludes:
 		122.2o7.net
 		1e100.net
 		adobedtm.com
@@ -214,7 +238,7 @@ var (
 
 Node: domains
 	Disabled: false
-	Include(s):
+	Includes:
 		adsrvr.org
 		adtechus.net
 		advertising.com
@@ -231,7 +255,7 @@ Node: domains
 
 Node: hosts
 	Disabled: false
-	Include(s):
+	Include:
 		beap.gemini.yahoo.com
 	Source: adaway
 		Disabled: false
@@ -268,6 +292,36 @@ Node: hosts
 		Description: Fully Qualified Domain Names only - no prefix to strip
 		Prefix: ""
 		URL: http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext
+
+`
+
+	blist2 = `Node: blacklist
+	Disabled: false
+	Redirect IP: 0.0.0.0
+	Exclude:
+		ytimg.com
+
+Node: domains
+	Disabled: false
+	Includes:
+		adsrvr.org
+		adtechus.net
+		advertising.com
+		centade.com
+		doubleclick.net
+		free-counter.co.uk
+		intellitxt.com
+		kiosked.com
+	Source: malc0de
+		Disabled: false
+		Description: List of zones serving malicious executables observed by malc0de.com/database/
+		Prefix: "zone "
+		URL: http://malc0de.com/bl/ZONES
+
+Node: hosts
+	Disabled: false
+	Include:
+		beap.gemini.yahoo.com
 
 `
 )

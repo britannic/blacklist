@@ -15,6 +15,7 @@ import (
 	c "github.com/britannic/blacklist/config"
 	"github.com/britannic/blacklist/data"
 	g "github.com/britannic/blacklist/global"
+	"github.com/britannic/blacklist/tdata"
 	"github.com/britannic/blacklist/utils"
 )
 
@@ -60,7 +61,6 @@ func main() {
 		os.Exit(code)
 
 	case *o.Version:
-
 		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n", version, build, githash)
 		os.Exit(0)
 
@@ -74,27 +74,9 @@ func main() {
 		log = g.LogInit(s)
 	}
 
-	log.Infof("CPU Cores: ", cores)
+	log.Infof("CPU Cores: %v", cores)
 
-	blist, err := func() (b *c.Blacklist, err error) {
-		switch g.WhatOS {
-		case g.TestOS:
-			b, err = c.Get(c.Testdata, g.Area.Root)
-			if err != nil {
-				return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
-			}
-			return b, err
-
-		default:
-
-			cfg, err := c.Load("showCfg", "service dns forwarding")
-			if err != nil {
-				return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
-			}
-			b, err = c.Get(cfg, g.Area.Root)
-			return b, err
-		}
-	}()
+	blist, err := getConfig(tdata.Cfg)
 	if err != nil {
 		log.Fatalf("Critical issue, exiting, error: %v", err)
 	}
@@ -121,4 +103,24 @@ func main() {
 		log.Errorf("Error reloading dnsmasq configuration: %v", err)
 	}
 	log.Infof("dnsmasq command output: %v", s)
+}
+
+func getConfig(s string) (b *c.Blacklist, err error) {
+	switch g.WhatOS {
+	case g.TestOS:
+		b, err = c.Get(s, g.Area.Root)
+		if err != nil {
+			return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
+		}
+		return b, err
+
+	default:
+		cfg, err := c.Load("showCfg", "service dns forwarding")
+		if err != nil {
+			return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
+		}
+
+		b, err = c.Get(cfg, g.Area.Root)
+		return b, err
+	}
 }

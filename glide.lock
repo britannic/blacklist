@@ -1,5 +1,5 @@
 hash: 3172a3a5dfcd3630d4b2277e68a1b350674b7711992bb559dc1e6d9a63e3ef6d
-updated: 2016-03-30T17:19:31.024497454-07:00
+updated: 2016-04-09T15:48:31.906685782-07:00
 imports:
 - name: github.com/britannic/testutils
   version: e4eeec23f78ee97a33a9925b639e27ef50de5309
