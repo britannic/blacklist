@@ -106,21 +106,20 @@ func main() {
 }
 
 func getConfig(s string) (b *c.Blacklist, err error) {
-	switch g.WhatOS {
-	case g.TestOS:
-		b, err = c.Get(s, g.Area.Root)
-		if err != nil {
-			return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
-		}
-		return b, err
-
-	default:
+	switch g.WhatArch {
+	case g.TargetArch:
 		cfg, err := c.Load("showCfg", "service dns forwarding")
 		if err != nil {
 			return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
 		}
-
 		b, err = c.Get(cfg, g.Area.Root)
+		return b, err
+
+	default:
+		b, err = c.Get(s, g.Area.Root)
+		if err != nil {
+			return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
+		}
 		return b, err
 	}
 }
