@@ -1,8 +1,0 @@
-type: txt
-help: A blacklist source url that provides a list of hostnames
-
-val_help: http; Example: http://someonewhocares.org/hosts/zero/
-comp_help: Ensure the matching prefix string removes all text before the Fully Qualified Domain Name or hostname.
-
-commit:expression: $VAR(../prefix) != ""; "A source prefix search string must be set"
-

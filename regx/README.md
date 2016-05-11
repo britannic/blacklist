@@ -10,7 +10,7 @@ Package regx provides regex objects for processing data in files and web content
 
 ## Variables
 ``` go
-var Regex = &RGX{
+var Objects = &OBJ{
     CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
     DESC: regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
     DSBL: regexp.MustCompile(`^(?:disabled)+\s([\S]+)$`),
@@ -29,7 +29,7 @@ var Regex = &RGX{
     SUFX: regexp.MustCompile(`(?:#.*|\{.*|[/[].*)\z`),
 }
 ```
-Regex is a struct of *re populated with precompiled regex objects
+Objects is a struct of *re populated with precompiled regex objects
 
 
 ## func Get
@@ -40,13 +40,13 @@ Get returns an array of the string and submatch
 
 
 
-## type RGX
+## type OBJ
 ``` go
-type RGX struct {
+type OBJ struct {
     CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
 }
 ```
-RGX is a struct of regex precompiled objects
+OBJ is a struct of regex precompiled objects
 
 
 
@@ -58,9 +58,9 @@ RGX is a struct of regex precompiled objects
 
 
 
-### func (\*RGX) String
+### func (\*OBJ) String
 ``` go
-func (rx *RGX) String() (result string)
+func (rx *OBJ) String() (result string)
 ```
 
 

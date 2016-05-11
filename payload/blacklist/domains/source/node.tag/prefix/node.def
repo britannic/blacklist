@@ -1,5 +1,0 @@
-type: txt
-help: Prefix string must include all text before the domain name
-comp_help: prefix; Example: "zone" - will remove 'zone ' from a line with: 'zones animp.org'
-
-commit:expression: $VAR(../url) != ""; "A source URL must be set"

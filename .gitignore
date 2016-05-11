@@ -30,3 +30,7 @@ testdata/blacklist.log
 .coveralls.yml
 
 vendor/github.com/britannic/testutils/
+
+.vscode/launch.json
+
+browse.VC.db

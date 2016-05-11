@@ -1,60 +1,55 @@
-// Copyright 2016 NJ Software. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE.txt file.
-
 package main
 
 import (
 	"flag"
 	"fmt"
+	"io"
+	"log"
 	"os"
 	"runtime"
 	"time"
 
-	logger "github.com/Sirupsen/logrus"
-	c "github.com/britannic/blacklist/config"
-	"github.com/britannic/blacklist/data"
-	g "github.com/britannic/blacklist/global"
-	"github.com/britannic/blacklist/tdata"
-	"github.com/britannic/blacklist/utils"
+	e "github.com/britannic/blacklist/edgeos"
 )
 
 var (
-	log     *logger.Logger
-	cores   = runtime.NumCPU()
+	// Versioning vars updated by go build -ldflags
 	build   = "UNKNOWN"
 	githash = "UNKNOWN"
 	version = "UNKNOWN"
+
+	cores = runtime.NumCPU()
+	dbg   = false
+	dir   = "/tmp"
+	nodes = []string{"blacklist", "domains", "hosts"}
+	poll  = time.Second * 2 // poll
 )
 
-func init() {
-	log = g.Log
-}
-
 func main() {
-	// defer profile.Start(profile.CPUProfile, profile.MemProfile).Stop()
-	runtime.GOMAXPROCS(cores)
-
 	var (
-		dnsmasq = g.DNSRestart
-		poll    = time.Second * 2 // poll
-		timeout = time.Minute * 30
+		reader io.Reader
+		err    error
 	)
 
-	o := getopts()
+	runtime.GOMAXPROCS(cores)
+
+	o := getOpts()
 	a := os.Args[1:]
-	if g.Args != nil {
-		a = g.Args
-	}
 	flag.CommandLine.Parse(a)
 
 	switch {
 	case *o.Debug:
-		g.Dbg = true
+		dbg = true
+
+	case *o.File != "":
+		reader, err = os.Open(*o.File)
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
 
 	case *o.Poll != 5:
 		poll = time.Duration(*o.Poll) * time.Second
-		log.Infof("Poll duration %v", poll)
+		log.Printf("Poll duration %v", poll)
 
 	case *o.Test:
 		code := 0
@@ -64,62 +59,40 @@ func main() {
 		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n", version, build, githash)
 		os.Exit(0)
 
-	case *o.Verb:
-		g.LogOutput = "screen"
-		s := &g.Set{
-			Level:  logger.DebugLevel,
-			Output: g.LogOutput,
-		}
-
-		log = g.LogInit(s)
+		// case *o.Verb:
+		// 	g.LogOutput = "screen"
+		// 	logger := &g.Set{
+		// 		Level:  logrus.DebugLevel,
+		// 		Output: g.LogOutput,
+		// 	}
+		//
+		// 	log = g.LogInit(logger)
 	}
 
-	log.Infof("CPU Cores: %v", cores)
+	if *o.File == "" {
+		reader, err = e.Load("showCfg", "service dns forwarding")
+	}
 
-	blist, err := getConfig(tdata.Cfg)
+	b, err := e.ReadCfg(reader)
 	if err != nil {
-		log.Fatalf("Critical issue, exiting, error: %v", err)
+		log.Fatalf("%v", err)
 	}
 
-	if !data.IsDisabled(*blist, g.Area.Root) {
+	c := b.NewConfig()
 
-		areas := data.GetURLs(*blist)
-
-		if err = data.PurgeFiles(areas, g.DmsqDir); err != nil {
-			log.Errorf("Error removing unused conf files: %v", err)
-		}
-
-		ex := data.GetExcludes(*blist)
-		dex := make(c.Dict)
-
-		for _, k := range []string{g.Area.Domains, g.Area.Hosts} {
-			getBlacklists(timeout, dex, ex, areas[k])
-		}
-	}
-
-	log.Info("Reloading dnsmasq configuration...")
-	s, err := utils.ReloadDNS(dnsmasq)
+	files, err := e.ListFiles(dir)
 	if err != nil {
-		log.Errorf("Error reloading dnsmasq configuration: %v", err)
+		log.Printf("%v", err)
 	}
-	log.Infof("dnsmasq command output: %v", s)
-}
 
-func getConfig(s string) (b *c.Blacklist, err error) {
-	switch g.WhatArch {
-	case g.TargetArch:
-		cfg, err := c.Load("showCfg", "service dns forwarding")
-		if err != nil {
-			return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
-		}
-		b, err = c.Get(cfg, g.Area.Root)
-		return b, err
-
-	default:
-		b, err = c.Get(s, g.Area.Root)
-		if err != nil {
-			return b, fmt.Errorf("unable to get configuration data, error code: %v\n", err)
-		}
-		return b, err
+	purgefiles := e.DiffArray(c.Files(dir, nodes), files)
+	if err = e.PurgeFiles(purgefiles); err != nil {
+		log.Printf("%v", err)
 	}
+
+	dex, ex := c.WriteIncludes(dir, nodes)
+	dex, ex = c.GetExcludes(dex, ex, nodes)
+
+	fmt.Println(dex)
+	fmt.Println(ex)
 }

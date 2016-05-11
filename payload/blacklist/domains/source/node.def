@@ -1,7 +1,0 @@
-tag:
-type: txt
-help: Blacklisted domains source name
-comp_help: Type any unique name, use quotes if spaces or special characters are used
-
-commit:expression: $VAR(./url) != ""; "At least one source url must be configured."
-

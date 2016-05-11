@@ -1,18 +1,8 @@
-hash: 3172a3a5dfcd3630d4b2277e68a1b350674b7711992bb559dc1e6d9a63e3ef6d
-updated: 2016-04-09T15:48:31.906685782-07:00
+hash: ee60634f7cdf636069b53adfd11851adeb282931042c0fa650dddaec9221ce00
+updated: 2016-05-11T11:48:39.481667086-07:00
 imports:
 - name: github.com/britannic/testutils
   version: e4eeec23f78ee97a33a9925b639e27ef50de5309
-- name: github.com/Sirupsen/logrus
-  version: a26f43589d737684363ff856c5a0f9f24b946510
-- name: golang.org/x/crypto
-  version: 9e7f5dc375abeb9619ea3c5c58502c428f457aa2
-  subpackages:
-  - /ssh/terminal
-- name: gopkg.in/airbrake/gobrake.v2
-  version: c9d51adc624b5cc4c1bf8de730a09af4878ffe2d
-- name: gopkg.in/gemnasium/logrus-airbrake-hook.v2
-  version: 31e6fd4bd5a98d8ee7673d24bc54ec73c31810dd
 - name: runtime
   version: ""
 devImports: []

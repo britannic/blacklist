@@ -1,5 +1,0 @@
-type: txt
-help: Prefix string must include all text before the fully qualified domain name
-val_help: prefix; Example: "0.0.0.0" - will remove '0.0.0.0 ' from a line with: '0.0.0.0 animp.org'
-
-commit:expression: $VAR(../url) != ""; "A source URL must be set"

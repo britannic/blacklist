@@ -6,8 +6,8 @@ import (
 	"github.com/britannic/blacklist/regx"
 )
 
-func ExampleRegex() {
-	rx := regx.Regex
+func ExampleOBJ() {
+	rx := regx.Objects
 	fmt.Println(rx)
 	// Output: CMNT: ^(?:[\/*]+)(.*?)(?:[*\/]+)$
 	// DESC: ^(?:description)+\s"?([^"]+)?"?$
@@ -16,7 +16,8 @@ func ExampleRegex() {
 	// FQDN: \b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\b
 	// HOST: ^(?:address=[/][.]{0,1})(.*)(?:[/].*)$
 	// HTTP: (?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)
-	// LEAF: ^(source)+\s([\S]+)\s[{]{1}$
+	// IPBH: ^(?:dns-redirect-ip)+\s([\S]+)$
+	// LEAF: ^([\S]+)+\s([\S]+)\s[{]{1}$
 	// LBRC: [{]
 	// MISC: ^([\w-]+)$
 	// MLTI: ^((?:include|exclude)+)\s([\S]+)$

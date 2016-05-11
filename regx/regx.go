@@ -11,14 +11,14 @@ import (
 	"regexp"
 )
 
-// RGX is a struct of regex precompiled objects
-type RGX struct {
-	CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
+// OBJ is a struct of regex precompiled objects
+type OBJ struct {
+	CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, IPBH, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
 }
 
 // Get returns an array of the string and submatch
 func Get(t, s string) (r []string) {
-	rx := Regex
+	rx := Objects
 	switch t {
 	case "cmnt":
 		r = rx.CMNT.FindStringSubmatch(s)
@@ -34,6 +34,8 @@ func Get(t, s string) (r []string) {
 		r = rx.HOST.FindStringSubmatch(s)
 	case "http":
 		r = rx.HTTP.FindStringSubmatch(s)
+	case "ipbh":
+		r = rx.IPBH.FindStringSubmatch(s)
 	case "lbrc":
 		r = rx.LBRC.FindStringSubmatch(s)
 	case "leaf":
@@ -56,7 +58,7 @@ func Get(t, s string) (r []string) {
 	return
 }
 
-func (rx *RGX) String() (result string) {
+func (rx *OBJ) String() (result string) {
 	v := reflect.ValueOf(rx).Elem()
 	// values := make([]interface{}, v.NumField())
 
@@ -68,8 +70,8 @@ func (rx *RGX) String() (result string) {
 	return result
 }
 
-// Regex is a struct of *re populated with precompiled regex objects
-var Regex = &RGX{
+// Objects is a struct of *re populated with precompiled regex objects
+var Objects = &OBJ{
 	CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
 	DESC: regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
 	DSBL: regexp.MustCompile(`^(?:disabled)+\s([\S]+)$`),
@@ -77,8 +79,10 @@ var Regex = &RGX{
 	FQDN: regexp.MustCompile(`\b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\b`),
 	HOST: regexp.MustCompile(`^(?:address=[/][.]{0,1})(.*)(?:[/].*)$`),
 	HTTP: regexp.MustCompile(`(?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)`),
+	IPBH: regexp.MustCompile(`^(?:dns-redirect-ip)+\s([\S]+)$`),
 	LBRC: regexp.MustCompile(`[{]`),
-	LEAF: regexp.MustCompile(`^(source)+\s([\S]+)\s[{]{1}$`),
+	// LEAF: regexp.MustCompile(`^(source)+\s([\S]+)\s[{]{1}$`),
+	LEAF: regexp.MustCompile(`^([\S]+)+\s([\S]+)\s[{]{1}$`),
 	MISC: regexp.MustCompile(`^([\w-]+)$`),
 	MLTI: regexp.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`),
 	MPTY: regexp.MustCompile(`^$`),

@@ -26,12 +26,12 @@ func TestGet(t *testing.T) {
 }
 
 func TestRegex(t *testing.T) {
-	rx := regx.Regex
-	rxtest := make(map[string][]byte)
-	rxtest["want"] = append(rxtest["want"], rxout...)
-	rxtest["got"] = append(rxtest["got"], fmt.Sprint(rx)...)
-
-	Equals(t, rxtest["want"], rxtest["got"])
+	got := regx.Objects
+	// rxtest := make(map[string][]byte)
+	// rxtest["want"] = append(rxtest["want"], rxout...)
+	// rxtest["got"] = append(rxtest["got"], fmt.Sprint(rx)...)
+	want := rxout
+	Equals(t, want, fmt.Sprint(got))
 }
 
 var (
@@ -118,21 +118,5 @@ var (
 		},
 	}
 
-	rxout = `CMNT: ^(?:[\/*]+)(.*?)(?:[*\/]+)$
-DESC: ^(?:description)+\s"?([^"]+)?"?$
-DSBL: ^(?:disabled)+\s([\S]+)$
-FLIP: ^(?:address=[/][.]{0,1}.*[/])(.*)$
-FQDN: \b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\b
-HOST: ^(?:address=[/][.]{0,1})(.*)(?:[/].*)$
-HTTP: (?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)
-LEAF: ^(source)+\s([\S]+)\s[{]{1}$
-LBRC: [{]
-MISC: ^([\w-]+)$
-MLTI: ^((?:include|exclude)+)\s([\S]+)$
-MPTY: ^$
-NAME: ^([\w-]+)\s["']{0,1}(.*?)["']{0,1}$
-NODE: ^([\w-]+)\s[{]{1}$
-RBRC: [}]
-SUFX: (?:#.*|\{.*|[/[].*)\z
-`
+	rxout = "CMNT: ^(?:[\\/*]+)(.*?)(?:[*\\/]+)$\nDESC: ^(?:description)+\\s\"?([^\"]+)?\"?$\nDSBL: ^(?:disabled)+\\s([\\S]+)$\nFLIP: ^(?:address=[/][.]{0,1}.*[/])(.*)$\nFQDN: \\b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\\b\nHOST: ^(?:address=[/][.]{0,1})(.*)(?:[/].*)$\nHTTP: (?:^(?:http|https){1}:)(?:\\/|%2f){1,2}(.*)\nIPBH: ^(?:dns-redirect-ip)+\\s([\\S]+)$\nLEAF: ^([\\S]+)+\\s([\\S]+)\\s[{]{1}$\nLBRC: [{]\nMISC: ^([\\w-]+)$\nMLTI: ^((?:include|exclude)+)\\s([\\S]+)$\nMPTY: ^$\nNAME: ^([\\w-]+)\\s[\"']{0,1}(.*?)[\"']{0,1}$\nNODE: ^([\\w-]+)\\s[{]{1}$\nRBRC: [}]\nSUFX: (?:#.*|\\{.*|[/[].*)\\z\n"
 )

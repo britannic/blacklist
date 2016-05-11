@@ -2,15 +2,24 @@ package tdata_test
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/britannic/blacklist/tdata"
 	. "github.com/britannic/testutils"
-	"testing"
 )
 
 func TestTdataCfg(t *testing.T) {
-	r, err := tdata.Get("cfg")
-	OK(t, err)
-	Equals(t, cfg, r)
+	want := map[string]string{
+		"cfg":  cfg,
+		"cfg2": cfg2,
+		"cfg3": cfg3,
+	}
+
+	for k := range want {
+		got, err := tdata.Get(k)
+		OK(t, err)
+		Equals(t, want[k], got)
+	}
 }
 
 func TestTdataCfg2(t *testing.T) {
@@ -43,7 +52,7 @@ var (
     disabled false
     dns-redirect-ip 0.0.0.0
     domains {
-        dns-redirect-ip
+        dns-redirect-ip 0.0.0.0
         include adsrvr.org
         include adtechus.net
         include advertising.com
@@ -101,7 +110,7 @@ var (
     exclude yimg.com
     exclude ytimg.com
     hosts {
-        dns-redirect-ip
+        dns-redirect-ip 192.168.168.1
         include beap.gemini.yahoo.com
         source adaway {
             description "Blocking mobile ad providers and some analytics providers"
@@ -123,6 +132,11 @@ var (
             prefix 0.0.0.0
             url http://someonewhocares.org/hosts/zero/
         }
+				source tasty {
+						description "File source"
+						dns-redirect-ip 0.0.0.0
+						file /config/user-data/blist.hosts.src
+				}
         source volkerschatz {
             description "Ad server blacklists"
             prefix http
@@ -130,6 +144,7 @@ var (
         }
         source winhelp2002 {
             description "Zero based host and domain list"
+						dns-redirect-ip 0.0.0.0
             prefix "0.0.0.0 "
             url http://winhelp2002.mvps.org/hosts.txt
         }
