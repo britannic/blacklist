@@ -18,8 +18,10 @@ var Objects = &OBJ{
     FQDN: regexp.MustCompile(`\b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\b`),
     HOST: regexp.MustCompile(`^(?:address=[/][.]{0,1})(.*)(?:[/].*)$`),
     HTTP: regexp.MustCompile(`(?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)`),
+    IPBH: regexp.MustCompile(`^(?:dns-redirect-ip)+\s([\S]+)$`),
     LBRC: regexp.MustCompile(`[{]`),
-    LEAF: regexp.MustCompile(`^(source)+\s([\S]+)\s[{]{1}$`),
+
+    LEAF: regexp.MustCompile(`^([\S]+)+\s([\S]+)\s[{]{1}$`),
     MISC: regexp.MustCompile(`^([\w-]+)$`),
     MLTI: regexp.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`),
     MPTY: regexp.MustCompile(`^$`),
@@ -43,7 +45,7 @@ Get returns an array of the string and submatch
 ## type OBJ
 ``` go
 type OBJ struct {
-    CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
+    CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, IPBH, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
 }
 ```
 OBJ is a struct of regex precompiled objects

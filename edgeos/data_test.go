@@ -218,7 +218,7 @@ func TestProcess(t *testing.T) {
 	}
 }
 
-func TeststripPrefixAndSuffix(t *testing.T) {
+func TestStripPrefixAndSuffix(t *testing.T) {
 	rx := regx.Objects
 	want := "This is a complete sentence and should not have a comment."
 
