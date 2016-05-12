@@ -53,6 +53,8 @@ func TestGetHTTP(t *testing.T) {
 
 	for _, test := range tests {
 		body, err := GetHTTP(test.method, test.URL)
+		t.Logf("Method: %v URL: %v", test.method, test.URL)
+
 		switch test.ok {
 		case true:
 			OK(t, err)

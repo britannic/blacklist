@@ -249,15 +249,30 @@ func TestStripPrefixAndSuffix(t *testing.T) {
 }
 
 func TestWriteIncludes(t *testing.T) {
+	wantDex := List{
+		"adsrvr.org":         0,
+		"adtechus.net":       0,
+		"advertising.com":    0,
+		"centade.com":        0,
+		"doubleclick.net":    0,
+		"free-counter.co.uk": 0,
+		"intellitxt.com":     0,
+		"kiosked.com":        0,
+	}
+
+	wantEx := List{
+		"beap.gemini.yahoo.com": 0,
+	}
+
 	nodes, err := ReadCfg(bytes.NewBufferString(tdata.Cfg))
 	OK(t, err)
 
 	c := nodes.NewConfig()
 
-	ex, dex := c.WriteIncludes("/tmp", []string{blacklist, Domains, Hosts})
+	gotDex, gotEx := c.WriteIncludes("/tmp", []string{blacklist, Domains, Hosts})
 
-	fmt.Println(dex)
-	fmt.Println(ex)
+	Equals(t, wantEx, gotEx)
+	Equals(t, wantDex, gotDex)
 }
 
 var (

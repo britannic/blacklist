@@ -34,3 +34,5 @@ vendor/github.com/britannic/testutils/
 .vscode/launch.json
 
 browse.VC.db
+
+*.test
