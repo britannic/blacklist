@@ -11,11 +11,22 @@ import (
 	. "github.com/britannic/testutils"
 )
 
+var dir = "../testdata"
+
 func TestListFiles(t *testing.T) {
 	want := []string{
-		"./test/domains.malc0de.blacklist.conf", "./test/hosts.adaway.blacklist.conf",
+		dir + "/domains.malc0de.blacklist.conf",
+		dir + "/domains.pre-configured.blacklist.conf",
+		dir + "/hosts.adaway.blacklist.conf",
+		dir + "/hosts.malwaredomainlist.blacklist.conf",
+		dir + "/hosts.openphish.blacklist.conf",
+		dir + "/hosts.pre-configured.blacklist.conf",
+		dir + "/hosts.someonewhocares.blacklist.conf",
+		dir + "/hosts.volkerschatz.blacklist.conf",
+		dir + "/hosts.winhelp2002.blacklist.conf",
+		dir + "/hosts.yoyo.blacklist.conf",
 	}
-	got, err := ListFiles("./test")
+	got, err := ListFiles(dir)
 	OK(t, err)
 	Equals(t, want, got)
 
@@ -25,7 +36,7 @@ func TestListFiles(t *testing.T) {
 }
 
 func TestDeleteFile(t *testing.T) {
-	f, err := ioutil.TempFile("./test", "test.delete.this.file.txt")
+	f, err := ioutil.TempFile(dir, "test.delete.this.file.txt")
 	OK(t, err)
 	Equals(t, true, DeleteFile(f.Name()))
 	OK(t, err)
