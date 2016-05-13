@@ -78,11 +78,21 @@ func TestGet(t *testing.T) {
 
 	c := n.NewConfig()
 	for node := range n {
-		Equals(t, n[node].IP, c.Get(node).IP)
+		if node != Root && n[node].IP != "" {
+			Equals(t, n[node].IP, c.IP(node))
+			ip := c[node].IP
+			c[node].IP = ""
+			Equals(t, n[Root].IP, c.IP(node))
+			c[node].IP = ip
+		}
+
 		Equals(t, n[node].Excludes, c.Get(node).Exc)
+		Equals(t, c.Get(node).Exc, c.Excludes(node))
 		Equals(t, n[node].Includes, c.Get(node).Inc)
-		Equals(t, n.getLeaves(node), c.Get(node).Nodes)
+		Equals(t, c.Get(node).Inc, c.Includes(node))
+		Equals(t, n.getSrcs(node), c.Sources(node))
 		Equals(t, n.getSrcs(node), c.Get(node).Sources)
+		Equals(t, c.Get(node).Disabled, c.Disabled(node))
 	}
 
 	n, err = ReadCfg(bytes.NewBufferString(noIPCfg))

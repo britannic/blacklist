@@ -15,9 +15,14 @@ import (
 
 // Configure has methods for returning config data supersets
 type Configure interface {
-	Get(path string) (e *EdgeOS)
 	Files() []string
 	FormatData(node string, data []string) (reader io.Reader, list List, err error)
+	Get(node string) (e *EdgeOS)
+	IP(node string) string
+	Sources(node string) []Srcs
+	Disabled(node string) bool
+	Excludes(node string) []string
+	Includes(node string) []string
 }
 
 // Config is a map of EdgeOS
@@ -62,6 +67,16 @@ func DiffArray(a, b []string) (diff []string) {
 	return diff
 }
 
+// Disabled returns the node is true or false
+func (c Config) Disabled(node string) bool {
+	return c[node].Disabled
+}
+
+// Excludes returns an array of excluded blacklist domains/hosts
+func (c Config) Excludes(node string) []string {
+	return c[node].Exc
+}
+
 // Files returns a list of dnsmasq conf files from all srcs
 func (c Config) Files(dir string, nodes []string) (files []string) {
 	format := dir + "/%v.%v." + Fext
@@ -78,9 +93,31 @@ func (c Config) Files(dir string, nodes []string) (files []string) {
 	return files
 }
 
+// FormatData returns a io.Reader loaded with dnsmasq formatted data
+func (c Config) FormatData(fmttr string, data []string) (reader io.Reader, list List) {
+	var (
+		b     []byte
+		lines []string
+	)
+
+	list = make(List)
+	for _, k := range data {
+		list[k] = 0
+		lines = append(lines, fmt.Sprintf(fmttr, k))
+	}
+
+	sort.Strings(lines)
+	for _, line := range lines {
+		b = append(b, line...)
+	}
+
+	reader = bytes.NewBuffer(b)
+	return reader, list
+}
+
 // Get returns a normalized EdgeOS data set
-func (c Config) Get(path string) (e *EdgeOS) {
-	return c[path]
+func (c Config) Get(node string) (e *EdgeOS) {
+	return c[node]
 }
 
 // GetExcludes collates the configured excludes and merges the ex/dex lists
@@ -90,7 +127,7 @@ func (c Config) GetExcludes(dex, ex List, nodes []string) (List, List) {
 			switch node {
 			case Domains:
 				dex[k] = 0
-			case blacklist, Hosts:
+			case Root, Hosts:
 				ex[k] = 0
 			}
 		}
@@ -99,6 +136,7 @@ func (c Config) GetExcludes(dex, ex List, nodes []string) (List, List) {
 }
 
 func (n Nodes) getLeaves(node string) (leaves []Leaf) {
+	leaves = []Leaf{}
 	if node == "all" {
 		for _, k := range n.SortKeys() {
 			leaves = append(leaves, (*n[k]))
@@ -136,33 +174,24 @@ func (n Nodes) getSrcs(node string) (srcs []Srcs) {
 	return srcs
 }
 
-// FormatData returns a io.Reader loaded with dnsmasq formatted data
-func (c Config) FormatData(fmttr string, data []string) (reader io.Reader, list List) {
-	var (
-		b     []byte
-		lines []string
-	)
+// Includes returns an array of included blacklist domains/hosts
+func (c Config) Includes(node string) []string {
+	return c[node].Inc
+}
 
-	list = make(List)
-	for _, k := range data {
-		list[k] = 0
-		lines = append(lines, fmt.Sprintf(fmttr, k))
+// IP returns the configured node IP, or the root node's IP if ""
+func (c Config) IP(node string) string {
+	if c[node].IP == "" && node != Root {
+		c[node].IP = c[Root].IP
 	}
-
-	sort.Strings(lines)
-	for _, line := range lines {
-		b = append(b, line...)
-	}
-
-	reader = bytes.NewBuffer(b)
-	return reader, list
+	return c[node].IP
 }
 
 // NewConfig returns an initialized Config map of struct EdgeOS
 func (n Nodes) NewConfig() (c Config) {
 	c = make(Config)
 
-	for node := range n {
+	for _, node := range bnodes {
 		ip := n[node].IP
 		if ip == "" {
 			ip = n[blacklist].IP
@@ -240,6 +269,11 @@ func shuffleArray(slice []string) {
 		j := rand.Intn(i + 1)
 		slice[i], slice[j] = slice[j], slice[i]
 	}
+}
+
+// Sources returns a Leaf array for the node
+func (c Config) Sources(node string) []Srcs {
+	return c[node].Sources
 }
 
 // stripPrefixAndSuffix strips the prefix and suffix

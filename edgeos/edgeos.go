@@ -10,6 +10,8 @@ import (
 	"github.com/britannic/blacklist/regx"
 )
 
+var bnodes = []string{Root, Domains, Hosts}
+
 const (
 	agent     = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/601.4.4 (KHTML, like Gecko) Version/9.0.3 Safari/601.4.4`
 	blackhole = "dns-redirect-ip"
@@ -29,6 +31,9 @@ const (
 
 	// PreCon sets the string for pre-configured
 	PreCon = "pre-configured"
+
+	// Root is the topmost node
+	Root = blacklist
 
 	// False is a string constant
 	False = "false"
@@ -53,7 +58,7 @@ const (
 	// e.g. address=/www.domain.com/0.0.0.0
 	host
 
-	// Root type is the topmost root nodes\
+	// Root type is the topmost root node
 	root
 
 	// Zone type is for future use

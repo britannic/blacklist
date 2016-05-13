@@ -23,6 +23,9 @@ const (
     // PreCon sets the string for pre-configured
     PreCon = "pre-configured"
 
+    // Root is the topmost node
+    Root = blacklist
+
     // False is a string constant
     False = "false"
 
@@ -140,6 +143,22 @@ Config is a map of EdgeOS
 
 
 
+### func (Config) Disabled
+``` go
+func (c Config) Disabled(node string) bool
+```
+Disabled returns the node is true or false
+
+
+
+### func (Config) Excludes
+``` go
+func (c Config) Excludes(node string) []string
+```
+Excludes returns an array of excluded blacklist domains/hosts
+
+
+
 ### func (Config) Files
 ``` go
 func (c Config) Files(dir string, nodes []string) (files []string)
@@ -158,7 +177,7 @@ FormatData returns a io.Reader loaded with dnsmasq formatted data
 
 ### func (Config) Get
 ``` go
-func (c Config) Get(path string) (e *EdgeOS)
+func (c Config) Get(node string) (e *EdgeOS)
 ```
 Get returns a normalized EdgeOS data set
 
@@ -169,6 +188,30 @@ Get returns a normalized EdgeOS data set
 func (c Config) GetExcludes(dex, ex List, nodes []string) (List, List)
 ```
 GetExcludes collates the configured excludes and merges the ex/dex lists
+
+
+
+### func (Config) IP
+``` go
+func (c Config) IP(node string) string
+```
+IP returns the configured node IP, or the root node's IP if ""
+
+
+
+### func (Config) Includes
+``` go
+func (c Config) Includes(node string) []string
+```
+Includes returns an array of included blacklist domains/hosts
+
+
+
+### func (Config) Sources
+``` go
+func (c Config) Sources(node string) []Srcs
+```
+Sources returns a Leaf array for the node
 
 
 
@@ -183,9 +226,14 @@ WriteIncludes writes pre-configure data to disk
 ## type Configure
 ``` go
 type Configure interface {
-    Get(path string) (e *EdgeOS)
     Files() []string
     FormatData(node string, data []string) (reader io.Reader, list List, err error)
+    Get(node string) (e *EdgeOS)
+    IP(node string) string
+    Sources(node string) []Srcs
+    Disabled(node string) bool
+    Excludes(node string) []string
+    Includes(node string) []string
 }
 ```
 Configure has methods for returning config data supersets
