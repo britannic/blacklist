@@ -71,6 +71,11 @@ var (
 			input:  `https:/123pagerank.com/*=UUID:272`,
 			result: `123pagerank.com/*=UUID:272`,
 		},
+		"ipbh": test{
+			index:  1,
+			input:  `dns-redirect-ip 0.0.0.0`,
+			result: `0.0.0.0`,
+		},
 		"lbrc": test{
 			index:  0,
 			input:  `blacklist {`,

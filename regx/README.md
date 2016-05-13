@@ -31,7 +31,7 @@ var Objects = &OBJ{
     SUFX: regexp.MustCompile(`(?:#.*|\{.*|[/[].*)\z`),
 }
 ```
-Objects is a struct of *re populated with precompiled regex objects
+Objects is a struct of *OBJ populated with precompiled regex objects
 
 
 ## func Get
@@ -64,6 +64,8 @@ OBJ is a struct of regex precompiled objects
 ``` go
 func (rx *OBJ) String() (result string)
 ```
+String returns a formatted dump of *OBJ for fmt.Println and fmt.Printf
+
 
 
 

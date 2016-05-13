@@ -58,6 +58,7 @@ func Get(t, s string) (r []string) {
 	return
 }
 
+// String returns a formatted dump of *OBJ for fmt.Println and fmt.Printf
 func (rx *OBJ) String() (result string) {
 	v := reflect.ValueOf(rx).Elem()
 	// values := make([]interface{}, v.NumField())
@@ -70,7 +71,7 @@ func (rx *OBJ) String() (result string) {
 	return result
 }
 
-// Objects is a struct of *re populated with precompiled regex objects
+// Objects is a struct of *OBJ populated with precompiled regex objects
 var Objects = &OBJ{
 	CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
 	DESC: regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
