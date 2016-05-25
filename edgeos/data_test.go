@@ -40,19 +40,18 @@ func TestFormatData(t *testing.T) {
 
 	c := n.NewConfig()
 
-	for node := range n {
+	for _, node := range []string{Domains, Hosts} {
 		var (
 			got       io.Reader
 			gotList   = make(List)
 			lines     []string
 			wantBytes []byte
-			wantList  = make(List)
 		)
-		eq := getSeparator(node)
+		eq := GetSeparator(node)
 
 		for _, k := range n[node].Includes {
-			wantList[k] = 0
-			lines = append(lines, fmt.Sprintf("address=%v%v/%v\n", eq, k, c.Get(node).IP))
+			lines = append(lines, fmt.Sprintf("address=%v%v/%v", eq, k, c.Get(node).IP)+"\n")
+			gotList[k] = 0
 		}
 
 		sort.Strings(lines)
@@ -60,13 +59,13 @@ func TestFormatData(t *testing.T) {
 			wantBytes = append(wantBytes, line...)
 		}
 
-		fmttr := "address=" + eq + "%v/" + c.Get(node).IP + "\n"
-		got, gotList = c.FormatData(fmttr, c.Get(node).Inc)
+		fmttr := "address=" + eq + "%v/" + c.Get(node).IP
+		got = FormatData(fmttr, gotList)
 
 		gotBytes, err := ioutil.ReadAll(got)
 		OK(t, err)
-		Equals(t, string(wantBytes[:]), string(gotBytes[:]))
-		Equals(t, wantList, gotList)
+		Equals(t, wantBytes[:], gotBytes[:])
+		// fmt.Println(string(gotBytes[:]))
 	}
 }
 
@@ -78,12 +77,25 @@ func TestGet(t *testing.T) {
 
 	c := n.NewConfig()
 	for node := range n {
-		if node != Root && n[node].IP != "" {
+		switch {
+		case node != Root && n[node].IP != "":
 			Equals(t, n[node].IP, c.IP(node))
-			ip := c[node].IP
-			c[node].IP = ""
+			ip := c.o[node].IP
+			c.o[node].IP = ""
 			Equals(t, n[Root].IP, c.IP(node))
-			c[node].IP = ip
+			c.o[node].IP = ip
+		case node != Root:
+			Equals(t, Srcs{Name: PreConf, Disabled: false, Type: getType(node).(int), No: 0}, c.Source(node, PreConf))
+		}
+
+		inc := []byte{}
+		for _, k := range n[node].Includes {
+			inc = append(inc, []byte(k+"\n")...)
+		}
+
+		switch node {
+		case Domains, Hosts:
+			Equals(t, bytes.NewBuffer(inc), c.GetIncludes(node))
 		}
 
 		Equals(t, n[node].Excludes, c.Get(node).Exc)
@@ -105,65 +117,21 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetExcludes(t *testing.T) {
-	want := List{
-		"122.2o7.net":             0,
-		"1e100.net":               0,
-		"adobedtm.com":            0,
-		"akamai.net":              0,
-		"amazon.com":              0,
-		"amazonaws.com":           0,
-		"apple.com":               0,
-		"ask.com":                 0,
-		"avast.com":               0,
-		"bitdefender.com":         0,
-		"cdn.visiblemeasures.com": 0,
-		"cloudfront.net":          0,
-		"coremetrics.com":         0,
-		"edgesuite.net":           0,
-		"freedns.afraid.org":      0,
-		"github.com":              0,
-		"githubusercontent.com":   0,
-		"google.com":              0,
-		"googleadservices.com":    0,
-		"googleapis.com":          0,
-		"googleusercontent.com":   0,
-		"gstatic.com":             0,
-		"gvt1.com":                0,
-		"gvt1.net":                0,
-		"hb.disney.go.com":        0,
-		"hp.com":                  0,
-		"hulu.com":                0,
-		"images-amazon.com":       0,
-		"msdn.com":                0,
-		"paypal.com":              0,
-		"rackcdn.com":             0,
-		"schema.org":              0,
-		"skype.com":               0,
-		"smacargo.com":            0,
-		"sourceforge.net":         0,
-		"ssl-on9.com":             0,
-		"ssl-on9.net":             0,
-		"static.chartbeat.com":    0,
-		"storage.googleapis.com":  0,
-		"windows.net":             0,
-		"yimg.com":                0,
-		"ytimg.com":               0,
-	}
+	want := testMap
 	n, err := ReadCfg(bytes.NewBufferString(tdata.Cfg))
 	OK(t, err)
 
 	domEx := "big.bopper.com"
 	c := n.NewConfig()
-	c[Domains].Exc = []string{
+	c.o[Domains].Exc = []string{
 		domEx,
 	}
 
-	dex := List{domEx: 0}
-	got := make(List)
-	dex, got = c.GetExcludes(dex, got, []string{blacklist, Domains, Hosts})
+	c.dex = List{domEx: 0}
+	c.GetExcludes([]string{blacklist, Domains, Hosts})
 
-	Equals(t, want, got)
-	Equals(t, List{domEx: 0}, dex)
+	Equals(t, want, c.ex)
+	Equals(t, List{domEx: 0}, c.dex)
 }
 
 func TestFiles(t *testing.T) {
@@ -203,10 +171,10 @@ func TestGetLeaves(t *testing.T) {
 }
 
 func TestProcess(t *testing.T) {
+	n, err := ReadCfg(bytes.NewBufferString(tdata.Cfg))
+	OK(t, err)
+	c := n.NewConfig()
 	for _, test := range ProcessTests {
-		// if test.num != 5 {
-		// 	continue
-		// }
 		h := new(HTTPserver)
 		URL := h.NewHTTPServer().String()
 		h.mux.HandleFunc(test.page,
@@ -221,10 +189,30 @@ func TestProcess(t *testing.T) {
 		default:
 			NotOK(t, err)
 		}
-		// fmt.Println(test.num)
-		got := Process(test.source, test.dex, test.ex, reader).List
+
+		c.dex = test.dex
+		c.ex = test.ex
+		got := c.Process(test.source, reader)
 		Equals(t, test.want, got)
-		// fmt.Println(got)
+	}
+}
+
+func TestSource(t *testing.T) {
+	n, err := ReadCfg(bytes.NewBufferString(tdata.Cfg))
+	OK(t, err)
+
+	c := n.NewConfig()
+
+	test := map[string]map[string][]Srcs{"domains": map[string][]Srcs{"pre-configured": []Srcs{Srcs{Desc: "", Disabled: false, File: "", IP: "0.0.0.0", List: List(nil), Name: "pre-configured", No: 0, Prefix: "", Type: 2, URL: ""}}, "urls": []Srcs{Srcs{Desc: "List of zones serving malicious executables observed by malc0de.com/database/", Disabled: false, File: "", IP: "", List: List(nil), Name: "malc0de", No: 0, Prefix: "zone ", Type: 2, URL: "http://malc0de.com/bl/ZONES"}, Srcs{Desc: "", Disabled: false, File: "", IP: "", List: List(nil), Name: "pre-configured", No: 0, Prefix: "", Type: 2, URL: ""}}, "files": []Srcs{}}, "hosts": map[string][]Srcs{"urls": []Srcs{Srcs{Desc: "Blocking mobile ad providers and some analytics providers", Disabled: false, File: "", IP: "", List: List(nil), Name: "adaway", No: 0, Prefix: "127.0.0.1 ", Type: 3, URL: "http://adaway.org/hosts.txt"}, Srcs{Desc: "127.0.0.1 based host and domain list", Disabled: false, File: "", IP: "", List: List(nil), Name: "malwaredomainlist", No: 0, Prefix: "127.0.0.1 ", Type: 3, URL: "http://www.malwaredomainlist.com/hostslist/hosts.txt"}, Srcs{Desc: "OpenPhish automatic phishing detection", Disabled: false, File: "", IP: "", List: List(nil), Name: "openphish", No: 0, Prefix: "http", Type: 3, URL: "https://openphish.com/feed.txt"}, Srcs{Desc: "", Disabled: false, File: "", IP: "", List: List(nil), Name: "pre-configured", No: 0, Prefix: "", Type: 3, URL: ""}, Srcs{Desc: "Zero based host and domain list", Disabled: false, File: "", IP: "", List: List(nil), Name: "someonewhocares", No: 0, Prefix: "0.0.0.0", Type: 3, URL: "http://someonewhocares.org/hosts/zero/"}, Srcs{Desc: "File source", Disabled: false, File: "/config/user-data/blist.hosts.src", IP: "0.0.0.0", List: List(nil), Name: "tasty", No: 0, Prefix: "", Type: 3, URL: ""}, Srcs{Desc: "Ad server blacklists", Disabled: false, File: "", IP: "", List: List(nil), Name: "volkerschatz", No: 0, Prefix: "http", Type: 3, URL: "http://www.volkerschatz.com/net/adpaths"}, Srcs{Desc: "Zero based host and domain list", Disabled: false, File: "", IP: "0.0.0.0", List: List(nil), Name: "winhelp2002", No: 0, Prefix: "0.0.0.0 ", Type: 3, URL: "http://winhelp2002.mvps.org/hosts.txt"}, Srcs{Desc: "Fully Qualified Domain Names only - no prefix to strip", Disabled: false, File: "", IP: "", List: List(nil), Name: "yoyo", No: 0, Prefix: "", Type: 3, URL: "http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext"}}, "files": []Srcs{Srcs{Desc: "File source", Disabled: false, File: "/config/user-data/blist.hosts.src", IP: "0.0.0.0", List: List(nil), Name: "tasty", No: 0, Prefix: "", Type: 3, URL: ""}}}}
+
+	for node := range n {
+		switch node {
+		case Domains, Hosts:
+			for _, stype := range []string{PreConf, "files", "urls"} {
+				test[node][stype] = c.Source(node, stype)
+				Equals(t, test[node][stype], c.Source(node, stype))
+			}
+		}
 	}
 }
 
@@ -258,31 +246,14 @@ func TestStripPrefixAndSuffix(t *testing.T) {
 	Equals(t, want, got)
 }
 
-func TestWriteIncludes(t *testing.T) {
-	wantDex := List{
-		"adsrvr.org":         0,
-		"adtechus.net":       0,
-		"advertising.com":    0,
-		"centade.com":        0,
-		"doubleclick.net":    0,
-		"free-counter.co.uk": 0,
-		"intellitxt.com":     0,
-		"kiosked.com":        0,
-	}
+func TestUpdateList(t *testing.T) {
+	var (
+		got  = make(List)
+		want = testMap
+	)
 
-	wantEx := List{
-		"beap.gemini.yahoo.com": 0,
-	}
-
-	nodes, err := ReadCfg(bytes.NewBufferString(tdata.Cfg))
-	OK(t, err)
-
-	c := nodes.NewConfig()
-
-	gotDex, gotEx := c.WriteIncludes("/tmp", []string{blacklist, Domains, Hosts})
-
-	Equals(t, wantEx, gotEx)
-	Equals(t, wantDex, gotDex)
+	UpdateList(testArray, got)
+	Equals(t, want, got)
 }
 
 var (
@@ -295,7 +266,7 @@ var (
 		ok     bool
 		page   string
 		source *Srcs
-		want   List
+		want   io.Reader
 	}{
 		{ // 1
 			data:   httpHostData,
@@ -309,155 +280,154 @@ var (
 				List:   make(List),
 				Prefix: "127.0.0.1 ",
 			},
-			want: List{
-				"a.applovin.com":                0,
-				"a.glcdn.co":                    0,
-				"a.vserv.mobi":                  0,
-				"ad.leadboltapps.net":           0,
-				"ad.madvertise.de":              0,
-				"ad.where.com":                  0,
-				"ad1.adinfuse.com":              0,
-				"ad2.adinfuse.com":              0,
-				"adcontent.saymedia.com":        0,
-				"adinfuse.com":                  0,
-				"admicro1.vcmedia.vn":           0,
-				"admicro2.vcmedia.vn":           0,
-				"admin.vserv.mobi":              0,
-				"ads.adiquity.com":              0,
-				"ads.admarvel.com":              0,
-				"ads.admoda.com":                0,
-				"ads.celtra.com":                0,
-				"ads.flurry.com":                0,
-				"ads.matomymobile.com":          0,
-				"ads.mobgold.com":               0,
-				"ads.mobilityware.com":          0,
-				"ads.mopub.com":                 0,
-				"ads.n-ws.org":                  0,
-				"ads.ookla.com":                 0,
-				"ads.saymedia.com":              0,
-				"ads.smartdevicemedia.com":      0,
-				"ads.vserv.mobi":                0,
-				"ads.xxxad.net":                 0,
-				"ads2.mediaarmor.com":           0,
-				"adserver.ubiyoo.com":           0,
-				"adultmoda.com":                 0,
-				"android-sdk31.transpera.com":   0,
-				"android.bcfads.com":            0,
-				"api.airpush.com":               0,
-				"api.analytics.omgpop.com":      0,
-				"api.yp.com":                    0,
-				"apps.buzzcity.net":             0,
-				"apps.mobilityware.com":         0,
-				"as.adfonic.net":                0,
-				"asotrack1.fluentmobile.com":    0,
-				"assets.cntdy.mobi":             0,
-				"atti.velti.com":                0,
-				"b.scorecardresearch.com":       0,
-				"banners.bigmobileads.com":      0,
-				"bigmobileads.com":              0,
-				"bo.jumptap.com":                0,
-				"bos-tapreq01.jumptap.com":      0,
-				"bos-tapreq02.jumptap.com":      0,
-				"bos-tapreq03.jumptap.com":      0,
-				"bos-tapreq04.jumptap.com":      0,
-				"bos-tapreq05.jumptap.com":      0,
-				"bos-tapreq06.jumptap.com":      0,
-				"bos-tapreq07.jumptap.com":      0,
-				"bos-tapreq08.jumptap.com":      0,
-				"bos-tapreq09.jumptap.com":      0,
-				"bos-tapreq10.jumptap.com":      0,
-				"bos-tapreq11.jumptap.com":      0,
-				"bos-tapreq12.jumptap.com":      0,
-				"bos-tapreq13.jumptap.com":      0,
-				"bos-tapreq14.jumptap.com":      0,
-				"bos-tapreq15.jumptap.com":      0,
-				"bos-tapreq16.jumptap.com":      0,
-				"bos-tapreq17.jumptap.com":      0,
-				"bos-tapreq18.jumptap.com":      0,
-				"bos-tapreq19.jumptap.com":      0,
-				"bos-tapreq20.jumptap.com":      0,
-				"c.vrvm.com":                    0,
-				"c.vserv.mobi":                  0,
-				"c753738.r38.cf2.rackcdn.com":   0,
-				"cache-ssl.celtra.com":          0,
-				"cache.celtra.com":              0,
-				"cdn.celtra.com":                0,
-				"cdn.nearbyad.com":              0,
-				"cdn.trafficforce.com":          0,
-				"cdn.us.goldspotmedia.com":      0,
-				"cdn.vdopia.com":                0,
-				"cdn1.crispadvertising.com":     0,
-				"cdn1.inner-active.mobi":        0,
-				"cdn2.crispadvertising.com":     0,
-				"click.buzzcity.net":            0,
-				"creative1cdn.mobfox.com":       0,
-				"d.applovin.com":                0,
-				"d2bgg7rjywcwsy.cloudfront.net": 0,
-				"d3anogn3pbtk4v.cloudfront.net": 0,
-				"d3oltyb66oj2v8.cloudfront.net": 0,
-				"edge.reporo.net":               0,
-				"ftpcontent.worldnow.com":       0,
-				"funnel0.adinfuse.com":          0,
-				"gemini.yahoo.com":              0,
-				"go.adinfuse.com":               0,
-				"go.mobpartner.mobi":            0,
-				"go.vrvm.com":                   0,
-				"gsmtop.net":                    0,
-				"gts-ads.twistbox.com":          0,
-				"hhbekxxw5d9e.pflexads.com":     1,
-				"hybl9bazbc35.pflexads.com":     0,
-				"i.jumptap.com":                 0,
-				"i.tapit.com":                   0,
-				"images.millennialmedia.com":    0,
-				"images.mpression.net":          0,
-				"img.ads.huntmad.com":           0,
-				"img.ads.mobilefuse.net":        0,
-				"img.ads.mocean.mobi":           0,
-				"img.ads.mojiva.com":            0,
-				"img.ads.taptapnetworks.com":    0,
-				"intouch.adinfuse.com":          0,
-				"lb.usemaxserver.de":            0,
-				"m.adsymptotic.com":             0,
-				"m2m1.inner-active.mobi":        0,
-				"media.mobpartner.mobi":         0,
-				"medrx.sensis.com.au":           0,
-				"mobile.banzai.it":              0,
-				"mobiledl.adboe.com":            0,
-				"mobpartner.mobi":               0,
-				"mwc.velti.com":                 0,
-				"netdna.reporo.net":             0,
-				"oasc04012.247realmedia.com":    0,
-				"orange-fr.adinfuse.com":        0,
-				"orangeuk-mc.adinfuse.com":      0,
-				"orencia.pflexads.com":          0,
-				"pdn.applovin.com":              0,
-				"r.edge.inmobicdn.net":          0,
-				"r.mobpartner.mobi":             0,
-				"req.appads.com":                0,
-				"rs-staticart.ybcdn.net":        0,
-				"ru.velti.com":                  0,
-				"s0.2mdn.net":                   0,
-				"s3.phluant.com":                0,
-				"sf.vserv.mobi":                 0,
-				"show.buzzcity.net":             0,
-				"sky-connect.adinfuse.com":      0,
-				"sky.adinfuse.com":              0,
-				"static.cdn.gtsmobi.com":        0,
-				"static.estebull.com":           0,
-				"stats.pflexads.com":            0,
-				"track.celtra.com":              0,
-				"tracking.klickthru.com":        0,
-				"uk-ad2.adinfuse.com":           0,
-				"uk-go.adinfuse.com":            0,
-				"web63.jumptap.com":             0,
-				"web64.jumptap.com":             0,
-				"web65.jumptap.com":             0,
-				"wv.inner-active.mobi":          0,
-				"www.eltrafiko.com":             0,
-				"www.mmnetwork.mobi":            0,
-				"www.pflexads.com":              0,
-				"wwww.adleads.com":              0,
-			},
+			want: bytes.NewBuffer([]byte(`address=/a.applovin.com/
+address=/a.glcdn.co/
+address=/a.vserv.mobi/
+address=/ad.leadboltapps.net/
+address=/ad.madvertise.de/
+address=/ad.where.com/
+address=/ad1.adinfuse.com/
+address=/ad2.adinfuse.com/
+address=/adcontent.saymedia.com/
+address=/adinfuse.com/
+address=/admicro1.vcmedia.vn/
+address=/admicro2.vcmedia.vn/
+address=/admin.vserv.mobi/
+address=/ads.adiquity.com/
+address=/ads.admarvel.com/
+address=/ads.admoda.com/
+address=/ads.celtra.com/
+address=/ads.flurry.com/
+address=/ads.matomymobile.com/
+address=/ads.mobgold.com/
+address=/ads.mobilityware.com/
+address=/ads.mopub.com/
+address=/ads.n-ws.org/
+address=/ads.ookla.com/
+address=/ads.saymedia.com/
+address=/ads.smartdevicemedia.com/
+address=/ads.vserv.mobi/
+address=/ads.xxxad.net/
+address=/ads2.mediaarmor.com/
+address=/adserver.ubiyoo.com/
+address=/adultmoda.com/
+address=/android-sdk31.transpera.com/
+address=/android.bcfads.com/
+address=/api.airpush.com/
+address=/api.analytics.omgpop.com/
+address=/api.yp.com/
+address=/apps.buzzcity.net/
+address=/apps.mobilityware.com/
+address=/as.adfonic.net/
+address=/asotrack1.fluentmobile.com/
+address=/assets.cntdy.mobi/
+address=/atti.velti.com/
+address=/b.scorecardresearch.com/
+address=/banners.bigmobileads.com/
+address=/bigmobileads.com/
+address=/bo.jumptap.com/
+address=/bos-tapreq01.jumptap.com/
+address=/bos-tapreq02.jumptap.com/
+address=/bos-tapreq03.jumptap.com/
+address=/bos-tapreq04.jumptap.com/
+address=/bos-tapreq05.jumptap.com/
+address=/bos-tapreq06.jumptap.com/
+address=/bos-tapreq07.jumptap.com/
+address=/bos-tapreq08.jumptap.com/
+address=/bos-tapreq09.jumptap.com/
+address=/bos-tapreq10.jumptap.com/
+address=/bos-tapreq11.jumptap.com/
+address=/bos-tapreq12.jumptap.com/
+address=/bos-tapreq13.jumptap.com/
+address=/bos-tapreq14.jumptap.com/
+address=/bos-tapreq15.jumptap.com/
+address=/bos-tapreq16.jumptap.com/
+address=/bos-tapreq17.jumptap.com/
+address=/bos-tapreq18.jumptap.com/
+address=/bos-tapreq19.jumptap.com/
+address=/bos-tapreq20.jumptap.com/
+address=/c.vrvm.com/
+address=/c.vserv.mobi/
+address=/c753738.r38.cf2.rackcdn.com/
+address=/cache-ssl.celtra.com/
+address=/cache.celtra.com/
+address=/cdn.celtra.com/
+address=/cdn.nearbyad.com/
+address=/cdn.trafficforce.com/
+address=/cdn.us.goldspotmedia.com/
+address=/cdn.vdopia.com/
+address=/cdn1.crispadvertising.com/
+address=/cdn1.inner-active.mobi/
+address=/cdn2.crispadvertising.com/
+address=/click.buzzcity.net/
+address=/creative1cdn.mobfox.com/
+address=/d.applovin.com/
+address=/d2bgg7rjywcwsy.cloudfront.net/
+address=/d3anogn3pbtk4v.cloudfront.net/
+address=/d3oltyb66oj2v8.cloudfront.net/
+address=/edge.reporo.net/
+address=/ftpcontent.worldnow.com/
+address=/funnel0.adinfuse.com/
+address=/gemini.yahoo.com/
+address=/go.adinfuse.com/
+address=/go.mobpartner.mobi/
+address=/go.vrvm.com/
+address=/gsmtop.net/
+address=/gts-ads.twistbox.com/
+address=/hhbekxxw5d9e.pflexads.com/
+address=/hybl9bazbc35.pflexads.com/
+address=/i.jumptap.com/
+address=/i.tapit.com/
+address=/images.millennialmedia.com/
+address=/images.mpression.net/
+address=/img.ads.huntmad.com/
+address=/img.ads.mobilefuse.net/
+address=/img.ads.mocean.mobi/
+address=/img.ads.mojiva.com/
+address=/img.ads.taptapnetworks.com/
+address=/intouch.adinfuse.com/
+address=/lb.usemaxserver.de/
+address=/m.adsymptotic.com/
+address=/m2m1.inner-active.mobi/
+address=/media.mobpartner.mobi/
+address=/medrx.sensis.com.au/
+address=/mobile.banzai.it/
+address=/mobiledl.adboe.com/
+address=/mobpartner.mobi/
+address=/mwc.velti.com/
+address=/netdna.reporo.net/
+address=/oasc04012.247realmedia.com/
+address=/orange-fr.adinfuse.com/
+address=/orangeuk-mc.adinfuse.com/
+address=/orencia.pflexads.com/
+address=/pdn.applovin.com/
+address=/r.edge.inmobicdn.net/
+address=/r.mobpartner.mobi/
+address=/req.appads.com/
+address=/rs-staticart.ybcdn.net/
+address=/ru.velti.com/
+address=/s0.2mdn.net/
+address=/s3.phluant.com/
+address=/sf.vserv.mobi/
+address=/show.buzzcity.net/
+address=/sky-connect.adinfuse.com/
+address=/sky.adinfuse.com/
+address=/static.cdn.gtsmobi.com/
+address=/static.estebull.com/
+address=/stats.pflexads.com/
+address=/track.celtra.com/
+address=/tracking.klickthru.com/
+address=/uk-ad2.adinfuse.com/
+address=/uk-go.adinfuse.com/
+address=/web63.jumptap.com/
+address=/web64.jumptap.com/
+address=/web65.jumptap.com/
+address=/wv.inner-active.mobi/
+address=/www.eltrafiko.com/
+address=/www.mmnetwork.mobi/
+address=/www.pflexads.com/
+address=/wwww.adleads.com/
+`)),
 		},
 		{ // 2
 			data:   httpDomainData,
@@ -471,16 +441,15 @@ var (
 				List:   make(List),
 				Prefix: "zone ",
 			},
-			want: List{
-				"192-168-0-255.com":          0,
-				"asi-37.fr":                  0,
-				"bagbackpack.com":            0,
-				"bitmeyenkartusistanbul.com": 0,
-				"byxon.com":                  0,
-				"img001.com":                 0,
-				"loadto.net":                 0,
-				"roastfiles2017.com":         0,
-			},
+			want: bytes.NewBuffer([]byte(`address=/192-168-0-255.com/
+address=/asi-37.fr/
+address=/bagbackpack.com/
+address=/bitmeyenkartusistanbul.com/
+address=/byxon.com/
+address=/img001.com/
+address=/loadto.net/
+address=/roastfiles2017.com/
+`)),
 		},
 		{ // 3
 			data: `# [General]
@@ -571,48 +540,47 @@ var (
 				},
 				Prefix: "127.0.0.1 ",
 			},
-			want: List{
-				"a.glcdn.co":                 0,
-				"ad.madvertise.de":           0,
-				"adcontent.saymedia.com":     0,
-				"admicro1.vcmedia.vn":        0,
-				"admicro2.vcmedia.vn":        0,
-				"ads.admoda.com":             0,
-				"ads.mobgold.com":            0,
-				"ads.mopub.com":              0,
-				"ads.saymedia.com":           0,
-				"ads.xxxad.net":              0,
-				"android.bcfads.com":         0,
-				"api.analytics.omgpop.com":   0,
-				"apps.buzzcity.net":          0,
-				"assets.cntdy.mobi":          0,
-				"banners.bigmobileads.com":   0,
-				"bigmobileads.com":           0,
-				"c.vrvm.com":                 0,
-				"click.buzzcity.net":         0,
-				"creative1cdn.mobfox.com":    0,
-				"ftpcontent.worldnow.com":    0,
-				"go.vrvm.com":                0,
-				"gsmtop.net":                 0,
-				"hhbekxxw5d9e.pflexads.com":  0,
-				"images.millennialmedia.com": 0,
-				"images.mpression.net":       0,
-				"img.ads.huntmad.com":        0,
-				"img.ads.mocean.mobi":        0,
-				"img.ads.mojiva.com":         0,
-				"lb.usemaxserver.de":         0,
-				"mobile.banzai.it":           0,
-				"pdn.applovin.com":           1,
-				"r.edge.inmobicdn.net":       1,
-				"r.mobpartner.mobi":          0,
-				"req.appads.com":             1,
-				"rs-staticart.ybcdn.net":     0,
-				"ru.velti.com":               0,
-				"s0.2mdn.net":                1,
-				"stats.pflexads.com":         0,
-				"tracking.klickthru.com":     0,
-				"www.mmnetwork.mobi":         0,
-			},
+			want: bytes.NewBuffer([]byte(`address=/a.glcdn.co/
+address=/ad.madvertise.de/
+address=/adcontent.saymedia.com/
+address=/admicro1.vcmedia.vn/
+address=/admicro2.vcmedia.vn/
+address=/ads.admoda.com/
+address=/ads.mobgold.com/
+address=/ads.mopub.com/
+address=/ads.saymedia.com/
+address=/ads.xxxad.net/
+address=/android.bcfads.com/
+address=/api.analytics.omgpop.com/
+address=/apps.buzzcity.net/
+address=/assets.cntdy.mobi/
+address=/banners.bigmobileads.com/
+address=/bigmobileads.com/
+address=/c.vrvm.com/
+address=/click.buzzcity.net/
+address=/creative1cdn.mobfox.com/
+address=/ftpcontent.worldnow.com/
+address=/go.vrvm.com/
+address=/gsmtop.net/
+address=/hhbekxxw5d9e.pflexads.com/
+address=/images.millennialmedia.com/
+address=/images.mpression.net/
+address=/img.ads.huntmad.com/
+address=/img.ads.mocean.mobi/
+address=/img.ads.mojiva.com/
+address=/lb.usemaxserver.de/
+address=/mobile.banzai.it/
+address=/pdn.applovin.com/
+address=/r.edge.inmobicdn.net/
+address=/r.mobpartner.mobi/
+address=/req.appads.com/
+address=/rs-staticart.ybcdn.net/
+address=/ru.velti.com/
+address=/s0.2mdn.net/
+address=/stats.pflexads.com/
+address=/tracking.klickthru.com/
+address=/www.mmnetwork.mobi/
+`)),
 		},
 		{ // 4
 			data: `zone "192-168-0-255.com"  {type master; file "/etc/namedb/blockeddomain.hosts";};
@@ -634,10 +602,9 @@ var (
 				List:   make(List),
 				Prefix: "zone ",
 			},
-			want: List{
-				"192-168-0-255.com":          0,
-				"bitmeyenkartusistanbul.com": 2,
-			},
+			want: bytes.NewBuffer([]byte(`address=/192-168-0-255.com/
+address=/bitmeyenkartusistanbul.com/
+`)),
 		},
 		{ // 5
 			data: `# [General]
@@ -680,12 +647,11 @@ var (
 				},
 				Prefix: "http",
 			},
-			want: List{
-				"ad.madvertise.de":           0,
-				"creative1cdn.mobfox.com":    1,
-				"img.ads.huntmad.com":        0,
-				"oasc04012.247realmedia.com": 1,
-			},
+			want: bytes.NewBuffer([]byte(`address=/ad.madvertise.de/
+address=/creative1cdn.mobfox.com/
+address=/img.ads.huntmad.com/
+address=/oasc04012.247realmedia.com/
+`)),
 		},
 	}
 
@@ -787,4 +753,94 @@ var (
 		}
 	}
 }`
+
+	testArray = []string{
+		"122.2o7.net",
+		"1e100.net",
+		"adobedtm.com",
+		"akamai.net",
+		"amazon.com",
+		"amazonaws.com",
+		"apple.com",
+		"ask.com",
+		"avast.com",
+		"bitdefender.com",
+		"cdn.visiblemeasures.com",
+		"cloudfront.net",
+		"coremetrics.com",
+		"edgesuite.net",
+		"freedns.afraid.org",
+		"github.com",
+		"githubusercontent.com",
+		"google.com",
+		"googleadservices.com",
+		"googleapis.com",
+		"googleusercontent.com",
+		"gstatic.com",
+		"gvt1.com",
+		"gvt1.net",
+		"hb.disney.go.com",
+		"hp.com",
+		"hulu.com",
+		"images-amazon.com",
+		"msdn.com",
+		"paypal.com",
+		"rackcdn.com",
+		"schema.org",
+		"skype.com",
+		"smacargo.com",
+		"sourceforge.net",
+		"ssl-on9.com",
+		"ssl-on9.net",
+		"static.chartbeat.com",
+		"storage.googleapis.com",
+		"windows.net",
+		"yimg.com",
+		"ytimg.com",
+	}
+
+	testMap = List{
+		"122.2o7.net":             0,
+		"1e100.net":               0,
+		"adobedtm.com":            0,
+		"akamai.net":              0,
+		"amazon.com":              0,
+		"amazonaws.com":           0,
+		"apple.com":               0,
+		"ask.com":                 0,
+		"avast.com":               0,
+		"bitdefender.com":         0,
+		"cdn.visiblemeasures.com": 0,
+		"cloudfront.net":          0,
+		"coremetrics.com":         0,
+		"edgesuite.net":           0,
+		"freedns.afraid.org":      0,
+		"github.com":              0,
+		"githubusercontent.com":   0,
+		"google.com":              0,
+		"googleadservices.com":    0,
+		"googleapis.com":          0,
+		"googleusercontent.com":   0,
+		"gstatic.com":             0,
+		"gvt1.com":                0,
+		"gvt1.net":                0,
+		"hb.disney.go.com":        0,
+		"hp.com":                  0,
+		"hulu.com":                0,
+		"images-amazon.com":       0,
+		"msdn.com":                0,
+		"paypal.com":              0,
+		"rackcdn.com":             0,
+		"schema.org":              0,
+		"skype.com":               0,
+		"smacargo.com":            0,
+		"sourceforge.net":         0,
+		"ssl-on9.com":             0,
+		"ssl-on9.net":             0,
+		"static.chartbeat.com":    0,
+		"storage.googleapis.com":  0,
+		"windows.net":             0,
+		"yimg.com":                0,
+		"ytimg.com":               0,
+	}
 )

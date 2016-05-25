@@ -10,8 +10,6 @@ import (
 	"github.com/britannic/blacklist/regx"
 )
 
-var bnodes = []string{Root, Domains, Hosts}
-
 const (
 	agent     = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/601.4.4 (KHTML, like Gecko) Version/9.0.3 Safari/601.4.4`
 	blackhole = "dns-redirect-ip"
@@ -19,50 +17,33 @@ const (
 	dbg       = false
 	disabled  = "disabled"
 	source    = "source"
-
-	// Fext sets the dnsmasq configuration file extension
-	Fext = "blacklist.conf"
-
 	// Domains sets the domains string
 	Domains = "domains"
-
-	// Hosts sets the hosts string
-	Hosts = "hosts"
-
-	// PreCon sets the string for pre-configured
-	PreCon = "pre-configured"
-
-	// Root is the topmost node
-	Root = blacklist
-
 	// False is a string constant
 	False = "false"
-
+	// Fext sets the dnsmasq configuration file extension
+	Fext = "blacklist.conf"
+	// Hosts sets the hosts string
+	Hosts = "hosts"
+	// PreConf sets the string for pre-configured
+	PreConf = "pre-configured"
+	// Root is the topmost node
+	Root = blacklist
 	// True is a string constant
 	True = "true"
+
+	// Unknown is a string for Unknown
+	Unknown = "unknown"
 )
 
 // Types determine load order and processing behavior for blacklist sources
 const (
-	// Unknown shouldn't ever be used, it denotes a coding error
-	unknown int = iota
-
-	// Pre type is for pre-configured backlisted domains/hosts
-	pre
-
-	// Domain type sets which format is used for dnsmasq conf files
-	// e.g. address=/.domain.com/0.0.0.0
-	domain
-
-	// Host type sets which format is used for dnsmasq conf files
-	// e.g. address=/www.domain.com/0.0.0.0
-	host
-
-	// Root type is the topmost root node
-	root
-
-	// Zone type is for future use
-	zone
+	unknown int = iota // Unknown shouldn't ever be used, it denotes a coding error
+	pre                // Pre type is for pre-configured backlisted domains/hosts
+	domain             // Domain type sets which format is used for dnsmasq conf files, e.g. address=/.domain.com/0.0.0.0
+	host               // Host type sets which format is used for dnsmasq conf files, e.g. address=/www.domain.com/0.0.0.0
+	root               // Root type is the topmost root node
+	zone               // Zone type is for future use
 )
 
 // Leaf is a struct for EdgeOS configuration data
@@ -88,6 +69,9 @@ type Srcs struct {
 	URL      string `json:"url, omitempty"`
 }
 
+// Nodes is a map of Leaf nodes
+type Nodes map[string]*Leaf
+
 // NewNodes implements a new Node map
 func NewNodes() Nodes {
 	return make(Nodes)
@@ -111,11 +95,11 @@ func typeInt(i int) (s string) {
 	case host:
 		s = Hosts
 	case pre:
-		s = PreCon
+		s = PreConf
 	case root:
 		s = blacklist
 	case unknown:
-		s = "unknown"
+		s = Unknown
 	}
 	return s
 }
@@ -126,18 +110,18 @@ func typeStr(s string) (i int) {
 		i = domain
 	case Hosts:
 		i = host
-	case PreCon:
+	case PreConf:
 		i = pre
 	case blacklist:
 		i = root
-	case "unknown":
+	case Unknown:
 		i = unknown
 	}
 	return i
 }
 
-// GetType returns the converted "in" type
-func GetType(in interface{}) (out interface{}) {
+// getType returns the converted "in" type
+func getType(in interface{}) (out interface{}) {
 	switch in.(type) {
 	case int:
 		out = typeInt(in.(int))
@@ -189,7 +173,7 @@ LINE:
 
 			if srcName[1] == source {
 				src.Name = leaf
-				src.Type = GetType(tnode).(int)
+				src.Type = getType(tnode).(int)
 			}
 
 		case rx.DSBL.MatchString(line):
@@ -238,9 +222,6 @@ LINE:
 
 	return sCfg, nil
 }
-
-// Nodes is a map of Leaf nodes
-type Nodes map[string]*Leaf
 
 // ToBool converts a string ("true" or "false") to it's boolean equivalent
 func ToBool(s string) bool {

@@ -20,8 +20,8 @@ const (
     // Hosts sets the hosts string
     Hosts = "hosts"
 
-    // PreCon sets the string for pre-configured
-    PreCon = "pre-configured"
+    // PreConf sets the string for pre-configured
+    PreConf = "pre-configured"
 
     // Root is the topmost node
     Root = blacklist
@@ -70,11 +70,11 @@ func GetHTTP(method, URL string) (io.Reader, error)
 GetHTTP creates http requests to download data
 
 
-## func GetType
+## func getType
 ``` go
-func GetType(in interface{}) (out interface{})
+func getType(in interface{}) (out interface{})
 ```
-GetType returns the converted "in" type
+getType returns the converted "in" type
 
 
 ## func Insession
@@ -145,7 +145,7 @@ Config is a map of EdgeOS
 
 ### func (Config) Disabled
 ``` go
-func (c Config) Disabled(node string) bool
+func (c *Config) Disabled(node string) bool
 ```
 Disabled returns the node is true or false
 
@@ -153,7 +153,7 @@ Disabled returns the node is true or false
 
 ### func (Config) Excludes
 ``` go
-func (c Config) Excludes(node string) []string
+func (c *Config) Excludes(node string) []string
 ```
 Excludes returns an array of excluded blacklist domains/hosts
 
@@ -161,7 +161,7 @@ Excludes returns an array of excluded blacklist domains/hosts
 
 ### func (Config) Files
 ``` go
-func (c Config) Files(dir string, nodes []string) (files []string)
+func (c *Config) Files(dir string, nodes []string) (files []string)
 ```
 Files returns a list of dnsmasq conf files from all srcs
 
@@ -169,7 +169,7 @@ Files returns a list of dnsmasq conf files from all srcs
 
 ### func (Config) FormatData
 ``` go
-func (c Config) FormatData(fmttr string, data []string) (reader io.Reader, list List)
+func (c *Config) FormatData(fmttr string, data []string) (reader io.Reader, list List)
 ```
 FormatData returns a io.Reader loaded with dnsmasq formatted data
 
@@ -177,7 +177,7 @@ FormatData returns a io.Reader loaded with dnsmasq formatted data
 
 ### func (Config) Get
 ``` go
-func (c Config) Get(node string) (e *EdgeOS)
+func (c *Config) Get(node string) (e *EdgeOS)
 ```
 Get returns a normalized EdgeOS data set
 
@@ -185,7 +185,7 @@ Get returns a normalized EdgeOS data set
 
 ### func (Config) GetExcludes
 ``` go
-func (c Config) GetExcludes(dex, ex List, nodes []string) (List, List)
+func (c *Config) GetExcludes(dex, ex List, nodes []string) (List, List)
 ```
 GetExcludes collates the configured excludes and merges the ex/dex lists
 
@@ -193,7 +193,7 @@ GetExcludes collates the configured excludes and merges the ex/dex lists
 
 ### func (Config) IP
 ``` go
-func (c Config) IP(node string) string
+func (c *Config) IP(node string) string
 ```
 IP returns the configured node IP, or the root node's IP if ""
 
@@ -201,7 +201,7 @@ IP returns the configured node IP, or the root node's IP if ""
 
 ### func (Config) Includes
 ``` go
-func (c Config) Includes(node string) []string
+func (c *Config) Includes(node string) []string
 ```
 Includes returns an array of included blacklist domains/hosts
 
@@ -209,7 +209,7 @@ Includes returns an array of included blacklist domains/hosts
 
 ### func (Config) Sources
 ``` go
-func (c Config) Sources(node string) []Srcs
+func (c *Config) Sources(node string) []Srcs
 ```
 Sources returns a Leaf array for the node
 
@@ -217,7 +217,7 @@ Sources returns a Leaf array for the node
 
 ### func (Config) WriteIncludes
 ``` go
-func (c Config) WriteIncludes(dir string, nodes []string) (dex, ex List)
+func (c *Config) WriteIncludes(dir string, nodes []string) (dex, ex List)
 ```
 WriteIncludes writes pre-configure data to disk
 
@@ -495,7 +495,7 @@ JSON returns raw print for the Blacklist struct
 
 ### func (Nodes) NewConfig
 ``` go
-func (n Nodes) NewConfig() (c Config)
+func (n Nodes) NewConfig() (c *Config)
 ```
 NewConfig returns an initialized Config map of struct EdgeOS
 

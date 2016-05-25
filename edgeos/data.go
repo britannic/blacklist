@@ -13,20 +13,31 @@ import (
 	"github.com/britannic/blacklist/regx"
 )
 
-// Configure has methods for returning config data supersets
-type Configure interface {
-	Files() []string
-	FormatData(node string, data []string) (reader io.Reader, list List, err error)
-	Get(node string) (e *EdgeOS)
-	IP(node string) string
-	Sources(node string) []Srcs
-	Disabled(node string) bool
-	Excludes(node string) []string
-	Includes(node string) []string
-}
+// Bnodes determines which nodes are used to look up configuration data
+var Bnodes = []string{Root, Domains, Hosts}
 
-// Config is a map of EdgeOS
-type Config map[string]*EdgeOS
+// Configure has methods for returning config data supersets
+// type Configure interface {
+// 	Disabled(node string) bool
+// 	Excludes(node string) []string
+// 	Files() []string
+// 	FormatData(node string, data []string) (reader io.Reader, list List, err error)
+// 	Get(node string) (e *EdgeOS)
+// 	Includes(node string) []string
+// 	IP(node string) string
+// 	SourceFiles(node string) (fSrcs []string)
+// 	Sources(node string) []Srcs
+// 	SourceURLs(node string) (fSrcs []string)
+// }
+
+// Object is a map of *EdgeOS
+type Object map[string]*EdgeOS
+
+// Config is a struct for configuring the EdgeOS methods
+type Config struct {
+	ex, dex List
+	o       Object
+}
 
 // EdgeOS struct for normalizing EdgeOS data.
 type EdgeOS struct {
@@ -68,42 +79,35 @@ func DiffArray(a, b []string) (diff []string) {
 }
 
 // Disabled returns the node is true or false
-func (c Config) Disabled(node string) bool {
-	return c[node].Disabled
+func (c *Config) Disabled(node string) bool {
+	return c.o[node].Disabled
 }
 
 // Excludes returns an array of excluded blacklist domains/hosts
-func (c Config) Excludes(node string) []string {
-	return c[node].Exc
+func (c *Config) Excludes(node string) []string {
+	return c.o[node].Exc
 }
 
 // Files returns a list of dnsmasq conf files from all srcs
-func (c Config) Files(dir string, nodes []string) (files []string) {
+func (c *Config) Files(dir string, nodes []string) (files []string) {
 	format := dir + "/%v.%v." + Fext
 	for _, node := range nodes {
-		if len(c.Get(node).Inc) > 0 {
-			files = append(files, fmt.Sprintf(format, node, PreCon))
-		}
-
 		for _, src := range c.Get(node).Sources {
-			files = append(files, fmt.Sprintf(format, GetType(src.Type), src.Name))
+			files = append(files, fmt.Sprintf(format, getType(src.Type), src.Name))
 		}
 	}
 	sort.Strings(files)
 	return files
 }
 
-// FormatData returns a io.Reader loaded with dnsmasq formatted data
-func (c Config) FormatData(fmttr string, data []string) (reader io.Reader, list List) {
+// FormatData returns an io.Reader loaded with dnsmasq formatted data
+func FormatData(fmttr string, data List) io.Reader {
 	var (
 		b     []byte
 		lines []string
 	)
-
-	list = make(List)
-	for _, k := range data {
-		list[k] = 0
-		lines = append(lines, fmt.Sprintf(fmttr, k))
+	for k := range data {
+		lines = append(lines, fmt.Sprintf(fmttr+"\n", k))
 	}
 
 	sort.Strings(lines)
@@ -111,28 +115,35 @@ func (c Config) FormatData(fmttr string, data []string) (reader io.Reader, list 
 		b = append(b, line...)
 	}
 
-	reader = bytes.NewBuffer(b)
-	return reader, list
+	return bytes.NewBuffer(b)
 }
 
 // Get returns a normalized EdgeOS data set
-func (c Config) Get(node string) (e *EdgeOS) {
-	return c[node]
+func (c *Config) Get(node string) (e *EdgeOS) {
+	return c.o[node]
 }
 
 // GetExcludes collates the configured excludes and merges the ex/dex lists
-func (c Config) GetExcludes(dex, ex List, nodes []string) (List, List) {
+func (c *Config) GetExcludes(nodes []string) {
 	for _, node := range nodes {
-		for _, k := range c.Get(node).Exc {
+		for _, k := range c.Excludes(node) {
 			switch node {
 			case Domains:
-				dex[k] = 0
+				c.dex[k] = 0
 			case Root, Hosts:
-				ex[k] = 0
+				c.ex[k] = 0
 			}
 		}
 	}
-	return dex, ex
+}
+
+// GetIncludes processes the configured excludes and returns an io.Reader of exclusions
+func (c *Config) GetIncludes(node string) io.Reader {
+	inc := []byte{}
+	for _, k := range c.Includes(node) {
+		inc = append(inc, []byte(k+"\n")...)
+	}
+	return bytes.NewBuffer(inc)
 }
 
 func (n Nodes) getLeaves(node string) (leaves []Leaf) {
@@ -147,15 +158,8 @@ func (n Nodes) getLeaves(node string) (leaves []Leaf) {
 	return leaves
 }
 
-// func (n Nodes) getLists(node string) (lists []Lists) {
-// 	for node := range n {
-// 		lists = append(lists, (*n[node].Data[snode].List))
-// 	}
-// 	return lists
-// }
-
-// getSeparator returns the dnsmasq conf file delimiter
-func getSeparator(node string) (sep string) {
+// GetSeparator returns the dnsmasq conf file delimiter
+func GetSeparator(node string) (sep string) {
 	sep = "/"
 	if node == Domains {
 		sep = "/."
@@ -164,39 +168,51 @@ func getSeparator(node string) (sep string) {
 }
 
 func (n Nodes) getSrcs(node string) (srcs []Srcs) {
-	// for _, node := range n.SortKeys() {
 	if node != blacklist {
+
+		if len(n[node].Includes) > 0 {
+			n[node].Data[PreConf] = &Srcs{
+				List:   make(List),
+				Name:   PreConf,
+				Prefix: "",
+				Type:   getType(node).(int),
+			}
+		}
+
 		for _, src := range n.SortSKeys(node) {
 			srcs = append(srcs, (*n[node].Data[src]))
 		}
 	}
-	// }
 	return srcs
 }
 
 // Includes returns an array of included blacklist domains/hosts
-func (c Config) Includes(node string) []string {
-	return c[node].Inc
+func (c *Config) Includes(node string) []string {
+	return c.o[node].Inc
 }
 
 // IP returns the configured node IP, or the root node's IP if ""
-func (c Config) IP(node string) string {
-	if c[node].IP == "" && node != Root {
-		c[node].IP = c[Root].IP
+func (c *Config) IP(node string) string {
+	if c.o[node].IP == "" && node != Root {
+		c.o[node].IP = c.o[Root].IP
 	}
-	return c[node].IP
+	return c.o[node].IP
 }
 
 // NewConfig returns an initialized Config map of struct EdgeOS
-func (n Nodes) NewConfig() (c Config) {
-	c = make(Config)
+func (n Nodes) NewConfig() (c *Config) {
+	c = &Config{
+		ex:  make(List),
+		dex: make(List),
+		o:   make(Object),
+	}
 
-	for _, node := range bnodes {
+	for _, node := range Bnodes {
 		ip := n[node].IP
 		if ip == "" {
 			ip = n[blacklist].IP
 		}
-		c[node] = &EdgeOS{
+		c.o[node] = &EdgeOS{
 			Disabled: n[node].Disabled,
 			Exc:      n[node].Excludes,
 			Inc:      n[node].Includes,
@@ -210,7 +226,7 @@ func (n Nodes) NewConfig() (c Config) {
 }
 
 // Process extracts hosts/domains from downloaded raw content
-func Process(s *Srcs, dex, ex List, reader io.Reader) *Srcs {
+func (c *Config) Process(s *Srcs, reader io.Reader) io.Reader {
 	rx := regx.Objects
 	b := bufio.NewScanner(reader)
 
@@ -224,15 +240,15 @@ NEXT:
 			continue NEXT
 
 		case strings.HasPrefix(line, s.Prefix):
-			var ok bool // We have to declare ok here, to fix var line shadow bug
-			line, ok = stripPrefixAndSuffix(line, s.Prefix, rx)
-			if ok {
+			var ok bool
+
+			if line, ok = stripPrefixAndSuffix(line, s.Prefix, rx); ok {
 				fqdns := rx.FQDN.FindAllString(line, -1)
 
 			FQDN:
 				for _, fqdn := range fqdns {
-					isDEX := dex.SubKeyExists(fqdn)
-					isEX := ex.KeyExists(fqdn)
+					isDEX := c.dex.SubKeyExists(fqdn)
+					isEX := c.ex.KeyExists(fqdn)
 					isList := s.List.KeyExists(fqdn)
 
 					switch {
@@ -243,15 +259,14 @@ NEXT:
 						if isList {
 							s.List[fqdn]++
 						}
-						ex[fqdn]++
+						c.ex[fqdn]++
 
 					case isList:
 						s.List[fqdn]++
 
 					case !isEX:
-						ex[fqdn] = 0
+						c.ex[fqdn] = 0
 						s.List[fqdn] = 0
-
 					}
 				}
 			}
@@ -259,7 +274,9 @@ NEXT:
 			continue NEXT
 		}
 	}
-	return s
+
+	fmttr := "address=" + GetSeparator(getType(s.Type).(string)) + "%v/" + s.IP
+	return FormatData(fmttr, s.List)
 }
 
 func shuffleArray(slice []string) {
@@ -271,9 +288,33 @@ func shuffleArray(slice []string) {
 	}
 }
 
-// Sources returns a Leaf array for the node
-func (c Config) Sources(node string) []Srcs {
-	return c[node].Sources
+// Sources returns an array of all the node's Srcs
+func (c *Config) Sources(node string) []Srcs {
+	return c.o[node].Sources
+}
+
+// Source returns an array subset of the node's Srcs specified by stype
+func (c *Config) Source(node, stype string) []Srcs {
+	s := []Srcs{}
+	for _, src := range c.o[node].Sources {
+		switch stype {
+		case "files":
+			if src.File != "" {
+				s = append(s, src)
+			}
+		case PreConf:
+			if src.Name == PreConf {
+				if src.IP == "" {
+					src.IP = c.o[node].IP
+				}
+				s = append(s, src)
+			}
+		case "urls":
+			s = append(s, src)
+		}
+	}
+
+	return s
 }
 
 // stripPrefixAndSuffix strips the prefix and suffix
@@ -295,31 +336,9 @@ func stripPrefixAndSuffix(line, prefix string, rx *regx.OBJ) (string, bool) {
 	return line, true
 }
 
-// WriteIncludes writes pre-configure data to disk
-func (c Config) WriteIncludes(dir string, nodes []string) (dex, ex List) {
-	for _, node := range nodes {
-		var (
-			reader   io.Reader
-			includes = c.Get(node).Inc
-		)
-
-		fmttr := "address=" + getSeparator(node) + "%v/" + c.Get(node).IP + "\n"
-
-		switch node {
-		case blacklist:
-			reader, dex = c.FormatData(fmttr, includes)
-
-		case Domains:
-			reader, dex = c.FormatData(fmttr, includes)
-
-		case Hosts:
-			reader, ex = c.FormatData(fmttr, includes)
-		}
-
-		if len(includes) > 0 {
-			WriteFile(fmt.Sprintf("%v/%v.%v.%v", dir, node, PreCon, Fext), reader)
-		}
-
+// UpdateList converts []string to map of List
+func UpdateList(data []string, list List) {
+	for _, k := range data {
+		list[k] = 0
 	}
-	return dex, ex
 }

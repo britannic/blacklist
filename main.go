@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"io"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	e "github.com/britannic/blacklist/edgeos"
+	"github.com/britannic/blacklist/tdata"
 )
 
 var (
@@ -18,11 +20,13 @@ var (
 	githash = "UNKNOWN"
 	version = "UNKNOWN"
 
-	cores = runtime.NumCPU()
-	dbg   = false
-	dir   = "/tmp"
-	nodes = []string{"blacklist", "domains", "hosts"}
-	poll  = time.Second * 2 // poll
+	cores    = runtime.NumCPU()
+	dir      = setDir()
+	dnsDir   = "/etc/dnsmasq.d"
+	dnsTmp   = "/tmp"
+	nodes    = []string{"domains", "hosts"}
+	whatOS   = runtime.GOOS
+	whatArch = runtime.GOARCH
 )
 
 func main() {
@@ -34,12 +38,12 @@ func main() {
 	runtime.GOMAXPROCS(cores)
 
 	o := getOpts()
-	a := os.Args[1:]
-	flag.CommandLine.Parse(a)
+	p := &e.Parms{}
+	flag.CommandLine.Parse(os.Args[1:])
 
 	switch {
 	case *o.Debug:
-		dbg = true
+		p.SetOpt(e.Debug(*o.Debug))
 
 	case *o.File != "":
 		reader, err = os.Open(*o.File)
@@ -47,9 +51,14 @@ func main() {
 			log.Fatalf("%v", err)
 		}
 
+	case *o.File == "" && whatArch != "mips64":
+		reader = bytes.NewBufferString(tdata.Cfg)
+
+	case *o.File == "":
+		reader, err = e.Load("showCfg", "service dns forwarding")
+
 	case *o.Poll != 5:
-		poll = time.Duration(*o.Poll) * time.Second
-		log.Printf("Poll duration %v", poll)
+		p.SetOpt(e.Poll(time.Duration(*o.Poll) * time.Second))
 
 	case *o.Test:
 		code := 0
@@ -69,17 +78,28 @@ func main() {
 		// 	log = g.LogInit(logger)
 	}
 
-	if *o.File == "" {
-		reader, err = e.Load("showCfg", "service dns forwarding")
-	}
-
 	b, err := e.ReadCfg(reader)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
 
 	c := b.NewConfig()
+	removeFiles(c)
+	allNodes := []string{"blacklist"}
+	allNodes = append(allNodes, nodes...)
 
+	c.GetExcludes(allNodes)
+
+	for _, node := range nodes {
+		for _, src := range c.Source(node, e.PreConf) {
+			data := c.Process(&src, c.GetIncludes(node))
+			fname := fmt.Sprintf("%v/%v.%v", dir, node, e.Fext)
+			e.WriteFile(fname, data)
+		}
+	}
+}
+
+func removeFiles(c *e.Config) {
 	files, err := e.ListFiles(dir)
 	if err != nil {
 		log.Printf("%v", err)
@@ -89,10 +109,13 @@ func main() {
 	if err = e.PurgeFiles(purgefiles); err != nil {
 		log.Printf("%v", err)
 	}
+}
 
-	dex, ex := c.WriteIncludes(dir, nodes)
-	dex, ex = c.GetExcludes(dex, ex, nodes)
-
-	fmt.Println(dex)
-	fmt.Println(ex)
+func setDir() string {
+	switch whatArch {
+	case "mips64":
+		return dnsDir
+	default:
+		return dnsTmp
+	}
 }

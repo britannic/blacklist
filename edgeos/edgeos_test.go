@@ -44,9 +44,9 @@ func TestGetType(t *testing.T) {
 		typeint int
 		typestr string
 	}{
-		{typeint: unknown, typestr: "unknown"},
+		{typeint: unknown, typestr: Unknown},
 		{typeint: root, typestr: blacklist},
-		{typeint: pre, typestr: PreCon},
+		{typeint: pre, typestr: PreConf},
 		{typeint: domain, typestr: Domains},
 		{typeint: host, typestr: Hosts},
 	}
@@ -54,8 +54,8 @@ func TestGetType(t *testing.T) {
 	for _, test := range tests {
 		Equals(t, test.typeint, typeStr(test.typestr))
 		Equals(t, test.typestr, typeInt(test.typeint))
-		Equals(t, test.typestr, GetType(test.typeint))
-		Equals(t, test.typeint, GetType(test.typestr))
+		Equals(t, test.typestr, getType(test.typeint))
+		Equals(t, test.typeint, getType(test.typestr))
 	}
 }
 

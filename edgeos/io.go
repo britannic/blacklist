@@ -1,7 +1,6 @@
 package edgeos
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -86,13 +85,13 @@ func ListFiles(dir string) (files []string, err error) {
 }
 
 // PurgeFiles removes any orphaned blacklist files that don't have sources
-func PurgeFiles(files []string) (err error) {
+func PurgeFiles(files []string) error {
 	var errArray []string
 
 NEXT:
 	for _, file := range files {
-		if _, err = os.Stat(file); os.IsNotExist(err) {
-			errArray = append(errArray, fmt.Sprintf("%q: %v", file, err))
+		if _, err := os.Stat(file); os.IsNotExist(err) {
+			// errArray = append(errArray, fmt.Sprintf("%q: %v", file, err))
 			continue NEXT
 		}
 		if !DeleteFile(file) {
@@ -101,54 +100,20 @@ NEXT:
 	}
 	switch len(errArray) > 0 {
 	case true:
-		err = fmt.Errorf("%v", strings.Join(errArray, "\n"))
+		err := fmt.Errorf("%v", strings.Join(errArray, "\n"))
 		return err
 	}
 
-	return err
+	return nil
 }
 
 // WriteFile writes blacklist data to storage
 func WriteFile(fname string, data io.Reader) (err error) {
-	var (
-		f *os.File
-		n int
-	)
-
-	f, err = os.OpenFile(fname, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
+	var b []byte
+	b, err = ioutil.ReadAll(data)
 	if err != nil {
-		return fmt.Errorf("unable to open file: %v for writing, error: %v", fname, err)
+		return err
 	}
-
-	defer func() error {
-		if err = f.Close(); err != nil {
-			return err
-		}
-		return nil
-	}()
-
-	w := bufio.NewWriter(f)
-	buf := make([]byte, 1024)
-
-NEXT:
-	for {
-
-		n, err = data.Read(buf)
-		switch {
-		case err != nil && err != io.EOF:
-			return err
-		case n == 0:
-			break NEXT
-		}
-
-		if _, err = w.Write(buf[:n]); err != nil {
-			return err
-		}
-
-		if err = w.Flush(); err != nil {
-			return err
-		}
-	}
-
+	err = ioutil.WriteFile(fname, b, 0644)
 	return err
 }

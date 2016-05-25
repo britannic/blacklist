@@ -5,7 +5,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"strings"
 	"testing"
 
 	. "github.com/britannic/testutils"
@@ -50,10 +49,10 @@ func TestDeleteFile(t *testing.T) {
 
 func TestPurgeFiles(t *testing.T) {
 	var (
-		errArray  []string
 		dir       = "/tmp"
 		ext       = ".delete"
 		purgeList []string
+		want      error
 	)
 
 	for i := 0; i < 10; i++ {
@@ -67,10 +66,6 @@ func TestPurgeFiles(t *testing.T) {
 	OK(t, err)
 
 	got := PurgeFiles(purgeList)
-	for _, fname := range purgeList {
-		errArray = append(errArray, fmt.Sprintf("%q: stat %v: no such file or directory", fname, fname))
-	}
-	want := fmt.Errorf("%v", strings.Join(errArray, "\n"))
 	Equals(t, want, got)
 
 	got = PurgeFiles([]string{"/dev/null"})
@@ -107,6 +102,13 @@ func TestWriteFile(t *testing.T) {
 			ok:    false,
 			want:  `unable to open file: /tmp/z/d/c/r/c:reallybadfile.zfts for writing, error: open /tmp/z/d/c/r/c:reallybadfile.zfts: no such file or directory`,
 		},
+		{
+			data:  NewContent(""),
+			dir:   "",
+			fname: "Test.util.WriteFile",
+			ok:    true,
+			want:  "",
+		},
 	}
 
 	for _, test := range writeFileTests {
@@ -121,7 +123,7 @@ func TestWriteFile(t *testing.T) {
 		default:
 			err := WriteFile(test.fname, test.data)
 			NotOK(t, err)
-			Equals(t, `unable to open file: /tmp/z/d/c/r/c:reallybadfile.zfts for writing, error: open /tmp/z/d/c/r/c:reallybadfile.zfts: no such file or directory`, err.Error())
+			Equals(t, `open /tmp/z/d/c/r/c:reallybadfile.zfts: no such file or directory`, err.Error())
 		}
 	}
 }
