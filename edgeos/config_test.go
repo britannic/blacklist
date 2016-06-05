@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/britannic/blacklist/edgeos"
 	"github.com/britannic/blacklist/tdata"
-	"github.com/britannic/junk/edgeos"
 	. "github.com/britannic/testutils"
 	"github.com/pmezard/go-difflib/difflib"
 )

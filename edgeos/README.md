@@ -1,6 +1,6 @@
 
 # edgeos
-    import "github.com/britannic/junk/edgeos"
+    import "github.com/britannic/blacklist/edgeos"
 
 Package edgeos provides methods and structures to retrieve, parse and render EdgeOS configuration data and files.
 
