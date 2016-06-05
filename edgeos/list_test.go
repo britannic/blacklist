@@ -15,8 +15,8 @@ func TestKeys(t *testing.T) {
 	b, err := ReadCfg(bytes.NewBufferString(tdata.Cfg))
 	OK(t, err)
 
-	Equals(t, "[blacklist domains hosts]", fmt.Sprint(b.SortKeys()))
-	Equals(t, "[adaway malwaredomainlist openphish someonewhocares tasty volkerschatz winhelp2002 yoyo]", fmt.Sprint(b.SortSKeys("hosts")))
+	Equals(t, "[blacklist domains hosts]", fmt.Sprint(b.sortKeys()))
+	Equals(t, "[adaway malwaredomainlist openphish someonewhocares tasty volkerschatz winhelp2002 yoyo]", fmt.Sprint(b.sortSKeys("hosts")))
 
 	for _, k := range []string{"a", "b", "c", "z", "q", "s", "e", "i", "x", "m"} {
 		keys = append(keys, k)
@@ -27,13 +27,13 @@ func TestKeys(t *testing.T) {
 
 func TestKeyExists(t *testing.T) {
 	full := "top.one.two.three.four.five.six.intellitxt.com"
-	d := GetSubdomains(full)
+	d := getSubdomains(full)
 	for key := range d {
-		Assert(t, d.KeyExists(key), fmt.Sprintf("%v key doesn't exist", key))
+		Assert(t, d.keyExists(key), fmt.Sprintf("%v key doesn't exist", key))
 	}
 
 	key := `zKeyDoesn'tExist`
-	Assert(t, !d.KeyExists(key), fmt.Sprintf("%v key shouldn't exist", key))
+	Assert(t, !d.keyExists(key), fmt.Sprintf("%v key shouldn't exist", key))
 }
 
 func TestMergeList(t *testing.T) {
@@ -50,7 +50,7 @@ func TestMergeList(t *testing.T) {
 			testList2[string(i)] = 1
 		}
 	}
-	got := MergeList(testList1, testList2)
+	got := mergeList(testList1, testList2)
 	Equals(t, want, got)
 }
 
@@ -84,7 +84,7 @@ func TestString(t *testing.T) {
 
 func TestSubKeyExists(t *testing.T) {
 	full := "top.one.two.three.four.five.six.com"
-	d := GetSubdomains(full)
+	d := getSubdomains(full)
 	key := `intellitxt.com`
 	d[key] = 0
 	got := len(d)
@@ -93,13 +93,13 @@ func TestSubKeyExists(t *testing.T) {
 	Equals(t, want, got)
 
 	for key = range d {
-		Assert(t, d.SubKeyExists(key), fmt.Sprintf("%v sub key doesn't exist", key), d)
+		Assert(t, d.subKeyExists(key), fmt.Sprintf("%v sub key doesn't exist", key), d)
 	}
 
-	Assert(t, d.SubKeyExists(key), fmt.Sprintf("%v key should exist", key))
+	Assert(t, d.subKeyExists(key), fmt.Sprintf("%v key should exist", key))
 
 	key = `zKeyDoesn'tExist`
-	Assert(t, !d.SubKeyExists(key), fmt.Sprintf("%v sub key shouldn't exist", key))
+	Assert(t, !d.subKeyExists(key), fmt.Sprintf("%v sub key shouldn't exist", key))
 
 }
 

@@ -1,6 +1,6 @@
 
 # edgeos
-    import "github.com/britannic/blacklist/edgeos"
+    import "github.com/britannic/junk/edgeos"
 
 Package edgeos provides methods and structures to retrieve, parse and render EdgeOS configuration data and files.
 
@@ -11,21 +11,6 @@ Package edgeos provides methods and structures to retrieve, parse and render Edg
 ``` go
 const (
 
-    // Fext sets the dnsmasq configuration file extension
-    Fext = "blacklist.conf"
-
-    // Domains sets the domains string
-    Domains = "domains"
-
-    // Hosts sets the hosts string
-    Hosts = "hosts"
-
-    // PreConf sets the string for pre-configured
-    PreConf = "pre-configured"
-
-    // Root is the topmost node
-    Root = blacklist
-
     // False is a string constant
     False = "false"
 
@@ -33,83 +18,6 @@ const (
     True = "true"
 )
 ```
-
-## Variables
-``` go
-var (
-    // API sets the path and executable for the EdgeOS shell API
-    API = "/bin/cli-shell-api"
-)
-```
-
-## func APICmd
-``` go
-func APICmd() (r map[string]string)
-```
-APICmd returns a map of CLI commands
-
-
-## func DeleteFile
-``` go
-func DeleteFile(f string) bool
-```
-DeleteFile removes a file if it exists
-
-
-## func DiffArray
-``` go
-func DiffArray(a, b []string) (diff []string)
-```
-DiffArray returns the delta of two arrays
-
-
-## func GetHTTP
-``` go
-func GetHTTP(method, URL string) (io.Reader, error)
-```
-GetHTTP creates http requests to download data
-
-
-## func getType
-``` go
-func getType(in interface{}) (out interface{})
-```
-getType returns the converted "in" type
-
-
-## func Insession
-``` go
-func Insession() bool
-```
-Insession returns true if VyOS/EdgeOS configuration is in session
-
-
-## func ListFiles
-``` go
-func ListFiles(dir string) (files []string, err error)
-```
-ListFiles returns a list of blacklist files
-
-
-## func Load
-``` go
-func Load(action, level string) (reader io.Reader, err error)
-```
-Load reads the config using the EdgeOS/VyOS cli-shell-api
-
-
-## func PurgeFiles
-``` go
-func PurgeFiles(files []string) (err error)
-```
-PurgeFiles removes any orphaned blacklist files that don't have sources
-
-
-## func SHCmd
-``` go
-func SHCmd(a string) string
-```
-SHCmd returns the appropriate command for non-tty or tty configure context
 
 
 ## func ToBool
@@ -119,19 +27,48 @@ func ToBool(s string) bool
 ToBool converts a string ("true" or "false") to it's boolean equivalent
 
 
-## func WriteFile
-``` go
-func WriteFile(fname string, data io.Reader) (err error)
-```
-WriteFile writes blacklist data to storage
 
+## type CFile
+``` go
+type CFile struct {
+    *Parms
+    // contains filtered or unexported fields
+}
+```
+CFile holds an array of file names
+
+
+
+
+
+
+
+
+
+
+
+### func (CFile) Remove
+``` go
+func (c CFile) Remove() error
+```
+Remove deletes a CFile array of file names
+
+
+
+### func (\*CFile) String
+``` go
+func (c *CFile) String() string
+```
 
 
 ## type Config
 ``` go
-type Config map[string]*EdgeOS
+type Config struct {
+    *Parms
+    // contains filtered or unexported fields
+}
 ```
-Config is a map of EdgeOS
+Config is a struct of configuration fields
 
 
 
@@ -141,245 +78,28 @@ Config is a map of EdgeOS
 
 
 
-
-
-### func (Config) Disabled
+### func ReadCfg
 ``` go
-func (c *Config) Disabled(node string) bool
+func ReadCfg(reader io.Reader) (*Config, error)
 ```
-Disabled returns the node is true or false
+ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 
 
 
-### func (Config) Excludes
+
+### func (\*Config) Files
 ``` go
-func (c *Config) Excludes(node string) []string
-```
-Excludes returns an array of excluded blacklist domains/hosts
-
-
-
-### func (Config) Files
-``` go
-func (c *Config) Files(dir string, nodes []string) (files []string)
+func (c *Config) Files() *CFile
 ```
 Files returns a list of dnsmasq conf files from all srcs
 
 
 
-### func (Config) FormatData
+### func (\*Config) Get
 ``` go
-func (c *Config) FormatData(fmttr string, data []string) (reader io.Reader, list List)
-```
-FormatData returns a io.Reader loaded with dnsmasq formatted data
-
-
-
-### func (Config) Get
-``` go
-func (c *Config) Get(node string) (e *EdgeOS)
+func (c *Config) Get(node string) (o *Object)
 ```
 Get returns a normalized EdgeOS data set
-
-
-
-### func (Config) GetExcludes
-``` go
-func (c *Config) GetExcludes(dex, ex List, nodes []string) (List, List)
-```
-GetExcludes collates the configured excludes and merges the ex/dex lists
-
-
-
-### func (Config) IP
-``` go
-func (c *Config) IP(node string) string
-```
-IP returns the configured node IP, or the root node's IP if ""
-
-
-
-### func (Config) Includes
-``` go
-func (c *Config) Includes(node string) []string
-```
-Includes returns an array of included blacklist domains/hosts
-
-
-
-### func (Config) Sources
-``` go
-func (c *Config) Sources(node string) []Srcs
-```
-Sources returns a Leaf array for the node
-
-
-
-### func (Config) WriteIncludes
-``` go
-func (c *Config) WriteIncludes(dir string, nodes []string) (dex, ex List)
-```
-WriteIncludes writes pre-configure data to disk
-
-
-
-## type Configure
-``` go
-type Configure interface {
-    Files() []string
-    FormatData(node string, data []string) (reader io.Reader, list List, err error)
-    Get(node string) (e *EdgeOS)
-    IP(node string) string
-    Sources(node string) []Srcs
-    Disabled(node string) bool
-    Excludes(node string) []string
-    Includes(node string) []string
-}
-```
-Configure has methods for returning config data supersets
-
-
-
-
-
-
-
-
-
-
-
-## type Content
-``` go
-type Content struct {
-    // contains filtered or unexported fields
-}
-```
-Content struct holds content data
-
-
-
-
-
-
-
-
-
-### func NewContent
-``` go
-func NewContent(toRead interface{}) *Content
-```
-NewContent returns a new Content pointer
-
-
-
-
-### func (\*Content) Read
-``` go
-func (c *Content) Read(p []byte) (n int, err error)
-```
-
-
-## type Data
-``` go
-type Data interface {
-    Reader
-    Writer
-}
-```
-Data inteface implements the Reader and Writer interfaces
-
-
-
-
-
-
-
-
-
-
-
-## type EdgeOS
-``` go
-type EdgeOS struct {
-    Disabled bool
-    Exc      []string
-    Inc      []string
-    IP       string
-    Nodes    []Leaf
-    Sources  []Srcs
-}
-```
-EdgeOS struct for normalizing EdgeOS data.
-
-
-
-
-
-
-
-
-
-
-
-## type Keys
-``` go
-type Keys []string
-```
-Keys is used for sorting operations on map keys
-
-
-
-
-
-
-
-
-
-
-
-### func (Keys) Len
-``` go
-func (k Keys) Len() int
-```
-Len returns length of Keys
-
-
-
-### func (Keys) Less
-``` go
-func (k Keys) Less(i, j int) bool
-```
-Less returns the smallest element
-
-
-
-### func (Keys) Swap
-``` go
-func (k Keys) Swap(i, j int)
-```
-Swap swaps elements of a key array
-
-
-
-## type Leaf
-``` go
-type Leaf struct {
-    Data     map[string]*Srcs `json:"data, omitempty"`
-    Disabled bool             `json:"disable"`
-    Excludes []string         `json:"excludes, omitempty"`
-    Includes []string         `json:"includes, omitempty"`
-    IP       string           `json:"ip, omitempty"`
-}
-```
-Leaf is a struct for EdgeOS configuration data
-
-
-
-
-
-
-
-
 
 
 
@@ -397,53 +117,22 @@ List is a map of int
 
 
 
-### func GetSubdomains
+### func UpdateList
 ``` go
-func GetSubdomains(s string) (l List)
+func UpdateList(data []string) (l List)
 ```
-GetSubdomains returns a map of subdomains
+UpdateList converts []string to map of List
 
 
-### func MergeList
+
+
+## type Object
 ``` go
-func MergeList(a, b List) List
-```
-MergeList combines two List maps
-
-
-
-
-### func (List) KeyExists
-``` go
-func (l List) KeyExists(s string) bool
-```
-KeyExists returns true if the key exists
-
-
-
-### func (List) String
-``` go
-func (l List) String() string
-```
-
-
-### func (List) SubKeyExists
-``` go
-func (l List) SubKeyExists(s string) bool
-```
-SubKeyExists returns true if part of all of the key matches
-
-
-
-## type Lister
-``` go
-type Lister interface {
-    KeyExists(s string) bool
-    String() string
-    SubKeyExists(s string) bool
+type Object struct {
+    // contains filtered or unexported fields
 }
 ```
-Lister implements List methods
+Object struct for normalizing EdgeOS data.
 
 
 
@@ -455,83 +144,101 @@ Lister implements List methods
 
 
 
-## type Nodes
+### func (\*Object) Excludes
 ``` go
-type Nodes map[string]*Leaf
+func (o *Object) Excludes() List
 ```
-Nodes is a map of Leaf nodes
+Excludes returns a List map of blacklist exclusions
 
 
 
-
-
-
-
-
-
-### func NewNodes
+### func (\*Object) Source
 ``` go
-func NewNodes() Nodes
+func (o *Object) Source(stypes []string) Sources
 ```
-NewNodes implements a new Node map
+Source returns an array subset of the node's source specified by stype
 
 
-### func ReadCfg
+
+## type Option
 ``` go
-func ReadCfg(reader io.Reader) (Nodes, error)
+type Option func(p *Parms) Option
 ```
-ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
+Option sets is a recursive function
 
 
 
 
-### func (Nodes) JSON
+
+
+
+
+
+### func Debug
 ``` go
-func (n Nodes) JSON() string
+func Debug(b bool) Option
 ```
-JSON returns raw print for the Blacklist struct
+Debug toggles debug level on or off
 
 
-
-### func (Nodes) NewConfig
+### func Dir
 ``` go
-func (n Nodes) NewConfig() (c *Config)
+func Dir(d string) Option
 ```
-NewConfig returns an initialized Config map of struct EdgeOS
+Dir toggles debug level on or off
 
 
-
-### func (Nodes) SortKeys
+### func Excludes
 ``` go
-func (n Nodes) SortKeys() (pkeys Keys)
+func Excludes(l List) Option
 ```
-SortKeys returns an array of sorted strings
+Excludes toggles debug level on or off
 
 
-
-### func (Nodes) SortSKeys
+### func Ext
 ``` go
-func (n Nodes) SortSKeys(node string) (skeys Keys)
+func Ext(e string) Option
 ```
-SortSKeys returns an array of sorted strings
+Ext toggles debug level on or off
 
 
-
-### func (Nodes) String
+### func Nodes
 ``` go
-func (n Nodes) String() string
+func Nodes(nodes []string) Option
 ```
-String returns pretty print for the Blacklist struct
+Nodes toggles debug level on or off
 
 
-
-## type Reader
+### func Poll
 ``` go
-type Reader interface {
-    Read(p []byte) (n int, err error)
+func Poll(t time.Duration) Option
+```
+Poll sets the polling interval in seconds
+
+
+### func Test
+``` go
+func Test(b bool) Option
+```
+Test toggles testing mode on or off
+
+
+### func Verbosity
+``` go
+func Verbosity(i int) Option
+```
+Verbosity sets the verbosity level to v
+
+
+
+
+## type Parms
+``` go
+type Parms struct {
+    // contains filtered or unexported fields
 }
 ```
-Reader implements the Read []byte method
+Parms is struct of parameters
 
 
 
@@ -543,47 +250,27 @@ Reader implements the Read []byte method
 
 
 
-## type Srcs
+### func (\*Parms) SetOpt
 ``` go
-type Srcs struct {
-    Desc     string `json:"desc, omitempty"`
-    Disabled bool   `json:"disabled, omitempty"`
-    File     string `json:"file, omitempty"`
-    IP       string `json:"ip, omitempty"`
-    List     List   `json:"-"`
-    Name     string `json:"name"`
-    No       int    `json:"-"`
-    Prefix   string `json:"prefix"`
-    Type     int    `json:"type, omitempty"`
-    URL      string `json:"url, omitempty"`
-}
+func (p *Parms) SetOpt(opts ...Option) (previous Option)
 ```
-Srcs holds download source information
+SetOpt sets the specified options passed as Parms and returns an option to restore the last arg's previous value
 
 
 
-
-
-
-
-
-
-### func Process
+### func (\*Parms) String
 ``` go
-func Process(s *Srcs, dex, ex List, reader io.Reader) *Srcs
+func (p *Parms) String() (s string)
 ```
-Process extracts hosts/domains from downloaded raw content
+String method to implement fmt.Print interface
 
 
 
-
-## type Writer
+## type Sources
 ``` go
-type Writer interface {
-    Write(p []byte) (n int, err error)
-}
+type Sources []*source
 ```
-Writer implements the Write []byte method
+Sources is an array of source pointers
 
 
 
@@ -592,6 +279,30 @@ Writer implements the Write []byte method
 
 
 
+
+
+
+### func (Sources) Len
+``` go
+func (s Sources) Len() int
+```
+len returns length of Keys
+
+
+
+### func (Sources) Less
+``` go
+func (s Sources) Less(i, j int) bool
+```
+less returns the smallest element
+
+
+
+### func (Sources) Swap
+``` go
+func (s Sources) Swap(i, j int)
+```
+Swap swaps elements of a key array
 
 
 

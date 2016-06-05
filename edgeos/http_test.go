@@ -12,15 +12,15 @@ import (
 )
 
 type HTTPserver struct {
-	mux    *http.ServeMux
-	server *httptest.Server
+	Mux    *http.ServeMux
+	Server *httptest.Server
 }
 
 func (h *HTTPserver) NewHTTPServer() *url.URL {
 	// test server
-	h.mux = http.NewServeMux()
-	h.server = httptest.NewServer(h.mux)
-	URL, _ := url.Parse(h.server.URL)
+	h.Mux = http.NewServeMux()
+	h.Server = httptest.NewServer(h.Mux)
+	URL, _ := url.Parse(h.Server.URL)
 	return URL
 }
 
@@ -30,11 +30,11 @@ func TestGetHTTP(t *testing.T) {
 		h      = new(HTTPserver)
 		method = "GET"
 		page   = "/domains.txt"
-		want   = httpDomainData
+		want   = HTTPDomainData
 	)
 
 	URL := h.NewHTTPServer().String()
-	h.mux.HandleFunc(page,
+	h.Mux.HandleFunc(page,
 		func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, want)
 		},
@@ -71,7 +71,7 @@ func TestGetHTTP(t *testing.T) {
 var (
 	method = "GET"
 
-	httpDomainData = `
+	HTTPDomainData = `
 // This bind zone is intended to be included in a running dns server for a local net
 // It will return 127.0.0.1 for domains serving malicious executables observed by malc0de.com/database/
 // This file will be automatically updated daily and populated with the last 30 days of malicious domains.

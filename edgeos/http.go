@@ -8,16 +8,6 @@ import (
 	"net/http"
 )
 
-// HTTPer implements the Do method to abstract HTTP requests
-// type HTTPer interface {
-// 	Do(*http.Request) (*http.Response, error)
-// }
-
-// HTTP implements the HTTPer interface
-// type HTTP struct {
-// 	HTTPer
-// }
-
 // GetHTTP creates http requests to download data
 func GetHTTP(method, URL string) (io.Reader, error) {
 	var (
