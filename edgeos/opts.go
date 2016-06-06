@@ -3,6 +3,7 @@ package edgeos
 import (
 	"fmt"
 	"runtime"
+	"strings"
 )
 
 // parms is struct of parameters
@@ -78,7 +79,7 @@ func Excludes(l List) Option {
 	}
 }
 
-// Ext sets the blacklist file name extension
+// Ext sets the blacklist file n extension
 func Ext(e string) Option {
 	return func(p *parms) Option {
 		previous := p.ext
@@ -87,7 +88,7 @@ func Ext(e string) Option {
 	}
 }
 
-// File sets the EdgeOS configuration file name
+// File sets the EdgeOS configuration file n
 func File(f string) Option {
 	return func(p *parms) Option {
 		previous := p.file
@@ -111,7 +112,7 @@ func NewParms(c *Config) *parms {
 	return c.parms
 }
 
-// Nodes sets the node names array
+// Nodes sets the node ns array
 func Nodes(nodes []string) Option {
 	return func(p *parms) Option {
 		previous := p.nodes
@@ -130,31 +131,44 @@ func Poll(t int) Option {
 }
 
 // String method to implement fmt.Print interface
-func (p *parms) String() (s string) {
-	s += fmt.Sprintln("edgeos.parms{")
-	s += fmt.Sprintf("cores:\t\t%v\n", p.cores)
-	s += fmt.Sprintf("dir:\t\t%q\n", p.dir)
-	s += fmt.Sprintf("debug:\t\t%t\n", p.debug)
-
-	for k := range p.exc {
-		s += fmt.Sprintf("exc:\t\t%q: %v\n", k, p.exc[k])
+func (p parms) String() string {
+	max := 9
+	pad := func(i int) string {
+		repeat := max - i + 1
+		return strings.Repeat(" ", repeat)
 	}
 
-	s += fmt.Sprintf("ext:\t\t%q\n", p.ext)
-	s += fmt.Sprintf("file:\t\t%q\n", p.file)
-	s += fmt.Sprintf("method:\t\t%q\n", p.method)
-
-	for _, node := range p.nodes {
-		s += fmt.Sprintf("node:\t\t%q\n", node)
+	getVal := func(v interface{}) string {
+		return strings.Replace(fmt.Sprint(v), "\n", "", -1)
 	}
 
-	s += fmt.Sprintf("poll:\t\t%v\n", p.poll)
-	s += fmt.Sprintf("stypes:\t\t%v\n", p.stypes)
-	s += fmt.Sprintf("test:\t\t%t\n", p.test)
-	s += fmt.Sprintf("verbosity:\t%q\n", p.verbosity)
-	s += fmt.Sprintln("}")
+	fields := []struct {
+		n string
+		i int
+		v string
+	}{
+		{n: "cores", i: 5, v: getVal(p.cores)},
+		{n: "dir", i: 3, v: getVal(p.dir)},
+		{n: "debug", i: 5, v: getVal(p.debug)},
+		{n: "exc", i: 3, v: getVal(p.exc)},
+		{n: "ext", i: 3, v: getVal(p.ext)},
+		{n: "file", i: 4, v: getVal(p.file)},
+		{n: "method", i: 6, v: getVal(p.method)},
+		{n: "nodes", i: 5, v: getVal(p.nodes)},
+		{n: "poll", i: 4, v: getVal(p.poll)},
+		{n: "stypes", i: 6, v: getVal(p.stypes)},
+		{n: "test", i: 4, v: getVal(p.test)},
+		{n: "verbosity", i: 9, v: getVal(p.verbosity)},
+	}
 
-	return s
+	r := fmt.Sprintln("edgeos.parms{")
+	for _, field := range fields {
+		r += fmt.Sprintf("%v:%v%v\n", field.n, pad(field.i), field.v)
+	}
+
+	r += fmt.Sprintln("}")
+
+	return r
 }
 
 // STypes sets an array of legal types used by Source

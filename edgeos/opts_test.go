@@ -9,7 +9,7 @@ import (
 func TestOption(t *testing.T) {
 	vanilla := parms{cores: 0, debug: false, dir: "", exc: nil, ext: "", file: "", method: "", nodes: nil, poll: 0, stypes: nil, test: false, verbosity: 0}
 
-	want := "edgeos.parms{\ncores:\t\t2\ndir:\t\t\"/tmp\"\ndebug:\t\ttrue\nexc:\t\t\"badactor.com\": 0\next:\t\t\"blacklist.conf\"\nfile:\t\t\"/config/config.boot\"\nmethod:\t\t\"GET\"\nnode:\t\t\"domains\"\nnode:\t\t\"hosts\"\npoll:\t\t10\nstypes:\t\t[files pre-configured urls]\ntest:\t\ttrue\nverbosity:\t'\\x02'\n}\n"
+	want := "edgeos.parms{\ncores:     2\ndir:       /tmp\ndebug:     true\nexc:       \"badactor.com\":0,\next:       blacklist.conf\nfile:      /config/config.boot\nmethod:    GET\nnodes:     [domains hosts]\npoll:      10\nstypes:    [files pre-configured urls]\ntest:      true\nverbosity: 2\n}\n"
 
 	wantRaw := parms{cores: 2, debug: true, dir: "/tmp", exc: List{"badactor.com": 0}, ext: "blacklist.conf", file: "/config/config.boot", method: "GET", nodes: []string{"domains", "hosts"}, poll: 10, stypes: []string{"files", preConf, "urls"}, test: true, verbosity: 2}
 
@@ -33,9 +33,7 @@ func TestOption(t *testing.T) {
 	)
 
 	Equals(t, want, p.String())
-
 	Equals(t, wantRaw, *p)
-	// fmt.Println(want, "\n\n", p.String())
 
 	p.SetOpt(prev)
 	Equals(t, vanilla, *p)

@@ -36,3 +36,7 @@ vendor/github.com/britannic/testutils/
 browse.VC.db
 
 *.test
+
+edgeos/debug.test
+
+*.test
