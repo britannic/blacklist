@@ -12,7 +12,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/britannic/blacklist/regx"
+	"github.com/britannic/blacklist/internal/regx"
 )
 
 type ntype int
@@ -61,7 +61,7 @@ func deleteFile(f string) bool {
 }
 
 // DiffArray returns the delta of two arrays
-func diffArray(a, b []string) (diff []string) {
+func DiffArray(a, b []string) (diff []string) {
 	var biggest, smallest []string
 
 	switch {
@@ -91,11 +91,17 @@ func diffArray(a, b []string) (diff []string) {
 
 // Files returns a list of dnsmasq conf files from all srcs
 func (o Objects) Files() *CFile {
-	f := CFile{}
-	for k := range o {
-		for sk := range o[k].data {
-			src := o[k].data[sk]
-			format := src.parms.dir + "/%v.%v." + src.parms.ext
+	b := false
+	f := CFile{Parms: o.Parms}
+	obj := o.S
+	for k := range obj {
+		for sk := range obj[k].data {
+			if !b {
+				f.nType = obj[k].nType
+			}
+
+			src := obj[k].data[sk]
+			format := src.Parms.dir + "/%v.%v." + src.Parms.ext
 			f.names = append(f.names, fmt.Sprintf(format, getType(src.nType), src.name))
 		}
 	}
@@ -103,23 +109,29 @@ func (o Objects) Files() *CFile {
 	return &f
 }
 
-// Get returns an *object for a given node
-func (c *Config) Get(node string) (o *object) {
+// Get returns an *Object for a given node
+func (c *Config) Get(node string) (o *Object) {
 	o = c.bNodes[node]
 	for k := range o.data {
-		o.data[k].parms = c.parms
+		o.data[k].Parms = c.Parms
 		o.data[k].nType = getType(node).(ntype)
+		switch {
+		case o.data[k].url != "":
+			o.data[k].ltype = "urls"
+		case o.data[k].file != "":
+			o.data[k].ltype = "files"
+		}
 	}
 
 	if len(o.inc) > 0 {
-		o.data[preConf] = &object{
+		o.data[preConf] = &Object{
 			desc:  preConf,
 			inc:   o.inc,
 			ip:    o.ip,
 			ltype: preConf,
 			name:  preConf,
 			nType: getType(node).(ntype),
-			parms: c.parms,
+			Parms: c.Parms,
 		}
 	}
 
@@ -149,22 +161,26 @@ func getType(in interface{}) (out interface{}) {
 }
 
 // Includes returns a Content struct of blacklist Includes
-func (o *object) Includes() io.Reader {
+func (o *Object) Includes() io.Reader {
 	sort.Strings(o.inc)
 	return bytes.NewBuffer([]byte(strings.Join(o.inc, "\n")))
 }
 
-func newObject() *object {
-	return &object{
+func newObject() *Object {
+	return &Object{
 		inc:  make([]string, 0),
 		exc:  make([]string, 0),
-		data: make(map[string]*object),
+		data: make(map[string]*Object),
 	}
 }
 
 // Nodes returns an array of configured nodes
-func (c *Config) Nodes() []string {
-	return c.parms.nodes
+func (c *Config) Nodes() (nodes []string) {
+	for k := range c.bNodes {
+		nodes = append(nodes, k)
+	}
+	sort.Strings(nodes)
+	return nodes
 }
 
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
@@ -261,7 +277,7 @@ LINE:
 }
 
 // Remove deletes a CFile array of file names
-func (c CFile) Remove() error {
+func (c *CFile) Remove() error {
 	var got = make([]string, 5)
 	dlist, err := ioutil.ReadDir(c.dir)
 	if err != nil {
@@ -269,36 +285,48 @@ func (c CFile) Remove() error {
 	}
 
 	for _, f := range dlist {
-		if strings.Contains(f.Name(), c.ext) {
+		if strings.Contains(f.Name(), getType(c.nType).(string)) && strings.Contains(f.Name(), c.ext) {
 			got = append(got, c.dir+"/"+f.Name())
 		}
 	}
 
-	return purgeFiles(diffArray(c.names, got))
+	return purgeFiles(DiffArray(c.names, got))
 }
 
 // Source returns a map of sources
-func (d data) Source(lType string) *Objects {
-	objs := Objects{}
+func (d data) Source(ltype string) *Objects {
+	b := false
+	var p *Parms
+	objs := []*Object{}
 	for _, k := range d.sortSKeys() {
+		if !b {
+			p = d[k].Parms
+		}
 		switch {
-		case lType == d[k].ltype:
+		case ltype == d[k].ltype:
 			objs = append(objs, d[k])
-		case lType == "all":
+		case ltype == "all":
 			objs = append(objs, d[k])
 		}
-
 	}
-	return &objs
+
+	return &Objects{Parms: p, S: objs}
 }
 
+// String implements string method
 func (c *CFile) String() string {
 	return strings.Join(c.names, "\n")
 }
 
+// Strings returns a sorted array of strings.
+func (c *CFile) Strings() []string {
+	sort.Strings(c.names)
+	return c.names
+}
+
 // STypes returns an array of configured nodes
 func (c *Config) STypes() []string {
-	return c.parms.stypes
+	return c.Parms.stypes
 }
 
 // ToBool converts a string ("true" or "false") to it's boolean equivalent

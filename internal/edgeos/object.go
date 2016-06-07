@@ -3,11 +3,11 @@ package edgeos
 import "fmt"
 
 // Excludes returns a List map of blacklist exclusions
-func (o *object) Excludes() List {
+func (o *Object) Excludes() List {
 	return UpdateList(o.exc)
 }
 
-func (o *object) String() (r string) {
+func (o *Object) String() (r string) {
 	r += fmt.Sprintf("\nDesc:\t %q\n", o.desc)
 	r += fmt.Sprintf("Disabled: %v\n", o.disabled)
 	r += fmt.Sprintf("File:\t %q\n", o.file)

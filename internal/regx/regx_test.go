@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/britannic/blacklist/regx"
+	"github.com/britannic/blacklist/internal/regx"
 	. "github.com/britannic/testutils"
 )
 

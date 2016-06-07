@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 
-	e "github.com/britannic/blacklist/edgeos"
+	e "github.com/britannic/blacklist/internal/edgeos"
 	"github.com/fatih/structs"
 )
 

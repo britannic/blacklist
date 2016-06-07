@@ -129,6 +129,9 @@ var (
             url http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext
         }
     }
+	/* Warning: Do not remove the following line. */
+	/* === vyatta-config-version: "config-management@1:conntrack@1:cron@1:dhcp-relay@1:dhcp-server@4:firewall@5:ipsec@5:nat@3:qos@1:quagga@2:system@4:ubnt-pptp@1:ubnt-util@1:vrrp@1:webgui@1:webproxy@1:zone-policy@1" === */
+	/* Release version: v1.8.0.4853089.160219.1607 */
 }`
 
 	// CfgPartial contains a valid partial EdgeOS blacklist configuration

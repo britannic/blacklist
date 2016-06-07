@@ -7,35 +7,37 @@ type blist struct {
 }
 
 // bNodes is a map of leaf nodes
-type bNodes map[string]*object
+type bNodes map[string]*Object
 
 // CFile holds an array of file names
 type CFile struct {
-	*parms
+	*Parms
 	names []string
+	nType ntype
 }
 
 // Config is a struct of configuration fields
 type Config struct {
 	bNodes
-	*parms
+	*Parms
 }
 
 // Content is a struct of blacklist content
 type Content struct {
 	err error
-	*object
+	*Object
 	r io.Reader
 }
 
 // Contents is an array of *content
 type Contents []*Content
 
-type data map[string]*object
+// data is a map[string] of *Object
+type data map[string]*Object
 
-// object struct for normalizing EdgeOS data.
-type object struct {
-	*parms
+// Object struct for normalizing EdgeOS data.
+type Object struct {
+	*Parms
 	data
 	desc     string
 	disabled bool
@@ -50,5 +52,8 @@ type object struct {
 	url      string
 }
 
-// Objects is a map[string] of *objects
-type Objects []*object
+// Objects is a struct of []*Objects
+type Objects struct {
+	S []*Object
+	*Parms
+}

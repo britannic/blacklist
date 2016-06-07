@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/britannic/blacklist/tdata"
+	"github.com/britannic/blacklist/internal/tdata"
 	. "github.com/britannic/testutils"
 )
 
@@ -30,18 +30,18 @@ func TestDiffArray(t *testing.T) {
 	smallest := []string{"one", "two", "three"}
 	want := []string{"five", "four", "six"}
 
-	got := diffArray(biggest, smallest)
+	got := DiffArray(biggest, smallest)
 	Equals(t, want, got)
 
-	got = diffArray(smallest, biggest)
+	got = DiffArray(smallest, biggest)
 	Equals(t, want, got)
 
 	shuffleArray(biggest)
-	got = diffArray(smallest, biggest)
+	got = DiffArray(smallest, biggest)
 	Equals(t, want, got)
 
 	shuffleArray(smallest)
-	got = diffArray(smallest, biggest)
+	got = DiffArray(smallest, biggest)
 	Equals(t, want, got)
 }
 
@@ -55,7 +55,7 @@ func TestFormatData(t *testing.T) {
 		Nodes([]string{"domains", "hosts"}),
 	)
 
-	for _, node := range c.parms.nodes {
+	for _, node := range c.Parms.nodes {
 		var (
 			got       io.Reader
 			gotList   = make(List)

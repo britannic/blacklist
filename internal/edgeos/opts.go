@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// parms is struct of parameters
-type parms struct {
+// Parms is struct of parameters
+type Parms struct {
 	cores     int
 	dir       string
 	debug     bool
@@ -23,10 +23,10 @@ type parms struct {
 }
 
 // Option sets is a recursive function
-type Option func(p *parms) Option
+type Option func(p *Parms) Option
 
-// SetOpt sets the specified options passed as parms and returns an option to restore the last arg's previous value
-func (p *parms) SetOpt(opts ...Option) (previous Option) {
+// SetOpt sets the specified options passed as Parms and returns an option to restore the last arg's previous value
+func (p *Parms) SetOpt(opts ...Option) (previous Option) {
 	// apply all the options, and replace each with its inverse
 	for i, opt := range opts {
 		opts[i] = opt(p)
@@ -37,14 +37,14 @@ func (p *parms) SetOpt(opts ...Option) (previous Option) {
 		opts[i], opts[j] = opts[j], opts[i]
 	}
 
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		return p.SetOpt(opts...)
 	}
 }
 
 // Cores sets max CPU cores
 func Cores(i int) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.cores
 		runtime.GOMAXPROCS(i)
 		p.cores = i
@@ -54,7 +54,7 @@ func Cores(i int) Option {
 
 // Debug toggles debug level on or off
 func Debug(b bool) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.debug
 		p.debug = b
 		return Debug(previous)
@@ -63,7 +63,7 @@ func Debug(b bool) Option {
 
 // Dir sets directory location
 func Dir(d string) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.dir
 		p.dir = d
 		return Dir(previous)
@@ -72,7 +72,7 @@ func Dir(d string) Option {
 
 // Excludes sets nodes exclusions
 func Excludes(l List) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.exc
 		p.exc = l
 		return Excludes(previous)
@@ -81,7 +81,7 @@ func Excludes(l List) Option {
 
 // Ext sets the blacklist file n extension
 func Ext(e string) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.ext
 		p.ext = e
 		return Ext(previous)
@@ -90,7 +90,7 @@ func Ext(e string) Option {
 
 // File sets the EdgeOS configuration file n
 func File(f string) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.file
 		p.file = f
 		return File(previous)
@@ -99,22 +99,22 @@ func File(f string) Option {
 
 // Method sets the HTTP method
 func Method(method string) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.method
 		p.method = method
 		return Method(previous)
 	}
 }
 
-// NewParms sets a new *parms instance
-func NewParms(c *Config) *parms {
-	c.parms = &parms{}
-	return c.parms
+// NewParms sets a new *Parms instance
+func NewParms(c *Config) *Parms {
+	c.Parms = &Parms{}
+	return c.Parms
 }
 
 // Nodes sets the node ns array
 func Nodes(nodes []string) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.nodes
 		p.nodes = nodes
 		return Nodes(previous)
@@ -123,7 +123,7 @@ func Nodes(nodes []string) Option {
 
 // Poll sets the polling interval in seconds
 func Poll(t int) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.poll
 		p.poll = t
 		return Poll(previous)
@@ -131,7 +131,7 @@ func Poll(t int) Option {
 }
 
 // String method to implement fmt.Print interface
-func (p parms) String() string {
+func (p Parms) String() string {
 	max := 9
 	pad := func(i int) string {
 		repeat := max - i + 1
@@ -161,7 +161,7 @@ func (p parms) String() string {
 		{n: "verbosity", i: 9, v: getVal(p.verbosity)},
 	}
 
-	r := fmt.Sprintln("edgeos.parms{")
+	r := fmt.Sprintln("edgeos.Parms{")
 	for _, field := range fields {
 		r += fmt.Sprintf("%v:%v%v\n", field.n, pad(field.i), field.v)
 	}
@@ -173,7 +173,7 @@ func (p parms) String() string {
 
 // STypes sets an array of legal types used by Source
 func STypes(s []string) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.stypes
 		p.stypes = s
 		return STypes(previous)
@@ -182,7 +182,7 @@ func STypes(s []string) Option {
 
 // Test toggles testing mode on or off
 func Test(b bool) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.test
 		p.test = b
 		return Test(previous)
@@ -191,7 +191,7 @@ func Test(b bool) Option {
 
 // Verbosity sets the verbosity level to v
 func Verbosity(i int) Option {
-	return func(p *parms) Option {
+	return func(p *Parms) Option {
 		previous := p.verbosity
 		p.verbosity = i
 		return Verbosity(previous)

@@ -3,7 +3,7 @@ package regx_test
 import (
 	"fmt"
 
-	"github.com/britannic/blacklist/regx"
+	"github.com/britannic/blacklist/internal/regx"
 )
 
 func ExampleOBJ() {

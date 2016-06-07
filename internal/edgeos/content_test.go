@@ -11,40 +11,50 @@ import (
 )
 
 func TestGetContent(t *testing.T) {
-	// var (
-	// 	d     = new(HTTPserver)
-	// 	dpage = "/domains.txt"
-	// 	h     = new(HTTPserver)
-	// 	hpage = "/hosts.txt"
-	// )
-
 	tests := []struct {
 		leaf     string
 		node     string
 		page     string
 		pageData string
-		stype    string
+		ltype    string
 		svr      *HTTPserver
 		url      string
 		want     string
 	}{
 		{
+			node:  domains,
+			ltype: preConf,
+			want:  "adsrvr.org\nadtechus.net\nadvertising.com\ncentade.com\ndoubleclick.net\nfree-counter.co.uk\nintellitxt.com\nkiosked.com",
+		},
+		{
+			ltype: preConf,
+			node:  hosts,
+			want:  "beap.gemini.yahoo.com",
+		},
+		{
+			leaf:  "tasty",
+			ltype: "files",
+			node:  hosts,
+			url:   "../testdata/blist.hosts.src",
+			want:  "really.bad.phishing.site.ru\n",
+		},
+		{
 			leaf:     "malc0de",
+			ltype:    "urls",
 			node:     domains,
 			page:     "/domains.txt",
 			pageData: HTTPDomainData,
-			stype:    preConf,
 			svr:      new(HTTPserver),
-			want:     "adsrvr.org\nadtechus.net\nadvertising.com\ncentade.com\ndoubleclick.net\nfree-counter.co.uk\nintellitxt.com\nkiosked.com",
+			want:     HTTPDomainData,
 		},
 		{
 			leaf:     "adaway",
+			ltype:    "urls",
 			node:     hosts,
 			page:     "/hosts.txt",
 			pageData: httpHostData,
-			stype:    preConf,
 			svr:      new(HTTPserver),
-			want:     "beap.gemini.yahoo.com",
+			want:     httpHostData,
 		},
 	}
 
@@ -59,14 +69,19 @@ func TestGetContent(t *testing.T) {
 	)
 
 	for _, test := range tests {
-		test.url = test.svr.NewHTTPServer().String() + test.page
-		test.svr.Mux.HandleFunc(test.page,
-			func(w http.ResponseWriter, r *http.Request) {
-				fmt.Fprint(w, test.pageData)
-			},
-		)
-		c.bNodes[test.node].data[test.leaf].url = test.url
-		for _, src := range *c.Get(test.node).Source(test.stype).GetContent() {
+		switch test.ltype {
+		case "urls":
+			test.url = test.svr.NewHTTPServer().String() + test.page
+			test.svr.Mux.HandleFunc(test.page,
+				func(w http.ResponseWriter, r *http.Request) {
+					fmt.Fprint(w, test.pageData)
+				},
+			)
+			c.bNodes[test.node].data[test.leaf].url = test.url
+		case "files":
+			c.bNodes[test.node].data[test.leaf].file = test.url
+		}
+		for _, src := range *c.Get(test.node).Source(test.ltype).GetContent() {
 			got, err := ioutil.ReadAll(src.r)
 			OK(t, err)
 			Equals(t, test.want, string(got))
@@ -145,6 +160,11 @@ var (
             prefix "127.0.0.1 "
             url http://adaway.org/hosts.txt
         }
+				source tasty {
+						description "File source"
+						dns-redirect-ip 0.0.0.0
+						file /config/user-data/blist.hosts.src
+				}
     }
 }`
 )

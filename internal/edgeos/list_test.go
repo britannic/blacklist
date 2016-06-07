@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/britannic/blacklist/tdata"
+	"github.com/britannic/blacklist/internal/tdata"
 	. "github.com/britannic/testutils"
 )
 
