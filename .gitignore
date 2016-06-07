@@ -9,6 +9,9 @@
 # Ignore debug
 *.debug
 
+# Ignore test
+*.test
+
 .DS_Store
 
 *.bkp
@@ -35,8 +38,4 @@ vendor/github.com/britannic/testutils/
 
 browse.VC.db
 
-*.test
 
-edgeos/debug.test
-
-*.test
