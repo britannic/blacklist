@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"runtime"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
+	"github.com/britannic/blacklist/internal/tdata"
 	"github.com/fatih/structs"
 )
 
@@ -26,10 +29,17 @@ var (
 
 func main() {
 	o := getOpts()
-	flag.CommandLine.Parse(os.Args[1:])
+	o.Init("blacklist", flag.ExitOnError)
+
+	if os.Args[1:] != nil {
+		if err := o.Parse(os.Args[1:]); err != nil {
+			o.Usage()
+		}
+	}
 
 	switch {
 	case *o.Test:
+		fmt.Println("Test activated!")
 		os.Exit(0)
 
 	case *o.Version:
@@ -37,8 +47,11 @@ func main() {
 		os.Exit(0)
 	}
 
-	c := e.Config{}
-	p := e.NewParms(&c)
+	c, err := getCFG(whatArch)
+	if err != nil {
+		log.Fatalf("Couldn't load configuration: %v", err)
+	}
+	p := e.NewParms(c)
 	_ = p.SetOpt(
 		e.Cores(runtime.NumCPU()),
 		e.Debug(*o.Debug),
@@ -54,6 +67,7 @@ func main() {
 
 // Opts struct for command line options
 type Opts struct {
+	*flag.FlagSet
 	Debug   *bool
 	File    *string
 	Poll    *int
@@ -72,17 +86,20 @@ func (o *Opts) String() (result string) {
 
 // getOpts returns command line flags and values or displays help
 func getOpts() Opts {
-	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %v [options] param>\n\n", os.Args[0])
-		flag.PrintDefaults()
+	flags := flag.NewFlagSet("blacklist", flag.ExitOnError)
+	flags.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %v [options]\n\n", basename(os.Args[0]))
+		flags.PrintDefaults()
 	}
+
 	return Opts{
-		File:    flag.String("f", "", "<file> # Load a configuration file"),
-		Debug:   flag.Bool("debug", false, "Enable debug mode"),
-		Poll:    flag.Int("i", 5, "Polling interval"),
-		Test:    flag.Bool("test", false, "Run config and data validation tests"),
-		Verb:    flag.Bool("v", false, "Verbose display"),
-		Version: flag.Bool("version", false, "# show program version number"),
+		FlagSet: flags,
+		File:    flags.String("f", "", "<file> # Load a configuration file"),
+		Debug:   flags.Bool("debug", false, "Enable debug mode"),
+		Poll:    flags.Int("i", 5, "Polling interval"),
+		Test:    flags.Bool("test", false, "Run config and data validation tests"),
+		Verb:    flags.Bool("v", false, "Verbose display"),
+		Version: flags.Bool("version", false, "# show program version number"),
 	}
 }
 
@@ -94,4 +111,39 @@ func setDir(arch string) (dir string) {
 		dir = dnsTmp
 	}
 	return dir
+}
+
+func getCFG(arch string) (c *e.Config, err error) {
+	var cfg string
+	c = &e.Config{}
+	switch arch {
+	case mips64:
+		if cfg, err = e.LoadCfg(); err != nil {
+			return c, err
+		}
+		c, err = e.ReadCfg(bytes.NewBufferString(cfg))
+	default:
+		c, err = e.ReadCfg(bytes.NewBufferString(tdata.Cfg))
+	}
+	return c, err
+}
+
+// basename removes directory components and file extensions.
+func basename(s string) string {
+	// Discard last '/' and everything before.
+	for i := len(s) - 1; i >= 0; i-- {
+		if s[i] == '/' {
+			s = s[i+1:]
+			break
+		}
+	}
+
+	// Preserve everything before last '.'.
+	for i := len(s) - 1; i >= 0; i-- {
+		if s[i] == '.' {
+			s = s[:i]
+			break
+		}
+	}
+	return s
 }

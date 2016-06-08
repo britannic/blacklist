@@ -208,5 +208,5 @@ func TestSTypes(t *testing.T) {
 }
 
 func TestToBool(t *testing.T) {
-	Equals(t, true, edgeos.ToBool("true"))
+	Equals(t, true, edgeos.StrToBool("true"))
 }

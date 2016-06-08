@@ -184,10 +184,10 @@ func (c *Config) Nodes() (nodes []string) {
 }
 
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
-func ReadCfg(reader io.Reader) (*Config, error) {
+func ReadCfg(r io.Reader) (*Config, error) {
 	var (
 		tnode  string
-		b      = bufio.NewScanner(reader)
+		b      = bufio.NewScanner(r)
 		branch string
 		nodes  = make([]string, 2)
 		rx     = regx.Objects
@@ -228,7 +228,7 @@ LINE:
 			}
 
 		case rx.DSBL.MatchString(line):
-			sCfg.bNodes[tnode].disabled = ToBool(regx.Get("dsbl", line)[1])
+			sCfg.bNodes[tnode].disabled = StrToBool(regx.Get("dsbl", line)[1])
 
 		case rx.IPBH.MatchString(line) && nodes[len(nodes)-1] != src:
 			sCfg.bNodes[tnode].ip = regx.Get("ipbh", line)[1]
@@ -329,9 +329,17 @@ func (c *Config) STypes() []string {
 	return c.Parms.stypes
 }
 
-// ToBool converts a string ("true" or "false") to it's boolean equivalent
-func ToBool(s string) bool {
-	if strings.ToLower(s) == "true" {
+// BooltoStr converts a boolean ("true" or "false") to a string equivalent
+func BooltoStr(b bool) string {
+	if b {
+		return True
+	}
+	return False
+}
+
+// StrToBool converts a string ("true" or "false") to it's boolean equivalent
+func StrToBool(s string) bool {
+	if strings.ToLower(s) == True {
 		return true
 	}
 	return false
