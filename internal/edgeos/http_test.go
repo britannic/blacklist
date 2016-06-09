@@ -26,6 +26,13 @@ func (h *HTTPserver) NewHTTPServer() *url.URL {
 
 func TestGetHTTP(t *testing.T) {
 	var (
+		errs = struct {
+			method string
+			url    string
+		}{
+			method: "Unable to form request for bad url...",
+			url:    "No data returned for bad url...",
+		}
 		got    []byte
 		h      = new(HTTPserver)
 		method = "GET"
@@ -47,13 +54,12 @@ func TestGetHTTP(t *testing.T) {
 		want   string
 	}{
 		{ok: true, method: method, URL: URL + page, want: want},
-		{ok: false, method: method, URL: "bad url", want: "No data returned for bad url..."},
-		{ok: false, method: "bad method", URL: "bad url", want: "Unable to form request for bad url..."},
+		{ok: false, method: method, URL: "bad url", want: errs.url},
+		{ok: false, method: "bad method", URL: "bad url", want: errs.method},
 	}
 
 	for _, test := range tests {
 		body, err := GetHTTP(test.method, test.URL)
-		t.Logf("Method: %v URL: %v", test.method, test.URL)
 
 		switch test.ok {
 		case true:
@@ -65,6 +71,7 @@ func TestGetHTTP(t *testing.T) {
 		got, err = ioutil.ReadAll(body)
 		OK(t, err)
 		Equals(t, test.want, string(got[:]))
+		t.Logf("Method: %v URL: %v\n Body: %v", test.method, test.URL, string(got[:]))
 	}
 }
 
