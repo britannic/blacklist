@@ -33,7 +33,7 @@ func (p *Parms) SetOpt(opts ...Option) (previous Option) {
 		opts[i] = opt(p)
 	}
 
-	// reverse the list of inverses, since we want them to be applied in reverse order
+	// Reverse the list of inverses, since we want them to be applied in reverse order
 	for i, j := 0, len(opts)-1; i <= j; i, j = i+1, j-1 {
 		opts[i], opts[j] = opts[j], opts[i]
 	}

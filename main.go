@@ -8,7 +8,6 @@ import (
 	"runtime"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
-	"github.com/fatih/structs"
 )
 
 var (
@@ -19,13 +18,13 @@ var (
 )
 
 func main() {
-	m := &e.Mvars{
-		DNSdir:   "/etc/dnsmasq.d",
-		DNStmp:   "/tmp",
-		MIPS64:   "mips64",
-		WhatOS:   runtime.GOOS,
-		WhatArch: runtime.GOARCH,
-	}
+	// m := &e.Mvars{
+	// 	DNSdir:   "/etc/dnsmasq.d",
+	// 	DNStmp:   "/tmp",
+	// 	MIPS64:   "mips64",
+	// 	WhatOS:   runtime.GOOS,
+	// 	WhatArch: runtime.GOARCH,
+	// }
 	o := getOpts()
 	o.Init("blacklist", flag.ExitOnError)
 
@@ -45,7 +44,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	c, err := m.GetCFG(m.WhatArch)
+	c, err := o.GetCFG(*o.ARCH)
 	if err != nil {
 		log.Fatalf("Couldn't load configuration: %v", err)
 	}
@@ -53,7 +52,7 @@ func main() {
 	_ = p.SetOpt(
 		e.Cores(runtime.NumCPU()),
 		e.Debug(*o.Debug),
-		e.Dir(m.SetDir(m.WhatArch)),
+		e.Dir(o.SetDir(*o.ARCH)),
 		e.Ext(".blacklist.conf"),
 		e.File(*o.File),
 		e.Method("GET"),
@@ -61,44 +60,6 @@ func main() {
 		e.STypes([]string{"files", "pre-configured", "urls"}),
 	)
 	fmt.Println(p)
-}
-
-// Opts struct for command line options
-type Opts struct {
-	*flag.FlagSet
-	Debug   *bool
-	File    *string
-	Poll    *int
-	Test    *bool
-	Verb    *bool
-	Version *bool
-}
-
-func (o *Opts) String() (result string) {
-	for _, name := range structs.Names(&Opts{}) {
-		result += name + "\n"
-	}
-
-	return result
-}
-
-// getOpts returns command line flags and values or displays help
-func getOpts() Opts {
-	flags := flag.NewFlagSet("blacklist", flag.ExitOnError)
-	flags.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %v [options]\n\n", basename(os.Args[0]))
-		flags.PrintDefaults()
-	}
-
-	return Opts{
-		FlagSet: flags,
-		File:    flags.String("f", "", "<file> # Load a configuration file"),
-		Debug:   flags.Bool("debug", false, "Enable debug mode"),
-		Poll:    flags.Int("i", 5, "Polling interval"),
-		Test:    flags.Bool("test", false, "Run config and data validation tests"),
-		Verb:    flags.Bool("v", false, "Verbose display"),
-		Version: flags.Bool("version", false, "# show program version number"),
-	}
 }
 
 // basename removes directory components and file extensions.

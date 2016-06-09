@@ -1,3 +1,0 @@
-#! /bin/bash
-
-cp -R ../edgeos/ ~/Dropbox/Golang/src/github.com/britannic/

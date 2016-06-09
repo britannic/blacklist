@@ -27,19 +27,14 @@ type cfgJSON struct {
 }
 
 func getJSONdisabled(c *cfgJSON) (d string) {
+	d = False
 	switch c.sk {
 	case null:
 		d = BooltoStr(c.bNodes[c.pk].disabled)
 	default:
 		d = BooltoStr(c.bNodes[c.pk].data[c.sk].disabled)
 	}
-
-	switch d {
-	case False, True:
-		return d
-	default:
-		return False
-	}
+	return d
 }
 
 func getJSONsrcIP(c *Config, pkey string) (result string) {

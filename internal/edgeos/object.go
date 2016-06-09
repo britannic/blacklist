@@ -20,6 +20,3 @@ func (o *Object) String() (r string) {
 	r += fmt.Sprintf("URL:\t %q\n", o.url)
 	return r
 }
-
-// Swap swaps elements of a slice of Objects
-// func (o Objects) Swap(i, j int) { o[i], o[j] = o[j], o[i] }
