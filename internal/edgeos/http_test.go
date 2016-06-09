@@ -71,7 +71,7 @@ func TestGetHTTP(t *testing.T) {
 
 		got, err = ioutil.ReadAll(body)
 		OK(t, err)
-		if runtime.GOOS == "linux" {
+		if runtime.GOOS == "linux" && test.method == "bad method" {
 			test.want = errs.url
 		}
 		Equals(t, test.want, string(got[:]))
