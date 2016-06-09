@@ -85,7 +85,7 @@ func TestCommandLineArgs(t *testing.T) {
 	want := "  -arch string\n    \tSet EdgeOS CPU architecture (default \"mips64\")\n  -debug\n    \tEnable debug mode\n  -dir string\n    \tOverride dnsmasq directory (default \"/etc/dnsmasq.d\")\n  -f string\n    \t<file> # Load a configuration file\n  -i int\n    \tPolling interval (default 5)\n  -mips64 string\n    \tOverride target EdgeOS CPU architecture (default \"mips64\")\n  -os string\n    \tOverride native EdgeOS OS (default \"darwin\")\n  -test\n    \tRun config and data validation tests\n  -tmp string\n    \tOverride dnsmasq temporary directory (default \"/tmp\")\n  -v\tVerbose display\n  -version\n    \tShow program version number\n"
 
 	if runtime.GOOS == "linux" {
-		want = "  -debug=false: Enable debug mode\n  -f=\"\": <file> # Load a configuration file\n  -i=5: Polling interval\n  -test=false: Run config and data validation tests\n  -v=false: Verbose display\n  -version=false: # show program version number\n"
+		want = "-arch=\"mips64\": Set EdgeOS CPU architecture\n  -debug=false: Enable debug mode\n  -dir=\"/etc/dnsmasq.d\": Override dnsmasq directory\n  -f=\"\": <file> # Load a configuration file\n  -i=5: Polling interval\n  -mips64=\"mips64\": Override target EdgeOS CPU architecture\n  -os=\"linux\": Override native EdgeOS OS\n  -test=false: Run config and data validation tests\n  -tmp=\"/tmp\": Override dnsmasq temporary directory\n  -v=false: Verbose display\n  -version=false: Show program version number\n"
 	}
 
 	o := getOpts()
