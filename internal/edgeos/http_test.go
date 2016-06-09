@@ -75,7 +75,9 @@ func TestGetHTTP(t *testing.T) {
 			test.want = errs.url
 		}
 		Equals(t, test.want, string(got[:]))
-		t.Logf("OS: %v Method: %v URL: %v\n Body: %v", runtime.GOOS, test.method, test.URL, string(got[:]))
+		if t.Failed() {
+			t.Logf(fmt.Sprint(test))
+		}
 	}
 }
 
