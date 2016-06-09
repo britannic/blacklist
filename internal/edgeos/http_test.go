@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"runtime"
 	"testing"
 
 	. "github.com/britannic/testutils"
@@ -70,6 +71,9 @@ func TestGetHTTP(t *testing.T) {
 
 		got, err = ioutil.ReadAll(body)
 		OK(t, err)
+		if runtime.GOOS == "linux" {
+			test.want = errs.url
+		}
 		Equals(t, test.want, string(got[:]))
 		t.Logf("Method: %v URL: %v\n Body: %v", test.method, test.URL, string(got[:]))
 	}
