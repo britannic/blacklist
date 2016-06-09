@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"flag"
 	"io/ioutil"
+	"runtime"
 	"testing"
 
 	. "github.com/britannic/testutils"
@@ -81,6 +82,10 @@ func TestGetOpts(t *testing.T) {
 func TestCommandLineArgs(t *testing.T) {
 	out := new(bytes.Buffer)
 	want := "  -debug\n    \tEnable debug mode\n  -f string\n    \t<file> # Load a configuration file\n  -i int\n    \tPolling interval (default 5)\n  -test\n    \tRun config and data validation tests\n  -v\tVerbose display\n  -version\n    \t# show program version number\n"
+
+	if runtime.GOOS == "linux" {
+		want = "  -debug=false: Enable debug mode\n  -f=\"\": <file> # Load a configuration file\n  -i=5: Polling interval\n  -test=false: Run config and data validation tests\n  -v=false: Verbose display\n  -version=false: # show program version number\n"
+	}
 
 	o := getOpts()
 	o.Init("blacklist", flag.ContinueOnError)
