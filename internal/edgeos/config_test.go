@@ -41,54 +41,22 @@ func TestExcludes(t *testing.T) {
 		edgeos.Nodes([]string{"domains", "hosts"}),
 	)
 
-	excludes := []string{
-		"coremetrics.com",
-		"hulu.com",
-		"images-amazon.com",
-		"skype.com",
-		"akamai.net",
-		"schema.org",
-		"googleusercontent.com",
-		"avast.com",
-		"google.com",
-		"smacargo.com",
-		"windows.net",
-		"adobedtm.com",
-		"gvt1.com",
-		"ytimg.com",
-		"apple.com",
-		"bitdefender.com",
-		"freedns.afraid.org",
-		"githubusercontent.com",
-		"gstatic.com",
-		"gvt1.net",
-		"ask.com",
-		"msdn.com",
-		"paypal.com",
-		"ssl-on9.com",
-		"amazonaws.com",
-		"1e100.net",
-		"googleadservices.com",
-		"googleapis.com",
-		"hb.disney.go.com",
-		"rackcdn.com",
-		"122.2o7.net",
-		"cdn.visiblemeasures.com",
-		"cloudfront.net",
-		"edgesuite.net",
-		"github.com",
-		"hp.com",
-		"sourceforge.net",
-		"ssl-on9.net",
-		"amazon.com",
-		"storage.googleapis.com",
-		"yimg.com",
-		"static.chartbeat.com",
+	excludes := []string{"122.2o7.net", "1e100.net", "adobedtm.com", "akamai.net", "amazon.com", "amazonaws.com", "apple.com", "ask.com", "avast.com", "bitdefender.com", "cdn.visiblemeasures.com", "cloudfront.net", "coremetrics.com", "edgesuite.net", "freedns.afraid.org", "github.com", "githubusercontent.com", "google.com", "googleadservices.com", "googleapis.com", "googleusercontent.com", "gstatic.com", "gvt1.com", "gvt1.net", "hb.disney.go.com", "hp.com", "hulu.com", "images-amazon.com", "msdn.com", "paypal.com", "rackcdn.com", "schema.org", "skype.com", "smacargo.com", "sourceforge.net", "ssl-on9.com", "ssl-on9.net", "static.chartbeat.com", "storage.googleapis.com", "windows.net", "yimg.com", "ytimg.com"}
+
+	tests := []struct {
+		get  string
+		raw  []string
+		node string
+	}{
+		{get: edgeos.UpdateList(excludes).String(), raw: excludes, node: "blacklist"},
+		{get: "", raw: []string{}, node: "domains"},
+		{get: "", raw: []string{}, node: "hosts"},
 	}
 
-	Equals(t, edgeos.UpdateList(excludes).String(), c.Get("blacklist").Excludes().String())
-	Equals(t, "", c.Get("domains").Excludes().String())
-	Equals(t, "", c.Get("hosts").Excludes().String())
+	for _, test := range tests {
+		Equals(t, test.get, c.Get(test.node).Excludes().String())
+		Equals(t, test.raw, c.Excludes(test.node))
+	}
 }
 
 func TestFiles(t *testing.T) {
