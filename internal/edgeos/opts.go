@@ -8,6 +8,7 @@ import (
 
 // Parms is struct of parameters
 type Parms struct {
+	arch      string
 	cores     int
 	dir       string
 	debug     bool
@@ -39,6 +40,15 @@ func (p *Parms) SetOpt(opts ...Option) (previous Option) {
 
 	return func(p *Parms) Option {
 		return p.SetOpt(opts...)
+	}
+}
+
+// Arch sets target CPU architecture
+func Arch(arch string) Option {
+	return func(p *Parms) Option {
+		previous := p.arch
+		p.arch = arch
+		return Arch(previous)
 	}
 }
 
@@ -147,6 +157,7 @@ func (p Parms) String() string {
 		i int
 		v string
 	}{
+		{n: "arch", i: 4, v: getVal(p.arch)},
 		{n: "cores", i: 5, v: getVal(p.cores)},
 		{n: "dir", i: 3, v: getVal(p.dir)},
 		{n: "debug", i: 5, v: getVal(p.debug)},

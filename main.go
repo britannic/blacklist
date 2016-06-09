@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -9,25 +8,24 @@ import (
 	"runtime"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
-	"github.com/britannic/blacklist/internal/tdata"
 	"github.com/fatih/structs"
 )
 
 var (
-	// Versioning vars updated by go build -ldflags
+	// Version vars updated by go build -ldflags
 	build   = "UNKNOWN"
 	githash = "UNKNOWN"
 	version = "UNKNOWN"
-
-	cores    = runtime.NumCPU()
-	dnsDir   = "/etc/dnsmasq.d"
-	dnsTmp   = "/tmp"
-	mips64   = "mips64"
-	whatOS   = runtime.GOOS
-	whatArch = runtime.GOARCH
 )
 
 func main() {
+	m := &e.Mvars{
+		DNSdir:   "/etc/dnsmasq.d",
+		DNStmp:   "/tmp",
+		MIPS64:   "mips64",
+		WhatOS:   runtime.GOOS,
+		WhatArch: runtime.GOARCH,
+	}
 	o := getOpts()
 	o.Init("blacklist", flag.ExitOnError)
 
@@ -47,7 +45,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	c, err := getCFG(whatArch)
+	c, err := m.GetCFG(m.WhatArch)
 	if err != nil {
 		log.Fatalf("Couldn't load configuration: %v", err)
 	}
@@ -55,8 +53,8 @@ func main() {
 	_ = p.SetOpt(
 		e.Cores(runtime.NumCPU()),
 		e.Debug(*o.Debug),
-		e.Dir(setDir(whatArch)),
-		e.Ext("blacklist.conf"),
+		e.Dir(m.SetDir(m.WhatArch)),
+		e.Ext(".blacklist.conf"),
 		e.File(*o.File),
 		e.Method("GET"),
 		e.Poll(*o.Poll),
@@ -101,31 +99,6 @@ func getOpts() Opts {
 		Verb:    flags.Bool("v", false, "Verbose display"),
 		Version: flags.Bool("version", false, "# show program version number"),
 	}
-}
-
-func setDir(arch string) (dir string) {
-	switch arch {
-	case mips64:
-		dir = dnsDir
-	default:
-		dir = dnsTmp
-	}
-	return dir
-}
-
-func getCFG(arch string) (c *e.Config, err error) {
-	var cfg string
-	c = &e.Config{}
-	switch arch {
-	case mips64:
-		if cfg, err = e.LoadCfg(); err != nil {
-			return c, err
-		}
-		c, err = e.ReadCfg(bytes.NewBufferString(cfg))
-	default:
-		c, err = e.ReadCfg(bytes.NewBufferString(tdata.Cfg))
-	}
-	return c, err
 }
 
 // basename removes directory components and file extensions.

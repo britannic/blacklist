@@ -1,139 +1,183 @@
 {
-"nodes": [{
-		"blacklist": {
-		"disabled": "false",
-		"ip": "0.0.0.0",
-		"excludes": [
-			"122.2o7.net",
-			"1e100.net",
-			"adobedtm.com",
-			"akamai.net",
-			"amazon.com",
-			"amazonaws.com",
-			"apple.com",
-			"ask.com",
-			"avast.com",
-			"bitdefender.com",
-			"cdn.visiblemeasures.com",
-			"cloudfront.net",
-			"coremetrics.com",
-			"edgesuite.net",
-			"freedns.afraid.org",
-			"github.com",
-			"githubusercontent.com",
-			"google.com",
-			"googleadservices.com",
-			"googleapis.com",
-			"googleusercontent.com",
-			"gstatic.com",
-			"gvt1.com",
-			"gvt1.net",
-			"hb.disney.go.com",
-			"hp.com",
-			"hulu.com",
-			"images-amazon.com",
-			"msdn.com",
-			"paypal.com",
-			"rackcdn.com",
-			"schema.org",
-			"skype.com",
-			"smacargo.com",
-			"sourceforge.net",
-			"ssl-on9.com",
-			"ssl-on9.net",
-			"static.chartbeat.com",
-			"storage.googleapis.com",
-			"windows.net",
-			"yimg.com",
-			"ytimg.com"
-			],
-		"includes": [],
-		"sources": [{
-
-}]
-		},
-		"domains": {
-		"disabled": "false",
-		"ip": "0.0.0.0",
-		"excludes": [],
-		"includes": [
-			"adsrvr.org",
-			"adtechus.net",
-			"advertising.com",
-			"centade.com",
-			"doubleclick.net",
-			"free-counter.co.uk",
-			"intellitxt.com",
-			"kiosked.com"
-			],
-		"sources": [{
-			"source": {
-				"malc0de": {
-					"disabled": "false",
-					"description": "List of zones serving malicious executables observed by malc0de.com/database/",
-					"prefix": "zone ",
-					"url": "http://malc0de.com/bl/ZONES"
-					}
-				}
-}]
-		},
-		"hosts": {
-		"disabled": "false",
-		"ip": "0.0.0.0",
-		"excludes": [],
-		"includes": ["beap.gemini.yahoo.com"],
-		"sources": [{
-			"source": {
-				"adaway": {
-					"disabled": "false",
-					"description": "Blocking mobile ad providers and some analytics providers",
-					"prefix": "127.0.0.1 ",
-					"url": "http://adaway.org/hosts.txt"
-					}
-				},			"source": {
-				"malwaredomainlist": {
-					"disabled": "false",
-					"description": "127.0.0.1 based host and domain list",
-					"prefix": "127.0.0.1 ",
-					"url": "http://www.malwaredomainlist.com/hostslist/hosts.txt"
-					}
-				},			"source": {
-				"openphish": {
-					"disabled": "false",
-					"description": "OpenPhish automatic phishing detection",
-					"prefix": "http",
-					"url": "https://openphish.com/feed.txt"
-					}
-				},			"source": {
-				"someonewhocares": {
-					"disabled": "false",
-					"description": "Zero based host and domain list",
-					"prefix": "0.0.0.0",
-					"url": "http://someonewhocares.org/hosts/zero/"
-					}
-				},			"source": {
-				"volkerschatz": {
-					"disabled": "false",
-					"description": "Ad server blacklists",
-					"prefix": "http",
-					"url": "http://www.volkerschatz.com/net/adpaths"
-					}
-				},			"source": {
-				"winhelp2002": {
-					"disabled": "false",
-					"description": "Zero based host and domain list",
-					"prefix": "0.0.0.0 ",
-					"url": "http://winhelp2002.mvps.org/hosts.txt"
-					}
-				},			"source": {
-				"yoyo": {
-					"disabled": "false",
-					"description": "Fully Qualified Domain Names only - no prefix to strip",
-					"prefix": "",
-					"url": "http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext"
-					}
-				}
-}]
-		}
-	}]
+  "nodes": [{
+    "blacklist": {
+      "disabled": "false",
+      "ip": "0.0.0.0",
+      "excludes": [
+        "122.2o7.net",
+        "1e100.net",
+        "adobedtm.com",
+        "akamai.net",
+        "amazon.com",
+        "amazonaws.com",
+        "applcom",
+        "ask.com",
+        "avast.com",
+        "bitdefender.com",
+        "cdn.visiblemeasures.com",
+        "cloudfront.net",
+        "coremetrics.com",
+        "edgesuitnet",
+        "freedns.afraid.org",
+        "github.com",
+        "githubusercontent.com",
+        "googlcom",
+        "googleadservices.com",
+        "googleapis.com",
+        "googleusercontent.com",
+        "gstatic.com",
+        "gvt1.com",
+        "gvt1.net",
+        "hb.disney.go.com",
+        "hp.com",
+        "hulu.com",
+        "images-amazon.com",
+        "msdn.com",
+        "paypal.com",
+        "rackcdn.com",
+        "schema.org",
+        "skypcom",
+        "smacargo.com",
+        "sourceforgnet",
+        "ssl-on9.com",
+        "ssl-on9.net",
+        "static.chartbeat.com",
+        "storaggoogleapis.com",
+        "windows.net",
+        "yimg.com",
+        "ytimg.com"
+        ]
+    },
+    "domains": {
+      "disabled": "false",
+      "ip": "0.0.0.0",
+      "excludes": [
+        "122.2o7.net",
+        "1e100.net",
+        "adobedtm.com",
+        "akamai.net",
+        "amazon.com",
+        "amazonaws.com",
+        "applcom",
+        "ask.com",
+        "avast.com",
+        "bitdefender.com",
+        "cdn.visiblemeasures.com",
+        "cloudfront.net",
+        "coremetrics.com",
+        "edgesuitnet",
+        "freedns.afraid.org",
+        "github.com",
+        "githubusercontent.com",
+        "googlcom",
+        "googleadservices.com",
+        "googleapis.com",
+        "googleusercontent.com",
+        "gstatic.com",
+        "gvt1.com",
+        "gvt1.net",
+        "hb.disney.go.com",
+        "hp.com",
+        "hulu.com",
+        "images-amazon.com",
+        "msdn.com",
+        "paypal.com",
+        "rackcdn.com",
+        "schema.org",
+        "skypcom",
+        "smacargo.com",
+        "sourceforgnet",
+        "ssl-on9.com",
+        "ssl-on9.net",
+        "static.chartbeat.com",
+        "storaggoogleapis.com",
+        "windows.net",
+        "yimg.com",
+        "ytimg.com"
+        ],
+      "includes": [
+        "adsrvr.org",
+        "adtechus.net",
+        "advertising.com",
+        "centadcom",
+        "doubleclick.net",
+        "free-counter.co.uk",
+        "intellitxt.com",
+        "kiosked.com"
+        ],
+      "sources": [{
+        "malc0de": {
+          "disabled": "false",
+          "description": "List of zones serving malicious executables observed by malc0de.com/database/",
+          "prefix": "zone ",
+          "file": "",
+          "url": "http://malc0de.com/bl/ZONES"
+        }
+    }]
+    },
+    "hosts": {
+      "disabled": "false",
+      "ip": "192.168.168.1",
+      "excludes": [],
+      "includes": ["beap.gemini.yahoo.com"],
+      "sources": [{
+        "adaway": {
+          "disabled": "false",
+          "description": "Blocking mobile ad providers and some analytics providers",
+          "prefix": "127.0.0.1 ",
+          "file": "",
+          "url": "http://adaway.org/hosts.txt"
+        },
+        "malwaredomainlist": {
+          "disabled": "false",
+          "description": "127.0.0.1 based host and domain list",
+          "prefix": "127.0.0.1 ",
+          "file": "",
+          "url": "http://www.malwaredomainlist.com/hostslist/hosts.txt"
+        },
+        "openphish": {
+          "disabled": "false",
+          "description": "OpenPhish automatic phishing detection",
+          "prefix": "http",
+          "file": "",
+          "url": "https://openphish.com/feed.txt"
+        },
+        "someonewhocares": {
+          "disabled": "false",
+          "description": "Zero based host and domain list",
+          "prefix": "0.0.0.0",
+          "file": "",
+          "url": "http://someonewhocares.org/hosts/zero/"
+        },
+        "tasty": {
+          "disabled": "false",
+          "description": "File source",
+          "prefix": "",
+          "file": "/config/user-data/blist.hosts.src",
+          "url": ""
+        },
+        "volkerschatz": {
+          "disabled": "false",
+          "description": "Ad server blacklists",
+          "prefix": "http",
+          "file": "",
+          "url": "http://www.volkerschatz.com/net/adpaths"
+        },
+        "winhelp2002": {
+          "disabled": "false",
+          "description": "Zero based host and domain list",
+          "prefix": "0.0.0.0 ",
+          "file": "",
+          "url": "http://winhelp2002.mvps.org/hosts.txt"
+        },
+        "yoyo": {
+          "disabled": "false",
+          "description": "Fully Qualified Domain Names only - no prefix to strip",
+          "prefix": "",
+          "file": "",
+          "url": "http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext"
+        }
+    }]
+    }
+  }]
 }

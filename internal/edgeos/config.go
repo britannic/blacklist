@@ -109,6 +109,11 @@ func (o Objects) Files() *CFile {
 	return &f
 }
 
+// Excludes returns a string array of excludes
+func (c *Config) Excludes(node string) []string {
+	return c.bNodes[node].exc
+}
+
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) (o *Object) {
 	o = c.bNodes[node]
@@ -160,7 +165,7 @@ func getType(in interface{}) (out interface{}) {
 	return out
 }
 
-// Includes returns a Content struct of blacklist Includes
+// Includes returns an io.Reader of blacklist Includes
 func (o *Object) Includes() io.Reader {
 	sort.Strings(o.inc)
 	return bytes.NewBuffer([]byte(strings.Join(o.inc, "\n")))
@@ -191,8 +196,8 @@ func ReadCfg(r io.Reader) (*Config, error) {
 		branch string
 		nodes  = make([]string, 2)
 		rx     = regx.Objects
+		s      *Object
 		sCfg   = Config{bNodes: make(bNodes)}
-		s      = newObject()
 	)
 
 LINE:
@@ -214,7 +219,7 @@ LINE:
 			node := regx.Get("node", line)
 			tnode = node[1]
 			nodes = append(nodes, tnode)
-
+			s = newObject()
 			sCfg.bNodes[tnode] = s
 
 		case rx.LEAF.MatchString(line):
@@ -272,7 +277,6 @@ LINE:
 	if len(sCfg.bNodes) < 1 {
 		return &sCfg, errors.New("Configuration data is empty, cannot continue")
 	}
-
 	return &sCfg, nil
 }
 
