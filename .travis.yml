@@ -12,7 +12,7 @@ os:
 go:
 - tip
 script:
-- $HOME/gopath/bin/overalls -project=github.com/britannic/blacklist -covermode=count -ignore='vendor,.git,payload'
+- $HOME/gopath/src/github.com/britannic/blacklist/testcoverage
 - $HOME/gopath/bin/goveralls -coverprofile=overalls.coverprofile -service=travis-ci
 env:
   global:
