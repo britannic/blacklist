@@ -92,7 +92,7 @@ func TestCommandLineArgs(t *testing.T) {
 		args = os.Args[1]
 	}
 	switch {
-	case runtime.GOOS == "linux":
+	case runtime.GOOS == "linux" && args != "-test.coverprofile=profile.out":
 		want = "  -arch=\"mips64\": Set EdgeOS CPU architecture\n  -debug=false: Enable debug mode\n  -dir=\"/etc/dnsmasq.d\": Override dnsmasq directory\n  -f=\"\": <file> # Load a configuration file\n  -i=5: Polling interval\n  -mips64=\"mips64\": Override target EdgeOS CPU architecture\n  -os=\"linux\": Override native EdgeOS OS\n  -test=false: Run config and data validation tests\n  -tmp=\"/tmp\": Override dnsmasq temporary directory\n  -v=false: Verbose display\n  -version=false: Show program version number\n"
 
 	case runtime.GOOS == "linux" && args == "-test.coverprofile=profile.out":
