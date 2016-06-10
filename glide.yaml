@@ -1,4 +1,4 @@
 package: github.com/britannic/blacklist
 import:
-- package: github.com/britannic/testutils
-
+- package: github.com/fatih/structs
+- package: runtime

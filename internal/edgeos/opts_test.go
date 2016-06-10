@@ -14,8 +14,7 @@ func TestOption(t *testing.T) {
 
 	wantRaw := Parms{arch: runtime.GOARCH, cores: 2, debug: true, dir: "/tmp", exc: List{"badactor.com": 0}, ext: "blacklist.conf", file: "/config/config.boot", method: "GET", nodes: []string{"domains", "hosts"}, poll: 10, stypes: []string{"files", preConf, "urls"}, test: true, verbosity: 2}
 
-	c := Config{}
-	p := NewParms(&c)
+	p := NewParms(&Config{})
 	Equals(t, vanilla, *p)
 
 	prev := p.SetOpt(

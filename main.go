@@ -2,10 +2,9 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
-	"os"
 	"runtime"
+	"syscall"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
 )
@@ -18,36 +17,16 @@ var (
 )
 
 func main() {
-	// m := &e.Mvars{
-	// 	DNSdir:   "/etc/dnsmasq.d",
-	// 	DNStmp:   "/tmp",
-	// 	MIPS64:   "mips64",
-	// 	WhatOS:   runtime.GOOS,
-	// 	WhatArch: runtime.GOARCH,
-	// }
-	o := getOpts()
+	var (
+		c   = &e.Config{}
+		err error
+		o   = getOpts()
+	)
+
 	o.Init("blacklist", flag.ExitOnError)
-
-	if os.Args[1:] != nil {
-		if err := o.Parse(os.Args[1:]); err != nil {
-			o.Usage()
-		}
-	}
-
-	switch {
-	case *o.Test:
-		fmt.Println("Test activated!")
-		os.Exit(0)
-
-	case *o.Version:
-		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n", version, build, githash)
-		os.Exit(0)
-	}
-
-	c, err := o.GetCFG(*o.ARCH)
-	if err != nil {
-		log.Fatalf("Couldn't load configuration: %v", err)
-	}
+	o.setArgs(func(code int) {
+		syscall.Exit(code)
+	})
 	p := e.NewParms(c)
 	_ = p.SetOpt(
 		e.Cores(runtime.NumCPU()),
@@ -59,7 +38,12 @@ func main() {
 		e.Poll(*o.Poll),
 		e.STypes([]string{"files", "pre-configured", "urls"}),
 	)
-	fmt.Println(p)
+
+	_, err = o.getCFG(*o.ARCH)
+	if err != nil {
+		log.Fatalf("Couldn't load configuration: %v", err)
+	}
+
 }
 
 // basename removes directory components and file extensions.
