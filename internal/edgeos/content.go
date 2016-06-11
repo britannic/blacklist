@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/britannic/oldBlist2/regx"
+	"github.com/britannic/blacklist/internal/regx"
 )
 
 // GetContent returns a Content struct

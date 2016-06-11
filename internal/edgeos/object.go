@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/britannic/oldBlist2/regx"
+	"github.com/britannic/blacklist/internal/regx"
 )
 
 // Excludes returns a List map of blacklist exclusions
