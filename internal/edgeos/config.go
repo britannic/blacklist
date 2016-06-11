@@ -29,6 +29,7 @@ const (
 
 const (
 	agent     = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/601.4.4 (KHTML, like Gecko) Version/9.0.3 Safari/601.4.4`
+	all       = "all"
 	notknown  = "unknown"
 	blackhole = "dns-redirect-ip"
 	blacklist = "blacklist"
@@ -61,7 +62,7 @@ func deleteFile(f string) bool {
 }
 
 // DiffArray returns the delta of two arrays
-func DiffArray(a, b []string) (diff []string) {
+func DiffArray(a, b []string) (diff sort.StringSlice) {
 	var biggest, smallest []string
 
 	switch {
@@ -84,8 +85,7 @@ func DiffArray(a, b []string) (diff []string) {
 			diff = append(diff, k)
 		}
 	}
-
-	sort.Strings(diff)
+	diff.Sort()
 	return diff
 }
 
@@ -111,11 +111,29 @@ func (o Objects) Files() *CFile {
 
 // Excludes returns a string array of excludes
 func (c *Config) Excludes(node string) []string {
-	return c.bNodes[node].exc
+	var exc []string
+	switch {
+	case node == all:
+		for _, k := range c.Nodes() {
+			if len(c.bNodes[k].exc) != 0 {
+				exc = append(exc, c.bNodes[k].exc...)
+			}
+		}
+	default:
+		exc = c.bNodes[node].exc
+	}
+	return exc
 }
 
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) (o *Object) {
+	if node == all {
+		o = &Object{
+			Parms: c.Parms,
+			inc:   c.Excludes(node),
+		}
+		return o
+	}
 	o = c.bNodes[node]
 	for k := range o.data {
 		o.data[k].Parms = c.Parms
@@ -173,9 +191,9 @@ func (o *Object) Includes() io.Reader {
 
 func newObject() *Object {
 	return &Object{
-		inc:  make([]string, 0),
+		data: make(data),
 		exc:  make([]string, 0),
-		data: make(map[string]*Object),
+		inc:  make([]string, 0),
 	}
 }
 
@@ -197,7 +215,7 @@ func ReadCfg(r io.Reader) (*Config, error) {
 		nodes  = make([]string, 2)
 		rx     = regx.Objects
 		s      *Object
-		sCfg   = Config{bNodes: make(bNodes)}
+		sCfg   = Config{Parms: &Parms{}, bNodes: make(bNodes)}
 	)
 
 LINE:

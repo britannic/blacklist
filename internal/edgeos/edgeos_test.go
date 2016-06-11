@@ -26,9 +26,9 @@ func shuffleArray(slice []string) {
 }
 
 func TestDiffArray(t *testing.T) {
-	biggest := []string{"one", "two", "three", "four", "five", "six"}
-	smallest := []string{"one", "two", "three"}
-	want := []string{"five", "four", "six"}
+	biggest := sort.StringSlice{"one", "two", "three", "four", "five", "six"}
+	smallest := sort.StringSlice{"one", "two", "three"}
+	want := sort.StringSlice{"five", "four", "six"}
 
 	got := DiffArray(biggest, smallest)
 	Equals(t, want, got)

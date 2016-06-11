@@ -47,6 +47,7 @@ func TestExcludes(t *testing.T) {
 		raw  []string
 		node string
 	}{
+		{get: "", raw: []string{"122.2o7.net", "1e100.net", "adobedtm.com", "akamai.net", "amazon.com", "amazonaws.com", "apple.com", "ask.com", "avast.com", "bitdefender.com", "cdn.visiblemeasures.com", "cloudfront.net", "coremetrics.com", "edgesuite.net", "freedns.afraid.org", "github.com", "githubusercontent.com", "google.com", "googleadservices.com", "googleapis.com", "googleusercontent.com", "gstatic.com", "gvt1.com", "gvt1.net", "hb.disney.go.com", "hp.com", "hulu.com", "images-amazon.com", "msdn.com", "paypal.com", "rackcdn.com", "schema.org", "skype.com", "smacargo.com", "sourceforge.net", "ssl-on9.com", "ssl-on9.net", "static.chartbeat.com", "storage.googleapis.com", "windows.net", "yimg.com", "ytimg.com"}, node: "all"},
 		{get: edgeos.UpdateList(excludes).String(), raw: excludes, node: "blacklist"},
 		{get: "", raw: []string{}, node: "domains"},
 		{get: "", raw: []string{}, node: "hosts"},

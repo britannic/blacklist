@@ -2,46 +2,45 @@ package edgeos
 
 import "sort"
 
-// Keys is used for sorting operations on map Keys
-type Keys []string
-
-// len returns length of Keys
-func (k Keys) Len() int { return len(k) }
-
-// less returns the smallest element
-func (k Keys) Less(i, j int) bool { return k[i] < k[j] }
-
-// Swap swaps elements of a key array
-func (k Keys) Swap(i, j int) { k[i], k[j] = k[j], k[i] }
-
-// sortKeys returns an array of sorted Keys
-func (c *Config) sortKeys() (pkeys Keys) {
-	for pkey := range c.bNodes {
-		pkeys = append(pkeys, pkey)
+// sortFlags returns the flags as a slice in lexicographical sorted order.
+func (c *Config) sortKeys() (pkeys sort.StringSlice) {
+	pkeys = make(sort.StringSlice, len(c.bNodes))
+	i := 0
+	for k := range c.bNodes {
+		pkeys[i] = k
+		i++
 	}
-	sort.Sort(Keys(pkeys))
+	pkeys.Sort()
+
 	return pkeys
 }
 
 // sortSKeys returns an array of sorted Keys
-func (c *Config) sortSKeys(node string) (skeys Keys) {
-	for skey := range c.bNodes[node].data {
-		skeys = append(skeys, skey)
+func (c *Config) sortSKeys(node string) (skeys sort.StringSlice) {
+	skeys = make(sort.StringSlice, len(c.bNodes[node].data))
+	i := 0
+	for k := range c.bNodes[node].data {
+		skeys[i] = k
+		i++
 	}
-	sort.Sort(Keys(skeys))
+	skeys.Sort()
+
 	return skeys
 }
 
 // sortSKeys returns an array of custom sorted strings
-func (d data) sortSKeys() (skeys Keys) {
-	for skey := range d {
-		if d[skey].ltype != preConf {
-			skeys = append(skeys, skey)
+func (d data) sortSKeys() (skeys sort.StringSlice) {
+	for k := range d {
+		if d[k].ltype != preConf {
+			skeys = append(skeys, k)
+			// skeys[i] = k
+			// i++
 		}
 	}
-	sort.Sort(Keys(skeys))
+	skeys.Sort()
+
 	if _, ok := d[preConf]; ok {
-		skeys = append(Keys{preConf}, skeys...)
+		skeys = append(sort.StringSlice{preConf}, skeys...)
 	}
 	return skeys
 }

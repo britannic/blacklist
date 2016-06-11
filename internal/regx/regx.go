@@ -83,10 +83,8 @@ func Get(t, s string) (r []string) {
 // String returns a formatted dump of *OBJ for fmt.Println and fmt.Printf
 func (rx *OBJ) String() (result string) {
 	v := reflect.ValueOf(rx).Elem()
-	// values := make([]interface{}, v.NumField())
 
 	for i := 0; i < v.NumField(); i++ {
-		// values[i] = v.Field(i).Interface()
 
 		result += fmt.Sprintf("%v: %v\n", v.Type().Field(i).Name, v.Field(i).Interface())
 	}

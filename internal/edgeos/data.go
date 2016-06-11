@@ -18,10 +18,10 @@ func getSeparator(node string) string {
 
 // formatData returns an io.Reader loaded with dnsmasq formatted data
 func formatData(fmttr string, data List) io.Reader {
-	var lines []string
+	var lines sort.StringSlice
 	for k := range data {
 		lines = append(lines, fmt.Sprintf(fmttr+"\n", k))
 	}
-	sort.Strings(lines)
+	lines.Sort()
 	return bytes.NewBuffer([]byte(strings.Join(lines, "")))
 }

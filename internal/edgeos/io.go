@@ -51,9 +51,8 @@ func apiCMD() (r map[string]string) {
 }
 
 // getFile reads a file and returns a *bufio.Scanner instance
-func getFile(fname string) (b io.Reader, err error) {
-	b, err = os.Open(fname)
-	return b, err
+func getFile(fname string) (io.Reader, error) {
+	return os.Open(fname)
 }
 
 // insession returns true if VyOS/EdgeOS configuration is in session
@@ -101,7 +100,6 @@ func purgeFiles(files []string) error {
 NEXT:
 	for _, file := range files {
 		if _, err := os.Stat(file); os.IsNotExist(err) {
-			// errArray = append(errArray, fmt.Sprintf("%q: %v", file, err))
 			continue NEXT
 		}
 		if !deleteFile(file) {
@@ -110,8 +108,7 @@ NEXT:
 	}
 	switch len(errArray) > 0 {
 	case true:
-		err := fmt.Errorf("%v", strings.Join(errArray, "\n"))
-		return err
+		return fmt.Errorf("%v", strings.Join(errArray, "\n"))
 	}
 
 	return nil

@@ -8,11 +8,11 @@ import (
 )
 
 func TestOption(t *testing.T) {
-	vanilla := Parms{arch: "", cores: 0, debug: false, dir: "", exc: nil, ext: "", file: "", method: "", nodes: nil, poll: 0, stypes: nil, test: false, verbosity: 0}
+	vanilla := Parms{arch: "", cores: 0, debug: false, dex: List{}, dir: "", exc: List{}, ext: "", file: "", method: "", nodes: nil, poll: 0, stypes: nil, test: false, verbosity: 0}
 
 	want := "edgeos.Parms{\narch:      " + runtime.GOARCH + "\ncores:     2\ndir:       /tmp\ndebug:     true\nexc:       \"badactor.com\":0,\next:       blacklist.conf\nfile:      /config/config.boot\nmethod:    GET\nnodes:     [domains hosts]\npoll:      10\nstypes:    [files pre-configured urls]\ntest:      true\nverbosity: 2\n}\n"
 
-	wantRaw := Parms{arch: runtime.GOARCH, cores: 2, debug: true, dir: "/tmp", exc: List{"badactor.com": 0}, ext: "blacklist.conf", file: "/config/config.boot", method: "GET", nodes: []string{"domains", "hosts"}, poll: 10, stypes: []string{"files", preConf, "urls"}, test: true, verbosity: 2}
+	wantRaw := Parms{arch: runtime.GOARCH, cores: 2, debug: true, dex: List{}, dir: "/tmp", exc: List{"badactor.com": 0}, ext: "blacklist.conf", file: "/config/config.boot", method: "GET", nodes: []string{"domains", "hosts"}, poll: 10, stypes: []string{"files", preConf, "urls"}, test: true, verbosity: 2}
 
 	p := NewParms(&Config{})
 	Equals(t, vanilla, *p)

@@ -3,6 +3,7 @@ package edgeos
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"strings"
 	"testing"
 
@@ -11,7 +12,7 @@ import (
 )
 
 func TestKeys(t *testing.T) {
-	var keys Keys
+	var keys sort.StringSlice
 	b, err := ReadCfg(bytes.NewBufferString(tdata.Cfg))
 	OK(t, err)
 

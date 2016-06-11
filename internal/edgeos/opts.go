@@ -11,9 +11,11 @@ type Parms struct {
 	arch      string
 	cores     int
 	dir       string
+	dex       List
 	debug     bool
 	exc       List
 	ext       string
+	fnfmt     string
 	file      string
 	method    string
 	nodes     []string
@@ -42,6 +44,11 @@ func (p *Parms) SetOpt(opts ...Option) (previous Option) {
 		return p.SetOpt(opts...)
 	}
 }
+
+// GetOpt retrieves the value of an Option
+// func (p *Parms) GetOpt(opt string) string {
+// 	return
+// }
 
 // Arch sets target CPU architecture
 func Arch(arch string) Option {
@@ -107,6 +114,15 @@ func File(f string) Option {
 	}
 }
 
+// FileNameFmt sets the EdgeOS configuration file n
+func FileNameFmt(f string) Option {
+	return func(p *Parms) Option {
+		previous := p.fnfmt
+		p.fnfmt = f
+		return File(previous)
+	}
+}
+
 // Method sets the HTTP method
 func Method(method string) Option {
 	return func(p *Parms) Option {
@@ -118,7 +134,10 @@ func Method(method string) Option {
 
 // NewParms sets a new *Parms instance
 func NewParms(c *Config) *Parms {
-	c.Parms = &Parms{}
+	c.Parms = &Parms{
+		dex: make(List),
+		exc: make(List),
+	}
 	return c.Parms
 }
 

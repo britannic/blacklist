@@ -25,11 +25,11 @@ func mergeList(a, b List) List {
 
 // String implements fmt.Print interface
 func (l List) String() string {
-	var lines []string
+	var lines sort.StringSlice
 	for k, v := range l {
 		lines = append(lines, fmt.Sprintf("%q:%v,\n", k, v))
 	}
-	sort.Strings(lines)
+	lines.Sort()
 	return strings.Join(lines, "")
 }
 
