@@ -19,9 +19,16 @@ const (
 ```
 
 
+## func BooltoStr
+``` go
+func BooltoStr(b bool) string
+```
+BooltoStr converts a boolean ("true" or "false") to a string equivalent
+
+
 ## func DiffArray
 ``` go
-func DiffArray(a, b []string) (diff []string)
+func DiffArray(a, b []string) (diff sort.StringSlice)
 ```
 DiffArray returns the delta of two arrays
 
@@ -40,11 +47,11 @@ func LoadCfg() (string, error)
 LoadCfg returns an EdgeOS config file string and error
 
 
-## func ToBool
+## func StrToBool
 ``` go
-func ToBool(s string) bool
+func StrToBool(s string) bool
 ```
-ToBool converts a string ("true" or "false") to it's boolean equivalent
+StrToBool converts a string ("true" or "false") to it's boolean equivalent
 
 
 
@@ -110,10 +117,18 @@ Config is a struct of configuration fields
 
 ### func ReadCfg
 ``` go
-func ReadCfg(reader io.Reader) (*Config, error)
+func ReadCfg(r io.Reader) (*Config, error)
 ```
 ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 
+
+
+
+### func (\*Config) Excludes
+``` go
+func (c *Config) Excludes(node string) []string
+```
+Excludes returns a string array of excludes
 
 
 
@@ -141,10 +156,19 @@ STypes returns an array of configured nodes
 
 
 
+### func (\*Config) String
+``` go
+func (c *Config) String() (result string)
+```
+String returns pretty print for the Blacklist struct
+
+
+
 ## type Content
 ``` go
 type Content struct {
     *Object
+    Contenter
     // contains filtered or unexported fields
 }
 ```
@@ -160,11 +184,45 @@ Content is a struct of blacklist content
 
 
 
+### func (\*Content) Process
+``` go
+func (c *Content) Process() io.Reader
+```
+Process extracts hosts/domains from downloaded raw content
+
+
+
 ### func (Content) Source
 ``` go
 func (d Content) Source(ltype string) *Objects
 ```
 Source returns a map of sources
+
+
+
+### func (\*Content) WriteFile
+``` go
+func (c *Content) WriteFile() (err error)
+```
+WriteFile saves hosts/domains data to disk
+
+
+
+## type Contenter
+``` go
+type Contenter interface {
+    // contains filtered or unexported methods
+}
+```
+Contenter is a Content interface
+
+
+
+
+
+
+
+
 
 
 
@@ -181,46 +239,6 @@ Contents is an array of *content
 
 
 
-
-
-
-## type Keys
-``` go
-type Keys []string
-```
-Keys is used for sorting operations on map Keys
-
-
-
-
-
-
-
-
-
-
-
-### func (Keys) Len
-``` go
-func (k Keys) Len() int
-```
-len returns length of Keys
-
-
-
-### func (Keys) Less
-``` go
-func (k Keys) Less(i, j int) bool
-```
-less returns the smallest element
-
-
-
-### func (Keys) Swap
-``` go
-func (k Keys) Swap(i, j int)
-```
-Swap swaps elements of a key array
 
 
 
@@ -286,7 +304,7 @@ Excludes returns a List map of blacklist exclusions
 ``` go
 func (o *Object) Includes() io.Reader
 ```
-Includes returns a Content struct of blacklist Includes
+Includes returns an io.Reader of blacklist Includes
 
 
 
@@ -302,6 +320,8 @@ Source returns a map of sources
 ``` go
 func (o *Object) String() (r string)
 ```
+String pretty prints Object
+
 
 
 ## type Objects
@@ -353,6 +373,13 @@ Option sets is a recursive function
 
 
 
+### func Arch
+``` go
+func Arch(arch string) Option
+```
+Arch sets target CPU architecture
+
+
 ### func Cores
 ``` go
 func Cores(i int) Option
@@ -395,6 +422,13 @@ func File(f string) Option
 File sets the EdgeOS configuration file n
 
 
+### func FileNameFmt
+``` go
+func FileNameFmt(f string) Option
+```
+FileNameFmt sets the EdgeOS configuration file name format
+
+
 ### func Method
 ``` go
 func Method(method string) Option
@@ -414,6 +448,13 @@ Nodes sets the node ns array
 func Poll(t int) Option
 ```
 Poll sets the polling interval in seconds
+
+
+### func Prefix
+``` go
+func Prefix(l string) Option
+```
+Prefix sets the dnsmasq configuration address line prefix
 
 
 ### func STypes
@@ -442,7 +483,22 @@ Verbosity sets the verbosity level to v
 ## type Parms
 ``` go
 type Parms struct {
-    // contains filtered or unexported fields
+    Arch      string
+    Cores     int
+    Debug     bool
+    Dex       List
+    Dir       string
+    Exc       List
+    Ext       string
+    File      string
+    FnFmt     string
+    Method    string
+    Nodes     []string
+    Pfx       string
+    Poll      int
+    Stypes    []string
+    Test      bool
+    Verbosity int
 }
 ```
 Parms is struct of parameters
@@ -472,9 +528,9 @@ SetOpt sets the specified options passed as Parms and returns an option to resto
 
 
 
-### func (Parms) String
+### func (\*Parms) String
 ``` go
-func (p Parms) String() string
+func (p *Parms) String() string
 ```
 String method to implement fmt.Print interface
 

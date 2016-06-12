@@ -3,6 +3,7 @@ package edgeos
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -48,6 +49,15 @@ func TestGetContent(t *testing.T) {
 			want:     HTTPDomainData,
 		},
 		{
+			leaf:     "malc0de",
+			ltype:    "urls",
+			node:     domains,
+			page:     "/domains.txt",
+			pageData: HTTPDomainData,
+			svr:      new(HTTPserver),
+			want:     HTTPDomainData,
+		},
+		{
 			leaf:     "adaway",
 			ltype:    "urls",
 			node:     hosts,
@@ -65,6 +75,7 @@ func TestGetContent(t *testing.T) {
 		Ext("blacklist.conf"),
 		Method("GET"),
 		Nodes([]string{"domains", "hosts"}),
+		Prefix("address="),
 		STypes([]string{"pre-configured", "files", "urls"}),
 	)
 
@@ -85,6 +96,8 @@ func TestGetContent(t *testing.T) {
 			got, err := ioutil.ReadAll(src.r)
 			OK(t, err)
 			Equals(t, test.want, string(got))
+			src.r = io.MultiReader(bytes.NewReader(got))
+			fmt.Println(src.Process())
 		}
 	}
 }

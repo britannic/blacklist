@@ -40,7 +40,7 @@ func main() {
 		e.Dir(o.SetDir(*o.ARCH)),
 		e.Ext(".blacklist.conf"),
 		e.Excludes(c.Get("all").Excludes()),
-		// e.FileNameFmt(src.Parms.dir + "/%v.%v." + src.Parms.ext),
+		e.FileNameFmt("%v/%v.%v.%v"),
 		e.File(*o.File),
 		e.Method("GET"),
 		e.Poll(*o.Poll),

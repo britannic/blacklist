@@ -68,6 +68,14 @@ String returns a formatted dump of *OBJ for fmt.Println and fmt.Printf
 
 
 
+### func (\*OBJ) StripPrefixAndSuffix
+``` go
+func (rx *OBJ) StripPrefixAndSuffix(line, prefix string) (string, bool)
+```
+StripPrefixAndSuffix strips the prefix and suffix
+
+
+
 
 
 

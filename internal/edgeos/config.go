@@ -101,7 +101,7 @@ func (o Objects) Files() *CFile {
 			}
 
 			src := obj[k].data[sk]
-			format := src.Parms.dir + "/%v.%v." + src.Parms.ext
+			format := src.Parms.Dir + "/%v.%v." + src.Parms.Ext
 			f.names = append(f.names, fmt.Sprintf(format, getType(src.nType), src.name))
 		}
 	}
@@ -301,14 +301,14 @@ LINE:
 // Remove deletes a CFile array of file names
 func (c *CFile) Remove() error {
 	var got = make([]string, 5)
-	dlist, err := ioutil.ReadDir(c.dir)
+	dlist, err := ioutil.ReadDir(c.Dir)
 	if err != nil {
 		return err
 	}
 
 	for _, f := range dlist {
-		if strings.Contains(f.Name(), getType(c.nType).(string)) && strings.Contains(f.Name(), c.ext) {
-			got = append(got, c.dir+"/"+f.Name())
+		if strings.Contains(f.Name(), getType(c.nType).(string)) && strings.Contains(f.Name(), c.Ext) {
+			got = append(got, c.Dir+"/"+f.Name())
 		}
 	}
 
@@ -348,7 +348,7 @@ func (c *CFile) Strings() []string {
 
 // STypes returns an array of configured nodes
 func (c *Config) STypes() []string {
-	return c.Parms.stypes
+	return c.Parms.Stypes
 }
 
 // BooltoStr converts a boolean ("true" or "false") to a string equivalent

@@ -98,6 +98,9 @@ zone "bitmeyenkartusistanbul.com"  {type master; file "/etc/namedb/blockeddomain
 zone "byxon.com"  {type master; file "/etc/namedb/blockeddomain.hosts";};
 zone "img001.com"  {type master; file "/etc/namedb/blockeddomain.hosts";};
 zone "loadto.net"  {type master; file "/etc/namedb/blockeddomain.hosts";};
+zone "byxon.com"  {type master; file "/etc/namedb/blockeddomain.hosts";};
+zone "img001.com"  {type master; file "/etc/namedb/blockeddomain.hosts";};
+zone "loadto.net"  {type master; file "/etc/namedb/blockeddomain.hosts";};
 zone "roastfiles2017.com"  {type master; file "/etc/namedb/blockeddomain.hosts";};`
 
 	httpHostData = `# AdAway default blocklist
@@ -132,6 +135,9 @@ zone "roastfiles2017.com"  {type master; file "/etc/namedb/blockeddomain.hosts";
 127.0.0.1 a.glcdn.co
 127.0.0.1 wwww.adleads.com
 127.0.0.1 ad.madvertise.de
+127.0.0.1 apps.buzzcity.net
+127.0.0.1 ads.mobgold.com
+127.0.0.1 android.bcfads.com
 127.0.0.1 apps.buzzcity.net
 127.0.0.1 ads.mobgold.com
 127.0.0.1 android.bcfads.com

@@ -2,12 +2,29 @@ package edgeos
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"strings"
 
 	"github.com/britannic/blacklist/internal/regx"
 )
+
+// Contenter is a Content interface
+type Contenter interface {
+	process() io.Reader
+}
+
+// Content is a struct of blacklist content
+type Content struct {
+	*Object
+	Contenter
+	err error
+	r   io.Reader
+}
+
+// Contents is an array of *content
+type Contents []*Content
 
 // GetContent returns a Content struct
 func (objs *Objects) GetContent() *Contents {
@@ -35,7 +52,7 @@ func (objs *Objects) GetContent() *Contents {
 
 		case "urls":
 			if o.url != "" {
-				reader, err := GetHTTP(o.Parms.method, o.url)
+				reader, err := GetHTTP(o.Parms.Method, o.url)
 				c = append(c, &Content{
 					err:    err,
 					Object: o,
@@ -48,20 +65,20 @@ func (objs *Objects) GetContent() *Contents {
 }
 
 // WriteFile saves hosts/domains data to disk
-func (c *Contents) WriteFile() (err error) {
-	for _, content := range *c {
-		var b []byte
-		if b, err = ioutil.ReadAll(content.process()); err != nil {
-			return err
-		}
-		fname := content.String()
-		return ioutil.WriteFile(fname, b, 0644)
+func (c *Content) WriteFile() (err error) {
+	// for _, a := range *c {
+	var b []byte
+	if b, err = ioutil.ReadAll(c.Process()); err != nil {
+		return err
 	}
-	return err
+	p := c.Parms
+	fname := fmt.Sprintf(p.FnFmt, getType(c.nType).(string), c.name, c.Ext)
+	return ioutil.WriteFile(fname, b, 0644)
+	// }
 }
 
-// process extracts hosts/domains from downloaded raw content
-func (c *Content) process() io.Reader {
+// Process extracts hosts/domains from downloaded raw content
+func (c *Content) Process() io.Reader {
 	var (
 		b     = bufio.NewScanner(c.r)
 		rx    = regx.Objects
@@ -80,30 +97,31 @@ NEXT:
 		case strings.HasPrefix(line, c.prefix):
 			var ok bool
 
-			if line, ok = stripPrefixAndSuffix(line, c.prefix, rx); ok {
+			if line, ok = rx.StripPrefixAndSuffix(line, c.prefix); ok {
 				fqdns := rx.FQDN.FindAllString(line, -1)
 
 			FQDN:
 				for _, fqdn := range fqdns {
-					isDEX := c.dex.subKeyExists(fqdn)
-					isEX := c.Parms.exc.keyExists(fqdn)
-					isList := sList.keyExists(fqdn)
+					isDEX := c.Parms.Dex.subKeyExists(fqdn)
+					isEX := c.Parms.Exc.keyExists(fqdn)
 
 					switch {
 					case isDEX:
+						c.Parms.Dex[fqdn]++
 						continue FQDN
 
 					case isEX:
-						if isList {
+						// isList := sList.keyExists(fqdn)
+						if sList.keyExists(fqdn) {
 							sList[fqdn]++
 						}
-						c.Parms.exc[fqdn]++
+						c.Parms.Exc[fqdn]++
 
-					case isList:
-						sList[fqdn]++
+					// case isList:
+					// 	sList[fqdn]++
 
 					case !isEX:
-						c.Parms.exc[fqdn] = 0
+						c.Parms.Exc[fqdn] = 0
 						sList[fqdn] = 0
 					}
 				}
@@ -114,9 +132,9 @@ NEXT:
 	}
 
 	if c.nType == domain {
-		c.dex = mergeList(c.dex, sList)
+		c.Parms.Dex = mergeList(c.Parms.Dex, sList)
 	}
 
-	fmttr := "address=" + getSeparator(getType(c.nType).(string)) + "%v/" + c.ip
+	fmttr := c.Parms.Pfx + getSeparator(getType(c.nType).(string)) + "%v/" + c.ip
 	return formatData(fmttr, sList)
 }

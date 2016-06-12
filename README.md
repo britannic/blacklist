@@ -49,7 +49,7 @@ The script will also install a default blacklist setup, here is the stanza (show
 	        source malc0de.com {
 	            description "List of zones serving malicious executables observed by malc0de.com/database/"
 	            prefix "zone "
-	            url http://malc0de.com/bl/ZONES
+	            url <a href="http://malc0de.com/bl/ZONES">http://malc0de.com/bl/ZONES</a>
 	        }
 	    }
 	    hosts {
@@ -68,32 +68,32 @@ The script will also install a default blacklist setup, here is the stanza (show
 	        source openphish.com {
 	            description "OpenPhish automatic phishing detection"
 	            prefix http
-	            url https://openphish.com/feed.txt
+	            url <a href="https://openphish.com/feed.txt">https://openphish.com/feed.txt</a>
 	        }
 	        source someonewhocares.org {
 	            description "Zero based host and domain list"
 	            prefix 0.0.0.0
-	            url http://someonewhocares.org/hosts/zero/
+	            url <a href="http://someonewhocares.org/hosts/zero/">http://someonewhocares.org/hosts/zero/</a>
 	        }
 	        source volkerschatz.com {
 	            description "Ad server blacklists"
 	            prefix http
-	            url http://www.volkerschatz.com/net/adpaths
+	            url <a href="http://www.volkerschatz.com/net/adpaths">http://www.volkerschatz.com/net/adpaths</a>
 	        }
 	        source winhelp2002.mvps.org {
 	            description "Zero based host and domain list"
 	            prefix "0.0.0.0 "
-	            url http://winhelp2002.mvps.org/hosts.txt
+	            url <a href="http://winhelp2002.mvps.org/hosts.txt">http://winhelp2002.mvps.org/hosts.txt</a>
 	        }
 	        source www.malwaredomainlist.com {
 	            description "127.0.0.1 based host and domain list"
 	            prefix "127.0.0.1 "
-	            url http://www.malwaredomainlist.com/hostslist/hosts.txt
+	            url <a href="http://www.malwaredomainlist.com/hostslist/hosts.txt">http://www.malwaredomainlist.com/hostslist/hosts.txt</a>
 	        }
 	        source yoyo.org {
 	            description "Fully Qualified Domain Names only - no prefix to strip"
 	            prefix ""
-	            url http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&amp;showintro=1&amp;mimetype=plaintext
+	            url <a href="http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&amp;showintro=1&amp;mimetype=plaintext">http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext</a>
 	        }
 	    }
 	}
@@ -117,7 +117,7 @@ CLI commands to configure blacklist:
 	set service dns forwarding blacklist domains include patoghee.in
 	set service dns forwarding blacklist domains source malc0de description 'List of zones serving malicious executables observed by malc0de.com/database/'
 	set service dns forwarding blacklist domains source malc0de prefix 'zone '
-	set service dns forwarding blacklist domains source malc0de url http://malc0de.com/bl/ZONES
+	set service dns forwarding blacklist domains source malc0de url '<a href="http://malc0de.com/bl/ZONES">http://malc0de.com/bl/ZONES</a>'
 	set service dns forwarding blacklist exclude 122.2o7.net
 	set service dns forwarding blacklist exclude 1e100.net
 	set service dns forwarding blacklist exclude adobedtm.com
@@ -168,28 +168,28 @@ CLI commands to configure blacklist:
 	set service dns forwarding blacklist hosts include beap.gemini.yahoo.com
 	set service dns forwarding blacklist hosts source adaway description 'Blocking mobile ad providers and some analytics providers'
 	set service dns forwarding blacklist hosts source adaway prefix '127.0.0.1 '
-	set service dns forwarding blacklist hosts source adaway url http://adaway.org/hosts.txt
+	set service dns forwarding blacklist hosts source adaway url '<a href="http://adaway.org/hosts.txt">http://adaway.org/hosts.txt</a>'
 	# set service dns forwarding blacklist hosts source hpHosts description 'Ad and Tracking servers only'
 	# set service dns forwarding blacklist hosts source hpHosts prefix 127.0.0.1
-	# set service dns forwarding blacklist hosts source hpHosts url http://hosts-file.net/ad_servers.txt
+	# set service dns forwarding blacklist hosts source hpHosts url '<a href="http://hosts-file.net/ad_servers.txt">http://hosts-file.net/ad_servers.txt</a>'
 	set service dns forwarding blacklist hosts source malwaredomainlist description '127.0.0.1 based host and domain list'
 	set service dns forwarding blacklist hosts source malwaredomainlist prefix '127.0.0.1 '
-	set service dns forwarding blacklist hosts source malwaredomainlist url http://www.malwaredomainlist.com/hostslist/hosts.txt
+	set service dns forwarding blacklist hosts source malwaredomainlist url '<a href="http://www.malwaredomainlist.com/hostslist/hosts.txt">http://www.malwaredomainlist.com/hostslist/hosts.txt</a>'
 	set service dns forwarding blacklist hosts source openphish description 'OpenPhish automatic phishing detection'
 	set service dns forwarding blacklist hosts source openphish prefix http
-	set service dns forwarding blacklist hosts source openphish url https://openphish.com/feed.txt
+	set service dns forwarding blacklist hosts source openphish url '<a href="https://openphish.com/feed.txt">https://openphish.com/feed.txt</a>'
 	set service dns forwarding blacklist hosts source someonewhocares description 'Zero based host and domain list'
 	set service dns forwarding blacklist hosts source someonewhocares prefix 0.0.0.0
-	set service dns forwarding blacklist hosts source someonewhocares url http://someonewhocares.org/hosts/zero/
+	set service dns forwarding blacklist hosts source someonewhocares url '<a href="http://someonewhocares.org/hosts/zero/">http://someonewhocares.org/hosts/zero/</a>'
 	set service dns forwarding blacklist hosts source volkerschatz description 'Ad server blacklists'
 	set service dns forwarding blacklist hosts source volkerschatz prefix http
-	set service dns forwarding blacklist hosts source volkerschatz url http://www.volkerschatz.com/net/adpaths
+	set service dns forwarding blacklist hosts source volkerschatz url '<a href="http://www.volkerschatz.com/net/adpaths">http://www.volkerschatz.com/net/adpaths</a>'
 	set service dns forwarding blacklist hosts source winhelp2002 description 'Zero based host and domain list'
 	set service dns forwarding blacklist hosts source winhelp2002 prefix '0.0.0.0 '
-	set service dns forwarding blacklist hosts source winhelp2002 url http://winhelp2002.mvps.org/hosts.txt
+	set service dns forwarding blacklist hosts source winhelp2002 url '<a href="http://winhelp2002.mvps.org/hosts.txt">http://winhelp2002.mvps.org/hosts.txt</a>'
 	set service dns forwarding blacklist hosts source yoyo description 'Fully Qualified Domain Names only - no prefix to strip'
 	set service dns forwarding blacklist hosts source yoyo prefix ''
-	set service dns forwarding blacklist hosts source yoyo url http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&amp;showintro=1&amp;mimetype=plaintext
+	set service dns forwarding blacklist hosts source yoyo url '<a href="http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&amp;showintro=1&amp;mimetype=plaintext">http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext</a>'
 	set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq.pl
 	set system task-scheduler task update_blacklists interval 1d
 

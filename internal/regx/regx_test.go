@@ -27,11 +27,52 @@ func TestGet(t *testing.T) {
 
 func TestRegex(t *testing.T) {
 	got := regx.Objects
-	// rxtest := make(map[string][]byte)
-	// rxtest["want"] = append(rxtest["want"], rxout...)
-	// rxtest["got"] = append(rxtest["got"], fmt.Sprint(rx)...)
 	want := rxout
 	Equals(t, want, fmt.Sprint(got))
+}
+
+func TestStripPrefixAndSuffix(t *testing.T) {
+	tests := []struct {
+		exp    string
+		line   string
+		ok     bool
+		prefix string
+		rx     *regx.OBJ
+	}{
+		{
+			exp:    "This is a complete sentence and should not be a comment.",
+			line:   "/* This is a complete sentence and should not be a comment.",
+			ok:     true,
+			prefix: "/* ",
+			rx:     regx.Objects,
+		},
+		{
+			exp:    "verybad.phishing.sites.r.us.com",
+			line:   "https://verybad.phishing.sites.r.us.com",
+			ok:     true,
+			prefix: "https://",
+			rx:     regx.Objects,
+		},
+		{
+			exp:    "verybad.phishing.sites.r.us.com",
+			line:   "https://verybad.phishing.sites.r.us.com",
+			ok:     true,
+			prefix: "http",
+			rx:     regx.Objects,
+		},
+		{
+			exp:    "verybad.phishing.sites.r.us.com",
+			line:   "verybad.phishing.sites.r.us.com",
+			ok:     false,
+			prefix: "http",
+			rx:     regx.Objects,
+		},
+	}
+	for _, tt := range tests {
+		act, ok := tt.rx.StripPrefixAndSuffix(tt.line, tt.prefix)
+		Equals(t, tt.exp, act)
+		Equals(t, tt.ok, ok)
+	}
 }
 
 var (

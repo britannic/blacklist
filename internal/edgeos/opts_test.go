@@ -1,6 +1,7 @@
 package edgeos
 
 import (
+	"fmt"
 	"runtime"
 	"testing"
 
@@ -8,11 +9,11 @@ import (
 )
 
 func TestOption(t *testing.T) {
-	vanilla := Parms{arch: "", cores: 0, debug: false, dex: List{}, dir: "", exc: List{}, ext: "", file: "", method: "", nodes: nil, poll: 0, stypes: nil, test: false, verbosity: 0}
+	vanilla := Parms{Arch: "", Cores: 0, Dir: "", Dex: List{}, Debug: false, Exc: List{}, Ext: "", FnFmt: "", File: "", Pfx: "", Method: "", Nodes: []string(nil), Poll: 0, Stypes: []string(nil), Test: false, Verbosity: 0}
 
-	want := "edgeos.Parms{\narch:      " + runtime.GOARCH + "\ncores:     2\ndir:       /tmp\ndebug:     true\nexc:       \"badactor.com\":0,\next:       blacklist.conf\nfile:      /config/config.boot\nmethod:    GET\nnodes:     [domains hosts]\npoll:      10\nstypes:    [files pre-configured urls]\ntest:      true\nverbosity: 2\n}\n"
+	want := "edgeos.Parms{\nArch:      amd64\nCores:     2\nDebug:     true\nDex:       \nDir:       /tmp\nExc:       \"badactor.com\":0,\nExt:       blacklist.conf\nFile:      /config/config.boot\nFnFmt:     %v/%v.%v.%v\nMethod:    GET\nNodes:     [domains hosts]\nPfx:       address=\nPoll:      10\nStypes:    [files pre-configured urls]\nTest:      true\nVerbosity: 2\n}\n"
 
-	wantRaw := Parms{arch: runtime.GOARCH, cores: 2, debug: true, dex: List{}, dir: "/tmp", exc: List{"badactor.com": 0}, ext: "blacklist.conf", file: "/config/config.boot", method: "GET", nodes: []string{"domains", "hosts"}, poll: 10, stypes: []string{"files", preConf, "urls"}, test: true, verbosity: 2}
+	wantRaw := Parms{Arch: "amd64", Cores: 2, Dir: "/tmp", Dex: List{}, Debug: true, Exc: List{"badactor.com": 0}, Ext: "blacklist.conf", FnFmt: "%v/%v.%v.%v", File: "/config/config.boot", Pfx: "address=", Method: "GET", Nodes: []string{"domains", "hosts"}, Poll: 10, Stypes: []string{"files", "pre-configured", "urls"}, Test: true, Verbosity: 2}
 
 	p := NewParms(&Config{})
 	Equals(t, vanilla, *p)
@@ -25,16 +26,19 @@ func TestOption(t *testing.T) {
 		Excludes(List{"badactor.com": 0}),
 		Ext("blacklist.conf"),
 		File("/config/config.boot"),
+		FileNameFmt("%v/%v.%v.%v"),
 		Method("GET"),
 		Nodes([]string{"domains", "hosts"}),
 		Poll(10),
+		Prefix("address="),
 		STypes([]string{"files", preConf, "urls"}),
 		Test(true),
 		Verbosity(2),
 	)
 
+	fmt.Println(p.String())
 	Equals(t, want, p.String())
-	// fmt.Println(p.String())
+
 	Equals(t, wantRaw, *p)
 
 	p.SetOpt(prev)

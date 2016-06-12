@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"strings"
 )
 
 // Objects is a struct of *OBJ populated with precompiled regex objects
@@ -89,4 +90,23 @@ func (rx *OBJ) String() (result string) {
 		result += fmt.Sprintf("%v: %v\n", v.Type().Field(i).Name, v.Field(i).Interface())
 	}
 	return result
+}
+
+// StripPrefixAndSuffix strips the prefix and suffix
+func (rx *OBJ) StripPrefixAndSuffix(line, prefix string) (string, bool) {
+	switch {
+	case prefix == "http", prefix == "https":
+		if !rx.HTTP.MatchString(line) {
+			return line, false
+		}
+		line = rx.HTTP.FindStringSubmatch(line)[1]
+
+	case strings.HasPrefix(line, prefix):
+		line = strings.TrimPrefix(line, prefix)
+	}
+
+	line = rx.SUFX.ReplaceAllString(line, "")
+	line = strings.Replace(line, `"`, "", -1)
+	line = strings.TrimSpace(line)
+	return line, true
 }

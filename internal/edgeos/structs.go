@@ -22,16 +22,6 @@ type Config struct {
 	*Parms
 }
 
-// Content is a struct of blacklist content
-type Content struct {
-	err error
-	*Object
-	r io.Reader
-}
-
-// Contents is an array of *content
-type Contents []*Content
-
 // data is a map[string] of *Object
 type data map[string]*Object
 

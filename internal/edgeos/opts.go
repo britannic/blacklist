@@ -2,27 +2,29 @@ package edgeos
 
 import (
 	"fmt"
+	"reflect"
 	"runtime"
 	"strings"
 )
 
 // Parms is struct of parameters
 type Parms struct {
-	arch      string
-	cores     int
-	dir       string
-	dex       List
-	debug     bool
-	exc       List
-	ext       string
-	fnfmt     string
-	file      string
-	method    string
-	nodes     []string
-	poll      int
-	stypes    []string
-	test      bool
-	verbosity int
+	Arch      string
+	Cores     int
+	Debug     bool
+	Dex       List
+	Dir       string
+	Exc       List
+	Ext       string
+	File      string
+	FnFmt     string
+	Method    string
+	Nodes     []string
+	Pfx       string
+	Poll      int
+	Stypes    []string
+	Test      bool
+	Verbosity int
 }
 
 // Option sets is a recursive function
@@ -45,16 +47,11 @@ func (p *Parms) SetOpt(opts ...Option) (previous Option) {
 	}
 }
 
-// GetOpt retrieves the value of an Option
-// func (p *Parms) GetOpt(opt string) string {
-// 	return
-// }
-
 // Arch sets target CPU architecture
 func Arch(arch string) Option {
 	return func(p *Parms) Option {
-		previous := p.arch
-		p.arch = arch
+		previous := p.Arch
+		p.Arch = arch
 		return Arch(previous)
 	}
 }
@@ -62,9 +59,9 @@ func Arch(arch string) Option {
 // Cores sets max CPU cores
 func Cores(i int) Option {
 	return func(p *Parms) Option {
-		previous := p.cores
+		previous := p.Cores
 		runtime.GOMAXPROCS(i)
-		p.cores = i
+		p.Cores = i
 		return Cores(previous)
 	}
 }
@@ -72,8 +69,8 @@ func Cores(i int) Option {
 // Debug toggles debug level on or off
 func Debug(b bool) Option {
 	return func(p *Parms) Option {
-		previous := p.debug
-		p.debug = b
+		previous := p.Debug
+		p.Debug = b
 		return Debug(previous)
 	}
 }
@@ -81,8 +78,8 @@ func Debug(b bool) Option {
 // Dir sets directory location
 func Dir(d string) Option {
 	return func(p *Parms) Option {
-		previous := p.dir
-		p.dir = d
+		previous := p.Dir
+		p.Dir = d
 		return Dir(previous)
 	}
 }
@@ -90,8 +87,8 @@ func Dir(d string) Option {
 // Excludes sets nodes exclusions
 func Excludes(l List) Option {
 	return func(p *Parms) Option {
-		previous := p.exc
-		p.exc = l
+		previous := p.Exc
+		p.Exc = l
 		return Excludes(previous)
 	}
 }
@@ -99,8 +96,8 @@ func Excludes(l List) Option {
 // Ext sets the blacklist file n extension
 func Ext(e string) Option {
 	return func(p *Parms) Option {
-		previous := p.ext
-		p.ext = e
+		previous := p.Ext
+		p.Ext = e
 		return Ext(previous)
 	}
 }
@@ -108,26 +105,35 @@ func Ext(e string) Option {
 // File sets the EdgeOS configuration file n
 func File(f string) Option {
 	return func(p *Parms) Option {
-		previous := p.file
-		p.file = f
+		previous := p.File
+		p.File = f
 		return File(previous)
 	}
 }
 
-// FileNameFmt sets the EdgeOS configuration file n
+// FileNameFmt sets the EdgeOS configuration file name format
 func FileNameFmt(f string) Option {
 	return func(p *Parms) Option {
-		previous := p.fnfmt
-		p.fnfmt = f
-		return File(previous)
+		previous := p.FnFmt
+		p.FnFmt = f
+		return FileNameFmt(previous)
+	}
+}
+
+// Prefix sets the dnsmasq configuration address line prefix
+func Prefix(l string) Option {
+	return func(p *Parms) Option {
+		previous := p.Pfx
+		p.Pfx = l
+		return Prefix(previous)
 	}
 }
 
 // Method sets the HTTP method
 func Method(method string) Option {
 	return func(p *Parms) Option {
-		previous := p.method
-		p.method = method
+		previous := p.Method
+		p.Method = method
 		return Method(previous)
 	}
 }
@@ -135,8 +141,8 @@ func Method(method string) Option {
 // NewParms sets a new *Parms instance
 func NewParms(c *Config) *Parms {
 	c.Parms = &Parms{
-		dex: make(List),
-		exc: make(List),
+		Dex: make(List),
+		Exc: make(List),
 	}
 	return c.Parms
 }
@@ -144,8 +150,8 @@ func NewParms(c *Config) *Parms {
 // Nodes sets the node ns array
 func Nodes(nodes []string) Option {
 	return func(p *Parms) Option {
-		previous := p.nodes
-		p.nodes = nodes
+		previous := p.Nodes
+		p.Nodes = nodes
 		return Nodes(previous)
 	}
 }
@@ -153,47 +159,51 @@ func Nodes(nodes []string) Option {
 // Poll sets the polling interval in seconds
 func Poll(t int) Option {
 	return func(p *Parms) Option {
-		previous := p.poll
-		p.poll = t
+		previous := p.Poll
+		p.Poll = t
 		return Poll(previous)
 	}
 }
 
 // String method to implement fmt.Print interface
-func (p Parms) String() string {
-	max := 9
-	pad := func(i int) string {
+func (p *Parms) String() string {
+	type pArray struct {
+		n string
+		i int
+		v string
+	}
+
+	var fields []pArray
+
+	maxLen := func(pA []pArray) int {
+		smallest := len(pA[0].n)
+		biggest := len(pA[0].n)
+		for i := range pA {
+			if len(pA[i].n) > biggest {
+				biggest = len(pA[i].n)
+			} else if len(pA[i].n) < smallest {
+				smallest = len(pA[i].n)
+			}
+		}
+		return biggest
+	}
+
+	v := reflect.ValueOf(p).Elem()
+	for i := 0; i < v.NumField(); i++ {
+		fields = append(fields, pArray{n: v.Type().Field(i).Name, v: strings.Replace(fmt.Sprint(v.Field(i).Interface()), "\n", "", -1)})
+	}
+
+	max := maxLen(fields)
+
+	pad := func(s string) string {
+		i := len(s)
 		repeat := max - i + 1
 		return strings.Repeat(" ", repeat)
 	}
 
-	getVal := func(v interface{}) string {
-		return strings.Replace(fmt.Sprint(v), "\n", "", -1)
-	}
-
-	fields := []struct {
-		n string
-		i int
-		v string
-	}{
-		{n: "arch", i: 4, v: getVal(p.arch)},
-		{n: "cores", i: 5, v: getVal(p.cores)},
-		{n: "dir", i: 3, v: getVal(p.dir)},
-		{n: "debug", i: 5, v: getVal(p.debug)},
-		{n: "exc", i: 3, v: getVal(p.exc)},
-		{n: "ext", i: 3, v: getVal(p.ext)},
-		{n: "file", i: 4, v: getVal(p.file)},
-		{n: "method", i: 6, v: getVal(p.method)},
-		{n: "nodes", i: 5, v: getVal(p.nodes)},
-		{n: "poll", i: 4, v: getVal(p.poll)},
-		{n: "stypes", i: 6, v: getVal(p.stypes)},
-		{n: "test", i: 4, v: getVal(p.test)},
-		{n: "verbosity", i: 9, v: getVal(p.verbosity)},
-	}
-
 	r := fmt.Sprintln("edgeos.Parms{")
 	for _, field := range fields {
-		r += fmt.Sprintf("%v:%v%v\n", field.n, pad(field.i), field.v)
+		r += fmt.Sprintf("%v:%v%v\n", field.n, pad(field.n), field.v)
 	}
 
 	r += fmt.Sprintln("}")
@@ -204,8 +214,8 @@ func (p Parms) String() string {
 // STypes sets an array of legal types used by Source
 func STypes(s []string) Option {
 	return func(p *Parms) Option {
-		previous := p.stypes
-		p.stypes = s
+		previous := p.Stypes
+		p.Stypes = s
 		return STypes(previous)
 	}
 }
@@ -213,8 +223,8 @@ func STypes(s []string) Option {
 // Test toggles testing mode on or off
 func Test(b bool) Option {
 	return func(p *Parms) Option {
-		previous := p.test
-		p.test = b
+		previous := p.Test
+		p.Test = b
 		return Test(previous)
 	}
 }
@@ -222,8 +232,8 @@ func Test(b bool) Option {
 // Verbosity sets the verbosity level to v
 func Verbosity(i int) Option {
 	return func(p *Parms) Option {
-		previous := p.verbosity
-		p.verbosity = i
+		previous := p.Verbosity
+		p.Verbosity = i
 		return Verbosity(previous)
 	}
 }

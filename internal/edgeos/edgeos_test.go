@@ -55,7 +55,7 @@ func TestFormatData(t *testing.T) {
 		Nodes([]string{"domains", "hosts"}),
 	)
 
-	for _, node := range c.Parms.nodes {
+	for _, node := range c.Parms.Nodes {
 		var (
 			got       io.Reader
 			gotList   = make(List)
