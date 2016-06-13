@@ -34,7 +34,8 @@ func TestExcludes(t *testing.T) {
 	c, err := edgeos.ReadCfg(cfg)
 	OK(t, err)
 
-	edgeos.NewParms(c).SetOpt(
+	c.Parms = edgeos.NewParms()
+	c.SetOpt(
 		edgeos.Dir("/tmp"),
 		edgeos.Ext("blacklist.conf"),
 		edgeos.Nodes([]string{"domains", "hosts"}),
@@ -62,7 +63,8 @@ func TestExcludes(t *testing.T) {
 func TestFiles(t *testing.T) {
 	c, err := edgeos.ReadCfg(bytes.NewBufferString(tdata.Cfg))
 	OK(t, err)
-	edgeos.NewParms(c).SetOpt(
+	c.Parms = edgeos.NewParms()
+	c.SetOpt(
 		edgeos.Dir("/tmp"),
 		edgeos.Ext("blacklist.conf"),
 		edgeos.Nodes([]string{"domains", "hosts"}),
@@ -80,7 +82,8 @@ func TestFiles(t *testing.T) {
 func TestNodes(t *testing.T) {
 	c, err := edgeos.ReadCfg(bytes.NewBufferString(tdata.Cfg))
 	OK(t, err)
-	edgeos.NewParms(c).SetOpt(
+	c.Parms = edgeos.NewParms()
+	c.SetOpt(
 		edgeos.Dir("/tmp"),
 		edgeos.Ext("blacklist.conf"),
 		edgeos.Nodes([]string{"domains", "hosts"}),
@@ -107,7 +110,8 @@ func TestRemove(t *testing.T) {
 	)
 	c, err := edgeos.ReadCfg(bytes.NewBufferString(tdata.Cfg))
 	OK(t, err)
-	edgeos.NewParms(c).SetOpt(
+	c.Parms = edgeos.NewParms()
+	c.SetOpt(
 		edgeos.Dir(dir),
 		edgeos.Ext(ext),
 		edgeos.Nodes(nodes),
@@ -141,7 +145,8 @@ func TestRemove(t *testing.T) {
 func TestSource(t *testing.T) {
 	c, err := edgeos.ReadCfg(bytes.NewBufferString(tdata.Cfg))
 	OK(t, err)
-	edgeos.NewParms(c).SetOpt(
+	c.Parms = edgeos.NewParms()
+	c.Parms.SetOpt(
 		edgeos.Dir("/tmp"),
 		edgeos.Ext(".blacklist.conf"),
 		edgeos.Nodes([]string{"domains", "hosts"}),
@@ -171,7 +176,8 @@ func TestSource(t *testing.T) {
 func TestSTypes(t *testing.T) {
 	want := []string{"files", "pre-configured", "urls"}
 	c := &edgeos.Config{}
-	edgeos.NewParms(c).SetOpt(
+	c.Parms = edgeos.NewParms()
+	c.SetOpt(
 		edgeos.Dir("/tmp"),
 		edgeos.Ext("blacklist.conf"),
 		edgeos.Nodes([]string{"domains", "hosts"}),

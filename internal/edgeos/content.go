@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/britannic/blacklist/internal/regx"
@@ -12,7 +12,7 @@ import (
 
 // Contenter is a Content interface
 type Contenter interface {
-	process() io.Reader
+	Process() io.Reader
 }
 
 // Content is a struct of blacklist content
@@ -65,20 +65,19 @@ func (objs *Objects) GetContent() *Contents {
 }
 
 // WriteFile saves hosts/domains data to disk
-func (c *Content) WriteFile() (err error) {
-	// for _, a := range *c {
-	var b []byte
-	if b, err = ioutil.ReadAll(c.Process()); err != nil {
+func (b *blist) WriteFile() error {
+	w, err := os.Create(b.file)
+	if err != nil {
 		return err
 	}
-	p := c.Parms
-	fname := fmt.Sprintf(p.FnFmt, getType(c.nType).(string), c.name, c.Ext)
-	return ioutil.WriteFile(fname, b, 0644)
-	// }
+	defer w.Close()
+
+	_, err = io.Copy(w, b.reader)
+	return err
 }
 
 // Process extracts hosts/domains from downloaded raw content
-func (c *Content) Process() io.Reader {
+func (c *Content) Process() *blist {
 	var (
 		b     = bufio.NewScanner(c.r)
 		rx    = regx.Objects
@@ -136,5 +135,8 @@ NEXT:
 	}
 
 	fmttr := c.Parms.Pfx + getSeparator(getType(c.nType).(string)) + "%v/" + c.ip
-	return formatData(fmttr, sList)
+	return &blist{
+		file:   fmt.Sprintf(c.Parms.FnFmt, c.Parms.Dir, getType(c.nType).(string), c.name, c.Parms.Ext),
+		reader: formatData(fmttr, sList),
+	}
 }

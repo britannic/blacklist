@@ -18,9 +18,11 @@ var (
 
 func main() {
 	var (
+		all = "all"
 		c   *e.Config
 		err error
 		o   = getOpts()
+		pre = "pre-configured"
 	)
 
 	o.Init("blacklist", flag.ExitOnError)
@@ -33,19 +35,30 @@ func main() {
 		log.Fatalf("Couldn't load configuration: %v", err)
 	}
 
-	p := e.NewParms(c)
-	_ = p.SetOpt(
+	c.Parms = e.NewParms()
+	_ = c.SetOpt(
 		e.Cores(runtime.NumCPU()),
 		e.Debug(*o.Debug),
 		e.Dir(o.SetDir(*o.ARCH)),
-		e.Ext(".blacklist.conf"),
-		e.Excludes(c.Get("all").Excludes()),
+		e.Ext("blacklist.conf"),
+		e.Excludes(c.Get(all).Excludes()),
 		e.FileNameFmt("%v/%v.%v.%v"),
 		e.File(*o.File),
 		e.Method("GET"),
+		e.Nodes([]string{"domains", "hosts"}),
 		e.Poll(*o.Poll),
-		e.STypes([]string{"files", "pre-configured", "urls"}),
+		e.STypes([]string{"files", pre, "urls"}),
 	)
+
+	c.Get(all).Source(all).Files().Remove()
+
+	for _, node := range c.Nodes() {
+		for _, src := range *c.Get(node).Source(pre).GetContent() {
+			if err := src.Process().WriteFile(); err != nil {
+				log.Println(err)
+			}
+		}
+	}
 }
 
 // basename removes directory components and file extensions.

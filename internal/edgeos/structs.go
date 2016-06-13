@@ -3,7 +3,8 @@ package edgeos
 import "io"
 
 type blist struct {
-	r io.Reader
+	file   string
+	reader io.Reader
 }
 
 // bNodes is a map of leaf nodes

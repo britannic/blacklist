@@ -11,7 +11,8 @@ import (
 func TestConfigString(t *testing.T) {
 	c, err := ReadCfg(bytes.NewBufferString(Cfg))
 	OK(t, err)
-	NewParms(c).SetOpt(
+	c.Parms = NewParms()
+	c.SetOpt(
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
 		Method("GET"),
@@ -22,7 +23,8 @@ func TestConfigString(t *testing.T) {
 
 	c, err = ReadCfg(bytes.NewBufferString(tdata.ZeroHostSourcesCfg))
 	OK(t, err)
-	NewParms(c).SetOpt(
+	c.Parms = NewParms()
+	c.SetOpt(
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
 		Method("GET"),

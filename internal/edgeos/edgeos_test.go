@@ -49,7 +49,8 @@ func TestFormatData(t *testing.T) {
 	reader := bytes.NewBufferString(tdata.Cfg)
 	c, err := ReadCfg(reader)
 	OK(t, err)
-	NewParms(c).SetOpt(
+	c.Parms = NewParms()
+	c.SetOpt(
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
 		Nodes([]string{"domains", "hosts"}),

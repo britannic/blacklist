@@ -1,7 +1,6 @@
 package edgeos
 
 import (
-	"fmt"
 	"runtime"
 	"testing"
 
@@ -15,10 +14,10 @@ func TestOption(t *testing.T) {
 
 	wantRaw := Parms{Arch: "amd64", Cores: 2, Dir: "/tmp", Dex: List{}, Debug: true, Exc: List{"badactor.com": 0}, Ext: "blacklist.conf", FnFmt: "%v/%v.%v.%v", File: "/config/config.boot", Pfx: "address=", Method: "GET", Nodes: []string{"domains", "hosts"}, Poll: 10, Stypes: []string{"files", "pre-configured", "urls"}, Test: true, Verbosity: 2}
 
-	p := NewParms(&Config{})
-	Equals(t, vanilla, *p)
+	c := NewParms()
+	Equals(t, vanilla, *c)
 
-	prev := p.SetOpt(
+	prev := c.SetOpt(
 		Arch(runtime.GOARCH),
 		Cores(2),
 		Debug(true),
@@ -36,11 +35,10 @@ func TestOption(t *testing.T) {
 		Verbosity(2),
 	)
 
-	fmt.Println(p.String())
-	Equals(t, want, p.String())
+	Equals(t, want, c.String())
 
-	Equals(t, wantRaw, *p)
+	Equals(t, wantRaw, *c)
 
-	p.SetOpt(prev)
-	Equals(t, vanilla, *p)
+	c.SetOpt(prev)
+	Equals(t, vanilla, *c)
 }

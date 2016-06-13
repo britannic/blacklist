@@ -89,26 +89,6 @@ func DiffArray(a, b []string) (diff sort.StringSlice) {
 	return diff
 }
 
-// Files returns a list of dnsmasq conf files from all srcs
-func (o Objects) Files() *CFile {
-	b := false
-	f := CFile{Parms: o.Parms}
-	obj := o.S
-	for k := range obj {
-		for sk := range obj[k].data {
-			if !b {
-				f.nType = obj[k].nType
-			}
-
-			src := obj[k].data[sk]
-			format := src.Parms.Dir + "/%v.%v." + src.Parms.Ext
-			f.names = append(f.names, fmt.Sprintf(format, getType(src.nType), src.name))
-		}
-	}
-	sort.Strings(f.names)
-	return &f
-}
-
 // Excludes returns a string array of excludes
 func (c *Config) Excludes(node string) []string {
 	var exc []string
@@ -125,37 +105,78 @@ func (c *Config) Excludes(node string) []string {
 	return exc
 }
 
+// Files returns a list of dnsmasq conf files from all srcs
+func (o Objects) Files() *CFile {
+	b := false
+	c := CFile{Parms: o.Parms}
+	obj := o.S
+	for k := range obj {
+		for sk := range obj[k].data {
+			if !b {
+				c.nType = obj[k].nType
+			}
+
+			src := obj[k].data[sk]
+			format := src.Parms.Dir + "/%v.%v." + src.Parms.Ext
+			c.names = append(c.names, fmt.Sprintf(format, getType(src.nType), src.name))
+		}
+	}
+	sort.Strings(c.names)
+	return &c
+}
+
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) (o *Object) {
-	if node == all {
-		o = &Object{
-			Parms: c.Parms,
-			inc:   c.Excludes(node),
+	getObj := func(o *Object) /* *Object */ {
+		for k := range o.data {
+			o.data[k].Parms = c.Parms
+			o.data[k].nType = getType(node).(ntype)
+			switch {
+			case o.data[k].url != "":
+				o.data[k].ltype = "urls"
+			case o.data[k].file != "":
+				o.data[k].ltype = "files"
+			}
 		}
-		return o
+		// return o
 	}
-	o = c.bNodes[node]
-	for k := range o.data {
-		o.data[k].Parms = c.Parms
-		o.data[k].nType = getType(node).(ntype)
-		switch {
-		case o.data[k].url != "":
-			o.data[k].ltype = "urls"
-		case o.data[k].file != "":
-			o.data[k].ltype = "files"
+
+	getInc := func(o *Object) {
+		if len(o.inc) > 0 {
+			o.data[preConf] = &Object{
+				desc:  preConf,
+				inc:   o.inc,
+				ip:    o.ip,
+				ltype: preConf,
+				name:  preConf,
+				nType: getType(node).(ntype),
+				Parms: c.Parms,
+			}
 		}
 	}
 
-	if len(o.inc) > 0 {
-		o.data[preConf] = &Object{
-			desc:  preConf,
-			inc:   o.inc,
-			ip:    o.ip,
-			ltype: preConf,
-			name:  preConf,
-			nType: getType(node).(ntype),
-			Parms: c.Parms,
+	mergeList := func(a, b *Object) *Object {
+		for k, v := range a.data {
+			b.data[k] = v
 		}
+		return b
+	}
+
+	switch node {
+	case all:
+		o = &Object{Parms: c.Parms, data: make(data)}
+		d := make([]*Object, len(c.Parms.Nodes))
+		for i, node := range c.Parms.Nodes {
+			d[i] = c.bNodes[node]
+			getObj(d[i])
+			getInc(d[i])
+			o = mergeList(o, d[i])
+		}
+
+	default:
+		o = c.bNodes[node]
+		getObj(o)
+		getInc(o)
 	}
 
 	return o
@@ -312,6 +333,9 @@ func (c *CFile) Remove() error {
 		}
 	}
 
+	// if got == nil {
+	// 	return fmt.Errorf("no files to remove")
+	// }
 	return purgeFiles(DiffArray(c.names, got))
 }
 
@@ -322,7 +346,9 @@ func (d data) Source(ltype string) *Objects {
 	objs := []*Object{}
 	for _, k := range d.sortSKeys() {
 		if !b {
-			p = d[k].Parms
+			if p = d[k].Parms; p.Dir != "" {
+				b = true
+			}
 		}
 		switch {
 		case ltype == d[k].ltype:
@@ -331,7 +357,6 @@ func (d data) Source(ltype string) *Objects {
 			objs = append(objs, d[k])
 		}
 	}
-
 	return &Objects{Parms: p, S: objs}
 }
 

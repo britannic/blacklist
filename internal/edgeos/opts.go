@@ -139,12 +139,12 @@ func Method(method string) Option {
 }
 
 // NewParms sets a new *Parms instance
-func NewParms(c *Config) *Parms {
-	c.Parms = &Parms{
+func NewParms() *Parms {
+	return &Parms{
 		Dex: make(List),
 		Exc: make(List),
 	}
-	return c.Parms
+	// return c.Parms
 }
 
 // Nodes sets the node ns array
