@@ -102,7 +102,7 @@ func getJSONsrcArray(c *cfgJSON) (result string) {
 	result += fmt.Sprintf("%v%q: [{%v", tabs(c.indent), "sources", enter)
 
 	for i, c.sk = range skeys {
-		if _, ok := c.Config.bNodes[c.pk].data[c.sk]; ok {
+		if _, ok := c.bNodes[c.pk].data[c.sk]; ok {
 			cmma := comma
 			indent = c.indent + 1
 

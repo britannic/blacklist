@@ -4,11 +4,18 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 
 	"github.com/britannic/blacklist/internal/regx"
 )
+
+type blist struct {
+	file string
+	r    io.Reader
+}
 
 // Contenter is a Content interface
 type Contenter interface {
@@ -20,7 +27,8 @@ type Content struct {
 	*Object
 	Contenter
 	err error
-	r   io.Reader
+	*Parms
+	r io.Reader
 }
 
 // Contents is an array of *content
@@ -36,6 +44,7 @@ func (objs *Objects) GetContent() *Contents {
 				c = append(c, &Content{
 					err:    nil,
 					Object: o,
+					Parms:  o.Parms,
 					r:      o.Includes(),
 				})
 			}
@@ -46,6 +55,7 @@ func (objs *Objects) GetContent() *Contents {
 				c = append(c, &Content{
 					err:    err,
 					Object: o,
+					Parms:  o.Parms,
 					r:      b,
 				})
 			}
@@ -56,6 +66,7 @@ func (objs *Objects) GetContent() *Contents {
 				c = append(c, &Content{
 					err:    err,
 					Object: o,
+					Parms:  o.Parms,
 					r:      reader,
 				})
 			}
@@ -72,7 +83,7 @@ func (b *blist) WriteFile() error {
 	}
 	defer w.Close()
 
-	_, err = io.Copy(w, b.reader)
+	_, err = io.Copy(w, b.r)
 	return err
 }
 
@@ -136,7 +147,25 @@ NEXT:
 
 	fmttr := c.Parms.Pfx + getSeparator(getType(c.nType).(string)) + "%v/" + c.ip
 	return &blist{
-		file:   fmt.Sprintf(c.Parms.FnFmt, c.Parms.Dir, getType(c.nType).(string), c.name, c.Parms.Ext),
-		reader: formatData(fmttr, sList),
+		file: fmt.Sprintf(c.Parms.FnFmt, c.Parms.Dir, getType(c.nType).(string), c.name, c.Parms.Ext),
+		r:    formatData(fmttr, sList),
 	}
+}
+
+// ProcessContent iterates through the Contents array and processes each
+func (c *Contents) ProcessContent() {
+	for _, src := range *c {
+		if err := src.Process().WriteFile(); err != nil {
+			log.Println(err)
+		}
+	}
+}
+
+func (c *Contents) String() (result string) {
+	for _, src := range *c {
+		b := src.Process()
+		got, _ := ioutil.ReadAll(b.r)
+		result += fmt.Sprintf("File: %#v\nData:\n%v\n", b.file, string(got))
+	}
+	return result
 }

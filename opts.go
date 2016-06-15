@@ -41,13 +41,17 @@ func (o *Opts) SetDir(arch string) (dir string) {
 
 // GetCFG returns a *Config
 func (o *Opts) getCFG(arch string) (c *e.Config, err error) {
-	var cfg string
+	var (
+		cfg string
+		r   = e.CFGstatic{}
+	)
 	c = &e.Config{Parms: &e.Parms{}}
 	switch arch {
 	case *o.MIPS64:
-		if cfg, err = e.LoadCfg(); err != nil {
+		if cfg, err = e.Load(); err != nil {
 			return c, err
 		}
+
 		c, err = e.ReadCfg(bytes.NewBufferString(cfg))
 	default:
 		c, err = e.ReadCfg(bytes.NewBufferString(tdata.Cfg))

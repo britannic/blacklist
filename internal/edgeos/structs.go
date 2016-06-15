@@ -2,9 +2,19 @@ package edgeos
 
 import "io"
 
-type blist struct {
-	file   string
-	reader io.Reader
+// ConfLoader interface defines load method
+type ConfLoader interface {
+	Load() io.Reader
+}
+
+// CFGstatic is for configurations loaded via the EdgeOS CFGstatic
+type CFGstatic struct {
+	Cfg string
+}
+
+// CFGcli is for configurations loaded via the EdgeOS CFGcli
+type CFGcli struct {
+	Cfg string
 }
 
 // bNodes is a map of leaf nodes

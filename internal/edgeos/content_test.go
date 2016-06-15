@@ -9,6 +9,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/britannic/blacklist/internal/tdata"
 	. "github.com/britannic/testutils"
 )
 
@@ -24,6 +25,12 @@ func TestGetContent(t *testing.T) {
 		url      string
 		want     string
 	}{
+		// {
+		// 	exp:   "address=/beap.gemini.yahoo.com/192.168.168.1\n",
+		// 	ltype: "all",
+		// 	node:  "all",
+		// 	want:  "beap.gemini.yahoo.com",
+		// },
 		{
 			exp:   "address=/.adsrvr.org/0.0.0.0\naddress=/.adtechus.net/0.0.0.0\naddress=/.advertising.com/0.0.0.0\naddress=/.centade.com/0.0.0.0\naddress=/.doubleclick.net/0.0.0.0\naddress=/.free-counter.co.uk/0.0.0.0\naddress=/.intellitxt.com/0.0.0.0\naddress=/.kiosked.com/0.0.0.0\n",
 			ltype: preConf,
@@ -75,13 +82,14 @@ func TestGetContent(t *testing.T) {
 			want:     httpHostData,
 		},
 	}
-
-	c, err := ReadCfg(bytes.NewBufferString(Cfg))
+	l := &CFGstatic{Cfg: Cfg}
+	c, err := ReadCfg(l)
 	OK(t, err)
 	c.Parms = NewParms()
 	c.SetOpt(
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
+		FileNameFmt("%v/%v.%v.%v"),
 		Method("GET"),
 		Nodes([]string{"domains", "hosts"}),
 		Prefix("address="),
@@ -106,11 +114,29 @@ func TestGetContent(t *testing.T) {
 			OK(t, err)
 			Equals(t, test.want, string(got))
 			src.r = io.MultiReader(bytes.NewReader(got))
-			got, err = ioutil.ReadAll(src.Process().reader)
+			got, err = ioutil.ReadAll(src.Process().r)
 			OK(t, err)
 			Equals(t, test.exp, string(got))
 		}
 	}
+}
+
+func TestGetAllContent(t *testing.T) {
+	l := &CFGstatic{Cfg: tdata.Cfg}
+	c, err := ReadCfg(l)
+	OK(t, err)
+	c.Parms = NewParms()
+	c.SetOpt(
+		Dir("/tmp"),
+		Ext("blacklist.conf"),
+		FileNameFmt("%v/%v.%v.%v"),
+		Method("GET"),
+		Nodes([]string{"domains", "hosts"}),
+		Prefix("address="),
+		STypes([]string{"pre-configured", "files", "urls"}),
+	)
+	z := c.Get(all).Source(preConf).GetContent().String()
+	fmt.Println(z)
 }
 
 func TestWriteFile(t *testing.T) {
@@ -146,7 +172,7 @@ func TestWriteFile(t *testing.T) {
 	}
 
 	c := Config{Parms: NewParms()}
-	c.Parms.SetOpt(
+	c.SetOpt(
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
 		FileNameFmt("%v/%v.%v.%v"),
@@ -160,8 +186,8 @@ func TestWriteFile(t *testing.T) {
 			f, err := ioutil.TempFile(test.dir, test.fname)
 			OK(t, err)
 			b := &blist{
-				file:   f.Name(),
-				reader: test.data,
+				file: f.Name(),
+				r:    test.data,
 			}
 			err = b.WriteFile()
 			OK(t, err)
@@ -169,8 +195,8 @@ func TestWriteFile(t *testing.T) {
 
 		default:
 			b := &blist{
-				file:   test.dir + test.fname,
-				reader: test.data,
+				file: test.dir + test.fname,
+				r:    test.data,
 			}
 			err := b.WriteFile()
 			NotOK(t, err)

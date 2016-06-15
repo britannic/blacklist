@@ -40,25 +40,28 @@ func main() {
 		e.Cores(runtime.NumCPU()),
 		e.Debug(*o.Debug),
 		e.Dir(o.SetDir(*o.ARCH)),
-		e.Ext("blacklist.conf"),
 		e.Excludes(c.Get(all).Excludes()),
-		e.FileNameFmt("%v/%v.%v.%v"),
+		e.Ext("blacklist.conf"),
 		e.File(*o.File),
+		e.FileNameFmt("%v/%v.%v.%v"),
 		e.Method("GET"),
 		e.Nodes([]string{"domains", "hosts"}),
 		e.Poll(*o.Poll),
+		e.Prefix("address="),
 		e.STypes([]string{"files", pre, "urls"}),
 	)
 
-	c.Get(all).Source(all).Files().Remove()
-
-	for _, node := range c.Nodes() {
-		for _, src := range *c.Get(node).Source(pre).GetContent() {
-			if err := src.Process().WriteFile(); err != nil {
-				log.Println(err)
-			}
-		}
-	}
+	c.GetAll().Files().Remove()
+	c.Get(all).Source(pre).GetContent().ProcessContent()
+	// for _, node := range c.Nodes() {
+	// 	c.Get(node).Source(pre).GetContent().ProcessContent()
+	// 	// for _, src := range *c.Get(node).Source(pre).GetContent() {
+	// 	//
+	// 	// 	if err := src.Process().WriteFile(); err != nil {
+	// 	// 		log.Println(err)
+	// 	// 	}
+	// 	// }
+	// }
 }
 
 // basename removes directory components and file extensions.

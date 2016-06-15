@@ -144,7 +144,6 @@ func NewParms() *Parms {
 		Dex: make(List),
 		Exc: make(List),
 	}
-	// return c.Parms
 }
 
 // Nodes sets the node ns array

@@ -1,13 +1,16 @@
 package edgeos
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 // Excludes returns a List map of blacklist exclusions
 func (o *Object) Excludes() List {
 	return UpdateList(o.exc)
 }
 
-// String pretty prints Object
+// Stringer for Object
 func (o *Object) String() (r string) {
 	r += fmt.Sprintf("\nDesc:\t %q\n", o.desc)
 	r += fmt.Sprintf("Disabled: %v\n", o.disabled)
@@ -21,3 +24,14 @@ func (o *Object) String() (r string) {
 	r += fmt.Sprintf("URL:\t %q\n", o.url)
 	return r
 }
+
+// Stringer for Objects
+func (o *Objects) String() string {
+	r, _ := json.MarshalIndent(o.S, "", "\t")
+	return string(r)
+}
+
+// Implement Sort Interface for Objects
+func (o *Objects) Len() int           { return len(o.S) }
+func (o *Objects) Less(i, j int) bool { return o.S[i].name < o.S[j].name }
+func (o *Objects) Swap(i, j int)      { o.S[i], o.S[j] = o.S[j], o.S[i] }

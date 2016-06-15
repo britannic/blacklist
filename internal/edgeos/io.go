@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -88,9 +89,13 @@ func load(action string, level string) (r string, err error) {
 	return r, err
 }
 
-// LoadCfg returns an EdgeOS config file string and error
-func LoadCfg() (string, error) {
-	return load("showConfig", service)
+// Load returns an EdgeOS config file string and error
+func (c *CFGcli) Load() io.Reader {
+	s, err := load("showConfig", service)
+	if err != nil {
+		log.Print(err)
+	}
+	return bytes.NewBufferString(s)
 }
 
 // purgeFiles removes any orphaned blacklist files that don't have sources

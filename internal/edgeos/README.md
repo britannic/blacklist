@@ -40,11 +40,11 @@ func GetHTTP(method, URL string) (io.Reader, error)
 GetHTTP creates http requests to download data
 
 
-## func LoadCfg
+## func Load
 ``` go
-func LoadCfg() (string, error)
+func Load() (string, error)
 ```
-LoadCfg returns an EdgeOS config file string and error
+Load returns an EdgeOS config file string and error
 
 
 ## func StrToBool

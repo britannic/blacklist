@@ -46,8 +46,8 @@ func TestDiffArray(t *testing.T) {
 }
 
 func TestFormatData(t *testing.T) {
-	reader := bytes.NewBufferString(tdata.Cfg)
-	c, err := ReadCfg(reader)
+	l := &CFGstatic{Cfg: tdata.Cfg}
+	c, err := ReadCfg(l)
 	OK(t, err)
 	c.Parms = NewParms()
 	c.SetOpt(

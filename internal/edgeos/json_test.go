@@ -1,7 +1,6 @@
 package edgeos
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/britannic/blacklist/internal/tdata"
@@ -9,7 +8,8 @@ import (
 )
 
 func TestConfigString(t *testing.T) {
-	c, err := ReadCfg(bytes.NewBufferString(Cfg))
+	r := &CFGstatic{Cfg: tdata.Cfg}
+	c, err := ReadCfg(r)
 	OK(t, err)
 	c.Parms = NewParms()
 	c.SetOpt(
@@ -21,7 +21,8 @@ func TestConfigString(t *testing.T) {
 	)
 	Equals(t, tdata.JSONcfg, c.String())
 
-	c, err = ReadCfg(bytes.NewBufferString(tdata.ZeroHostSourcesCfg))
+	r = &CFGstatic{Cfg: tdata.ZeroHostSourcesCfg}
+	c, err = ReadCfg(r)
 	OK(t, err)
 	c.Parms = NewParms()
 	c.SetOpt(

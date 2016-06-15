@@ -127,9 +127,12 @@ func (o Objects) Files() *CFile {
 
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) (o *Object) {
-	getObj := func(o *Object) /* *Object */ {
+	getObj := func(o *Object, node string) {
 		for k := range o.data {
-			o.data[k].Parms = c.Parms
+			o.data[k].Parms = c.Parms // TODO: check this is needed
+			if o.data[k].ip == "" {
+				o.data[k].ip = c.bNodes[node].ip
+			}
 			o.data[k].nType = getType(node).(ntype)
 			switch {
 			case o.data[k].url != "":
@@ -138,10 +141,9 @@ func (c *Config) Get(node string) (o *Object) {
 				o.data[k].ltype = "files"
 			}
 		}
-		// return o
 	}
 
-	getInc := func(o *Object) {
+	getInc := func(o *Object, node string) {
 		if len(o.inc) > 0 {
 			o.data[preConf] = &Object{
 				desc:  preConf,
@@ -168,18 +170,32 @@ func (c *Config) Get(node string) (o *Object) {
 		d := make([]*Object, len(c.Parms.Nodes))
 		for i, node := range c.Parms.Nodes {
 			d[i] = c.bNodes[node]
-			getObj(d[i])
-			getInc(d[i])
-			o = mergeList(o, d[i])
+			getObj(d[i], node)
+			getInc(d[i], node)
+			o = mergeList(d[i], o)
 		}
 
 	default:
 		o = c.bNodes[node]
-		getObj(o)
-		getInc(o)
+		getObj(o, node)
+		getInc(o, node)
 	}
 
+	// o = c.bNodes[node]
+	// getObj(o, node)
+	// getInc(o, node)
+
 	return o
+}
+
+// GetAll returns and array of Objects
+func (c *Config) GetAll() *Objects {
+	o := Objects{Parms: c.Parms}
+	for _, node := range c.Parms.Nodes {
+		o.S = append(o.S, c.Get(node).Source(all).S...)
+	}
+	sort.Sort(&o)
+	return &o
 }
 
 // getSubdomains returns a map of subdomains
@@ -210,6 +226,11 @@ func (o *Object) Includes() io.Reader {
 	return bytes.NewBuffer([]byte(strings.Join(o.inc, "\n")))
 }
 
+// Load returns an EdgeOS CLI loaded configuration
+func (c *CFGstatic) Load() io.Reader {
+	return bytes.NewBufferString(c.Cfg)
+}
+
 func newObject() *Object {
 	return &Object{
 		data: make(data),
@@ -228,10 +249,10 @@ func (c *Config) Nodes() (nodes []string) {
 }
 
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
-func ReadCfg(r io.Reader) (*Config, error) {
+func ReadCfg(r ConfLoader) (*Config, error) {
 	var (
 		tnode  string
-		b      = bufio.NewScanner(r)
+		b      = bufio.NewScanner(r.Load())
 		branch string
 		nodes  = make([]string, 2)
 		rx     = regx.Objects
@@ -333,9 +354,6 @@ func (c *CFile) Remove() error {
 		}
 	}
 
-	// if got == nil {
-	// 	return fmt.Errorf("no files to remove")
-	// }
 	return purgeFiles(DiffArray(c.names, got))
 }
 

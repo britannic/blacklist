@@ -59,9 +59,10 @@ func TestLoad(t *testing.T) {
 	OK(t, err)
 	Equals(t, "Test\n", cfg)
 
-	cfg, err = LoadCfg()
-	NotOK(t, err)
-	Equals(t, "", cfg)
+	r := CFGcli{}
+	got, err := ioutil.ReadAll(r.Load())
+	OK(t, err)
+	Equals(t, "", string(got))
 }
 
 func TestPurgeFiles(t *testing.T) {

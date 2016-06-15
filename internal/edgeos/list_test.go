@@ -1,7 +1,6 @@
 package edgeos
 
 import (
-	"bytes"
 	"fmt"
 	"sort"
 	"strings"
@@ -13,7 +12,8 @@ import (
 
 func TestKeys(t *testing.T) {
 	var keys sort.StringSlice
-	b, err := ReadCfg(bytes.NewBufferString(tdata.Cfg))
+	l := &CFGstatic{Cfg: tdata.Cfg}
+	b, err := ReadCfg(l)
 	OK(t, err)
 
 	Equals(t, "[blacklist domains hosts]", fmt.Sprint(b.sortKeys()))
