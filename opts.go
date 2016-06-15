@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"os"
@@ -41,20 +40,14 @@ func (o *Opts) SetDir(arch string) (dir string) {
 
 // GetCFG returns a *Config
 func (o *Opts) getCFG(arch string) (c *e.Config, err error) {
-	var (
-		cfg string
-		r   = e.CFGstatic{}
-	)
 	c = &e.Config{Parms: &e.Parms{}}
 	switch arch {
 	case *o.MIPS64:
-		if cfg, err = e.Load(); err != nil {
-			return c, err
-		}
-
-		c, err = e.ReadCfg(bytes.NewBufferString(cfg))
+		r := &e.CFGcli{}
+		c, err = e.ReadCfg(r)
 	default:
-		c, err = e.ReadCfg(bytes.NewBufferString(tdata.Cfg))
+		r := &e.CFGstatic{Cfg: tdata.Cfg}
+		c, err = e.ReadCfg(r)
 	}
 	return c, err
 }
