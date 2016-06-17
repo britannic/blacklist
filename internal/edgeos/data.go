@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/britannic/oldBlist2/regx"
+	"github.com/britannic/blacklist/internal/regx"
 )
 
 // BooltoStr converts a boolean ("true" or "false") to a string equivalent
