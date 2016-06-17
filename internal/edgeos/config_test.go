@@ -3,7 +3,6 @@ package edgeos_test
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -71,12 +70,10 @@ func TestFiles(t *testing.T) {
 		edgeos.STypes([]string{"files", "pre-configured", "urls"}),
 	)
 
-	want := map[string]string{"domains": "/tmp/domains.malc0de.blacklist.conf\n/tmp/domains.pre-configured.blacklist.conf", "hosts": "/tmp/hosts.adaway.blacklist.conf\n/tmp/hosts.malwaredomainlist.blacklist.conf\n/tmp/hosts.openphish.blacklist.conf\n/tmp/hosts.pre-configured.blacklist.conf\n/tmp/hosts.someonewhocares.blacklist.conf\n/tmp/hosts.tasty.blacklist.conf\n/tmp/hosts.volkerschatz.blacklist.conf\n/tmp/hosts.winhelp2002.blacklist.conf\n/tmp/hosts.yoyo.blacklist.conf"}
+	want := "/tmp/domains.malc0de.blacklist.conf\n/tmp/domains.pre-configured.blacklist.conf\n/tmp/hosts.adaway.blacklist.conf\n/tmp/hosts.malwaredomainlist.blacklist.conf\n/tmp/hosts.openphish.blacklist.conf\n/tmp/hosts.pre-configured.blacklist.conf\n/tmp/hosts.someonewhocares.blacklist.conf\n/tmp/hosts.tasty.blacklist.conf\n/tmp/hosts.volkerschatz.blacklist.conf\n/tmp/hosts.winhelp2002.blacklist.conf\n/tmp/hosts.yoyo.blacklist.conf"
 
-	for _, node := range []string{"domains", "hosts"} {
-		got := c.Get(node).Source("all").Files().String()
-		Equals(t, want[node], got)
-	}
+	got := c.GetAll().Files().String()
+	Equals(t, want, got)
 }
 
 func TestNodes(t *testing.T) {
@@ -102,6 +99,16 @@ func TestReadCfg(t *testing.T) {
 	_, got := edgeos.ReadCfg(l)
 	Equals(t, want, got)
 }
+
+// type dummy struct{}
+//
+// func (d *dummy) ReadDir(s string) ([]os.FileInfo, error) {
+// 	return []os.FileInfo{}, fmt.Errorf("%v totally failed!", s)
+// }
+//
+// func (d *dummy) Remove() error {
+// 	return nil
+// }
 
 func TestRemove(t *testing.T) {
 	var (
@@ -133,16 +140,23 @@ func TestRemove(t *testing.T) {
 		c.Get(node).Source("all").Files().Remove()
 	}
 
-	dlist, err := ioutil.ReadDir(dir)
+	cf := &edgeos.CFile{}
+	dlist, err := cf.ReadDir(dir)
 	OK(t, err)
+
 	var got []string
 	for _, f := range dlist {
 		if strings.Contains(f.Name(), ext) {
 			got = append(got, dir+"/"+f.Name())
 		}
 	}
+
 	Equals(t, want, got)
 	// fmt.Println(edgeos.DiffArray(want, got))
+
+	c.SetOpt(edgeos.Dir("re-#-Zzzzz"))
+	err = c.Get("domains").Source("all").Files().Remove()
+	NotOK(t, err)
 }
 
 func TestSource(t *testing.T) {

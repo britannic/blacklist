@@ -1,13 +1,30 @@
 package edgeos
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
+	"io"
+	"sort"
+	"strings"
 )
 
 // Excludes returns a List map of blacklist exclusions
 func (o *Object) Excludes() List {
 	return UpdateList(o.exc)
+}
+
+// Includes returns an io.Reader of blacklist Includes
+func (o *Object) Includes() io.Reader {
+	sort.Strings(o.inc)
+	return bytes.NewBuffer([]byte(strings.Join(o.inc, "\n")))
+}
+
+func newObject() *Object {
+	return &Object{
+		data: make(data),
+		exc:  make([]string, 0),
+		inc:  make([]string, 0),
+	}
 }
 
 // Stringer for Object
@@ -27,8 +44,7 @@ func (o *Object) String() (r string) {
 
 // Stringer for Objects
 func (o *Objects) String() string {
-	r, _ := json.MarshalIndent(o.S, "", "\t")
-	return string(r)
+	return fmt.Sprint(o.S)
 }
 
 // Implement Sort Interface for Objects

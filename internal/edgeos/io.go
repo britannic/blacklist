@@ -51,6 +51,19 @@ func apiCMD() (r map[string]string) {
 	return r
 }
 
+// deleteFile removes a file if it exists
+func deleteFile(f string) bool {
+	if _, err := os.Stat(f); os.IsNotExist(err) {
+		return true
+	}
+
+	if err := os.Remove(f); err != nil {
+		return false
+	}
+
+	return true
+}
+
 // getFile reads a file and returns a *bufio.Scanner instance
 func getFile(fname string) (io.Reader, error) {
 	return os.Open(fname)

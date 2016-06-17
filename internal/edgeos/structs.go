@@ -1,10 +1,19 @@
 package edgeos
 
-import "io"
+import (
+	"io"
+	"os"
+)
 
 // ConfLoader interface defines load method
 type ConfLoader interface {
 	Load() io.Reader
+}
+
+// OSinformer implements os.FileInfo methods
+type OSinformer interface {
+	ReadDir(string) ([]os.FileInfo, error)
+	Remove() error
 }
 
 // CFGstatic is for configurations loaded via the EdgeOS CFGstatic
@@ -53,7 +62,7 @@ type Object struct {
 	url      string
 }
 
-// Objects is a struct of []*Objects
+// Objects is a struct of []*Object
 type Objects struct {
 	S []*Object
 	*Parms

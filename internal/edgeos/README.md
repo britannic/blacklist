@@ -40,18 +40,63 @@ func GetHTTP(method, URL string) (io.Reader, error)
 GetHTTP creates http requests to download data
 
 
-## func Load
-``` go
-func Load() (string, error)
-```
-Load returns an EdgeOS config file string and error
-
-
 ## func StrToBool
 ``` go
 func StrToBool(s string) bool
 ```
 StrToBool converts a string ("true" or "false") to it's boolean equivalent
+
+
+
+## type CFGcli
+``` go
+type CFGcli struct {
+    Cfg string
+}
+```
+CFGcli is for configurations loaded via the EdgeOS CFGcli
+
+
+
+
+
+
+
+
+
+
+
+### func (\*CFGcli) Load
+``` go
+func (c *CFGcli) Load() io.Reader
+```
+Load returns an EdgeOS config file string and error
+
+
+
+## type CFGstatic
+``` go
+type CFGstatic struct {
+    Cfg string
+}
+```
+CFGstatic is for configurations loaded via the EdgeOS CFGstatic
+
+
+
+
+
+
+
+
+
+
+
+### func (\*CFGstatic) Load
+``` go
+func (c *CFGstatic) Load() io.Reader
+```
+Load returns an EdgeOS CLI loaded configuration
 
 
 
@@ -71,6 +116,14 @@ CFile holds an array of file names
 
 
 
+
+
+
+### func (\*CFile) ReadDir
+``` go
+func (c *CFile) ReadDir(dir string) ([]os.FileInfo, error)
+```
+ReadDir implements OSinformer
 
 
 
@@ -98,6 +151,24 @@ Strings returns a sorted array of strings.
 
 
 
+## type ConfLoader
+``` go
+type ConfLoader interface {
+    Load() io.Reader
+}
+```
+ConfLoader interface defines load method
+
+
+
+
+
+
+
+
+
+
+
 ## type Config
 ``` go
 type Config struct {
@@ -117,7 +188,7 @@ Config is a struct of configuration fields
 
 ### func ReadCfg
 ``` go
-func ReadCfg(r io.Reader) (*Config, error)
+func ReadCfg(r ConfLoader) (*Config, error)
 ```
 ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 
@@ -137,6 +208,14 @@ Excludes returns a string array of excludes
 func (c *Config) Get(node string) (o *Object)
 ```
 Get returns an *Object for a given node
+
+
+
+### func (\*Config) GetAll
+``` go
+func (c *Config) GetAll() *Objects
+```
+GetAll returns an array of Objects
 
 
 
@@ -169,6 +248,8 @@ String returns pretty print for the Blacklist struct
 type Content struct {
     *Object
     Contenter
+
+    *Parms
     // contains filtered or unexported fields
 }
 ```
@@ -186,7 +267,7 @@ Content is a struct of blacklist content
 
 ### func (\*Content) Process
 ``` go
-func (c *Content) Process() io.Reader
+func (c *Content) Process() *blist
 ```
 Process extracts hosts/domains from downloaded raw content
 
@@ -200,18 +281,10 @@ Source returns a map of sources
 
 
 
-### func (\*Content) WriteFile
-``` go
-func (c *Content) WriteFile() (err error)
-```
-WriteFile saves hosts/domains data to disk
-
-
-
 ## type Contenter
 ``` go
 type Contenter interface {
-    // contains filtered or unexported methods
+    Process() io.Reader
 }
 ```
 Contenter is a Content interface
@@ -242,6 +315,20 @@ Contents is an array of *content
 
 
 
+### func (\*Contents) ProcessContent
+``` go
+func (c *Contents) ProcessContent()
+```
+ProcessContent iterates through the Contents array and processes each
+
+
+
+### func (\*Contents) String
+``` go
+func (c *Contents) String() (result string)
+```
+
+
 ## type List
 ``` go
 type List map[string]int
@@ -270,6 +357,25 @@ UpdateList converts []string to map of List
 func (l List) String() string
 ```
 String implements fmt.Print interface
+
+
+
+## type OSinformer
+``` go
+type OSinformer interface {
+    ReadDir(string) ([]os.FileInfo, error)
+    Remove() error
+}
+```
+OSinformer implements os.FileInfo methods
+
+
+
+
+
+
+
+
 
 
 
@@ -320,7 +426,7 @@ Source returns a map of sources
 ``` go
 func (o *Object) String() (r string)
 ```
-String pretty prints Object
+Stringer for Object
 
 
 
@@ -331,7 +437,7 @@ type Objects struct {
     *Parms
 }
 ```
-Objects is a struct of []*Objects
+Objects is a struct of []*Object
 
 
 
@@ -343,9 +449,9 @@ Objects is a struct of []*Objects
 
 
 
-### func (Objects) Files
+### func (\*Objects) Files
 ``` go
-func (o Objects) Files() *CFile
+func (o *Objects) Files() *CFile
 ```
 Files returns a list of dnsmasq conf files from all srcs
 
@@ -357,6 +463,34 @@ func (objs *Objects) GetContent() *Contents
 ```
 GetContent returns a Content struct
 
+
+
+### func (\*Objects) Len
+``` go
+func (o *Objects) Len() int
+```
+Implement Sort Interface for Objects
+
+
+
+### func (\*Objects) Less
+``` go
+func (o *Objects) Less(i, j int) bool
+```
+
+
+### func (\*Objects) String
+``` go
+func (o *Objects) String() string
+```
+Stringer for Objects
+
+
+
+### func (\*Objects) Swap
+``` go
+func (o *Objects) Swap(i, j int)
+```
 
 
 ## type Option
@@ -513,7 +647,7 @@ Parms is struct of parameters
 
 ### func NewParms
 ``` go
-func NewParms(c *Config) *Parms
+func NewParms() *Parms
 ```
 NewParms sets a new *Parms instance
 

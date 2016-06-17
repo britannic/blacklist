@@ -53,15 +53,6 @@ func main() {
 
 	c.GetAll().Files().Remove()
 	c.Get(all).Source(pre).GetContent().ProcessContent()
-	// for _, node := range c.Nodes() {
-	// 	c.Get(node).Source(pre).GetContent().ProcessContent()
-	// 	// for _, src := range *c.Get(node).Source(pre).GetContent() {
-	// 	//
-	// 	// 	if err := src.Process().WriteFile(); err != nil {
-	// 	// 		log.Println(err)
-	// 	// 	}
-	// 	// }
-	// }
 }
 
 // basename removes directory components and file extensions.
