@@ -6,7 +6,7 @@ import (
 	"syscall"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
-	"github.com/britannic/oldBlist2/tdata"
+	"github.com/britannic/blacklist/internal/tdata"
 )
 
 var (
