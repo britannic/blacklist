@@ -6,8 +6,6 @@ import (
 	"os"
 	"runtime"
 
-	e "github.com/britannic/blacklist/internal/edgeos"
-	"github.com/britannic/blacklist/internal/tdata"
 	"github.com/fatih/structs"
 )
 
@@ -36,20 +34,6 @@ func (o *Opts) SetDir(arch string) (dir string) {
 		dir = *o.DNStmp
 	}
 	return dir
-}
-
-// GetCFG returns a loaded *Config
-func (o *Opts) getCFG(arch string) (c *e.Config, err error) {
-	c = &e.Config{Parms: &e.Parms{}}
-	switch arch {
-	case *o.MIPS64:
-		r := &e.CFGcli{}
-		c, err = e.ReadCfg(r)
-	default:
-		r := &e.CFGstatic{Cfg: tdata.Cfg}
-		c, err = e.ReadCfg(r)
-	}
-	return c, err
 }
 
 func (o *Opts) String() (result string) {
