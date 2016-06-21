@@ -8,58 +8,23 @@ import (
 	. "github.com/britannic/testutils"
 )
 
-func TestAPICMD(t *testing.T) {
-	want := map[string]string{
-		"cfExists":           fmt.Sprintf("%v cfExists", api),
-		"cfReturnValue":      fmt.Sprintf("%v cfReturnValue", api),
-		"cfReturnValues":     fmt.Sprintf("%v cfReturnValues", api),
-		"echo":               "echo",
-		"exists":             fmt.Sprintf("%v exists", api),
-		"existsActive":       fmt.Sprintf("%v existsActive", api),
-		"getNodeType":        fmt.Sprintf("%v getNodeType", api),
-		"inSession":          fmt.Sprintf("%v inSession", api),
-		"isLeaf":             fmt.Sprintf("%v isLeaf", api),
-		"isMulti":            fmt.Sprintf("%v isMulti", api),
-		"isTag":              fmt.Sprintf("%v isTag", api),
-		"listActiveNodes":    fmt.Sprintf("%v listActiveNodes", api),
-		"listNodes":          fmt.Sprintf("%v listNodes", api),
-		"returnActiveValue":  fmt.Sprintf("%v returnActiveValue", api),
-		"returnActiveValues": fmt.Sprintf("%v returnActiveValues", api),
-		"returnValue":        fmt.Sprintf("%v returnValue", api),
-		"returnValues":       fmt.Sprintf("%v returnValues", api),
-		"showCfg":            fmt.Sprintf("%v showCfg", api),
-		"showConfig":         fmt.Sprintf("%v showConfig", api),
-	}
-
-	got := apiCMD()
-
-	Equals(t, want, got)
-
-	for k := range got {
-		v, ok := want[k]
-		switch ok {
-		case true:
-			Equals(t, v, got[k])
-
-		default:
-			Equals(t, want[k], got[k])
-
-		}
-	}
-}
-
 func TestLoad(t *testing.T) {
-	cfg, err := load("zBroken", "service dns forwarding")
+	c := NewConfig(
+		API("/bin/cli-shell-api"),
+		Level("service dns forwarding"),
+	)
+
+	cfg, err := c.load("zBroken", "service dns forwarding")
 	NotOK(t, err)
 
-	cfg, err = load("showConfig", "")
+	cfg, err = c.load("showConfig", "")
 	NotOK(t, err)
 
-	cfg, err = load("echo", "Test")
+	cfg, err = c.load("true", "")
 	OK(t, err)
-	Equals(t, "Test\n", cfg)
+	Equals(t, "", cfg)
 
-	r := CFGcli{}
+	r := CFGcli{Config: c}
 	got, err := ioutil.ReadAll(r.Load())
 	OK(t, err)
 	Equals(t, "", string(got))
@@ -91,43 +56,122 @@ func TestPurgeFiles(t *testing.T) {
 	Equals(t, want, got)
 }
 
-func TestSHCMD(t *testing.T) {
+func TestAPICMD(t *testing.T) {
 	type query struct {
+		b    bool
 		q, r string
 	}
 	testSrc := []*query{
 		{
+			b: false,
+			q: "listNodes",
+			r: "listNodes",
+		},
+		{
+			b: true,
 			q: "listNodes",
 			r: "listActiveNodes",
 		},
 		{
+			b: false,
+			q: "listActiveNodes",
+			r: "listNodes",
+		},
+		{
+			b: false,
+			q: "returnValue",
+			r: "returnValue",
+		},
+		{
+			b: true,
 			q: "returnValue",
 			r: "returnActiveValue",
 		},
 		{
+			b: false,
+			q: "returnActiveValue",
+			r: "returnValue",
+		},
+		{
+			b: false,
+			q: "returnValues",
+			r: "returnValues",
+		},
+		{
+			b: true,
 			q: "returnValues",
 			r: "returnActiveValues",
 		},
 		{
+			b: false,
+			q: "returnActiveValues",
+			r: "returnValues",
+		},
+		{
+			b: false,
+			q: "exists",
+			r: "exists",
+		},
+		{
+			b: true,
 			q: "exists",
 			r: "existsActive",
 		},
 		{
+			b: false,
+			q: "existsActive",
+			r: "exists",
+		},
+		{
+			b: false,
+			q: "showCfg",
+			r: "showCfg",
+		},
+		{
+			b: true,
+			q: "showCfg",
+			r: "showConfig",
+		},
+		{
+			b: false,
 			q: "showConfig",
 			r: "showCfg",
 		},
 	}
 
-	inSession := insession()
-
 	for _, rq := range testSrc {
-		got := shCMD(rq.q)
-		switch inSession {
-		case false:
-			Equals(t, rq.r, got)
+		Equals(t, rq.r, apiCMD(rq.q, rq.b))
+	}
+}
 
+func TestDeleteFile(t *testing.T) {
+	dir := "../testdata"
+	ext := "delete.me"
+
+	tests := []struct {
+		name string
+		f    string
+		exp  bool
+	}{
+		{
+			name: "exists",
+			f:    fmt.Sprintf("%v%v", "goodFile", ext),
+			exp:  true,
+		},
+		{
+			name: "non-existent",
+			f:    fmt.Sprintf("%v%v", "badFile", ext),
+			exp:  true,
+		},
+	}
+	for _, tt := range tests {
+		switch tt.name {
+		case "exists":
+			f, err := ioutil.TempFile(dir, tt.f)
+			OK(t, err)
+			Equals(t, tt.exp, deleteFile(f.Name()))
 		default:
-			Equals(t, rq.q, got)
+			Equals(t, tt.exp, deleteFile(tt.f))
 		}
 	}
 }

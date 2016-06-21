@@ -26,16 +26,16 @@ type cfgJSON struct {
 	leaf, pk, sk string
 }
 
-func getJSONdisabled(c *cfgJSON) (d string) {
-	d = False
-	switch c.sk {
-	case null:
-		d = BooltoStr(c.bNodes[c.pk].disabled)
-	default:
-		d = BooltoStr(c.bNodes[c.pk].data[c.sk].disabled)
-	}
-	return d
-}
+// func getJSONdisabled(c *cfgJSON) (d string) {
+// 	d = False
+// 	switch c.sk {
+// 	case null:
+// 		d = BooltoStr(c.bNodes[c.pk].disabled)
+// 	default:
+// 		d = BooltoStr(c.bNodes[c.pk].data[c.sk].disabled)
+// 	}
+// 	return d
+// }
 
 func getJSONsrcIP(c *Config, pkey string) (result string) {
 	b := c.bNodes
@@ -88,10 +88,11 @@ func getJSONArray(c *cfgJSON) (result string) {
 
 func getJSONsrcArray(c *cfgJSON) (result string) {
 	var (
+		// skeys  = c.Config.sortSKeys(c.pk)
+		cnt    = len(c.bNodes[c.pk].Objects.S)
 		i      int
 		indent = c.indent
-		skeys  = c.Config.sortSKeys(c.pk)
-		cnt    = len(skeys)
+		s      *Object
 	)
 
 	if cnt == 0 {
@@ -101,27 +102,27 @@ func getJSONsrcArray(c *cfgJSON) (result string) {
 
 	result += fmt.Sprintf("%v%q: [{%v", tabs(c.indent), "sources", enter)
 
-	for i, c.sk = range skeys {
-		if _, ok := c.bNodes[c.pk].data[c.sk]; ok {
-			cmma := comma
-			indent = c.indent + 1
+	for i, s = range c.bNodes[c.pk].Objects.S {
+		// if _, ok := c.bNodes[c.pk].data[c.sk]; ok {
+		cmma := comma
+		indent = c.indent + 1
 
-			if i == cnt-1 {
-				cmma = null
-			}
-
-			d := getJSONdisabled(&cfgJSON{Config: c.Config, pk: c.pk, sk: c.sk})
-			s := c.bNodes[c.pk].data[c.sk]
-			result += fmt.Sprintf("%v%q: {\n", tabs(indent), c.sk)
-			indent++
-			result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled, d)
-			result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), "description", s.desc)
-			result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), "prefix", s.prefix)
-			result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), "file", s.file)
-			result += fmt.Sprintf("%v%q: %q\n", tabs(indent), "url", s.url)
-			indent--
-			result += fmt.Sprintf("%v}%v%v", tabs(indent), cmma, enter)
+		if i == cnt-1 {
+			cmma = null
 		}
+
+		// d := getJSONdisabled(&cfgJSON{Config: c.Config, pk: c.pk, sk: c.sk})
+		// s := c.bNodes[c.pk].data[c.sk]
+		result += fmt.Sprintf("%v%q: {\n", tabs(indent), s.name)
+		indent++
+		result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled, BooltoStr(s.disabled))
+		result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), "description", s.desc)
+		result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), "prefix", s.prefix)
+		result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), "file", s.file)
+		result += fmt.Sprintf("%v%q: %q\n", tabs(indent), urls, s.url)
+		indent--
+		result += fmt.Sprintf("%v}%v%v", tabs(indent), cmma, enter)
+		// }
 	}
 
 	indent -= 2

@@ -8,17 +8,55 @@ import (
 )
 
 func TestOption(t *testing.T) {
-	vanilla := Parms{Arch: "", Cores: 0, Dir: "", Dex: List{}, Debug: false, Exc: List{}, Ext: "", FnFmt: "", File: "", Pfx: "", Method: "", Nodes: []string(nil), Poll: 0, Stypes: []string(nil), Test: false, Verbosity: 0}
+	vanilla := Parms{
+		API:       "",
+		Arch:      "",
+		Cores:     0,
+		Debug:     false,
+		Dex:       List{},
+		Dir:       "",
+		Exc:       List{},
+		Ext:       "",
+		File:      "",
+		FnFmt:     "",
+		Level:     "",
+		Method:    "",
+		Nodes:     []string(nil),
+		Pfx:       "",
+		Poll:      0,
+		Stypes:    []string(nil),
+		Test:      false,
+		Verbosity: 0,
+	}
 
-	want := "edgeos.Parms{\nArch:      amd64\nCores:     2\nDebug:     true\nDex:       \nDir:       /tmp\nExc:       \"badactor.com\":0,\nExt:       blacklist.conf\nFile:      /config/config.boot\nFnFmt:     %v/%v.%v.%v\nMethod:    GET\nNodes:     [domains hosts]\nPfx:       address=\nPoll:      10\nStypes:    [files pre-configured urls]\nTest:      true\nVerbosity: 2\n}\n"
+	want := "edgeos.Parms{\nAPI:       /bin/cli-shell-api\nArch:      amd64\nCores:     2\nDebug:     true\nDex:       \nDir:       /tmp\nExc:       \"badactor.com\":0,\nExt:       blacklist.conf\nFile:      /config/config.boot\nFnFmt:     %v/%v.%v.%v\nLevel:     service dns forwarding\nMethod:    GET\nNodes:     [domains hosts]\nPfx:       address=\nPoll:      10\nStypes:    [file pre-configured url]\nTest:      true\nVerbosity: 2\n}\n"
 
-	wantRaw := Parms{Arch: "amd64", Cores: 2, Dir: "/tmp", Dex: List{}, Debug: true, Exc: List{"badactor.com": 0}, Ext: "blacklist.conf", FnFmt: "%v/%v.%v.%v", File: "/config/config.boot", Pfx: "address=", Method: "GET", Nodes: []string{"domains", "hosts"}, Poll: 10, Stypes: []string{"files", "pre-configured", "urls"}, Test: true, Verbosity: 2}
+	wantRaw := Parms{
+		API:       "/bin/cli-shell-api",
+		Arch:      "amd64",
+		Cores:     2,
+		Debug:     true,
+		Dex:       List{},
+		Dir:       "/tmp",
+		Exc:       List{"badactor.com": 0},
+		Ext:       "blacklist.conf",
+		File:      "/config/config.boot",
+		FnFmt:     "%v/%v.%v.%v",
+		Level:     "service dns forwarding",
+		Method:    "GET",
+		Nodes:     []string{domains, hosts},
+		Pfx:       "address=",
+		Poll:      10,
+		Stypes:    []string{files, preConf, urls},
+		Test:      true,
+		Verbosity: 2,
+	}
+	c := NewConfig()
+	Equals(t, vanilla, *c.Parms)
 
-	c := NewParms()
-	Equals(t, vanilla, *c)
-
-	prev := c.SetOpt(
+	c = NewConfig(
 		Arch(runtime.GOARCH),
+		API("/bin/cli-shell-api"),
 		Cores(2),
 		Debug(true),
 		Dir("/tmp"),
@@ -30,15 +68,13 @@ func TestOption(t *testing.T) {
 		Nodes([]string{"domains", "hosts"}),
 		Poll(10),
 		Prefix("address="),
-		STypes([]string{"files", preConf, "urls"}),
+		Level("service dns forwarding"),
+		STypes([]string{"file", preConf, urls}),
 		Test(true),
 		Verbosity(2),
 	)
 
-	Equals(t, want, c.String())
+	Equals(t, wantRaw, *c.Parms)
 
-	Equals(t, wantRaw, *c)
-
-	c.SetOpt(prev)
-	Equals(t, vanilla, *c)
+	Equals(t, want, c.Parms.String())
 }

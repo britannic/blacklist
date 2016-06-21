@@ -46,15 +46,15 @@ func TestDiffArray(t *testing.T) {
 }
 
 func TestFormatData(t *testing.T) {
-	l := &CFGstatic{Cfg: tdata.Cfg}
-	c, err := ReadCfg(l)
-	OK(t, err)
-	c.Parms = NewParms()
-	c.SetOpt(
+	c := NewConfig(
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
 		Nodes([]string{"domains", "hosts"}),
 	)
+
+	l := &CFGstatic{Cfg: tdata.Cfg}
+	err := c.ReadCfg(l)
+	OK(t, err)
 
 	for _, node := range c.Parms.Nodes {
 		var (
@@ -74,14 +74,14 @@ func TestFormatData(t *testing.T) {
 
 		for b.Scan() {
 			k := b.Text()
-			lines = append(lines, fmt.Sprintf("address=%v%v/%v", eq, k, c.Get(node).ip)+"\n")
+			lines = append(lines, fmt.Sprintf("address=%v%v/%v", eq, k, c.bNodes[node].ip)+"\n")
 			gotList[k] = 0
 		}
 
 		sort.Strings(lines)
 		wantBytes = []byte(strings.Join(lines, ""))
 
-		fmttr := "address=" + eq + "%v/" + c.Get(node).ip
+		fmttr := "address=" + eq + "%v/" + c.bNodes[node].ip
 		got = formatData(fmttr, gotList)
 		gotBytes, err := ioutil.ReadAll(got)
 		OK(t, err)

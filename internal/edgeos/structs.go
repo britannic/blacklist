@@ -18,11 +18,13 @@ type OSinformer interface {
 
 // CFGstatic is for configurations loaded via the EdgeOS CFGstatic
 type CFGstatic struct {
+	*Parms
 	Cfg string
 }
 
 // CFGcli is for configurations loaded via the EdgeOS CFGcli
 type CFGcli struct {
+	*Config
 	Cfg string
 }
 
@@ -38,17 +40,17 @@ type CFile struct {
 
 // Config is a struct of configuration fields
 type Config struct {
-	bNodes
 	*Parms
+	bNodes
 }
 
 // data is a map[string] of *Object
-type data map[string]*Object
+// type data map[string]*Object
 
 // Object struct for normalizing EdgeOS data.
 type Object struct {
 	*Parms
-	data
+	Objects
 	desc     string
 	disabled bool
 	exc      []string
@@ -64,6 +66,6 @@ type Object struct {
 
 // Objects is a struct of []*Object
 type Objects struct {
-	S []*Object
 	*Parms
+	S []*Object
 }

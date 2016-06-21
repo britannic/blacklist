@@ -38,7 +38,7 @@ func (o *Opts) SetDir(arch string) (dir string) {
 	return dir
 }
 
-// GetCFG returns a *Config
+// GetCFG returns a loaded *Config
 func (o *Opts) getCFG(arch string) (c *e.Config, err error) {
 	c = &e.Config{Parms: &e.Parms{}}
 	switch arch {

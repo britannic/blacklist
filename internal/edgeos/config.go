@@ -2,13 +2,17 @@
 package edgeos
 
 import (
+	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"os"
+	"os/exec"
+	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/britannic/oldBlist2/regx"
 )
 
 type ntype int
@@ -32,10 +36,12 @@ const (
 	dbg       = false
 	disabled  = "disabled"
 	domains   = "domains"
+	files     = "file"
 	src       = "source"
 	hosts     = "hosts"
 	preConf   = "pre-configured"
 	rootNode  = blacklist
+	urls      = "url"
 	zones     = "zones"
 
 	// False is a string constant
@@ -44,8 +50,13 @@ const (
 	True = "true"
 )
 
+// Excludes returns a List map of blacklist exclusions
+func (c *Config) Excludes(node string) List {
+	return UpdateList(c.excludes(node))
+}
+
 // Excludes returns a string array of excludes
-func (c *Config) Excludes(node string) []string {
+func (c *Config) excludes(node string) []string {
 	var exc []string
 	switch {
 	case node == all:
@@ -62,96 +73,140 @@ func (c *Config) Excludes(node string) []string {
 
 // Files returns a list of dnsmasq conf files from all srcs
 func (o *Objects) Files() *CFile {
-	b := false
 	c := CFile{Parms: o.Parms}
-	obj := o.S
-	for k := range obj {
-		for sk := range obj[k].data {
-			if !b {
-				c.nType = obj[k].nType
-			}
-
-			src := obj[k].data[sk]
-			format := src.Parms.Dir + "/%v.%v." + src.Parms.Ext
-			c.names = append(c.names, fmt.Sprintf(format, getType(src.nType), src.name))
-		}
+	for _, obj := range o.S {
+		c.nType = obj.nType
+		format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
+		c.names = append(c.names, fmt.Sprintf(format, getType(obj.nType), obj.name))
 	}
 	sort.Strings(c.names)
 	return &c
 }
 
+func getInc(obj *Object, node string) []*Object {
+	return []*Object{
+		&Object{
+			desc:  preConf,
+			inc:   obj.inc,
+			ip:    obj.ip,
+			ltype: preConf,
+			name:  preConf,
+			nType: getType(node).(ntype),
+			Parms: obj.Parms,
+		},
+	}
+}
+
+func (b bNodes) validate(node string) *Objects {
+	for _, obj := range b[node].Objects.S {
+		if obj.ip == "" {
+			obj.ip = b[node].ip
+		}
+	}
+	return &b[node].Objects
+}
+
 // Get returns an *Object for a given node
-func (c *Config) Get(node string) (o *Object) {
-	getObj := func(o *Object, node string) {
-		for k := range o.data {
-			o.data[k].Parms = c.Parms
-			if o.data[k].ip == "" {
-				o.data[k].ip = c.bNodes[node].ip
-			}
-			o.data[k].nType = getType(node).(ntype)
-			switch {
-			case o.data[k].url != "":
-				o.data[k].ltype = "urls"
-			case o.data[k].file != "":
-				o.data[k].ltype = "files"
-			}
-		}
-	}
-
-	getInc := func(o *Object, node string) {
-		if len(o.inc) > 0 {
-			o.data[preConf] = &Object{
-				desc:  preConf,
-				inc:   o.inc,
-				ip:    o.ip,
-				ltype: preConf,
-				name:  preConf,
-				nType: getType(node).(ntype),
-				Parms: c.Parms,
-			}
-		}
-	}
-
-	mergeList := func(a, b *Object) *Object {
-		for k, v := range a.data {
-			b.data[k] = v
-		}
-		return b
-	}
+func (c *Config) Get(node string) *Objects {
+	o := &Objects{Parms: c.Parms}
 
 	switch node {
 	case all:
-		o = &Object{Parms: c.Parms, data: make(data)}
-		d := make([]*Object, len(c.Parms.Nodes))
-		for i, node := range c.Parms.Nodes {
-			d[i] = c.bNodes[node]
-			getObj(d[i], node)
-			getInc(d[i], node)
-			o = mergeList(d[i], o)
+		for _, node := range c.Parms.Nodes {
+			o.addInc(c, node)
+			o.addObj(c, node)
+			// if c.bNodes[node].inc != nil {
+			// 	o.S = append(o.S, getInc(&Object{Parms: c.Parms, inc: c.bNodes[node].inc, ip: c.bNodes[node].ip}, node)...)
+			// }
+			// o.S = append(o.S, c.bNodes.validate(node).S...)
 		}
-
 	default:
-		o = c.bNodes[node]
-		getObj(o, node)
-		getInc(o, node)
+		o.addInc(c, node)
+		o.addObj(c, node)
+		// if c.bNodes[node].inc != nil {
+		// 	o.S = append(o.S, getInc(&Object{Parms: c.Parms, inc: c.bNodes[node].inc, ip: c.bNodes[node].ip}, node)...)
+		// }
+		// o.S = append(o.S, c.bNodes.validate(node).S...)
 	}
-
 	return o
 }
 
-// GetAll returns an array of Objects
-func (c *Config) GetAll() *Objects {
-	o := Objects{Parms: c.Parms}
-	for _, node := range c.Parms.Nodes {
-		o.S = append(o.S, c.Get(node).Source(all).S...)
+func (o *Objects) addInc(c *Config, node string) {
+	if c.bNodes[node].inc != nil {
+		o.S = append(o.S, getInc(&Object{Parms: c.Parms, inc: c.bNodes[node].inc, ip: c.bNodes[node].ip}, node)...)
 	}
-	sort.Sort(&o)
-	return &o
+}
+
+func (o *Objects) addObj(c *Config, node string) {
+	o.S = append(o.S, c.bNodes.validate(node).S...)
+}
+
+// GetAll returns an array of Objects
+func (c *Config) GetAll(ltypes ...string) *Objects {
+	var (
+		o = &Objects{Parms: c.Parms}
+	)
+
+	for _, node := range c.Parms.Nodes {
+		switch ltypes {
+		case nil:
+			o.addInc(c, node)
+			o.addObj(c, node)
+		default:
+			for _, ltype := range ltypes {
+				switch ltype {
+				case preConf:
+					o.addInc(c, node)
+					// if c.bNodes[node].inc != nil {
+					// 	o.S = append(o.S, getInc(&Object{Parms: c.Parms}, node)...)
+					// }
+				default:
+					obj := c.bNodes[node].Objects.S
+					for i := range obj {
+						b := obj[i].ltype == ltype
+						if b {
+							o.S = append(o.S, obj[i])
+						}
+					}
+				}
+			}
+		}
+	}
+	return o
+}
+
+// insession returns true if VyOS/EdgeOS configuration is in session
+func (c *Config) insession() bool {
+	var (
+		cmd = exec.Command(c.API, "inSession")
+		out bytes.Buffer
+	)
+
+	cmd.Stdout = &out
+	if ok := cmd.Run(); ok == nil {
+		return out.String() == "0"
+	}
+	return false
 }
 
 // Load returns an EdgeOS CLI loaded configuration
 func (c *CFGstatic) Load() io.Reader {
 	return bytes.NewBufferString(c.Cfg)
+}
+
+// NewConfig returns a new *Config initialized with the parameter options passed to it
+func NewConfig(opts ...Option) *Config {
+	c := Config{
+		bNodes: make(bNodes),
+		Parms: &Parms{
+			Dex: make(List),
+			Exc: make(List),
+		},
+	}
+	for _, opt := range opts {
+		opt(&c)
+	}
+	return &c
 }
 
 // Nodes returns an array of configured nodes
@@ -163,27 +218,119 @@ func (c *Config) Nodes() (nodes []string) {
 	return nodes
 }
 
+// ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
+func (c *Config) ReadCfg(r ConfLoader) error {
+	var (
+		tnode  string
+		b      = bufio.NewScanner(r.Load())
+		branch string
+		nodes  = make([]string, 2)
+		rx     = regx.Objects
+		s      *Object
+	)
+
+LINE:
+	for b.Scan() {
+		line := strings.TrimSpace(b.Text())
+
+		switch {
+		case rx.MLTI.MatchString(line):
+			incExc := regx.Get("mlti", line)
+			switch incExc[1] {
+			case "exclude":
+				c.bNodes[tnode].exc = append(c.bNodes[tnode].exc, incExc[2])
+
+			case "include":
+				c.bNodes[tnode].inc = append(c.bNodes[tnode].inc, incExc[2])
+			}
+
+		case rx.NODE.MatchString(line):
+			node := regx.Get("node", line)
+			tnode = node[1]
+			nodes = append(nodes, tnode)
+			s = newObject()
+			c.bNodes[tnode] = s
+
+		case rx.LEAF.MatchString(line):
+			srcName := regx.Get("leaf", line)
+			branch = srcName[2]
+			nodes = append(nodes, srcName[1])
+
+			if srcName[1] == src {
+				s.name = branch
+				s.nType = getType(tnode).(ntype)
+			}
+
+		case rx.DSBL.MatchString(line):
+			c.bNodes[tnode].disabled = StrToBool(regx.Get("dsbl", line)[1])
+
+		case rx.IPBH.MatchString(line) && nodes[len(nodes)-1] != src:
+			c.bNodes[tnode].ip = regx.Get("ipbh", line)[1]
+
+		case rx.NAME.MatchString(line):
+			name := regx.Get("name", line)
+
+			switch name[1] {
+			case "description":
+				s.desc = name[2]
+
+			case blackhole:
+				s.ip = name[2]
+
+			case files:
+				s.file = name[2]
+				s.ltype = name[1]
+				c.bNodes[tnode].Objects.S = append(c.bNodes[tnode].Objects.S, s)
+				s = newObject() // reset s for the next loop
+
+			case "prefix":
+				s.prefix = name[2]
+
+			case urls:
+				s.ltype = name[1]
+				s.url = name[2]
+				c.bNodes[tnode].Objects.S = append(c.bNodes[tnode].Objects.S, s)
+				s = newObject() // reset s for the next loop
+
+			}
+
+		case rx.DESC.MatchString(line) || rx.CMNT.MatchString(line) || rx.MISC.MatchString(line):
+			continue LINE
+
+		case rx.RBRC.MatchString(line):
+			nodes = nodes[:len(nodes)-1] // pop last node
+			tnode = nodes[len(nodes)-1]
+		}
+	}
+
+	if len(c.bNodes) < 1 {
+		return errors.New("Configuration data is empty, cannot continue")
+	}
+
+	return nil
+}
+
 // ReadDir implements OSinformer
-func (c *CFile) ReadDir(dir string) ([]os.FileInfo, error) {
-	return ioutil.ReadDir(dir)
+func (c *CFile) ReadDir(pattern string) ([]string, error) {
+	return filepath.Glob(pattern)
 }
 
 // Remove deletes a CFile array of file names
 func (c *CFile) Remove() error {
-	var got = make([]string, 5)
-
-	dlist, err := c.ReadDir(c.Dir)
+	// var got = make([]string, 5)
+	pattern := fmt.Sprintf(c.FnFmt, c.Dir, "*s", "*", c.Parms.Ext)
+	dlist, err := c.ReadDir(pattern)
 	if err != nil {
 		return err
 	}
 
-	for _, f := range dlist {
-		if strings.Contains(f.Name(), getType(c.nType).(string)) && strings.Contains(f.Name(), c.Ext) {
-			got = append(got, c.Dir+"/"+f.Name())
-		}
-	}
+	// for _, f := range dlist {
+	// 	if path.Glob(); strings.Contains(f.Name(), getType(c.nType).(string)) && strings.Contains(f.Name(), c.Ext) {
+	// 		got = append(got, c.Dir+"/"+f.Name())
+	// 	}
+	// }
 
-	return purgeFiles(DiffArray(c.names, got))
+	return purgeFiles(DiffArray(c.names, dlist))
 }
 
 // String returns pretty print for the Blacklist struct
@@ -203,7 +350,8 @@ func (c *Config) String() (result string) {
 		result += fmt.Sprintf("%v%q: {\n", tabs(indent), pkey)
 
 		indent++
-		result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled, getJSONdisabled(&cfgJSON{Config: c, pk: pkey}))
+		result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled,
+			BooltoStr(c.bNodes[pkey].disabled))
 
 		result += tabs(indent) + getJSONsrcIP(c, pkey)
 

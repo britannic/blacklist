@@ -25,47 +25,47 @@ type Contenter interface {
 // Content is a struct of blacklist content
 type Content struct {
 	*Object
+	*Parms
 	Contenter
 	err error
-	*Parms
-	r io.Reader
+	r   io.Reader
 }
 
 // Contents is an array of *content
 type Contents []*Content
 
 // GetContent returns a Content struct
-func (objs *Objects) GetContent() *Contents {
+func (o *Objects) GetContent() *Contents {
 	var c Contents
-	for _, o := range objs.S {
-		switch o.ltype {
+	for _, obj := range o.S {
+		switch obj.ltype {
 		case preConf:
-			if o.inc != nil {
+			if obj.inc != nil {
 				c = append(c, &Content{
 					err:    nil,
-					Object: o,
+					Object: obj,
 					Parms:  o.Parms,
-					r:      o.Includes(),
+					r:      obj.Includes(),
 				})
 			}
 
-		case "files":
-			if o.file != "" {
-				b, err := getFile(o.file)
+		case files:
+			if obj.file != "" {
+				b, err := getFile(obj.file)
 				c = append(c, &Content{
 					err:    err,
-					Object: o,
+					Object: obj,
 					Parms:  o.Parms,
 					r:      b,
 				})
 			}
 
-		case "urls":
-			if o.url != "" {
-				reader, err := GetHTTP(o.Parms.Method, o.url)
+		case urls:
+			if obj.url != "" {
+				reader, err := GetHTTP(o.Parms.Method, obj.url)
 				c = append(c, &Content{
 					err:    err,
-					Object: o,
+					Object: obj,
 					Parms:  o.Parms,
 					r:      reader,
 				})

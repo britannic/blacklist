@@ -1,9 +1,23 @@
-"/tmp/hosts.adaway.blacklist.conf
-/tmp/hosts.malwaredomainlist.blacklist.conf
-/tmp/hosts.openphish.blacklist.conf
-/tmp/hosts.pre-configured.blacklist.conf
-/tmp/hosts.someonewhocares.blacklist.conf
-/tmp/hosts.tasty.blacklist.conf
-/tmp/hosts.volkerschatz.blacklist.conf
-/tmp/hosts.winhelp2002.blacklist.conf
-/tmp/hosts.yoyo.blacklist.conf"
+"[
+Desc:\t \"pre-configured\"
+Disabled: false
+File:\t \"\"
+IP:\t \"\"
+Ltype:\t \"pre-configured\"
+Name:\t \"pre-configured\"
+nType:\t \"domain\"
+Prefix:\t \"\"
+Type:\t \"domains\"
+URL:\t \"\"
+
+Desc:\t \"pre-configured\"
+Disabled: false
+File:\t \"\"
+IP:\t \"\"
+Ltype:\t \"pre-configured\"
+Name:\t \"pre-configured\"
+nType:\t \"host\"
+Prefix:\t \"\"
+Type:\t \"hosts\"
+URL:\t \"\"
+]"

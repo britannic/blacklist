@@ -8,29 +8,31 @@ import (
 )
 
 func TestConfigString(t *testing.T) {
-	r := &CFGstatic{Cfg: tdata.Cfg}
-	c, err := ReadCfg(r)
-	OK(t, err)
-	c.Parms = NewParms()
-	c.SetOpt(
+	c := NewConfig(
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
 		Method("GET"),
 		Nodes([]string{"domains", "hosts"}),
-		STypes([]string{"pre-configured", "files", "urls"}),
+		STypes([]string{"pre-configured", "file", urls}),
 	)
+
+	r := &CFGstatic{Cfg: tdata.Cfg}
+	err := c.ReadCfg(r)
+	OK(t, err)
+
 	Equals(t, tdata.JSONcfg, c.String())
 
 	r = &CFGstatic{Cfg: tdata.ZeroHostSourcesCfg}
-	c, err = ReadCfg(r)
-	OK(t, err)
-	c.Parms = NewParms()
-	c.SetOpt(
+	c = NewConfig(
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
 		Method("GET"),
 		Nodes([]string{"domains", "hosts"}),
-		STypes([]string{"pre-configured", "files", "urls"}),
+		STypes([]string{"pre-configured", "file", urls}),
 	)
+
+	err = c.ReadCfg(r)
+	OK(t, err)
+
 	Equals(t, tdata.JSONcfgZeroHostSources, c.String())
 }

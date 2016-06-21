@@ -13,11 +13,13 @@ import (
 func TestKeys(t *testing.T) {
 	var keys sort.StringSlice
 	l := &CFGstatic{Cfg: tdata.Cfg}
-	b, err := ReadCfg(l)
+	c := NewConfig(Nodes([]string{"domains", "hosts"}))
+	err := c.ReadCfg(l)
 	OK(t, err)
 
-	Equals(t, "[blacklist domains hosts]", fmt.Sprint(b.sortKeys()))
-	Equals(t, "[adaway malwaredomainlist openphish someonewhocares tasty volkerschatz winhelp2002 yoyo]", fmt.Sprint(b.sortSKeys("hosts")))
+	z := c.GetAll().Names()
+	Equals(t, "[blacklist domains hosts]", fmt.Sprint(c.sortKeys()))
+	Equals(t, "[adaway malc0de malwaredomainlist openphish pre-configured pre-configured someonewhocares tasty volkerschatz winhelp2002 yoyo]", fmt.Sprint(z))
 
 	for _, k := range []string{"a", "b", "c", "z", "q", "s", "e", "i", "x", "m"} {
 		keys = append(keys, k)

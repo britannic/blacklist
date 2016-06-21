@@ -10,45 +10,64 @@ import (
 	"strings"
 )
 
-// api sets the path and executable for the EdgeOS shell api
-const (
-	api     = "/bin/cli-shell-api"
-	service = "service dns forwarding"
-)
+var apiCMDs = map[string]string{
+	"cfExists":           "cfExists",
+	"cfReturnValue":      "cfReturnValue",
+	"cfReturnValues":     "cfReturnValues",
+	"echo":               "true",
+	"exists":             "exists",
+	"existsActive":       "existsActive",
+	"getNodeType":        "getNodeType",
+	"inSession":          "inSession",
+	"isLeaf":             "isLeaf",
+	"isMulti":            "isMulti",
+	"isTag":              "isTag",
+	"listActiveNodes":    "listActiveNodes",
+	"listNodes":          "listNodes",
+	"returnActiveValue":  "returnActiveValue",
+	"returnActiveValues": "returnActiveValues",
+	"returnValue":        "returnValue",
+	"returnValues":       "returnValues",
+	"showCfg":            "showCfg",
+	"showConfig":         "showConfig",
+}
 
-// apiCMD returns a map of CLI commands
-func apiCMD() (r map[string]string) {
-	r = make(map[string]string)
-	c := []string{
-		"cfExists",
-		"cfReturnValue",
-		"cfReturnValues",
-		"echo",
-		"exists",
-		"existsActive",
-		"getNodeType",
-		"inSession",
-		"isLeaf",
-		"isMulti",
-		"isTag",
-		"listActiveNodes",
-		"listNodes",
-		"returnActiveValue",
-		"returnActiveValues",
-		"returnValue",
-		"returnValues",
-		"showCfg",
-		"showConfig",
-	}
-	for _, k := range c {
-		switch k {
-		case "echo":
-			r[k] = k
-		default:
-			r[k] = fmt.Sprintf("%v %v", api, k)
+func active(a string, inS bool) string {
+	switch inS {
+	case true:
+		switch a {
+		case "exists":
+			a = "existsActive"
+		case "listNodes":
+			a = "listActiveNodes"
+		case "returnValue":
+			a = "returnActiveValue"
+		case "returnValues":
+			a = "returnActiveValues"
+		case "showCfg":
+			a = "showConfig"
+
+		}
+	default:
+		switch a {
+		case "existsActive":
+			a = "exists"
+		case "listActiveNodes":
+			a = "listNodes"
+		case "returnActiveValue":
+			a = "returnValue"
+		case "returnActiveValues":
+			a = "returnValues"
+		case "showConfig":
+			a = "showCfg"
 		}
 	}
-	return r
+	return a
+}
+
+// apiCMD returns a map of CLI commands
+func apiCMD(action string, inCLI bool) string {
+	return apiCMDs[active(action, inCLI)]
 }
 
 // deleteFile removes a file if it exists
@@ -69,29 +88,10 @@ func getFile(fname string) (io.Reader, error) {
 	return os.Open(fname)
 }
 
-// insession returns true if VyOS/EdgeOS configuration is in session
-func insession() bool {
-	cmd := exec.Command(api, "inSession")
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	if ok := cmd.Run(); ok == nil {
-		if out.String() == "0" {
-			return true
-		}
-	}
-	return false
-}
-
 // load reads the config using the EdgeOS/VyOS cli-shell-api
-func load(action string, level string) (r string, err error) {
-	action = shCMD(action)
-	x := apiCMD()
-	if _, ok := x[action]; !ok {
-		return r, fmt.Errorf("API command %v is invalid", level)
-	}
-
+func (c *Config) load(action string, level string) (r string, err error) {
 	cmd := exec.Command("/bin/bash")
-	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v", x[action], level))
+	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v", apiCMD(action, c.insession()), level))
 
 	stdout, err := cmd.Output()
 	if err != nil {
@@ -104,7 +104,7 @@ func load(action string, level string) (r string, err error) {
 
 // Load returns an EdgeOS config file string and error
 func (c *CFGcli) Load() io.Reader {
-	s, err := load("showConfig", service)
+	s, err := c.load("showConfig", c.Level)
 	if err != nil {
 		log.Print(err)
 	}
@@ -130,24 +130,4 @@ NEXT:
 	}
 
 	return nil
-}
-
-// shCMD returns the appropriate command for non-tty or tty context
-func shCMD(a string) (action string) {
-	if !insession() {
-		action = a
-		switch a {
-		case "listNodes":
-			action = "listActiveNodes"
-		case "returnValue":
-			action = "returnActiveValue"
-		case "returnValues":
-			action = "returnActiveValues"
-		case "exists":
-			action = "existsActive"
-		case "showConfig":
-			action = "showCfg"
-		}
-	}
-	return action
 }

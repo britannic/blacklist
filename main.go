@@ -37,6 +37,7 @@ func main() {
 
 	c.Parms = e.NewParms()
 	_ = c.SetOpt(
+		e.API("/bin/cli-shell-api"),
 		e.Cores(runtime.NumCPU()),
 		e.Debug(*o.Debug),
 		e.Dir(o.SetDir(*o.ARCH)),
@@ -44,11 +45,12 @@ func main() {
 		e.Ext("blacklist.conf"),
 		e.File(*o.File),
 		e.FileNameFmt("%v/%v.%v.%v"),
+		e.Level("service dns forwarding"),
 		e.Method("GET"),
 		e.Nodes([]string{"domains", "hosts"}),
 		e.Poll(*o.Poll),
 		e.Prefix("address="),
-		e.STypes([]string{"files", pre, "urls"}),
+		e.STypes([]string{"file", pre, "url"}),
 	)
 
 	c.GetAll().Files().Remove()

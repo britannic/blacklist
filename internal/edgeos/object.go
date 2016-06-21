@@ -8,9 +8,14 @@ import (
 	"strings"
 )
 
-// Excludes returns a List map of blacklist exclusions
-func (o *Object) Excludes() List {
-	return UpdateList(o.exc)
+// Find returns the int position of an Objects' element in the StringSlice
+func (o *Objects) Find(elem string) int {
+	for i, obj := range o.S {
+		if obj.name == elem {
+			return i
+		}
+	}
+	return -1
 }
 
 // Includes returns an io.Reader of blacklist Includes
@@ -21,10 +26,34 @@ func (o *Object) Includes() io.Reader {
 
 func newObject() *Object {
 	return &Object{
-		data: make(data),
-		exc:  make([]string, 0),
-		inc:  make([]string, 0),
+		Objects: Objects{},
+		exc:     make([]string, 0),
+		inc:     make([]string, 0),
 	}
+}
+
+// Names returns a sorted slice of Objects names
+func (o *Objects) Names() (s sort.StringSlice) {
+	for _, obj := range o.S {
+		s = append(s, obj.name)
+	}
+	sort.Sort(s)
+	return s
+}
+
+// Source returns a map of sources
+func (o *Objects) Source(ltype string) *Objects {
+	objs := Objects{Parms: o.Parms}
+	for _, obj := range o.S {
+		switch ltype {
+		case obj.ltype:
+			objs.S = append(objs.S, obj)
+		case "all":
+			// objs.S = append(objs.S, obj)
+			return o
+		}
+	}
+	return &objs
 }
 
 // Stringer for Object

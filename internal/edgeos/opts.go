@@ -9,6 +9,7 @@ import (
 
 // Parms is struct of parameters
 type Parms struct {
+	API       string
 	Arch      string
 	Cores     int
 	Debug     bool
@@ -18,6 +19,7 @@ type Parms struct {
 	Ext       string
 	File      string
 	FnFmt     string
+	Level     string
 	Method    string
 	Nodes     []string
 	Pfx       string
@@ -27,14 +29,14 @@ type Parms struct {
 	Verbosity int
 }
 
-// Option sets is a recursive function
-type Option func(p *Parms) Option
+// Option is a recursive function
+type Option func(c *Config) Option
 
 // SetOpt sets the specified options passed as Parms and returns an option to restore the last arg's previous value
-func (p *Parms) SetOpt(opts ...Option) (previous Option) {
+func (c *Config) SetOpt(opts ...Option) (previous Option) {
 	// apply all the options, and replace each with its inverse
 	for i, opt := range opts {
-		opts[i] = opt(p)
+		opts[i] = opt(c)
 	}
 
 	// Reverse the list of inverses, since we want them to be applied in reverse order
@@ -42,98 +44,116 @@ func (p *Parms) SetOpt(opts ...Option) (previous Option) {
 		opts[i], opts[j] = opts[j], opts[i]
 	}
 
-	return func(p *Parms) Option {
-		return p.SetOpt(opts...)
+	return func(c *Config) Option {
+		return c.SetOpt(opts...)
 	}
 }
 
 // Arch sets target CPU architecture
 func Arch(arch string) Option {
-	return func(p *Parms) Option {
-		previous := p.Arch
-		p.Arch = arch
+	return func(c *Config) Option {
+		previous := c.Arch
+		c.Arch = arch
 		return Arch(previous)
+	}
+}
+
+// API sets the EdgeOS CLI API command
+func API(s string) Option {
+	return func(c *Config) Option {
+		previous := c.API
+		c.API = s
+		return API(previous)
 	}
 }
 
 // Cores sets max CPU cores
 func Cores(i int) Option {
-	return func(p *Parms) Option {
-		previous := p.Cores
+	return func(c *Config) Option {
+		previous := c.Cores
 		runtime.GOMAXPROCS(i)
-		p.Cores = i
+		c.Cores = i
 		return Cores(previous)
 	}
 }
 
 // Debug toggles debug level on or off
 func Debug(b bool) Option {
-	return func(p *Parms) Option {
-		previous := p.Debug
-		p.Debug = b
+	return func(c *Config) Option {
+		previous := c.Debug
+		c.Debug = b
 		return Debug(previous)
 	}
 }
 
 // Dir sets directory location
 func Dir(d string) Option {
-	return func(p *Parms) Option {
-		previous := p.Dir
-		p.Dir = d
+	return func(c *Config) Option {
+		previous := c.Dir
+		c.Dir = d
 		return Dir(previous)
 	}
 }
 
 // Excludes sets nodes exclusions
 func Excludes(l List) Option {
-	return func(p *Parms) Option {
-		previous := p.Exc
-		p.Exc = l
+	return func(c *Config) Option {
+		previous := c.Exc
+		c.Exc = l
 		return Excludes(previous)
 	}
 }
 
 // Ext sets the blacklist file n extension
 func Ext(e string) Option {
-	return func(p *Parms) Option {
-		previous := p.Ext
-		p.Ext = e
+	return func(c *Config) Option {
+		previous := c.Ext
+		c.Ext = e
 		return Ext(previous)
 	}
 }
 
 // File sets the EdgeOS configuration file n
 func File(f string) Option {
-	return func(p *Parms) Option {
-		previous := p.File
-		p.File = f
+	return func(c *Config) Option {
+		previous := c.File
+		c.File = f
 		return File(previous)
 	}
 }
 
 // FileNameFmt sets the EdgeOS configuration file name format
 func FileNameFmt(f string) Option {
-	return func(p *Parms) Option {
-		previous := p.FnFmt
-		p.FnFmt = f
+	return func(c *Config) Option {
+		previous := c.FnFmt
+		c.FnFmt = f
 		return FileNameFmt(previous)
+	}
+}
+
+// Level sets the EdgeOS API CLI level
+func Level(s string) Option {
+	return func(c *Config) Option {
+		previous := c.Level
+		c.Level = s
+		return Level(previous)
 	}
 }
 
 // Prefix sets the dnsmasq configuration address line prefix
 func Prefix(l string) Option {
-	return func(p *Parms) Option {
-		previous := p.Pfx
-		p.Pfx = l
+	return func(c *Config) Option {
+		previous := c.Pfx
+		c.Pfx = l
 		return Prefix(previous)
 	}
 }
 
 // Method sets the HTTP method
 func Method(method string) Option {
-	return func(p *Parms) Option {
-		previous := p.Method
-		p.Method = method
+	return func(c *Config) Option {
+		previous := c.Method
+		c.Method = method
 		return Method(previous)
 	}
 }
@@ -148,18 +168,18 @@ func NewParms() *Parms {
 
 // Nodes sets the node ns array
 func Nodes(nodes []string) Option {
-	return func(p *Parms) Option {
-		previous := p.Nodes
-		p.Nodes = nodes
+	return func(c *Config) Option {
+		previous := c.Parms.Nodes
+		c.Parms.Nodes = nodes
 		return Nodes(previous)
 	}
 }
 
 // Poll sets the polling interval in seconds
 func Poll(t int) Option {
-	return func(p *Parms) Option {
-		previous := p.Poll
-		p.Poll = t
+	return func(c *Config) Option {
+		previous := c.Poll
+		c.Poll = t
 		return Poll(previous)
 	}
 }
@@ -212,27 +232,27 @@ func (p *Parms) String() string {
 
 // STypes sets an array of legal types used by Source
 func STypes(s []string) Option {
-	return func(p *Parms) Option {
-		previous := p.Stypes
-		p.Stypes = s
+	return func(c *Config) Option {
+		previous := c.Stypes
+		c.Stypes = s
 		return STypes(previous)
 	}
 }
 
 // Test toggles testing mode on or off
 func Test(b bool) Option {
-	return func(p *Parms) Option {
-		previous := p.Test
-		p.Test = b
+	return func(c *Config) Option {
+		previous := c.Test
+		c.Test = b
 		return Test(previous)
 	}
 }
 
 // Verbosity sets the verbosity level to v
 func Verbosity(i int) Option {
-	return func(p *Parms) Option {
-		previous := p.Verbosity
-		p.Verbosity = i
+	return func(c *Config) Option {
+		previous := c.Verbosity
+		c.Verbosity = i
 		return Verbosity(previous)
 	}
 }
