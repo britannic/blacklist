@@ -71,32 +71,6 @@ func (c *Config) excludes(node string) []string {
 	return exc
 }
 
-// Files returns a list of dnsmasq conf files from all srcs
-func (o *Objects) Files() *CFile {
-	c := CFile{Parms: o.Parms}
-	for _, obj := range o.S {
-		c.nType = obj.nType
-		format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
-		c.names = append(c.names, fmt.Sprintf(format, getType(obj.nType), obj.name))
-	}
-	sort.Strings(c.names)
-	return &c
-}
-
-func getInc(obj *Object, node string) []*Object {
-	return []*Object{
-		&Object{
-			desc:  preConf,
-			inc:   obj.inc,
-			ip:    obj.ip,
-			ltype: preConf,
-			name:  preConf,
-			nType: getType(node).(ntype),
-			Parms: obj.Parms,
-		},
-	}
-}
-
 func (b bNodes) validate(node string) *Objects {
 	for _, obj := range b[node].Objects.S {
 		if obj.ip == "" {
@@ -121,16 +95,6 @@ func (c *Config) Get(node string) *Objects {
 		o.addObj(c, node)
 	}
 	return o
-}
-
-func (o *Objects) addInc(c *Config, node string) {
-	if c.bNodes[node].inc != nil {
-		o.S = append(o.S, getInc(&Object{Parms: c.Parms, inc: c.bNodes[node].inc, ip: c.bNodes[node].ip}, node)...)
-	}
-}
-
-func (o *Objects) addObj(c *Config, node string) {
-	o.S = append(o.S, c.bNodes.validate(node).S...)
 }
 
 // GetAll returns an array of Objects
@@ -183,19 +147,18 @@ func (c *CFGstatic) Load() io.Reader {
 	return bytes.NewBufferString(c.Cfg)
 }
 
-// NewConfig returns a new *Config initialized with the parameter options passed to it
-func NewConfig(opts ...Option) *Config {
-	c := Config{
-		bNodes: make(bNodes),
-		Parms: &Parms{
-			Dex: make(List),
-			Exc: make(List),
-		},
+// load reads the config using the EdgeOS/VyOS cli-shell-api
+func (c *Config) load(action string, level string) (r string, err error) {
+	cmd := exec.Command("/bin/bash")
+	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v", apiCMD(action, c.insession()), level))
+
+	stdout, err := cmd.Output()
+	if err != nil {
+		return r, err
 	}
-	for _, opt := range opts {
-		opt(&c)
-	}
-	return &c
+
+	r = string(stdout)
+	return r, err
 }
 
 // Nodes returns an array of configured nodes
@@ -307,10 +270,10 @@ func (c *CFile) ReadDir(pattern string) ([]string, error) {
 // Remove deletes a CFile array of file names
 func (c *CFile) Remove() error {
 	if c.Wildcard == (Wildcard{}) {
-		c.Wildcard = Wildcard{node: "*s", name: "*"}
+		c.Wildcard = Wildcard{Node: "*s", Name: "*"}
 	}
 
-	pattern := fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.node, c.Wildcard.name, c.Parms.Ext)
+	pattern := fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.Node, c.Wildcard.Name, c.Parms.Ext)
 	dlist, err := c.ReadDir(pattern)
 	if err != nil {
 		return err

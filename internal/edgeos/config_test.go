@@ -155,11 +155,8 @@ func TestRemove(t *testing.T) {
 	OK(t, err)
 
 	Equals(t, want, got)
-	// fmt.Println(DiffArray(want, got))
-	prev := c.SetOpt(WCard(Wildcard{node: "[]a]", name: "]"}))
-	// pattern = fmt.Sprintf(c.FnFmt, c.Dir, "[]a]", "]", c.Parms.Ext)
-	// _, err = cf.ReadDir(pattern)
-	// NotOK(t, err)
+
+	prev := c.SetOpt(WCard(Wildcard{Node: "[]a]", Name: "]"}))
 
 	err = cf.Remove()
 	NotOK(t, err)

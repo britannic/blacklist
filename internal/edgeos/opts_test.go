@@ -51,7 +51,7 @@ func TestOption(t *testing.T) {
 		Stypes:    []string{files, preConf, urls},
 		Test:      true,
 		Verbosity: 2,
-		Wildcard:  Wildcard{node: "*s", name: "*"},
+		Wildcard:  Wildcard{Node: "*s", Name: "*"},
 	}
 
 	c := NewConfig()
@@ -75,7 +75,7 @@ func TestOption(t *testing.T) {
 		STypes([]string{"file", preConf, urls}),
 		Test(true),
 		Verbosity(2),
-		WCard(Wildcard{node: "*s", name: "*"}),
+		WCard(Wildcard{Node: "*s", Name: "*"}),
 	)
 
 	Equals(t, wantRaw, *c.Parms)

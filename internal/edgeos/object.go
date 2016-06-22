@@ -8,6 +8,28 @@ import (
 	"strings"
 )
 
+func (o *Objects) addInc(c *Config, node string) {
+	if c.bNodes[node].inc != nil {
+		o.S = append(o.S, getInc(&Object{Parms: c.Parms, inc: c.bNodes[node].inc, ip: c.bNodes[node].ip}, node)...)
+	}
+}
+
+func (o *Objects) addObj(c *Config, node string) {
+	o.S = append(o.S, c.bNodes.validate(node).S...)
+}
+
+// Files returns a list of dnsmasq conf files from all srcs
+func (o *Objects) Files() *CFile {
+	c := CFile{Parms: o.Parms}
+	for _, obj := range o.S {
+		c.nType = obj.nType
+		format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
+		c.names = append(c.names, fmt.Sprintf(format, getType(obj.nType), obj.name))
+	}
+	sort.Strings(c.names)
+	return &c
+}
+
 // Find returns the int position of an Objects' element in the StringSlice
 func (o *Objects) Find(elem string) int {
 	for i, obj := range o.S {
@@ -18,18 +40,24 @@ func (o *Objects) Find(elem string) int {
 	return -1
 }
 
+func getInc(obj *Object, node string) []*Object {
+	return []*Object{
+		&Object{
+			desc:  preConf,
+			inc:   obj.inc,
+			ip:    obj.ip,
+			ltype: preConf,
+			name:  preConf,
+			nType: getType(node).(ntype),
+			Parms: obj.Parms,
+		},
+	}
+}
+
 // Includes returns an io.Reader of blacklist Includes
 func (o *Object) Includes() io.Reader {
 	sort.Strings(o.inc)
 	return bytes.NewBuffer([]byte(strings.Join(o.inc, "\n")))
-}
-
-func newObject() *Object {
-	return &Object{
-		Objects: Objects{},
-		exc:     make([]string, 0),
-		inc:     make([]string, 0),
-	}
 }
 
 // Names returns a sorted slice of Objects names
@@ -39,6 +67,14 @@ func (o *Objects) Names() (s sort.StringSlice) {
 	}
 	sort.Sort(s)
 	return s
+}
+
+func newObject() *Object {
+	return &Object{
+		Objects: Objects{},
+		exc:     make([]string, 0),
+		inc:     make([]string, 0),
+	}
 }
 
 // Source returns a map of sources

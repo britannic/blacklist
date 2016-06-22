@@ -41,6 +41,7 @@ func main() {
 		e.Poll(*o.Poll),
 		e.Prefix("address="),
 		e.STypes([]string{"file", pre, "url"}),
+		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
 	)
 
 	c.ReadCfg(o.getCFG())

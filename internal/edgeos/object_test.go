@@ -1,6 +1,7 @@
 package edgeos
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/britannic/blacklist/internal/tdata"
@@ -22,4 +23,30 @@ func TestObjectString(t *testing.T) {
 	OK(t, err)
 
 	Equals(t, exp, c.GetAll().String())
+}
+
+func TestSortObject(t *testing.T) {
+	act := &Objects{
+		S: []*Object{
+			{name: "eagle"},
+			{name: "aardvark"},
+			{name: "dog"},
+			{name: "crab"},
+			{name: "beetle"},
+		},
+	}
+
+	exp := &Objects{
+		S: []*Object{
+			{name: "aardvark"},
+			{name: "beetle"},
+			{name: "crab"},
+			{name: "dog"},
+			{name: "eagle"},
+		},
+	}
+
+	sort.Sort(act)
+	Equals(t, exp, act)
+
 }

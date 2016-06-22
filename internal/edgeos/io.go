@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 )
 
@@ -86,20 +85,6 @@ func deleteFile(f string) bool {
 // getFile reads a file and returns a *bufio.Scanner instance
 func getFile(fname string) (io.Reader, error) {
 	return os.Open(fname)
-}
-
-// load reads the config using the EdgeOS/VyOS cli-shell-api
-func (c *Config) load(action string, level string) (r string, err error) {
-	cmd := exec.Command("/bin/bash")
-	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v", apiCMD(action, c.insession()), level))
-
-	stdout, err := cmd.Output()
-	if err != nil {
-		return r, err
-	}
-
-	r = string(stdout)
-	return r, err
 }
 
 // Load returns an EdgeOS config file string and error

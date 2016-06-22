@@ -32,12 +32,27 @@ type Parms struct {
 
 // Wildcard struct sets globbing wildcards for filename searches
 type Wildcard struct {
-	node string
-	name string
+	Node string
+	Name string
 }
 
 // Option is a recursive function
 type Option func(c *Config) Option
+
+// NewConfig returns a new *Config initialized with the parameter options passed to it
+func NewConfig(opts ...Option) *Config {
+	c := Config{
+		bNodes: make(bNodes),
+		Parms: &Parms{
+			Dex: make(List),
+			Exc: make(List),
+		},
+	}
+	for _, opt := range opts {
+		opt(&c)
+	}
+	return &c
+}
 
 // SetOpt sets the specified options passed as Parms and returns an option to restore the last arg's previous value
 func (c *Config) SetOpt(opts ...Option) (previous Option) {
