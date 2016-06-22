@@ -149,13 +149,21 @@ func TestRemove(t *testing.T) {
 
 	c.GetAll().Files().Remove()
 
-	cf := &CFile{}
+	cf := &CFile{Parms: c.Parms}
 	pattern := fmt.Sprintf(c.FnFmt, c.Dir, "*s", "*", c.Parms.Ext)
 	got, err := cf.ReadDir(pattern)
 	OK(t, err)
 
 	Equals(t, want, got)
 	// fmt.Println(DiffArray(want, got))
+	prev := c.SetOpt(WCard(Wildcard{node: "[]a]", name: "]"}))
+	// pattern = fmt.Sprintf(c.FnFmt, c.Dir, "[]a]", "]", c.Parms.Ext)
+	// _, err = cf.ReadDir(pattern)
+	// NotOK(t, err)
+
+	err = cf.Remove()
+	NotOK(t, err)
+	c.SetOpt(prev)
 }
 
 func TestSource(t *testing.T) {

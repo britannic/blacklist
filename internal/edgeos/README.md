@@ -51,6 +51,7 @@ StrToBool converts a string ("true" or "false") to it's boolean equivalent
 ## type CFGcli
 ``` go
 type CFGcli struct {
+    *Config
     Cfg string
 }
 ```
@@ -77,6 +78,7 @@ Load returns an EdgeOS config file string and error
 ## type CFGstatic
 ``` go
 type CFGstatic struct {
+    *Parms
     Cfg string
 }
 ```
@@ -121,9 +123,9 @@ CFile holds an array of file names
 
 ### func (\*CFile) ReadDir
 ``` go
-func (c *CFile) ReadDir(dir string) ([]os.FileInfo, error)
+func (c *CFile) ReadDir(pattern string) ([]string, error)
 ```
-ReadDir implements OSinformer
+ReadDir returns a listing of dnsmasq formatted blacklist configuration files
 
 
 
@@ -186,26 +188,26 @@ Config is a struct of configuration fields
 
 
 
-### func ReadCfg
+### func NewConfig
 ``` go
-func ReadCfg(r ConfLoader) (*Config, error)
+func NewConfig(opts ...Option) *Config
 ```
-ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
+NewConfig returns a new *Config initialized with the parameter options passed to it
 
 
 
 
 ### func (\*Config) Excludes
 ``` go
-func (c *Config) Excludes(node string) []string
+func (c *Config) Excludes(node string) List
 ```
-Excludes returns a string array of excludes
+Excludes returns a List map of blacklist exclusions
 
 
 
 ### func (\*Config) Get
 ``` go
-func (c *Config) Get(node string) (o *Object)
+func (c *Config) Get(node string) *Objects
 ```
 Get returns an *Object for a given node
 
@@ -213,7 +215,7 @@ Get returns an *Object for a given node
 
 ### func (\*Config) GetAll
 ``` go
-func (c *Config) GetAll() *Objects
+func (c *Config) GetAll(ltypes ...string) *Objects
 ```
 GetAll returns an array of Objects
 
@@ -227,11 +229,27 @@ Nodes returns an array of configured nodes
 
 
 
+### func (\*Config) ReadCfg
+``` go
+func (c *Config) ReadCfg(r ConfLoader) error
+```
+ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
+
+
+
 ### func (\*Config) STypes
 ``` go
 func (c *Config) STypes() []string
 ```
 STypes returns an array of configured nodes
+
+
+
+### func (\*Config) SetOpt
+``` go
+func (c *Config) SetOpt(opts ...Option) (previous Option)
+```
+SetOpt sets the specified options passed as Parms and returns an option to restore the last arg's previous value
 
 
 
@@ -247,9 +265,8 @@ String returns pretty print for the Blacklist struct
 ``` go
 type Content struct {
     *Object
-    Contenter
-
     *Parms
+    Contenter
     // contains filtered or unexported fields
 }
 ```
@@ -270,14 +287,6 @@ Content is a struct of blacklist content
 func (c *Content) Process() *blist
 ```
 Process extracts hosts/domains from downloaded raw content
-
-
-
-### func (Content) Source
-``` go
-func (d Content) Source(ltype string) *Objects
-```
-Source returns a map of sources
 
 
 
@@ -360,29 +369,11 @@ String implements fmt.Print interface
 
 
 
-## type OSinformer
-``` go
-type OSinformer interface {
-    ReadDir(string) ([]os.FileInfo, error)
-    Remove() error
-}
-```
-OSinformer implements os.FileInfo methods
-
-
-
-
-
-
-
-
-
-
-
 ## type Object
 ``` go
 type Object struct {
     *Parms
+    Objects
     // contains filtered or unexported fields
 }
 ```
@@ -398,27 +389,11 @@ Object struct for normalizing EdgeOS data.
 
 
 
-### func (\*Object) Excludes
-``` go
-func (o *Object) Excludes() List
-```
-Excludes returns a List map of blacklist exclusions
-
-
-
 ### func (\*Object) Includes
 ``` go
 func (o *Object) Includes() io.Reader
 ```
 Includes returns an io.Reader of blacklist Includes
-
-
-
-### func (Object) Source
-``` go
-func (d Object) Source(ltype string) *Objects
-```
-Source returns a map of sources
 
 
 
@@ -433,8 +408,8 @@ Stringer for Object
 ## type Objects
 ``` go
 type Objects struct {
-    S []*Object
     *Parms
+    S []*Object
 }
 ```
 Objects is a struct of []*Object
@@ -457,9 +432,17 @@ Files returns a list of dnsmasq conf files from all srcs
 
 
 
+### func (\*Objects) Find
+``` go
+func (o *Objects) Find(elem string) int
+```
+Find returns the int position of an Objects' element in the StringSlice
+
+
+
 ### func (\*Objects) GetContent
 ``` go
-func (objs *Objects) GetContent() *Contents
+func (o *Objects) GetContent() *Contents
 ```
 GetContent returns a Content struct
 
@@ -479,6 +462,22 @@ func (o *Objects) Less(i, j int) bool
 ```
 
 
+### func (\*Objects) Names
+``` go
+func (o *Objects) Names() (s sort.StringSlice)
+```
+Names returns a sorted slice of Objects names
+
+
+
+### func (\*Objects) Source
+``` go
+func (o *Objects) Source(ltype string) *Objects
+```
+Source returns a map of sources
+
+
+
 ### func (\*Objects) String
 ``` go
 func (o *Objects) String() string
@@ -495,9 +494,9 @@ func (o *Objects) Swap(i, j int)
 
 ## type Option
 ``` go
-type Option func(p *Parms) Option
+type Option func(c *Config) Option
 ```
-Option sets is a recursive function
+Option is a recursive function
 
 
 
@@ -505,6 +504,13 @@ Option sets is a recursive function
 
 
 
+
+
+### func API
+``` go
+func API(s string) Option
+```
+API sets the EdgeOS CLI API command
 
 
 ### func Arch
@@ -563,6 +569,13 @@ func FileNameFmt(f string) Option
 FileNameFmt sets the EdgeOS configuration file name format
 
 
+### func Level
+``` go
+func Level(s string) Option
+```
+Level sets the EdgeOS API CLI level
+
+
 ### func Method
 ``` go
 func Method(method string) Option
@@ -612,11 +625,19 @@ func Verbosity(i int) Option
 Verbosity sets the verbosity level to v
 
 
+### func WCard
+``` go
+func WCard(w Wildcard) Option
+```
+WCard sets file globbing wildcard values
+
+
 
 
 ## type Parms
 ``` go
 type Parms struct {
+    API       string
     Arch      string
     Cores     int
     Debug     bool
@@ -626,6 +647,7 @@ type Parms struct {
     Ext       string
     File      string
     FnFmt     string
+    Level     string
     Method    string
     Nodes     []string
     Pfx       string
@@ -633,6 +655,7 @@ type Parms struct {
     Stypes    []string
     Test      bool
     Verbosity int
+    Wildcard
 }
 ```
 Parms is struct of parameters
@@ -654,19 +677,29 @@ NewParms sets a new *Parms instance
 
 
 
-### func (\*Parms) SetOpt
-``` go
-func (p *Parms) SetOpt(opts ...Option) (previous Option)
-```
-SetOpt sets the specified options passed as Parms and returns an option to restore the last arg's previous value
-
-
-
 ### func (\*Parms) String
 ``` go
 func (p *Parms) String() string
 ```
 String method to implement fmt.Print interface
+
+
+
+## type Wildcard
+``` go
+type Wildcard struct {
+    // contains filtered or unexported fields
+}
+```
+Wildcard struct sets globbing wildcards for filename searches
+
+
+
+
+
+
+
+
 
 
 

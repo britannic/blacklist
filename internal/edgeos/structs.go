@@ -1,31 +1,10 @@
 package edgeos
 
-import (
-	"io"
-	"os"
-)
+import "io"
 
 // ConfLoader interface defines load method
 type ConfLoader interface {
 	Load() io.Reader
-}
-
-// OSinformer implements os.FileInfo methods
-type OSinformer interface {
-	ReadDir(string) ([]os.FileInfo, error)
-	Remove() error
-}
-
-// CFGstatic is for configurations loaded via the EdgeOS CFGstatic
-type CFGstatic struct {
-	*Parms
-	Cfg string
-}
-
-// CFGcli is for configurations loaded via the EdgeOS CFGcli
-type CFGcli struct {
-	*Config
-	Cfg string
 }
 
 // bNodes is a map of leaf nodes
@@ -36,6 +15,18 @@ type CFile struct {
 	*Parms
 	names []string
 	nType ntype
+}
+
+// CFGcli is for configurations loaded via the EdgeOS CFGcli
+type CFGcli struct {
+	*Config
+	Cfg string
+}
+
+// CFGstatic is for configurations loaded via the EdgeOS CFGstatic
+type CFGstatic struct {
+	*Parms
+	Cfg string
 }
 
 // Config is a struct of configuration fields

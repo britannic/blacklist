@@ -27,6 +27,13 @@ type Parms struct {
 	Stypes    []string
 	Test      bool
 	Verbosity int
+	Wildcard
+}
+
+// Wildcard struct sets globbing wildcards for filename searches
+type Wildcard struct {
+	node string
+	name string
 }
 
 // Option is a recursive function
@@ -254,5 +261,14 @@ func Verbosity(i int) Option {
 		previous := c.Verbosity
 		c.Verbosity = i
 		return Verbosity(previous)
+	}
+}
+
+// WCard sets file globbing wildcard values
+func WCard(w Wildcard) Option {
+	return func(c *Config) Option {
+		previous := c.Wildcard
+		c.Wildcard = w
+		return WCard(previous)
 	}
 }

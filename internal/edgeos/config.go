@@ -115,18 +115,10 @@ func (c *Config) Get(node string) *Objects {
 		for _, node := range c.Parms.Nodes {
 			o.addInc(c, node)
 			o.addObj(c, node)
-			// if c.bNodes[node].inc != nil {
-			// 	o.S = append(o.S, getInc(&Object{Parms: c.Parms, inc: c.bNodes[node].inc, ip: c.bNodes[node].ip}, node)...)
-			// }
-			// o.S = append(o.S, c.bNodes.validate(node).S...)
 		}
 	default:
 		o.addInc(c, node)
 		o.addObj(c, node)
-		// if c.bNodes[node].inc != nil {
-		// 	o.S = append(o.S, getInc(&Object{Parms: c.Parms, inc: c.bNodes[node].inc, ip: c.bNodes[node].ip}, node)...)
-		// }
-		// o.S = append(o.S, c.bNodes.validate(node).S...)
 	}
 	return o
 }
@@ -157,9 +149,6 @@ func (c *Config) GetAll(ltypes ...string) *Objects {
 				switch ltype {
 				case preConf:
 					o.addInc(c, node)
-					// if c.bNodes[node].inc != nil {
-					// 	o.S = append(o.S, getInc(&Object{Parms: c.Parms}, node)...)
-					// }
 				default:
 					obj := c.bNodes[node].Objects.S
 					for i := range obj {
@@ -310,26 +299,22 @@ LINE:
 	return nil
 }
 
-// ReadDir implements OSinformer
+// ReadDir returns a listing of dnsmasq formatted blacklist configuration files
 func (c *CFile) ReadDir(pattern string) ([]string, error) {
 	return filepath.Glob(pattern)
 }
 
 // Remove deletes a CFile array of file names
 func (c *CFile) Remove() error {
-	// var got = make([]string, 5)
-	pattern := fmt.Sprintf(c.FnFmt, c.Dir, "*s", "*", c.Parms.Ext)
+	if c.Wildcard == (Wildcard{}) {
+		c.Wildcard = Wildcard{node: "*s", name: "*"}
+	}
+
+	pattern := fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.node, c.Wildcard.name, c.Parms.Ext)
 	dlist, err := c.ReadDir(pattern)
 	if err != nil {
 		return err
 	}
-
-	// for _, f := range dlist {
-	// 	if path.Glob(); strings.Contains(f.Name(), getType(c.nType).(string)) && strings.Contains(f.Name(), c.Ext) {
-	// 		got = append(got, c.Dir+"/"+f.Name())
-	// 	}
-	// }
-
 	return purgeFiles(DiffArray(c.names, dlist))
 }
 
@@ -341,7 +326,6 @@ func (c *Config) String() (result string) {
 	result += fmt.Sprintf("{\n%v%q: [{\n", tabs(indent), "nodes")
 
 	for i, pkey := range c.sortKeys() {
-
 		if i == cnt-1 {
 			cmma = null
 		}

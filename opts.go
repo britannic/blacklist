@@ -6,6 +6,8 @@ import (
 	"os"
 	"runtime"
 
+	"github.com/britannic/blacklist/internal/edgeos"
+	"github.com/britannic/blacklist/internal/tdata"
 	"github.com/fatih/structs"
 )
 
@@ -36,12 +38,23 @@ func (o *Opts) SetDir(arch string) (dir string) {
 	return dir
 }
 
-func (o *Opts) String() (result string) {
+func (o *Opts) String() (r string) {
 	for _, name := range structs.Names(&Opts{}) {
-		result += name + "\n"
+		r += name + "\n"
 	}
 
-	return result
+	return r
+}
+
+// getCFG returns a e.ConfLoader
+func (o *Opts) getCFG() (r edgeos.ConfLoader) {
+	switch o.ARCH {
+	case o.MIPS64:
+		r = &edgeos.CFGcli{}
+	default:
+		r = &edgeos.CFGstatic{Cfg: tdata.Cfg}
+	}
+	return r
 }
 
 // getOpts returns command line flags and values or displays help
