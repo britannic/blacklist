@@ -3,10 +3,9 @@ package edgeos
 
 import (
 	"bufio"
-	"bytes"
 	"errors"
 	"fmt"
-	"io"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"sort"
@@ -71,15 +70,6 @@ func (c *Config) excludes(node string) []string {
 	return exc
 }
 
-func (b bNodes) validate(node string) *Objects {
-	for _, obj := range b[node].Objects.S {
-		if obj.ip == "" {
-			obj.ip = b[node].ip
-		}
-	}
-	return &b[node].Objects
-}
-
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) *Objects {
 	o := &Objects{Parms: c.Parms}
@@ -128,37 +118,17 @@ func (c *Config) GetAll(ltypes ...string) *Objects {
 	return o
 }
 
-// insession returns true if VyOS/EdgeOS configuration is in session
-func (c *Config) insession() bool {
-	var (
-		cmd = exec.Command(c.API, "inSession")
-		out bytes.Buffer
-	)
-
-	cmd.Stdout = &out
-	if ok := cmd.Run(); ok == nil {
-		return out.String() == "0"
-	}
-	return false
-}
-
-// Load returns an EdgeOS CLI loaded configuration
-func (c *CFGstatic) Load() io.Reader {
-	return bytes.NewBufferString(c.Cfg)
+// InSession returns true if VyOS/EdgeOS configuration is in session
+func (c *Config) InSession() bool {
+	return os.ExpandEnv("$_OFR_CONFIGURE") == "ok"
 }
 
 // load reads the config using the EdgeOS/VyOS cli-shell-api
-func (c *Config) load(action string, level string) (r string, err error) {
-	cmd := exec.Command("/bin/bash")
-	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v", apiCMD(action, c.insession()), level))
+func (c *Config) load(action string, level string) ([]byte, error) {
+	cmd := exec.Command(c.Bash)
+	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v %v", c.API, apiCMD(action, c.InSession()), level))
 
-	stdout, err := cmd.Output()
-	if err != nil {
-		return r, err
-	}
-
-	r = string(stdout)
-	return r, err
+	return cmd.Output()
 }
 
 // Nodes returns an array of configured nodes
@@ -176,7 +146,7 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 		tnode  string
 		b      = bufio.NewScanner(r.Load())
 		branch string
-		nodes  = make([]string, 2)
+		nodes  []string //make([]string, 2)
 		rx     = regx.Objects
 		s      *Object
 	)
@@ -209,6 +179,7 @@ LINE:
 			nodes = append(nodes, srcName[1])
 
 			if srcName[1] == src {
+				s = newObject()
 				s.name = branch
 				s.nType = getType(tnode).(ntype)
 			}
@@ -242,7 +213,7 @@ LINE:
 				s.ltype = name[1]
 				s.url = name[2]
 				c.bNodes[tnode].Objects.S = append(c.bNodes[tnode].Objects.S, s)
-				s = newObject() // reset s for the next loop
+				// s = newObject() // reset s for the next loop
 
 			}
 
@@ -250,8 +221,10 @@ LINE:
 			continue LINE
 
 		case rx.RBRC.MatchString(line):
-			nodes = nodes[:len(nodes)-1] // pop last node
-			tnode = nodes[len(nodes)-1]
+			if len(nodes) > 1 {
+				nodes = nodes[:len(nodes)-1] // pop last node
+				tnode = nodes[len(nodes)-1]
+			}
 		}
 	}
 
@@ -267,11 +240,15 @@ func (c *CFile) ReadDir(pattern string) ([]string, error) {
 	return filepath.Glob(pattern)
 }
 
+// ReloadDNS reloads the dnsmasq configuration
+func (c *Config) ReloadDNS() ([]byte, error) {
+	cmd := exec.Command("/bin/bash")
+	cmd.Stdin = strings.NewReader(c.DNSsvc)
+	return cmd.CombinedOutput()
+}
+
 // Remove deletes a CFile array of file names
 func (c *CFile) Remove() error {
-	if c.Wildcard == (Wildcard{}) {
-		c.Wildcard = Wildcard{Node: "*s", Name: "*"}
-	}
 
 	pattern := fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.Node, c.Wildcard.Name, c.Parms.Ext)
 	dlist, err := c.ReadDir(pattern)
@@ -299,16 +276,11 @@ func (c *Config) String() (result string) {
 		indent++
 		result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled,
 			BooltoStr(c.bNodes[pkey].disabled))
-
-		result += tabs(indent) + getJSONsrcIP(c, pkey)
-
+		result = is(indent, result, "ip", c.bNodes[pkey].ip)
 		result += getJSONArray(&cfgJSON{array: c.bNodes[pkey].exc, pk: pkey, leaf: "excludes", indent: indent})
 
 		if pkey != rootNode {
 			result += getJSONArray(&cfgJSON{array: c.bNodes[pkey].inc, pk: pkey, leaf: "includes", indent: indent})
-		}
-
-		if pkey != rootNode {
 			result += getJSONsrcArray(&cfgJSON{Config: c, pk: pkey, indent: indent})
 		}
 
@@ -335,4 +307,23 @@ func (c *CFile) Strings() []string {
 // STypes returns an array of configured nodes
 func (c *Config) STypes() []string {
 	return c.Parms.Stypes
+}
+
+func (b bNodes) getIP(node string) (ip string) {
+	switch b[node].ip {
+	case "":
+		ip = b[rootNode].ip
+	default:
+		ip = b[node].ip
+	}
+	return ip
+}
+
+func (b bNodes) validate(node string) *Objects {
+	for _, obj := range b[node].Objects.S {
+		if obj.ip == "" {
+			obj.ip = b.getIP(node)
+		}
+	}
+	return &b[node].Objects
 }

@@ -74,11 +74,9 @@ func deleteFile(f string) bool {
 	if _, err := os.Stat(f); os.IsNotExist(err) {
 		return true
 	}
-
 	if err := os.Remove(f); err != nil {
 		return false
 	}
-
 	return true
 }
 
@@ -89,17 +87,21 @@ func getFile(fname string) (io.Reader, error) {
 
 // Load returns an EdgeOS config file string and error
 func (c *CFGcli) Load() io.Reader {
-	s, err := c.load("showConfig", c.Level)
+	b, err := c.load("showConfig", c.Level)
 	if err != nil {
 		log.Print(err)
 	}
-	return bytes.NewBufferString(s)
+	return bytes.NewReader(b)
+}
+
+// Load returns an EdgeOS CLI loaded configuration
+func (c *CFGstatic) Load() io.Reader {
+	return bytes.NewBufferString(c.Cfg)
 }
 
 // purgeFiles removes any orphaned blacklist files that don't have sources
 func purgeFiles(files []string) error {
 	var errArray []string
-
 NEXT:
 	for _, file := range files {
 		if _, err := os.Stat(file); os.IsNotExist(err) {
@@ -113,6 +115,5 @@ NEXT:
 	case true:
 		return fmt.Errorf("%v", strings.Join(errArray, "\n"))
 	}
-
 	return nil
 }

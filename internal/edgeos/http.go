@@ -34,7 +34,6 @@ func GetHTTP(method, URL string) (io.Reader, error) {
 		body, err = ioutil.ReadAll(resp.Body)
 	}
 
-	// fmt.Println(string(body[:]))
 	if len(body) == 0 {
 		return bytes.NewBuffer([]byte(fmt.Sprintf("No data returned for %s...", URL))), err
 	}

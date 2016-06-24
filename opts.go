@@ -47,12 +47,12 @@ func (o *Opts) String() (r string) {
 }
 
 // getCFG returns a e.ConfLoader
-func (o *Opts) getCFG() (r edgeos.ConfLoader) {
-	switch o.ARCH {
-	case o.MIPS64:
-		r = &edgeos.CFGcli{}
+func (o *Opts) getCFG(c *edgeos.Config) (r edgeos.ConfLoader) {
+	switch *o.ARCH {
+	case *o.MIPS64:
+		r = &edgeos.CFGcli{Config: c}
 	default:
-		r = &edgeos.CFGstatic{Cfg: tdata.Cfg}
+		r = &edgeos.CFGstatic{Config: c, Cfg: tdata.Cfg}
 	}
 	return r
 }

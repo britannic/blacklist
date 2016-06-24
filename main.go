@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"runtime"
 	"syscall"
 
@@ -29,12 +30,14 @@ func main() {
 
 	c := e.NewConfig(
 		e.API("/bin/cli-shell-api"),
+		e.Bash("/bin/bash"),
 		e.Cores(runtime.NumCPU()),
 		e.Debug(*o.Debug),
 		e.Dir(o.SetDir(*o.ARCH)),
 		e.Ext("blacklist.conf"),
 		e.File(*o.File),
 		e.FileNameFmt("%v/%v.%v.%v"),
+		e.InCLI("inSession"),
 		e.Level("service dns forwarding"),
 		e.Method("GET"),
 		e.Nodes([]string{"domains", "hosts"}),
@@ -44,7 +47,8 @@ func main() {
 		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
 	)
 
-	c.ReadCfg(o.getCFG())
+	c.ReadCfg(o.getCFG(c))
+	fmt.Println(c.String())
 
 	c.SetOpt(
 		e.Excludes(c.Excludes("all")),
@@ -53,6 +57,13 @@ func main() {
 	c.GetAll().Files().Remove()
 	c.GetAll(pre).GetContent().ProcessContent()
 	c.GetAll("url").GetContent().ProcessContent()
+
+	if c.InSession() {
+		fmt.Println("In the CLI")
+	} else {
+		fmt.Println("NOT in the CLI")
+	}
+
 }
 
 // basename removes directory components and file extensions.

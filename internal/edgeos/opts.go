@@ -11,14 +11,17 @@ import (
 type Parms struct {
 	API       string
 	Arch      string
+	Bash      string
 	Cores     int
 	Debug     bool
 	Dex       List
 	Dir       string
+	DNSsvc    string
 	Exc       List
 	Ext       string
 	File      string
 	FnFmt     string
+	InCLI     string
 	Level     string
 	Method    string
 	Nodes     []string
@@ -89,6 +92,15 @@ func API(s string) Option {
 	}
 }
 
+// Bash sets the shell processor
+func Bash(cmd string) Option {
+	return func(c *Config) Option {
+		previous := c.Bash
+		c.Bash = cmd
+		return Bash(previous)
+	}
+}
+
 // Cores sets max CPU cores
 func Cores(i int) Option {
 	return func(c *Config) Option {
@@ -114,6 +126,15 @@ func Dir(d string) Option {
 		previous := c.Dir
 		c.Dir = d
 		return Dir(previous)
+	}
+}
+
+// DNSsvc sets dnsmasq restart command
+func DNSsvc(d string) Option {
+	return func(c *Config) Option {
+		previous := c.DNSsvc
+		c.DNSsvc = d
+		return DNSsvc(previous)
 	}
 }
 
@@ -150,6 +171,15 @@ func FileNameFmt(f string) Option {
 		previous := c.FnFmt
 		c.FnFmt = f
 		return FileNameFmt(previous)
+	}
+}
+
+// InCLI sets the CLI inSession command
+func InCLI(in string) Option {
+	return func(c *Config) Option {
+		previous := c.InCLI
+		c.InCLI = in
+		return InCLI(previous)
 	}
 }
 

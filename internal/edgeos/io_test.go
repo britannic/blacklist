@@ -11,6 +11,8 @@ import (
 func TestLoad(t *testing.T) {
 	c := NewConfig(
 		API("/bin/cli-shell-api"),
+		Bash("/bin/bash"),
+		InCLI("inSession"),
 		Level("service dns forwarding"),
 	)
 
@@ -20,14 +22,15 @@ func TestLoad(t *testing.T) {
 	cfg, err = c.load("showConfig", "")
 	NotOK(t, err)
 
-	cfg, err = c.load("true", "")
-	OK(t, err)
-	Equals(t, "", cfg)
-
 	r := CFGcli{Config: c}
 	got, err := ioutil.ReadAll(r.Load())
 	OK(t, err)
 	Equals(t, "", string(got))
+
+	cfg, err = c.load("echo", "true")
+	NotOK(t, err)
+
+	Equals(t, []byte{}, cfg)
 }
 
 func TestPurgeFiles(t *testing.T) {
@@ -142,6 +145,16 @@ func TestAPICMD(t *testing.T) {
 	for _, rq := range testSrc {
 		Equals(t, rq.r, apiCMD(rq.q, rq.b))
 	}
+
+	c := NewConfig(
+		API("/bin/cli-shell-api"),
+		InCLI("inSession"),
+		Level("service dns forwarding"),
+	)
+	act := fmt.Sprintf("%v %v", apiCMD("showConfig", c.InSession()), c.Level)
+	exp := "showCfg service dns forwarding"
+	Equals(t, exp, act)
+
 }
 
 func TestDeleteFile(t *testing.T) {

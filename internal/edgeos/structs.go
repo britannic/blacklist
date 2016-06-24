@@ -2,9 +2,13 @@ package edgeos
 
 import "io"
 
-// ConfLoader interface defines load method
+// ConfLoader interface defines configuration load method
 type ConfLoader interface {
 	Load() io.Reader
+}
+
+// Configger defines Config methods
+type Configger interface {
 }
 
 // bNodes is a map of leaf nodes
@@ -25,7 +29,7 @@ type CFGcli struct {
 
 // CFGstatic is for configurations loaded via the EdgeOS CFGstatic
 type CFGstatic struct {
-	*Parms
+	*Config
 	Cfg string
 }
 

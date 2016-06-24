@@ -10,7 +10,14 @@ import (
 
 func (o *Objects) addInc(c *Config, node string) {
 	if c.bNodes[node].inc != nil {
-		o.S = append(o.S, getInc(&Object{Parms: c.Parms, inc: c.bNodes[node].inc, ip: c.bNodes[node].ip}, node)...)
+		o.S = append(
+			o.S,
+			getInc(
+				&Object{
+					Parms: c.Parms,
+					inc:   c.bNodes[node].inc,
+					ip:    c.bNodes.getIP(node),
+				}, node)...)
 	}
 }
 

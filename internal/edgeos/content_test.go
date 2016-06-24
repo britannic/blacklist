@@ -158,12 +158,10 @@ func TestGetAllContent(t *testing.T) {
 	svr.Mux.HandleFunc(hPage, hostsHandler)
 
 	act := fmt.Sprint(c.GetAll(preConf).GetContent())
-	// fmt.Println(z)
 	Equals(t, wantPre, act)
 
 	act = fmt.Sprint(c.GetAll().GetContent())
 	Equals(t, wantAll, act)
-	// fmt.Println(z)
 }
 
 func TestWriteFile(t *testing.T) {

@@ -85,8 +85,7 @@ func TestFormatData(t *testing.T) {
 		got = formatData(fmttr, gotList)
 		gotBytes, err := ioutil.ReadAll(got)
 		OK(t, err)
-		Equals(t, wantBytes[:], gotBytes[:])
-		// fmt.Println(string(gotBytes[:]))
+		Equals(t, wantBytes, gotBytes)
 	}
 }
 

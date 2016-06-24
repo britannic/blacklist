@@ -24,17 +24,14 @@ func DiffArray(a, b []string) (diff sort.StringSlice) {
 	case len(a) > len(b), len(a) == len(b):
 		biggest = a
 		smallest = b
-
 	case len(a) < len(b):
 		biggest = b
 		smallest = a
 	}
-
 	dmap := make(List)
 	for _, k := range smallest {
 		dmap[k] = 0
 	}
-
 	for _, k := range biggest {
 		if !dmap.keyExists(k) {
 			diff = append(diff, k)
