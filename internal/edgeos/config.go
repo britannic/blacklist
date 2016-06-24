@@ -55,8 +55,7 @@ func (c *Config) Excludes(node string) List {
 }
 
 // Excludes returns a string array of excludes
-func (c *Config) excludes(node string) []string {
-	var exc []string
+func (c *Config) excludes(node string) (exc []string) {
 	switch {
 	case node == all:
 		for _, k := range c.Nodes() {
@@ -89,9 +88,7 @@ func (c *Config) Get(node string) *Objects {
 
 // GetAll returns an array of Objects
 func (c *Config) GetAll(ltypes ...string) *Objects {
-	var (
-		o = &Objects{Parms: c.Parms}
-	)
+	o := &Objects{Parms: c.Parms}
 
 	for _, node := range c.Parms.Nodes {
 		switch ltypes {
@@ -137,6 +134,7 @@ func (c *Config) Nodes() (nodes []string) {
 		nodes = append(nodes, k)
 	}
 	sort.Strings(nodes)
+
 	return nodes
 }
 
@@ -213,8 +211,6 @@ LINE:
 				s.ltype = name[1]
 				s.url = name[2]
 				c.bNodes[tnode].Objects.S = append(c.bNodes[tnode].Objects.S, s)
-				// s = newObject() // reset s for the next loop
-
 			}
 
 		case rx.DESC.MatchString(line) || rx.CMNT.MatchString(line) || rx.MISC.MatchString(line):
@@ -244,6 +240,7 @@ func (c *CFile) ReadDir(pattern string) ([]string, error) {
 func (c *Config) ReloadDNS() ([]byte, error) {
 	cmd := exec.Command("/bin/bash")
 	cmd.Stdin = strings.NewReader(c.DNSsvc)
+
 	return cmd.CombinedOutput()
 }
 
@@ -255,6 +252,7 @@ func (c *CFile) Remove() error {
 	if err != nil {
 		return err
 	}
+
 	return purgeFiles(DiffArray(c.names, dlist))
 }
 
@@ -272,8 +270,8 @@ func (c *Config) String() (result string) {
 
 		indent++
 		result += fmt.Sprintf("%v%q: {\n", tabs(indent), pkey)
-
 		indent++
+
 		result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled,
 			BooltoStr(c.bNodes[pkey].disabled))
 		result = is(indent, result, "ip", c.bNodes[pkey].ip)
@@ -290,6 +288,7 @@ func (c *Config) String() (result string) {
 	}
 
 	result += tabs(indent) + "}]\n}"
+
 	return result
 }
 
@@ -301,6 +300,7 @@ func (c *CFile) String() string {
 // Strings returns a sorted array of strings.
 func (c *CFile) Strings() []string {
 	sort.Strings(c.names)
+
 	return c.names
 }
 
@@ -316,6 +316,7 @@ func (b bNodes) getIP(node string) (ip string) {
 	default:
 		ip = b[node].ip
 	}
+
 	return ip
 }
 
@@ -325,5 +326,6 @@ func (b bNodes) validate(node string) *Objects {
 			obj.ip = b.getIP(node)
 		}
 	}
+
 	return &b[node].Objects
 }

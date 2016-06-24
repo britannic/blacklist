@@ -9,6 +9,7 @@ import (
 
 // Parms is struct of parameters
 type Parms struct {
+	Wildcard
 	API       string
 	Arch      string
 	Bash      string
@@ -30,7 +31,6 @@ type Parms struct {
 	Stypes    []string
 	Test      bool
 	Verbosity int
-	Wildcard
 }
 
 // Wildcard struct sets globbing wildcards for filename searches
@@ -248,15 +248,15 @@ func (p *Parms) String() string {
 
 	maxLen := func(pA []pArray) int {
 		smallest := len(pA[0].n)
-		biggest := len(pA[0].n)
+		largest := len(pA[0].n)
 		for i := range pA {
-			if len(pA[i].n) > biggest {
-				biggest = len(pA[i].n)
+			if len(pA[i].n) > largest {
+				largest = len(pA[i].n)
 			} else if len(pA[i].n) < smallest {
 				smallest = len(pA[i].n)
 			}
 		}
-		return biggest
+		return largest
 	}
 
 	v := reflect.ValueOf(p).Elem()

@@ -152,7 +152,7 @@ NEXT:
 	}
 }
 
-// ProcessContent iterates through the Contents array and processes each
+// ProcessContent processes the Contents array
 func (c *Contents) ProcessContent() {
 	for _, src := range *c {
 		if err := src.Process().WriteFile(); err != nil {

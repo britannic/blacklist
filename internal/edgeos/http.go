@@ -40,14 +40,3 @@ func GetHTTP(method, URL string) (io.Reader, error) {
 
 	return bytes.NewBuffer(body), err
 }
-
-// func debug(data []byte, err error) {
-// 	switch {
-// 	case !dbg:
-// 		return
-// 	case err == nil:
-// 		fmt.Printf("Debug: %s\n\n", data)
-// 	default:
-// 		fmt.Printf("Error: %s\n\n", err)
-// 	}
-// }

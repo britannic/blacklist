@@ -32,7 +32,7 @@ func TestOption(t *testing.T) {
 		Wildcard:  Wildcard{},
 	}
 
-	want := "edgeos.Parms{\nAPI:       /bin/cli-shell-api\nArch:      amd64\nBash:      /bin/bash\nCores:     2\nDebug:     true\nDex:       \nDir:       /tmp\nDNSsvc:    service dnsmasq restart\nExc:       \"badactor.com\":0,\nExt:       blacklist.conf\nFile:      /config/config.boot\nFnFmt:     %v/%v.%v.%v\nInCLI:     inSession\nLevel:     service dns forwarding\nMethod:    GET\nNodes:     [domains hosts]\nPfx:       address=\nPoll:      10\nStypes:    [file pre-configured url]\nTest:      true\nVerbosity: 2\nWildcard:  {*s *}\n}\n"
+	want := "edgeos.Parms{\nWildcard:  {*s *}\nAPI:       /bin/cli-shell-api\nArch:      amd64\nBash:      /bin/bash\nCores:     2\nDebug:     true\nDex:       \nDir:       /tmp\nDNSsvc:    service dnsmasq restart\nExc:       \"badactor.com\":0,\nExt:       blacklist.conf\nFile:      /config/config.boot\nFnFmt:     %v/%v.%v.%v\nInCLI:     inSession\nLevel:     service dns forwarding\nMethod:    GET\nNodes:     [domains hosts]\nPfx:       address=\nPoll:      10\nStypes:    [file pre-configured url]\nTest:      true\nVerbosity: 2\n}\n"
 
 	wantRaw := Parms{
 		API:       "/bin/cli-shell-api",

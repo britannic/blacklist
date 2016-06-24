@@ -74,7 +74,7 @@ func TestGetHTTP(t *testing.T) {
 		if runtime.GOOS == "linux" && test.method == "bad method" {
 			test.want = errs.url
 		}
-		Equals(t, test.want, string(got[:]))
+		Equals(t, test.want, string(got))
 		if t.Failed() {
 			t.Logf(fmt.Sprint(test))
 		}
