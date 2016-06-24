@@ -78,7 +78,7 @@ Load returns an EdgeOS config file string and error
 ## type CFGstatic
 ``` go
 type CFGstatic struct {
-    *Parms
+    *Config
     Cfg string
 }
 ```
@@ -159,7 +159,7 @@ type ConfLoader interface {
     Load() io.Reader
 }
 ```
-ConfLoader interface defines load method
+ConfLoader interface defines configuration load method
 
 
 
@@ -221,6 +221,14 @@ GetAll returns an array of Objects
 
 
 
+### func (\*Config) InSession
+``` go
+func (c *Config) InSession() bool
+```
+InSession returns true if VyOS/EdgeOS configuration is in session
+
+
+
 ### func (\*Config) Nodes
 ``` go
 func (c *Config) Nodes() (nodes []string)
@@ -234,6 +242,14 @@ Nodes returns an array of configured nodes
 func (c *Config) ReadCfg(r ConfLoader) error
 ```
 ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
+
+
+
+### func (\*Config) ReloadDNS
+``` go
+func (c *Config) ReloadDNS() ([]byte, error)
+```
+ReloadDNS reloads the dnsmasq configuration
 
 
 
@@ -258,6 +274,23 @@ SetOpt sets the specified options passed as Parms and returns an option to resto
 func (c *Config) String() (result string)
 ```
 String returns pretty print for the Blacklist struct
+
+
+
+## type Configger
+``` go
+type Configger interface {
+}
+```
+Configger defines Config methods
+
+
+
+
+
+
+
+
 
 
 
@@ -520,11 +553,25 @@ func Arch(arch string) Option
 Arch sets target CPU architecture
 
 
+### func Bash
+``` go
+func Bash(cmd string) Option
+```
+Bash sets the shell processor
+
+
 ### func Cores
 ``` go
 func Cores(i int) Option
 ```
 Cores sets max CPU cores
+
+
+### func DNSsvc
+``` go
+func DNSsvc(d string) Option
+```
+DNSsvc sets dnsmasq restart command
 
 
 ### func Debug
@@ -567,6 +614,13 @@ File sets the EdgeOS configuration file n
 func FileNameFmt(f string) Option
 ```
 FileNameFmt sets the EdgeOS configuration file name format
+
+
+### func InCLI
+``` go
+func InCLI(in string) Option
+```
+InCLI sets the CLI inSession command
 
 
 ### func Level
@@ -639,14 +693,17 @@ WCard sets file globbing wildcard values
 type Parms struct {
     API       string
     Arch      string
+    Bash      string
     Cores     int
     Debug     bool
     Dex       List
     Dir       string
+    DNSsvc    string
     Exc       List
     Ext       string
     File      string
     FnFmt     string
+    InCLI     string
     Level     string
     Method    string
     Nodes     []string
@@ -688,7 +745,8 @@ String method to implement fmt.Print interface
 ## type Wildcard
 ``` go
 type Wildcard struct {
-    // contains filtered or unexported fields
+    Node string
+    Name string
 }
 ```
 Wildcard struct sets globbing wildcards for filename searches
