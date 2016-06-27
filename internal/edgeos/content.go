@@ -2,15 +2,28 @@ package edgeos
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 
 	"github.com/britannic/blacklist/internal/regx"
 )
+
+// iFace type for labeling interface types
+type iFace int
+
+// iFace types for labeling interface types
+const (
+	Invalid iFace = iota
+	FileObj
+	PreObj
+	URLObj
+	ContObj
+)
+
+const cntnt = "contents"
 
 type blist struct {
 	file string
@@ -19,76 +32,152 @@ type blist struct {
 
 // Contenter is a Content interface
 type Contenter interface {
-	Process() io.Reader
+	Find(elem string) int
+	GetBlacklist() *Contents
+	SetURL(name string, url string)
 }
 
 // Content is a struct of blacklist content
 type Content struct {
 	*Object
 	*Parms
-	Contenter
 	err error
 	r   io.Reader
+}
+
+// FileObjects implements GetBlacklist for files
+type FileObjects struct {
+	*Objects
+}
+
+// PreObjects implements GetBlacklist for pre-configured content
+type PreObjects struct {
+	*Objects
+}
+
+// URLObjects implements GetBlacklist for URLs
+type URLObjects struct {
+	*Objects
 }
 
 // Contents is an array of *content
 type Contents []*Content
 
-// GetContent returns a Content struct
-func (o *Objects) GetContent() *Contents {
+// CreateObject returns an interface of the requested iFace type
+func (c *Config) CreateObject(i iFace) (Contenter, error) {
+	var o *Objects
+	if ltype := i.String(); ltype != cntnt {
+		o = c.GetAll(ltype)
+	}
+	switch i {
+	case ContObj:
+		return &Contents{}, nil
+	case FileObj:
+		return &FileObjects{Objects: o}, nil
+	case PreObj:
+		return &PreObjects{Objects: o}, nil
+	case URLObj:
+		return &URLObjects{Objects: o}, nil
+	default:
+		return nil, errors.New("Invalid interface requested")
+	}
+}
+
+// Find returns the int position of an Objects' element in the StringSlice
+func (c *Contents) Find(elem string) int {
+	if elem == cntnt {
+		return 0
+	}
+	return -1
+}
+
+// Find returns the int position of an Objects' element in the StringSlice
+func (f *FileObjects) Find(elem string) int {
+	for i, obj := range f.S {
+		if obj.name == elem {
+			return i
+		}
+	}
+	return -1
+}
+
+// Find returns the int position of an Objects' element in the StringSlice
+func (p *PreObjects) Find(elem string) int {
+	for i, obj := range p.S {
+		if obj.name == elem {
+			return i
+		}
+	}
+	return -1
+}
+
+// Find returns the int position of an Objects' element in the StringSlice
+func (u *URLObjects) Find(elem string) int {
+	for i, obj := range u.S {
+		if obj.name == elem {
+			return i
+		}
+	}
+	return -1
+}
+
+// GetBlacklist implements a dummy Contenter interface for Contents
+func (c *Contents) GetBlacklist() *Contents {
+	return c
+}
+
+// GetBlacklist implements the Contenter interface for FileObjects
+func (f *FileObjects) GetBlacklist() *Contents {
 	var c Contents
-	for _, obj := range o.S {
-		switch obj.ltype {
-		case preConf:
-			if obj.inc != nil {
-				c = append(c, &Content{
-					err:    nil,
-					Object: obj,
-					Parms:  o.Parms,
-					r:      obj.Includes(),
-				})
-			}
-
-		case files:
-			if obj.file != "" {
-				b, err := getFile(obj.file)
-				c = append(c, &Content{
-					err:    err,
-					Object: obj,
-					Parms:  o.Parms,
-					r:      b,
-				})
-			}
-
-		case urls:
-			if obj.url != "" {
-				reader, err := GetHTTP(o.Parms.Method, obj.url)
-				c = append(c, &Content{
-					err:    err,
-					Object: obj,
-					Parms:  o.Parms,
-					r:      reader,
-				})
-			}
+	for _, obj := range f.S {
+		if obj.ltype == files && obj.file != "" {
+			b, err := getFile(obj.file)
+			c = append(c, &Content{
+				err:    err,
+				Object: obj,
+				Parms:  f.Parms,
+				r:      b,
+			})
 		}
 	}
 	return &c
 }
 
-// WriteFile saves hosts/domains data to disk
-func (b *blist) WriteFile() error {
-	w, err := os.Create(b.file)
-	if err != nil {
-		return err
+// GetBlacklist implements the Contenter interface for PreObjects
+func (p *PreObjects) GetBlacklist() *Contents {
+	var c Contents
+	for _, obj := range p.S {
+		if obj.ltype == preConf && obj.inc != nil {
+			c = append(c, &Content{
+				err:    nil,
+				Object: obj,
+				Parms:  p.Parms,
+				r:      obj.Includes(),
+			})
+		}
 	}
-	defer w.Close()
+	return &c
+}
 
-	_, err = io.Copy(w, b.r)
-	return err
+// GetBlacklist implements the Contenter interface for URLObjects
+func (u *URLObjects) GetBlacklist() *Contents {
+	var c Contents
+	for _, obj := range u.S {
+		if obj.ltype == urls && obj.url != "" {
+			reader, err := GetHTTP(u.Parms.Method, obj.url)
+			c = append(c, &Content{
+				err:    err,
+				Object: obj,
+				Parms:  u.Parms,
+				r:      reader,
+			})
+		}
+	}
+	return &c
 }
 
 // Process extracts hosts/domains from downloaded raw content
-func (c *Content) Process() *blist {
+func (c *Content) process() *blist {
 	var (
 		b     = bufio.NewScanner(c.r)
 		rx    = regx.Objects
@@ -121,14 +210,10 @@ NEXT:
 						continue FQDN
 
 					case isEX:
-						// isList := sList.keyExists(fqdn)
 						if sList.keyExists(fqdn) {
 							sList[fqdn]++
 						}
 						c.Parms.Exc[fqdn]++
-
-					// case isList:
-					// 	sList[fqdn]++
 
 					case !isEX:
 						c.Parms.Exc[fqdn] = 0
@@ -146,6 +231,7 @@ NEXT:
 	}
 
 	fmttr := c.Parms.Pfx + getSeparator(getType(c.nType).(string)) + "%v/" + c.ip
+
 	return &blist{
 		file: fmt.Sprintf(c.Parms.FnFmt, c.Parms.Dir, getType(c.nType).(string), c.name, c.Parms.Ext),
 		r:    formatData(fmttr, sList),
@@ -153,19 +239,85 @@ NEXT:
 }
 
 // ProcessContent processes the Contents array
-func (c *Contents) ProcessContent() {
-	for _, src := range *c {
-		if err := src.Process().WriteFile(); err != nil {
-			log.Println(err)
+func (c *Config) ProcessContent(ct Contenter) error {
+	var errs []string
+	for _, src := range *ct.GetBlacklist() {
+		if err := src.process().WriteFile(); err != nil {
+			errs = append(errs, fmt.Sprint(err))
+		}
+	}
+
+	if errs != nil {
+		return errors.New(strings.Join(errs, "\n"))
+	}
+
+	return nil
+}
+
+// SetURL sets a field value
+func (f *FileObjects) SetURL(name, url string) {
+	for _, obj := range f.S {
+		if obj.name == name {
+			obj.url = url
 		}
 	}
 }
 
-func (c *Contents) String() (result string) {
-	for _, src := range *c {
-		b := src.Process()
-		got, _ := ioutil.ReadAll(b.r)
-		result += fmt.Sprintf("File: %#v\nData:\n%v\n", b.file, string(got))
+// SetURL sets a field value
+func (p *PreObjects) SetURL(name, url string) {
+	for _, obj := range p.S {
+		if obj.name == name {
+			obj.url = url
+		}
 	}
-	return result
+}
+
+// SetURL sets a field value
+func (u *URLObjects) SetURL(name, url string) {
+	for _, obj := range u.S {
+		if obj.name == name {
+			obj.url = url
+		}
+	}
+}
+
+// SetURL sets a field value
+func (c *Contents) SetURL(name, url string) {
+	if name == cntnt && url == cntnt {
+		_ = true
+	}
+}
+
+func (p *PreObjects) String() string { return p.Objects.String() }
+
+func (f *FileObjects) String() string { return f.Objects.String() }
+
+func (u *URLObjects) String() string { return u.Objects.String() }
+
+func (i iFace) String() (s string) {
+	switch i {
+	case ContObj:
+		s = cntnt
+	case FileObj:
+		s = files
+	case PreObj:
+		s = preConf
+	case URLObj:
+		s = urls
+	default:
+		s = notknown
+	}
+	return s
+}
+
+// WriteFile saves hosts/domains data to disk
+func (b *blist) WriteFile() error {
+	w, err := os.Create(b.file)
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+
+	_, err = io.Copy(w, b.r)
+	return err
 }

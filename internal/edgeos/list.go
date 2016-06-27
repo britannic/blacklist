@@ -17,10 +17,10 @@ func (l List) keyExists(s string) bool {
 
 // mergeList combines two List maps
 func mergeList(a, b List) List {
-	for k, v := range a {
-		b[k] = v
+	for k, v := range b {
+		a[k] = v
 	}
-	return b
+	return a
 }
 
 // String implements fmt.Print interface

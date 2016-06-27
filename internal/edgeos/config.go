@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,9 +15,31 @@ import (
 	"github.com/britannic/blacklist/internal/regx"
 )
 
+// bNodes is a map of leaf nodes
+type bNodes map[string]*Object
+
+// ConfLoader interface defines configuration load method
+type ConfLoader interface {
+	Load() io.Reader
+}
+
+// CFile holds an array of file names
+type CFile struct {
+	*Parms
+	names []string
+	nType ntype
+}
+
+// Config is a struct of configuration fields
+type Config struct {
+	*Parms
+	bNodes
+}
+
+// ntype for labeling blacklist source types
 type ntype int
 
-// Types determine load order and processing behavior for blacklist sources
+// ntypes label blacklist source types
 const (
 	unknown ntype = iota // denotes a coding error
 	pre                  // Pre-configured backlisted domains/hosts
@@ -50,21 +73,23 @@ const (
 )
 
 // Excludes returns a List map of blacklist exclusions
-func (c *Config) Excludes(node string) List {
-	return UpdateList(c.excludes(node))
+func (c *Config) Excludes(nodes ...string) List {
+	return UpdateList(c.excludes(nodes...))
 }
 
 // Excludes returns a string array of excludes
-func (c *Config) excludes(node string) (exc []string) {
-	switch {
-	case node == all:
+func (c *Config) excludes(nodes ...string) (exc []string) {
+	switch nodes {
+	case nil:
 		for _, k := range c.Nodes() {
 			if len(c.bNodes[k].exc) != 0 {
 				exc = append(exc, c.bNodes[k].exc...)
 			}
 		}
 	default:
-		exc = c.bNodes[node].exc
+		for _, node := range nodes {
+			exc = append(exc, c.bNodes[node].exc...)
+		}
 	}
 	return exc
 }
@@ -101,10 +126,9 @@ func (c *Config) GetAll(ltypes ...string) *Objects {
 				case preConf:
 					o.addInc(c, node)
 				default:
-					obj := c.bNodes[node].Objects.S
+					obj := c.validate(node).S
 					for i := range obj {
-						b := obj[i].ltype == ltype
-						if b {
+						if obj[i].ltype == ltype {
 							o.S = append(o.S, obj[i])
 						}
 					}
@@ -144,7 +168,7 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 		tnode  string
 		b      = bufio.NewScanner(r.Load())
 		branch string
-		nodes  []string //make([]string, 2)
+		nodes  []string
 		rx     = regx.Objects
 		s      *Object
 	)

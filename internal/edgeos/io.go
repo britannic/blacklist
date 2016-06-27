@@ -9,6 +9,18 @@ import (
 	"strings"
 )
 
+// CFGcli is for configurations loaded via the EdgeOS CFGcli
+type CFGcli struct {
+	*Config
+	Cfg string
+}
+
+// CFGstatic is for configurations loaded via the EdgeOS CFGstatic
+type CFGstatic struct {
+	*Config
+	Cfg string
+}
+
 var apiCMDs = map[string]string{
 	"cfExists":           "cfExists",
 	"cfReturnValue":      "cfReturnValue",
@@ -96,7 +108,7 @@ func (c *CFGcli) Load() io.Reader {
 
 // Load returns an EdgeOS CLI loaded configuration
 func (c *CFGstatic) Load() io.Reader {
-	return bytes.NewBufferString(c.Cfg)
+	return strings.NewReader(c.Cfg)
 }
 
 // purgeFiles removes any orphaned blacklist files that don't have sources

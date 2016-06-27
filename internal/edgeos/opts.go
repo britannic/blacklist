@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
+	"time"
 )
 
 // Parms is struct of parameters
@@ -30,6 +31,7 @@ type Parms struct {
 	Poll      int
 	Stypes    []string
 	Test      bool
+	Timeout   time.Duration
 	Verbosity int
 }
 
@@ -57,14 +59,13 @@ func NewConfig(opts ...Option) *Config {
 	return &c
 }
 
-// SetOpt sets the specified options passed as Parms and returns an option to restore the last arg's previous value
+// SetOpt sets the specified options passed as Parms and returns an option to restore the last set of arg's previous values
 func (c *Config) SetOpt(opts ...Option) (previous Option) {
 	// apply all the options, and replace each with its inverse
 	for i, opt := range opts {
 		opts[i] = opt(c)
 	}
 
-	// Reverse the list of inverses, since we want them to be applied in reverse order
 	for i, j := 0, len(opts)-1; i <= j; i, j = i+1, j-1 {
 		opts[i], opts[j] = opts[j], opts[i]
 	}
@@ -138,7 +139,16 @@ func DNSsvc(d string) Option {
 	}
 }
 
-// Excludes sets nodes exclusions
+// Dexcludes sets blacklist domain exclusions
+func Dexcludes(l List) Option {
+	return func(c *Config) Option {
+		previous := c.Dex
+		c.Dex = l
+		return Dexcludes(previous)
+	}
+}
+
+// Excludes sets blacklist exclusions
 func Excludes(l List) Option {
 	return func(c *Config) Option {
 		previous := c.Exc
@@ -274,7 +284,10 @@ func (p *Parms) String() string {
 
 	r := fmt.Sprintln("edgeos.Parms{")
 	for _, field := range fields {
-		r += fmt.Sprintf("%v:%v%v\n", field.n, pad(field.n), field.v)
+		if field.v == "" {
+			field.v = "**not initialized**"
+		}
+		r += fmt.Sprintf("%v:%v%q\n", field.n, pad(field.n), field.v)
 	}
 
 	r += fmt.Sprintln("}")
@@ -297,6 +310,15 @@ func Test(b bool) Option {
 		previous := c.Test
 		c.Test = b
 		return Test(previous)
+	}
+}
+
+// Timeout sets how long before an unresponsive goroutine is aborted
+func Timeout(t time.Duration) Option {
+	return func(c *Config) Option {
+		previous := c.Timeout
+		c.Timeout = t
+		return Timeout(previous)
 	}
 }
 

@@ -8,6 +8,29 @@ import (
 	"strings"
 )
 
+// Object struct for normalizing EdgeOS data.
+type Object struct {
+	*Parms
+	Objects
+	desc     string
+	disabled bool
+	exc      []string
+	file     string
+	inc      []string
+	ip       string
+	ltype    string
+	name     string
+	nType    ntype
+	prefix   string
+	url      string
+}
+
+// Objects is a struct of []*Object
+type Objects struct {
+	*Parms
+	S []*Object
+}
+
 func (o *Objects) addInc(c *Config, node string) {
 	if c.bNodes[node].inc != nil {
 		o.S = append(
