@@ -1,127 +1,26 @@
-"&{blacklist {
-    disabled false
-    dns-redirect-ip 0.0.0.0
-    domains {
-        dns-redirect-ip 192.168.100.1
-        include adsrvr.org
-        include adtechus.net
-        include advertising.com
-        include centade.com
-        include doubleclick.net
-        include free-counter.co.uk
-        include intellitxt.com
-        include kiosked.com
-        include patoghee.in
-        source malc0de {
-            dns-redirect-ip 192.168.168.1
-            description \"List of zones serving malicious executables observed by malc0de.com/database/\"
-            prefix \"zone \"
-            url http://malc0de.com/bl/ZONES
-        }
-        source malwaredomains.com {
-            dns-redirect-ip 10.0.0.1
-            description \"Just domains\"
-            prefix \"\"
-            url http://mirror1.malwaredomains.com/files/justdomains
-        }
-        source simple_tracking {
-            description \"Basic tracking list by Disconnect\"
-            prefix \"\"
-            url https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
-        }
-        source zeus {
-            description \"abuse.ch ZeuS domain blocklist\"
-            prefix \"\"
-            url https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
-        }
-    }
-    exclude 1e100.net
-    exclude 2o7.net
-    exclude adobedtm.com
-    exclude akamai.net
-    exclude akamaihd.net
-    exclude amazon.com
-    exclude amazonaws.com
-    exclude apple.com
-    exclude ask.com
-    exclude avast.com
-    exclude bitdefender.com
-    exclude cdn.visiblemeasures.com
-    exclude cloudfront.net
-    exclude coremetrics.com
-    exclude edgesuite.net
-    exclude freedns.afraid.org
-    exclude github.com
-    exclude githubusercontent.com
-    exclude google.com
-    exclude googleadservices.com
-    exclude googleapis.com
-    exclude googletagmanager.com
-    exclude googleusercontent.com
-    exclude gstatic.com
-    exclude gvt1.com
-    exclude gvt1.net
-    exclude hb.disney.go.com
-    exclude hp.com
-    exclude hulu.com
-    exclude images-amazon.com
-    exclude live.com
-    exclude microsoft.com
-    exclude msdn.com
-    exclude msecnd.net
-    exclude paypal.com
-    exclude rackcdn.com
-    exclude schema.org
-    exclude shopify.com
-    exclude skype.com
-    exclude smacargo.com
-    exclude sourceforge.net
-    exclude ssl-on9.com
-    exclude ssl-on9.net
-    exclude sstatic.net
-    exclude static.chartbeat.com
-    exclude storage.googleapis.com
-    exclude windows.net
-    exclude xboxlive.com
-    exclude yimg.com
-    exclude ytimg.com
-    hosts {
-        include beap.gemini.yahoo.com
-        source openphish {
-            description \"OpenPhish automatic phishing detection\"
-            prefix http
-            url https://openphish.com/feed.txt
-        }
-        source raw.github.com {
-            description \"This hosts file is a merged collection of hosts from reputable sources\"
-            prefix \"0.0.0.0 \"
-            url https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
-        }
-        source sysctl.org {
-            dns-redirect-ip 172.16.16.1
-            description \"This hosts file is a merged collection of hosts from cameleon\"
-            prefix \"127.0.0.1	 \"
-            url http://sysctl.org/cameleon/hosts
-        }
-        source tasty {
-            description \"File source\"
-            dns-redirect-ip 10.10.10.10
-            file ../testdata/blist.hosts.src
-            }
-        source volkerschatz {
-            description \"Ad server blacklists\"
-            prefix http
-            url http://www.volkerschatz.com/net/adpaths
-        }
-        source yoyo {
-            description \"Fully Qualified Domain Names only - no prefix to strip\"
-            prefix \"\"
-            url http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext
-        }
-    }
+"edgeos.Parms{
+Wildcard:  \"{*s *}\"
+API:       \"/bin/cli-shell-api\"
+Arch:      \"amd64\"
+Bash:      \"/bin/bash\"
+Cores:     \"2\"
+Debug:     \"false\"
+Dex:       \"**not initialized**\"
+Dir:       \"/tmp\"
+DNSsvc:    \"service dnsmasq restart\"
+Exc:       \"**not initialized**\"
+Ext:       \"blacklist.conf\"
+File:      \"**not initialized**\"
+FnFmt:     \"%v/%v.%v.%v\"
+InCLI:     \"inSession\"
+Level:     \"service dns forwarding\"
+Method:    \"GET\"
+Nodes:     \"[domains hosts]\"
+Pfx:       \"address=\"
+Poll:      \"5\"
+Stypes:    \"[file pre-configured url]\"
+Test:      \"false\"
+Timeout:   \"30s\"
+Verbosity: \"0\"
 }
-
-	/* Warning: Do not remove the following line. */
-	/* === vyatta-config-version: \"config-management@1:conntrack@1:cron@1:dhcp-relay@1:dhcp-server@4:firewall@5:ipsec@5:nat@3:qos@1:quagga@2:system@4:ubnt-pptp@1:ubnt-util@1:vrrp@1:webgui@1:webproxy@1:zone-policy@1\" === */
-	/* Release version: v1.8.5.4884695.160608.1057 */
-} 0 -1}"
+"
