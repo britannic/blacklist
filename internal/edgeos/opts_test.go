@@ -27,14 +27,14 @@ func TestOption(t *testing.T) {
 		Nodes:     []string(nil),
 		Pfx:       "",
 		Poll:      0,
-		Stypes:    []string(nil),
+		Ltypes:    []string(nil),
 		Test:      false,
 		Timeout:   0,
 		Verbosity: 0,
 		Wildcard:  Wildcard{},
 	}
 
-	want := "edgeos.Parms{\nWildcard:  \"{*s *}\"\nAPI:       \"/bin/cli-shell-api\"\nArch:      \"amd64\"\nBash:      \"/bin/bash\"\nCores:     \"2\"\nDebug:     \"true\"\nDex:       \"\\\"synodal.com\\\":0,\"\nDir:       \"/tmp\"\nDNSsvc:    \"service dnsmasq restart\"\nExc:       \"\\\"goodactor.com\\\":0,\"\nExt:       \"blacklist.conf\"\nFile:      \"/config/config.boot\"\nFnFmt:     \"%v/%v.%v.%v\"\nInCLI:     \"inSession\"\nLevel:     \"service dns forwarding\"\nMethod:    \"GET\"\nNodes:     \"[domains hosts]\"\nPfx:       \"address=\"\nPoll:      \"10\"\nStypes:    \"[file pre-configured url]\"\nTest:      \"true\"\nTimeout:   \"30s\"\nVerbosity: \"2\"\n}\n"
+	want := "edgeos.Parms{\nWildcard:  \"{*s *}\"\nAPI:       \"/bin/cli-shell-api\"\nArch:      \"amd64\"\nBash:      \"/bin/bash\"\nCores:     \"2\"\nDebug:     \"true\"\nDex:       \"\\\"synodal.com\\\":0,\"\nDir:       \"/tmp\"\nDNSsvc:    \"service dnsmasq restart\"\nExc:       \"\\\"goodactor.com\\\":0,\"\nExt:       \"blacklist.conf\"\nFile:      \"/config/config.boot\"\nFnFmt:     \"%v/%v.%v.%v\"\nInCLI:     \"inSession\"\nLevel:     \"service dns forwarding\"\nMethod:    \"GET\"\nNodes:     \"[domains hosts]\"\nPfx:       \"address=\"\nPoll:      \"10\"\nLtypes:    \"[file pre-configured-domain pre-configured-host url]\"\nTest:      \"true\"\nTimeout:   \"30s\"\nVerbosity: \"2\"\n}\n"
 
 	wantRaw := Parms{
 		API:       "/bin/cli-shell-api",
@@ -55,7 +55,7 @@ func TestOption(t *testing.T) {
 		Nodes:     []string{domains, hosts},
 		Pfx:       "address=",
 		Poll:      10,
-		Stypes:    []string{files, preConf, urls},
+		Ltypes:    []string{files, PreDomns, PreHosts, urls},
 		Test:      true,
 		Timeout:   30000000000,
 		Verbosity: 2,
@@ -80,11 +80,11 @@ func TestOption(t *testing.T) {
 		FileNameFmt("%v/%v.%v.%v"),
 		InCLI("inSession"),
 		Method("GET"),
-		Nodes([]string{"domains", "hosts"}),
+		Nodes([]string{domains, hosts}),
 		Poll(10),
 		Prefix("address="),
 		Level("service dns forwarding"),
-		STypes([]string{"file", preConf, urls}),
+		LTypes([]string{"file", PreDomns, PreHosts, urls}),
 		Test(true),
 		Timeout(30*time.Second),
 		Verbosity(2),

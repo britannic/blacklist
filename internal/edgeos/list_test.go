@@ -19,7 +19,7 @@ func TestKeys(t *testing.T) {
 
 	z := c.GetAll().Names()
 	Equals(t, "[blacklist domains hosts]", fmt.Sprint(c.sortKeys()))
-	Equals(t, "[malc0de malwaredomains.com openphish pre-configured pre-configured raw.github.com simple_tracking sysctl.org tasty volkerschatz yoyo zeus]", fmt.Sprint(z))
+	Equals(t, "[includes.[1] includes.[9] malc0de malwaredomains.com openphish raw.github.com simple_tracking sysctl.org tasty volkerschatz yoyo zeus]", fmt.Sprint(z))
 
 	for _, k := range []string{"a", "b", "c", "z", "q", "s", "e", "i", "x", "m"} {
 		keys = append(keys, k)

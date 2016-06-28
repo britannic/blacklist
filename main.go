@@ -51,7 +51,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	p, err := c.CreateObject(e.PreObj)
+	p, err := c.CreateObject(e.PreHostObj)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -97,7 +97,7 @@ func (o *Opts) initEdgeOS() *e.Config {
 		e.API("/bin/cli-shell-api"),
 		e.Arch(runtime.GOARCH),
 		e.Bash("/bin/bash"),
-		e.Cores(runtime.NumCPU()),
+		e.Cores(2),
 		e.Debug(*o.Debug),
 		e.Dir(o.SetDir(*o.ARCH)),
 		e.DNSsvc("service dnsmasq restart"),
@@ -110,7 +110,7 @@ func (o *Opts) initEdgeOS() *e.Config {
 		e.Nodes([]string{"domains", "hosts"}),
 		e.Poll(*o.Poll),
 		e.Prefix("address="),
-		e.STypes([]string{"file", pre, "url"}),
+		e.LTypes([]string{"file", e.PreDomns, e.PreHosts, "url"}),
 		e.Timeout(30*time.Second),
 		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
 	)

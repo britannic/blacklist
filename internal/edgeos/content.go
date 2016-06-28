@@ -16,11 +16,12 @@ type iFace int
 
 // iFace types for labeling interface types
 const (
-	Invalid iFace = iota
-	FileObj
-	PreObj
-	URLObj
+	Invalid iFace = iota + 100
 	ContObj
+	FileObj
+	PreDomnObj
+	PreHostObj
+	URLObj
 )
 
 const cntnt = "contents"
@@ -50,8 +51,13 @@ type FileObjects struct {
 	*Objects
 }
 
-// PreObjects implements GetBlacklist for pre-configured content
-type PreObjects struct {
+// PreDomainObjects implements GetBlacklist for pre-configured domains content
+type PreDomainObjects struct {
+	*Objects
+}
+
+// PreHostObjects implements GetBlacklist for pre-configured hosts content
+type PreHostObjects struct {
 	*Objects
 }
 
@@ -62,26 +68,6 @@ type URLObjects struct {
 
 // Contents is an array of *content
 type Contents []*Content
-
-// CreateObject returns an interface of the requested iFace type
-func (c *Config) CreateObject(i iFace) (Contenter, error) {
-	var o *Objects
-	if ltype := i.String(); ltype != cntnt {
-		o = c.GetAll(ltype)
-	}
-	switch i {
-	case ContObj:
-		return &Contents{}, nil
-	case FileObj:
-		return &FileObjects{Objects: o}, nil
-	case PreObj:
-		return &PreObjects{Objects: o}, nil
-	case URLObj:
-		return &URLObjects{Objects: o}, nil
-	default:
-		return nil, errors.New("Invalid interface requested")
-	}
-}
 
 // Find returns the int position of an Objects' element in the StringSlice
 func (c *Contents) Find(elem string) int {
@@ -102,7 +88,17 @@ func (f *FileObjects) Find(elem string) int {
 }
 
 // Find returns the int position of an Objects' element in the StringSlice
-func (p *PreObjects) Find(elem string) int {
+func (p *PreDomainObjects) Find(elem string) int {
+	for i, obj := range p.S {
+		if obj.name == elem {
+			return i
+		}
+	}
+	return -1
+}
+
+// Find returns the int position of an Objects' element in the StringSlice
+func (p *PreHostObjects) Find(elem string) int {
 	for i, obj := range p.S {
 		if obj.name == elem {
 			return i
@@ -143,11 +139,27 @@ func (f *FileObjects) GetBlacklist() *Contents {
 	return &c
 }
 
-// GetBlacklist implements the Contenter interface for PreObjects
-func (p *PreObjects) GetBlacklist() *Contents {
+// GetBlacklist implements the Contenter interface for PreDomainObjects
+func (p *PreDomainObjects) GetBlacklist() *Contents {
 	var c Contents
 	for _, obj := range p.S {
-		if obj.ltype == preConf && obj.inc != nil {
+		if obj.ltype == PreDomns && obj.inc != nil {
+			c = append(c, &Content{
+				err:    nil,
+				Object: obj,
+				Parms:  p.Parms,
+				r:      obj.Includes(),
+			})
+		}
+	}
+	return &c
+}
+
+// GetBlacklist implements the Contenter interface for PreHostObjects
+func (p *PreHostObjects) GetBlacklist() *Contents {
+	var c Contents
+	for _, obj := range p.S {
+		if obj.ltype == PreHosts && obj.inc != nil {
 			c = append(c, &Content{
 				err:    nil,
 				Object: obj,
@@ -264,7 +276,16 @@ func (f *FileObjects) SetURL(name, url string) {
 }
 
 // SetURL sets a field value
-func (p *PreObjects) SetURL(name, url string) {
+func (p *PreDomainObjects) SetURL(name, url string) {
+	for _, obj := range p.S {
+		if obj.name == name {
+			obj.url = url
+		}
+	}
+}
+
+// SetURL sets a field value
+func (p *PreHostObjects) SetURL(name, url string) {
 	for _, obj := range p.S {
 		if obj.name == name {
 			obj.url = url
@@ -288,11 +309,10 @@ func (c *Contents) SetURL(name, url string) {
 	}
 }
 
-func (p *PreObjects) String() string { return p.Objects.String() }
-
-func (f *FileObjects) String() string { return f.Objects.String() }
-
-func (u *URLObjects) String() string { return u.Objects.String() }
+func (f *FileObjects) String() string      { return f.Objects.String() }
+func (p *PreDomainObjects) String() string { return p.Objects.String() }
+func (p *PreHostObjects) String() string   { return p.Objects.String() }
+func (u *URLObjects) String() string       { return u.Objects.String() }
 
 func (i iFace) String() (s string) {
 	switch i {
@@ -300,8 +320,10 @@ func (i iFace) String() (s string) {
 		s = cntnt
 	case FileObj:
 		s = files
-	case PreObj:
-		s = preConf
+	case PreDomnObj:
+		s = PreDomns
+	case PreHostObj:
+		s = PreHosts
 	case URLObj:
 		s = urls
 	default:

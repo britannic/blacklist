@@ -39,12 +39,14 @@ type Config struct {
 // ntype for labeling blacklist source types
 type ntype int
 
+//go:generate stringer -type=ntype
 // ntypes label blacklist source types
 const (
 	unknown ntype = iota // denotes a coding error
-	pre                  // Pre-configured backlisted domains/hosts
 	domain               // Format e.g. address=/.d.com/0.0.0.0
 	host                 // Format e.g. address=/www.d.com/0.0.0.0
+	preDomn              // Pre-configured backlisted domains
+	preHost              // Pre-configured backlisted hosts
 	root                 // Topmost root node
 	zone                 // Unused - future application
 )
@@ -52,25 +54,79 @@ const (
 const (
 	agent     = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/601.4.4 (KHTML, like Gecko) Version/9.0.3 Safari/601.4.4`
 	all       = "all"
-	notknown  = "unknown"
 	blackhole = "dns-redirect-ip"
 	blacklist = "blacklist"
 	dbg       = false
 	disabled  = "disabled"
 	domains   = "domains"
 	files     = "file"
-	src       = "source"
 	hosts     = "hosts"
-	preConf   = "pre-configured"
-	rootNode  = blacklist
-	urls      = "url"
-	zones     = "zones"
+	notknown  = "unknown"
+	preNoun   = "pre-configured"
+	// PreDomns designates string label for preconfigured blacklisted domains
+	PreDomns = preNoun + "-domain"
+	// PreHosts designates string label for preconfigured blacklisted hosts
+	PreHosts = preNoun + "-host"
+	rootNode = blacklist
+	src      = "source"
+	urls     = "url"
+	zones    = "zones"
 
 	// False is a string constant
 	False = "false"
 	// True is a string constant
 	True = "true"
 )
+
+func (c *Config) addInc(node string) *Object {
+	var (
+		inc   = c.bNodes[node].inc
+		ltype string
+		n     ntype
+	)
+	if inc != nil {
+		switch node {
+		case domains:
+			ltype = getType(preDomn).(string)
+			n = getType(ltype).(ntype)
+		case hosts:
+			ltype = getType(preHost).(string)
+			n = getType(ltype).(ntype)
+		}
+		return &Object{
+			desc:  ltype + " blacklist content",
+			inc:   inc,
+			ip:    c.bNodes.getIP(node),
+			ltype: ltype,
+			name:  fmt.Sprintf("includes.[%v]", len(inc)),
+			nType: n,
+			Parms: c.Parms,
+		}
+	}
+	return nil
+}
+
+// CreateObject returns an interface of the requested iFace type
+func (c *Config) CreateObject(i iFace) (Contenter, error) {
+	var o *Objects
+	if ltype := i.String(); ltype != cntnt {
+		o = c.GetAll(ltype)
+	}
+	switch i {
+	case ContObj:
+		return &Contents{}, nil
+	case FileObj:
+		return &FileObjects{Objects: o}, nil
+	case PreDomnObj:
+		return &PreDomainObjects{Objects: o}, nil
+	case PreHostObj:
+		return &PreHostObjects{Objects: o}, nil
+	case URLObj:
+		return &URLObjects{Objects: o}, nil
+	default:
+		return nil, errors.New("Invalid interface requested")
+	}
+}
 
 // Excludes returns a List map of blacklist exclusions
 func (c *Config) Excludes(nodes ...string) List {
@@ -101,30 +157,40 @@ func (c *Config) Get(node string) *Objects {
 	switch node {
 	case all:
 		for _, node := range c.Parms.Nodes {
-			o.addInc(c, node)
 			o.addObj(c, node)
 		}
 	default:
-		o.addInc(c, node)
-		o.addObj(c, node)
+		// o.addObj(c, node)
+		return c.GetAll()
 	}
 	return o
 }
 
 // GetAll returns an array of Objects
 func (c *Config) GetAll(ltypes ...string) *Objects {
-	o := &Objects{Parms: c.Parms}
+	var (
+		newDomns = true
+		newHosts = true
+		o        = &Objects{Parms: c.Parms}
+	)
 
 	for _, node := range c.Parms.Nodes {
 		switch ltypes {
 		case nil:
-			o.addInc(c, node)
 			o.addObj(c, node)
 		default:
 			for _, ltype := range ltypes {
 				switch ltype {
-				case preConf:
-					o.addInc(c, node)
+				case PreDomns:
+					if newDomns && node == domains {
+						o.S = append(o.S, c.addInc(node))
+						newDomns = false
+					}
+				case PreHosts:
+					if newHosts && node == hosts {
+						o.S = append(o.S, c.addInc(node))
+						newHosts = false
+					}
 				default:
 					obj := c.validate(node).S
 					for i := range obj {
@@ -328,9 +394,9 @@ func (c *CFile) Strings() []string {
 	return c.names
 }
 
-// STypes returns an array of configured nodes
-func (c *Config) STypes() []string {
-	return c.Parms.Stypes
+// LTypes returns an array of configured nodes
+func (c *Config) LTypes() []string {
+	return c.Parms.Ltypes
 }
 
 func (b bNodes) getIP(node string) (ip string) {

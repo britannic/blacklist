@@ -103,13 +103,14 @@ func TestGetType(t *testing.T) {
 		typeint  ntype
 		typestr  string
 	}{
+		{typeint: 100, typestr: notknown, ntypestr: "ntype(100)"},
 		{typeint: domain, typestr: domains, ntypestr: "domain"},
 		{typeint: host, typestr: hosts, ntypestr: "host"},
-		{typeint: pre, typestr: preConf, ntypestr: "pre"},
+		{typeint: preDomn, typestr: PreDomns, ntypestr: "preDomn"},
+		{typeint: preHost, typestr: PreHosts, ntypestr: "preHost"},
 		{typeint: root, typestr: blacklist, ntypestr: "root"},
 		{typeint: unknown, typestr: notknown, ntypestr: "unknown"},
 		{typeint: zone, typestr: zones, ntypestr: "zone"},
-		{typeint: 100, typestr: notknown, ntypestr: "ntype(100)"},
 	}
 
 	for _, test := range tests {

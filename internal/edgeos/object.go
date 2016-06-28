@@ -31,21 +31,14 @@ type Objects struct {
 	S []*Object
 }
 
-func (o *Objects) addInc(c *Config, node string) {
-	if c.bNodes[node].inc != nil {
-		o.S = append(
-			o.S,
-			getInc(
-				&Object{
-					Parms: c.Parms,
-					inc:   c.bNodes[node].inc,
-					ip:    c.bNodes.getIP(node),
-				}, node)...)
-	}
-}
-
 func (o *Objects) addObj(c *Config, node string) {
-	o.S = append(o.S, c.bNodes.validate(node).S...)
+	switch obj := c.addInc(node); obj {
+	case nil:
+		o.S = append(o.S, c.bNodes.validate(node).S...)
+	default:
+		o.S = append(o.S, obj)
+		o.S = append(o.S, c.bNodes.validate(node).S...)
+	}
 }
 
 // Files returns a list of dnsmasq conf files from all srcs
@@ -70,20 +63,6 @@ func (o *Objects) Find(elem string) int {
 	return -1
 }
 
-func getInc(obj *Object, node string) []*Object {
-	return []*Object{
-		&Object{
-			desc:  preConf,
-			inc:   obj.inc,
-			ip:    obj.ip,
-			ltype: preConf,
-			name:  preConf,
-			nType: getType(node).(ntype),
-			Parms: obj.Parms,
-		},
-	}
-}
-
 // Includes returns an io.Reader of blacklist Includes
 func (o *Object) Includes() io.Reader {
 	sort.Strings(o.inc)
@@ -105,21 +84,6 @@ func newObject() *Object {
 		exc:     make([]string, 0),
 		inc:     make([]string, 0),
 	}
-}
-
-// Source returns a map of sources
-func (o *Objects) Source(ltype string) *Objects {
-	objs := Objects{Parms: o.Parms}
-	for _, obj := range o.S {
-		switch ltype {
-		case obj.ltype:
-			objs.S = append(objs.S, obj)
-		case "all":
-			// objs.S = append(objs.S, obj)
-			return o
-		}
-	}
-	return &objs
 }
 
 // Stringer for Object

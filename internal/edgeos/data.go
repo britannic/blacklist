@@ -95,10 +95,12 @@ func typeInt(i ntype) (s string) {
 		s = domains
 	case host:
 		s = hosts
-	case pre:
-		s = preConf
+	case preDomn:
+		s = PreDomns
+	case preHost:
+		s = PreHosts
 	case root:
-		s = blacklist
+		s = rootNode
 	case unknown:
 		s = notknown
 	case zone:
@@ -113,12 +115,14 @@ func typeStr(s string) (i ntype) {
 		i = domain
 	case hosts:
 		i = host
-	case preConf:
-		i = pre
-	case blacklist:
-		i = root
 	case notknown:
 		i = unknown
+	case PreDomns:
+		i = preDomn
+	case PreHosts:
+		i = preHost
+	case rootNode:
+		i = root
 	case zones:
 		i = zone
 	}

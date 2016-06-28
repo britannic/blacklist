@@ -12,8 +12,8 @@ func TestConfigString(t *testing.T) {
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
 		Method("GET"),
-		Nodes([]string{"domains", "hosts"}),
-		STypes([]string{"pre-configured", "file", urls}),
+		Nodes([]string{rootNode, domains, hosts}),
+		LTypes([]string{files, PreDomns, PreHosts, urls}),
 	)
 
 	r := &CFGstatic{Cfg: tdata.Cfg}
@@ -27,8 +27,8 @@ func TestConfigString(t *testing.T) {
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
 		Method("GET"),
-		Nodes([]string{"domains", "hosts"}),
-		STypes([]string{"pre-configured", "file", urls}),
+		Nodes([]string{domains, hosts}),
+		LTypes([]string{files, PreDomns, PreHosts, urls}),
 	)
 
 	err = c.ReadCfg(r)

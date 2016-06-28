@@ -29,7 +29,7 @@ type Parms struct {
 	Nodes     []string
 	Pfx       string
 	Poll      int
-	Stypes    []string
+	Ltypes    []string
 	Test      bool
 	Timeout   time.Duration
 	Verbosity int
@@ -295,12 +295,12 @@ func (p *Parms) String() string {
 	return r
 }
 
-// STypes sets an array of legal types used by Source
-func STypes(s []string) Option {
+// LTypes sets an array of legal types used by Source
+func LTypes(s []string) Option {
 	return func(c *Config) Option {
-		previous := c.Stypes
-		c.Stypes = s
-		return STypes(previous)
+		previous := c.Ltypes
+		c.Ltypes = s
+		return LTypes(previous)
 	}
 }
 
