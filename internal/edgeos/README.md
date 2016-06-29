@@ -88,7 +88,7 @@ CFGcli is for configurations loaded via the EdgeOS CFGcli
 ``` go
 func (c *CFGcli) Load() io.Reader
 ```
-Load returns an EdgeOS config file string and error
+Load returns an EdgeOS config file loaded in to a string
 
 
 
@@ -115,7 +115,7 @@ CFGstatic is for configurations loaded via the EdgeOS CFGstatic
 ``` go
 func (c *CFGstatic) Load() io.Reader
 ```
-Load returns an EdgeOS CLI loaded configuration
+Load returns an EdgeOS config file loaded in to a string
 
 
 

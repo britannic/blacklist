@@ -370,8 +370,8 @@ func TestProcessContent(t *testing.T) {
 	}
 }
 
-func TestwriteFile(t *testing.T) {
-	writeFileTests := []struct {
+func TestWriteFile(t *testing.T) {
+	tests := []struct {
 		data  io.Reader
 		dir   string
 		fname string
@@ -395,9 +395,9 @@ func TestwriteFile(t *testing.T) {
 		{
 			data:  bytes.NewBufferString("This shouldn't be written!"),
 			dir:   "",
-			fname: "/tmp/z/d/c/r/c:reallybadfile.zfts",
+			fname: "/",
 			ok:    false,
-			want:  `unable to open file: /tmp/z/d/c/r/c:reallybadfile.zfts for writing, error: open /tmp/z/d/c/r/c:reallybadfile.zfts: no such file or directory`,
+			want:  "open /: is a directory",
 		},
 	}
 
@@ -409,14 +409,14 @@ func TestwriteFile(t *testing.T) {
 		Nodes([]string{"domains", "hosts"}),
 	)
 
-	for _, test := range writeFileTests {
-		switch test.ok {
+	for _, tt := range tests {
+		switch tt.ok {
 		case true:
-			f, err := ioutil.TempFile(test.dir, test.fname)
+			f, err := ioutil.TempFile(tt.dir, tt.fname)
 			OK(t, err)
 			b := &blist{
 				file: f.Name(),
-				r:    test.data,
+				r:    tt.data,
 			}
 			err = b.writeFile()
 			OK(t, err)
@@ -424,12 +424,12 @@ func TestwriteFile(t *testing.T) {
 
 		default:
 			b := &blist{
-				file: test.dir + test.fname,
-				r:    test.data,
+				file: tt.dir + tt.fname,
+				r:    tt.data,
 			}
 			err := b.writeFile()
 			NotOK(t, err)
-			Equals(t, "open /tmp/z/d/c/r/c:reallybadfile.zfts: no such file or directory", err.Error())
+			Equals(t, tt.want, err.Error())
 		}
 	}
 }

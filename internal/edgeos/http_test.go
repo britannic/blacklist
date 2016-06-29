@@ -25,7 +25,7 @@ func (h *HTTPserver) NewHTTPServer() *url.URL {
 	return URL
 }
 
-func TestgetHTTP(t *testing.T) {
+func TestGetHTTP(t *testing.T) {
 	var (
 		errs = struct {
 			method string

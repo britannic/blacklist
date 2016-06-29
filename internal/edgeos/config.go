@@ -376,6 +376,19 @@ func (c *CFile) Remove() error {
 	return purgeFiles(DiffArray(c.names, dlist))
 }
 
+// sortKeys returns a slice of keys in lexicographical sorted order.
+func (c *Config) sortKeys() (pkeys sort.StringSlice) {
+	pkeys = make(sort.StringSlice, len(c.bNodes))
+	i := 0
+	for k := range c.bNodes {
+		pkeys[i] = k
+		i++
+	}
+	pkeys.Sort()
+
+	return pkeys
+}
+
 // String returns pretty print for the Blacklist struct
 func (c *Config) String() (result string) {
 	indent := 1
