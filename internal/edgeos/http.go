@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-// GetHTTP creates http requests to download data
-func GetHTTP(method, URL string) (io.Reader, error) {
+// getHTTP creates http requests to download data
+func getHTTP(method, URL string) (io.Reader, error) {
 	var (
 		body []byte
 		err  error

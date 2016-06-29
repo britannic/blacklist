@@ -139,8 +139,6 @@ func (c *Config) CreateObject(i iFace) (Contenter, error) {
 		o = c.addExc(hosts)
 	case ExcRoots:
 		o = c.addExc(rootNode)
-	case "contents":
-		o = c.GetAll()
 	default:
 		o = c.GetAll(ltype)
 	}
@@ -165,13 +163,9 @@ func (c *Config) CreateObject(i iFace) (Contenter, error) {
 	}
 }
 
-// Excludes returns a List map of blacklist exclusions
-func (c *Config) Excludes(nodes ...string) List {
-	return UpdateList(c.excludes(nodes...))
-}
-
-// Excludes returns a string array of excludes
-func (c *Config) excludes(nodes ...string) (exc []string) {
+// excludes returns a string array of excludes
+func (c *Config) excludes(nodes ...string) List {
+	var exc []string
 	switch nodes {
 	case nil:
 		for _, k := range c.Nodes() {
@@ -184,7 +178,7 @@ func (c *Config) excludes(nodes ...string) (exc []string) {
 			exc = append(exc, c.bNodes[node].exc...)
 		}
 	}
-	return exc
+	return updateList(exc)
 }
 
 // Get returns an *Object for a given node
@@ -357,8 +351,8 @@ LINE:
 	return nil
 }
 
-// ReadDir returns a listing of dnsmasq formatted blacklist configuration files
-func (c *CFile) ReadDir(pattern string) ([]string, error) {
+// readDir returns a listing of dnsmasq formatted blacklist configuration files
+func (c *CFile) readDir(pattern string) ([]string, error) {
 	return filepath.Glob(pattern)
 }
 
@@ -374,7 +368,7 @@ func (c *Config) ReloadDNS() ([]byte, error) {
 func (c *CFile) Remove() error {
 
 	pattern := fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.Node, c.Wildcard.Name, c.Parms.Ext)
-	dlist, err := c.ReadDir(pattern)
+	dlist, err := c.readDir(pattern)
 	if err != nil {
 		return err
 	}

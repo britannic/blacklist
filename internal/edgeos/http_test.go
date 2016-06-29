@@ -25,7 +25,7 @@ func (h *HTTPserver) NewHTTPServer() *url.URL {
 	return URL
 }
 
-func TestGetHTTP(t *testing.T) {
+func TestgetHTTP(t *testing.T) {
 	var (
 		errs = struct {
 			method string
@@ -60,7 +60,7 @@ func TestGetHTTP(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		body, err := GetHTTP(test.method, test.URL)
+		body, err := getHTTP(test.method, test.URL)
 
 		switch test.ok {
 		case true:

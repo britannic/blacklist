@@ -139,24 +139,6 @@ func DNSsvc(d string) Option {
 	}
 }
 
-// Dexcludes sets blacklist domain exclusions
-func Dexcludes(l List) Option {
-	return func(c *Config) Option {
-		previous := c.Dex
-		c.Dex = l
-		return Dexcludes(previous)
-	}
-}
-
-// Excludes sets blacklist exclusions
-func Excludes(l List) Option {
-	return func(c *Config) Option {
-		previous := c.Exc
-		c.Exc = l
-		return Excludes(previous)
-	}
-}
-
 // Ext sets the blacklist file n extension
 func Ext(e string) Option {
 	return func(c *Config) Option {

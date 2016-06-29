@@ -42,8 +42,8 @@ func (o *Objects) addObj(c *Config, node string) {
 	}
 }
 
-// Excludes returns an io.Reader of blacklist Includes
-func (o *Object) Excludes() io.Reader {
+// excludes returns an io.Reader of blacklist includes
+func (o *Object) excludes() io.Reader {
 	sort.Strings(o.exc)
 	return strings.NewReader(strings.Join(o.exc, "\n"))
 }
@@ -70,8 +70,8 @@ func (o *Objects) Find(elem string) int {
 	return -1
 }
 
-// Includes returns an io.Reader of blacklist Includes
-func (o *Object) Includes() io.Reader {
+// includes returns an io.Reader of blacklist includes
+func (o *Object) includes() io.Reader {
 	sort.Strings(o.inc)
 	return strings.NewReader(strings.Join(o.inc, "\n"))
 }

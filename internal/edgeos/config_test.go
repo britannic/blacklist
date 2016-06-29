@@ -60,24 +60,23 @@ func TestExcludes(t *testing.T) {
 	excludes := List{"sstatic.net": 0, "yimg.com": 0, "ytimg.com": 0, "google.com": 0, "images-amazon.com": 0, "msdn.com": 0, "schema.org": 0, "skype.com": 0, "avast.com": 0, "bitdefender.com": 0, "cdn.visiblemeasures.com": 0, "cloudfront.net": 0, "microsoft.com": 0, "akamaihd.net": 0, "amazon.com": 0, "apple.com": 0, "shopify.com": 0, "storage.googleapis.com": 0, "msecnd.net": 0, "ssl-on9.com": 0, "windows.net": 0, "1e100.net": 0, "akamai.net": 0, "coremetrics.com": 0, "gstatic.com": 0, "gvt1.com": 0, "freedns.afraid.org": 0, "hb.disney.go.com": 0, "hp.com": 0, "live.com": 0, "rackcdn.com": 0, "edgesuite.net": 0, "googleapis.com": 0, "smacargo.com": 0, "static.chartbeat.com": 0, "gvt1.net": 0, "hulu.com": 0, "paypal.com": 0, "amazonaws.com": 0, "ask.com": 0, "github.com": 0, "githubusercontent.com": 0, "googletagmanager.com": 0, "sourceforge.net": 0, "xboxlive.com": 0, "2o7.net": 0, "adobedtm.com": 0, "googleadservices.com": 0, "googleusercontent.com": 0, "ssl-on9.net": 0}
 
 	tests := []struct {
-		get  []string
+		get  List
 		list List
 		raw  []string
 		node string
 	}{
-		{get: c.excludes("blacklist"), list: excludes, node: "blacklist"},
+		{get: c.excludes(rootNode), list: excludes, node: rootNode},
 		{get: c.excludes(), list: excludes},
-		{get: c.excludes("domains"), list: List{}, node: "domains"},
-		{get: c.excludes("hosts"), list: List{}, node: "hosts"},
+		{get: c.excludes(domains), list: List{}, node: domains},
+		{get: c.excludes(hosts), list: List{}, node: hosts},
 	}
 
 	for _, test := range tests {
 		switch test.node {
 		case "":
-			x := c.Excludes()
-			Equals(t, test.list, x)
+			Equals(t, test.list, c.excludes())
 		default:
-			Equals(t, test.list, c.Excludes(test.node))
+			Equals(t, test.list, c.excludes(test.node))
 		}
 
 	}
@@ -136,7 +135,7 @@ func TestReadCfg(t *testing.T) {
 
 // type dummy struct{}
 //
-// func (d *dummy) ReadDir(s string) ([]os.FileInfo, error) {
+// func (d *dummy) readDir(s string) ([]os.FileInfo, error) {
 // 	return []os.FileInfo{}, fmt.Errorf("%v totally failed!", s)
 // }
 //
@@ -198,7 +197,7 @@ func TestRemove(t *testing.T) {
 
 	cf := &CFile{Parms: c.Parms}
 	pattern := fmt.Sprintf(c.FnFmt, c.Dir, "*s", "*", c.Parms.Ext)
-	got, err := cf.ReadDir(pattern)
+	got, err := cf.readDir(pattern)
 	OK(t, err)
 
 	Equals(t, want, got)

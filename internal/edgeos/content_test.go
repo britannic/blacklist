@@ -370,7 +370,7 @@ func TestProcessContent(t *testing.T) {
 	}
 }
 
-func TestWriteFile(t *testing.T) {
+func TestwriteFile(t *testing.T) {
 	writeFileTests := []struct {
 		data  io.Reader
 		dir   string
@@ -381,14 +381,14 @@ func TestWriteFile(t *testing.T) {
 		{
 			data:  strings.NewReader("The rest is history!"),
 			dir:   "/tmp",
-			fname: "Test.util.WriteFile",
+			fname: "Test.util.writeFile",
 			ok:    true,
 			want:  "",
 		},
 		{
 			data:  bytes.NewBuffer([]byte{84, 104, 101, 32, 114, 101, 115, 116, 32, 105, 115, 32, 104, 105, 115, 116, 111, 114, 121, 33}),
 			dir:   "/tmp",
-			fname: "Test.util.WriteFile",
+			fname: "Test.util.writeFile",
 			ok:    true,
 			want:  "",
 		},
@@ -418,7 +418,7 @@ func TestWriteFile(t *testing.T) {
 				file: f.Name(),
 				r:    test.data,
 			}
-			err = b.WriteFile()
+			err = b.writeFile()
 			OK(t, err)
 			os.Remove(f.Name())
 
@@ -427,7 +427,7 @@ func TestWriteFile(t *testing.T) {
 				file: test.dir + test.fname,
 				r:    test.data,
 			}
-			err := b.WriteFile()
+			err := b.writeFile()
 			NotOK(t, err)
 			Equals(t, "open /tmp/z/d/c/r/c:reallybadfile.zfts: no such file or directory", err.Error())
 		}

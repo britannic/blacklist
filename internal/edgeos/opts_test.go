@@ -34,7 +34,7 @@ func TestOption(t *testing.T) {
 		Wildcard:  Wildcard{},
 	}
 
-	want := "edgeos.Parms{\nWildcard:  \"{*s *}\"\nAPI:       \"/bin/cli-shell-api\"\nArch:      \"amd64\"\nBash:      \"/bin/bash\"\nCores:     \"2\"\nDebug:     \"true\"\nDex:       \"\\\"synodal.com\\\":0,\"\nDir:       \"/tmp\"\nDNSsvc:    \"service dnsmasq restart\"\nExc:       \"\\\"goodactor.com\\\":0,\"\nExt:       \"blacklist.conf\"\nFile:      \"/config/config.boot\"\nFnFmt:     \"%v/%v.%v.%v\"\nInCLI:     \"inSession\"\nLevel:     \"service dns forwarding\"\nMethod:    \"GET\"\nNodes:     \"[domains hosts]\"\nPfx:       \"address=\"\nPoll:      \"10\"\nLtypes:    \"[file pre-configured-domain pre-configured-host url]\"\nTest:      \"true\"\nTimeout:   \"30s\"\nVerbosity: \"2\"\n}\n"
+	want := "edgeos.Parms{\nWildcard:  \"{*s *}\"\nAPI:       \"/bin/cli-shell-api\"\nArch:      \"amd64\"\nBash:      \"/bin/bash\"\nCores:     \"2\"\nDebug:     \"true\"\nDex:       \"**not initialized**\"\nDir:       \"/tmp\"\nDNSsvc:    \"service dnsmasq restart\"\nExc:       \"**not initialized**\"\nExt:       \"blacklist.conf\"\nFile:      \"/config/config.boot\"\nFnFmt:     \"%v/%v.%v.%v\"\nInCLI:     \"inSession\"\nLevel:     \"service dns forwarding\"\nMethod:    \"GET\"\nNodes:     \"[domains hosts]\"\nPfx:       \"address=\"\nPoll:      \"10\"\nLtypes:    \"[file pre-configured-domain pre-configured-host url]\"\nTest:      \"true\"\nTimeout:   \"30s\"\nVerbosity: \"2\"\n}\n"
 
 	wantRaw := Parms{
 		API:       "/bin/cli-shell-api",
@@ -42,10 +42,10 @@ func TestOption(t *testing.T) {
 		Bash:      "/bin/bash",
 		Cores:     2,
 		Debug:     true,
-		Dex:       List{"synodal.com": 0},
+		Dex:       List{},
 		Dir:       "/tmp",
 		DNSsvc:    "service dnsmasq restart",
-		Exc:       List{"goodactor.com": 0},
+		Exc:       List{},
 		Ext:       "blacklist.conf",
 		File:      "/config/config.boot",
 		FnFmt:     "%v/%v.%v.%v",
@@ -71,10 +71,10 @@ func TestOption(t *testing.T) {
 		Bash("/bin/bash"),
 		Cores(2),
 		Debug(true),
-		Dexcludes(List{"synodal.com": 0}),
+		// Dexcludes(List{"synodal.com": 0}),
 		Dir("/tmp"),
 		DNSsvc("service dnsmasq restart"),
-		Excludes(List{"goodactor.com": 0}),
+		// excludes(List{"goodactor.com": 0}),
 		Ext("blacklist.conf"),
 		File("/config/config.boot"),
 		FileNameFmt("%v/%v.%v.%v"),

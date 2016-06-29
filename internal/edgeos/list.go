@@ -44,8 +44,8 @@ func (l List) subKeyExists(s string) bool {
 	return l.keyExists(s)
 }
 
-// UpdateList converts []string to map of List
-func UpdateList(data []string) (l List) {
+// updateList converts []string to map of List
+func updateList(data []string) (l List) {
 	l = make(List)
 	for _, k := range data {
 		l[k] = 0

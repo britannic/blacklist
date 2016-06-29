@@ -151,7 +151,7 @@ func (e *ExcDomnObjects) GetList() *Objects {
 		switch obj.nType {
 		case excDomn:
 			if obj.exc != nil {
-				obj.r = obj.Excludes()
+				obj.r = obj.excludes()
 				obj.err = nil
 				obj.Parms = e.Objects.Parms
 			}
@@ -166,7 +166,7 @@ func (e *ExcHostObjects) GetList() *Objects {
 		switch obj.nType {
 		case excHost:
 			if obj.exc != nil {
-				obj.r = obj.Excludes()
+				obj.r = obj.excludes()
 				obj.err = nil
 				obj.Parms = e.Objects.Parms
 			}
@@ -182,7 +182,7 @@ func (e *ExcRootObjects) GetList() *Objects {
 		switch obj.nType {
 		case excRoot:
 			if obj.exc != nil {
-				obj.r = obj.Excludes()
+				obj.r = obj.excludes()
 				obj.Parms = e.Objects.Parms
 			}
 		}
@@ -205,7 +205,7 @@ func (f *FIODataObjects) GetList() *Objects {
 func (p *PreDomnObjects) GetList() *Objects {
 	for _, obj := range p.S {
 		if obj.ltype == PreDomns && obj.inc != nil {
-			obj.r = obj.Includes()
+			obj.r = obj.includes()
 			obj.Parms = p.Objects.Parms
 		}
 	}
@@ -216,7 +216,7 @@ func (p *PreDomnObjects) GetList() *Objects {
 func (p *PreHostObjects) GetList() *Objects {
 	for _, obj := range p.S {
 		if obj.ltype == PreHosts && obj.inc != nil {
-			obj.r = obj.Includes()
+			obj.r = obj.includes()
 			obj.Parms = p.Objects.Parms
 		}
 	}
@@ -227,7 +227,7 @@ func (p *PreHostObjects) GetList() *Objects {
 func (u *URLDataObjects) GetList() *Objects {
 	for _, obj := range u.S {
 		if obj.ltype == urls && obj.url != "" {
-			obj.r, obj.err = GetHTTP(u.Parms.Method, obj.url)
+			obj.r, obj.err = getHTTP(u.Parms.Method, obj.url)
 			obj.Parms = u.Objects.Parms
 		}
 	}
@@ -306,7 +306,7 @@ func (c *Config) ProcessContent(ct Contenter) error {
 			src.process()
 
 		default:
-			if err := src.process().WriteFile(); err != nil {
+			if err := src.process().writeFile(); err != nil {
 				errs = append(errs, fmt.Sprint(err))
 			}
 		}
@@ -412,8 +412,8 @@ func (i iFace) String() (s string) {
 	return s
 }
 
-// WriteFile saves hosts/domains data to disk
-func (b *blist) WriteFile() error {
+// writeFile saves hosts/domains data to disk
+func (b *blist) writeFile() error {
 	w, err := os.Create(b.file)
 	if err != nil {
 		return err

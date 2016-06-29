@@ -57,13 +57,6 @@ func DiffArray(a, b []string) (diff sort.StringSlice)
 DiffArray returns the delta of two arrays
 
 
-## func GetHTTP
-``` go
-func GetHTTP(method, URL string) (io.Reader, error)
-```
-GetHTTP creates http requests to download data
-
-
 ## func StrToBool
 ``` go
 func StrToBool(s string) bool
@@ -145,14 +138,6 @@ CFile holds an array of file names
 
 
 
-### func (\*CFile) ReadDir
-``` go
-func (c *CFile) ReadDir(pattern string) ([]string, error)
-```
-ReadDir returns a listing of dnsmasq formatted blacklist configuration files
-
-
-
 ### func (\*CFile) Remove
 ``` go
 func (c *CFile) Remove() error
@@ -226,14 +211,6 @@ NewConfig returns a new *Config initialized with the parameter options passed to
 func (c *Config) CreateObject(i iFace) (Contenter, error)
 ```
 CreateObject returns an interface of the requested iFace type
-
-
-
-### func (\*Config) Excludes
-``` go
-func (c *Config) Excludes(nodes ...string) List
-```
-Excludes returns a List map of blacklist exclusions
 
 
 
@@ -544,13 +521,6 @@ List is a map of int
 
 
 
-### func UpdateList
-``` go
-func UpdateList(data []string) (l List)
-```
-UpdateList converts []string to map of List
-
-
 
 
 ### func (List) String
@@ -579,22 +549,6 @@ Object struct for normalizing EdgeOS data.
 
 
 
-
-
-
-### func (\*Object) Excludes
-``` go
-func (o *Object) Excludes() io.Reader
-```
-Excludes returns an io.Reader of blacklist Includes
-
-
-
-### func (\*Object) Includes
-``` go
-func (o *Object) Includes() io.Reader
-```
-Includes returns an io.Reader of blacklist Includes
 
 
 
@@ -733,25 +687,11 @@ func Debug(b bool) Option
 Debug toggles debug level on or off
 
 
-### func Dexcludes
-``` go
-func Dexcludes(l List) Option
-```
-Dexcludes sets blacklist domain exclusions
-
-
 ### func Dir
 ``` go
 func Dir(d string) Option
 ```
 Dir sets directory location
-
-
-### func Excludes
-``` go
-func Excludes(l List) Option
-```
-Excludes sets blacklist exclusions
 
 
 ### func Ext
