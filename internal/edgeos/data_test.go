@@ -2,7 +2,6 @@ package edgeos
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -67,7 +66,7 @@ func TestFormatData(t *testing.T) {
 
 		getBytes := func() io.Reader {
 			sort.Strings(c.bNodes[node].inc)
-			return bytes.NewBuffer([]byte(strings.Join(c.bNodes[node].inc, "\n")))
+			return strings.NewReader(strings.Join(c.bNodes[node].inc, "\n"))
 		}
 
 		b := bufio.NewScanner(getBytes())
@@ -105,6 +104,9 @@ func TestGetType(t *testing.T) {
 	}{
 		{typeint: 100, typestr: notknown, ntypestr: "ntype(100)"},
 		{typeint: domain, typestr: domains, ntypestr: "domain"},
+		{typeint: excDomn, typestr: ExcDomns, ntypestr: "excDomn"},
+		{typeint: excHost, typestr: ExcHosts, ntypestr: "excHost"},
+		{typeint: excRoot, typestr: ExcRoots, ntypestr: "excRoot"},
 		{typeint: host, typestr: hosts, ntypestr: "host"},
 		{typeint: preDomn, typestr: PreDomns, ntypestr: "preDomn"},
 		{typeint: preHost, typestr: PreHosts, ntypestr: "preHost"},

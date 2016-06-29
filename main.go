@@ -37,11 +37,6 @@ func main() {
 	c.ReadCfg(o.getCFG(c))
 	fmt.Println(c.String())
 
-	c.SetOpt(
-		e.Dexcludes(c.Excludes("blacklist", "domains")),
-		e.Excludes(c.Excludes("hosts")),
-	)
-
 	if err := c.GetAll().Files().Remove(); err != nil {
 		log.Printf("c.GetAll().Files().Remove() error: %v\n", err)
 	}
@@ -51,12 +46,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	p, err := c.CreateObject(e.PreHostObj)
+	p, err := c.CreateObject(e.PreHObj)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	u, err := c.CreateObject(e.URLObj)
+	u, err := c.CreateObject(e.URLsObj)
 	if err != nil {
 		log.Fatal(err)
 	}

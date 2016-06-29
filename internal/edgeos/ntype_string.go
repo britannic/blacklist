@@ -4,9 +4,9 @@ package edgeos
 
 import "fmt"
 
-const _ntype_name = "unknowndomainhostpreDomnpreHostrootzone"
+const _ntype_name = "unknowndomainexcDomnexcHostexcRoothostpreDomnpreHostrootzone"
 
-var _ntype_index = [...]uint8{7, 13, 17, 24, 31, 35, 39}
+var _ntype_index = [...]uint8{7, 13, 20, 27, 34, 38, 45, 52, 56, 60}
 
 func (i ntype) String() string {
 	if i < 0 || i >= ntype(len(_ntype_index)) {

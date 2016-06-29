@@ -11,12 +11,36 @@ Package edgeos provides methods and structures to retrieve, parse and render Edg
 ``` go
 const (
 
+    // ExcDomns labels domain exclusions
+    ExcDomns = "domn-excludes"
+    // ExcHosts labels host exclusions
+    ExcHosts = "host-excludes"
+    // ExcRoots labels global domain exclusions
+    ExcRoots = "root-excludes"
     // False is a string constant
     False = "false"
+    // PreDomns designates string label for preconfigured blacklisted domains
+    PreDomns = preNoun + "-domain"
+    // PreHosts designates string label for preconfigured blacklisted hosts
+    PreHosts = preNoun + "-host"
     // True is a string constant
     True = "true"
 )
 ```
+``` go
+const (
+    Invalid iFace = iota + 100
+    ExRtObj
+    ExDmObj
+    ExHtObj
+    FileObj
+    PreDObj
+    PreHObj
+    URLsObj
+)
+```
+iFace types for labeling interface types
+
 
 
 ## func BooltoStr
@@ -197,9 +221,17 @@ NewConfig returns a new *Config initialized with the parameter options passed to
 
 
 
+### func (\*Config) CreateObject
+``` go
+func (c *Config) CreateObject(i iFace) (Contenter, error)
+```
+CreateObject returns an interface of the requested iFace type
+
+
+
 ### func (\*Config) Excludes
 ``` go
-func (c *Config) Excludes(node string) List
+func (c *Config) Excludes(nodes ...string) List
 ```
 Excludes returns a List map of blacklist exclusions
 
@@ -229,11 +261,27 @@ InSession returns true if VyOS/EdgeOS configuration is in session
 
 
 
+### func (\*Config) LTypes
+``` go
+func (c *Config) LTypes() []string
+```
+LTypes returns an array of configured nodes
+
+
+
 ### func (\*Config) Nodes
 ``` go
 func (c *Config) Nodes() (nodes []string)
 ```
 Nodes returns an array of configured nodes
+
+
+
+### func (\*Config) ProcessContent
+``` go
+func (c *Config) ProcessContent(ct Contenter) error
+```
+ProcessContent processes the Contents array
 
 
 
@@ -253,19 +301,11 @@ ReloadDNS reloads the dnsmasq configuration
 
 
 
-### func (\*Config) STypes
-``` go
-func (c *Config) STypes() []string
-```
-STypes returns an array of configured nodes
-
-
-
 ### func (\*Config) SetOpt
 ``` go
 func (c *Config) SetOpt(opts ...Option) (previous Option)
 ```
-SetOpt sets the specified options passed as Parms and returns an option to restore the last arg's previous value
+SetOpt sets the specified options passed as Parms and returns an option to restore the last set of arg's previous values
 
 
 
@@ -277,56 +317,13 @@ String returns pretty print for the Blacklist struct
 
 
 
-## type Configger
-``` go
-type Configger interface {
-}
-```
-Configger defines Config methods
-
-
-
-
-
-
-
-
-
-
-
-## type Content
-``` go
-type Content struct {
-    *Object
-    *Parms
-    Contenter
-    // contains filtered or unexported fields
-}
-```
-Content is a struct of blacklist content
-
-
-
-
-
-
-
-
-
-
-
-### func (\*Content) Process
-``` go
-func (c *Content) Process() *blist
-```
-Process extracts hosts/domains from downloaded raw content
-
-
-
 ## type Contenter
 ``` go
 type Contenter interface {
-    Process() io.Reader
+    Find(elem string) int
+    GetList() *Objects
+    SetURL(name string, url string)
+    String() string
 }
 ```
 Contenter is a Content interface
@@ -341,11 +338,13 @@ Contenter is a Content interface
 
 
 
-## type Contents
+## type ExcDomnObjects
 ``` go
-type Contents []*Content
+type ExcDomnObjects struct {
+    *Objects
+}
 ```
-Contents is an array of *content
+ExcDomnObjects implements GetList for domain exclusions
 
 
 
@@ -357,17 +356,177 @@ Contents is an array of *content
 
 
 
-### func (\*Contents) ProcessContent
+### func (\*ExcDomnObjects) Find
 ``` go
-func (c *Contents) ProcessContent()
+func (e *ExcDomnObjects) Find(elem string) int
 ```
-ProcessContent iterates through the Contents array and processes each
+Find returns the int position of an Objects' element
 
 
 
-### func (\*Contents) String
+### func (\*ExcDomnObjects) GetList
 ``` go
-func (c *Contents) String() (result string)
+func (e *ExcDomnObjects) GetList() *Objects
+```
+GetList implements the Contenter interface for ExcDomnObjects
+
+
+
+### func (\*ExcDomnObjects) SetURL
+``` go
+func (e *ExcDomnObjects) SetURL(name, url string)
+```
+SetURL sets the Object's url field value
+
+
+
+### func (\*ExcDomnObjects) String
+``` go
+func (e *ExcDomnObjects) String() string
+```
+
+
+## type ExcHostObjects
+``` go
+type ExcHostObjects struct {
+    *Objects
+}
+```
+ExcHostObjects implements GetList for host exclusions
+
+
+
+
+
+
+
+
+
+
+
+### func (\*ExcHostObjects) Find
+``` go
+func (e *ExcHostObjects) Find(elem string) int
+```
+Find returns the int position of an Objects' element
+
+
+
+### func (\*ExcHostObjects) GetList
+``` go
+func (e *ExcHostObjects) GetList() *Objects
+```
+GetList implements the Contenter interface for ExcDomnObjects
+
+
+
+### func (\*ExcHostObjects) SetURL
+``` go
+func (e *ExcHostObjects) SetURL(name, url string)
+```
+SetURL sets the Object's url field value
+
+
+
+### func (\*ExcHostObjects) String
+``` go
+func (e *ExcHostObjects) String() string
+```
+
+
+## type ExcRootObjects
+``` go
+type ExcRootObjects struct {
+    *Objects
+}
+```
+ExcRootObjects implements GetList for global domain exclusions
+
+
+
+
+
+
+
+
+
+
+
+### func (\*ExcRootObjects) Find
+``` go
+func (e *ExcRootObjects) Find(elem string) int
+```
+Find returns the int position of an Objects' element
+
+
+
+### func (\*ExcRootObjects) GetList
+``` go
+func (e *ExcRootObjects) GetList() *Objects
+```
+GetList implements the Contenter interface for ExcDomnObjects
+
+
+
+### func (\*ExcRootObjects) SetURL
+``` go
+func (e *ExcRootObjects) SetURL(name, url string)
+```
+SetURL sets the Object's url field value
+
+
+
+### func (\*ExcRootObjects) String
+``` go
+func (e *ExcRootObjects) String() string
+```
+
+
+## type FIODataObjects
+``` go
+type FIODataObjects struct {
+    *Objects
+}
+```
+FIODataObjects implements GetList for files
+
+
+
+
+
+
+
+
+
+
+
+### func (\*FIODataObjects) Find
+``` go
+func (f *FIODataObjects) Find(elem string) int
+```
+Find returns the int position of an Objects' element
+
+
+
+### func (\*FIODataObjects) GetList
+``` go
+func (f *FIODataObjects) GetList() *Objects
+```
+GetList implements the Contenter interface for FIODataObjects
+
+
+
+### func (\*FIODataObjects) SetURL
+``` go
+func (f *FIODataObjects) SetURL(name, url string)
+```
+SetURL sets the Object's url field value
+
+
+
+### func (\*FIODataObjects) String
+``` go
+func (f *FIODataObjects) String() string
 ```
 
 
@@ -406,6 +565,7 @@ String implements fmt.Print interface
 ``` go
 type Object struct {
     *Parms
+
     Objects
     // contains filtered or unexported fields
 }
@@ -419,6 +579,14 @@ Object struct for normalizing EdgeOS data.
 
 
 
+
+
+
+### func (\*Object) Excludes
+``` go
+func (o *Object) Excludes() io.Reader
+```
+Excludes returns an io.Reader of blacklist Includes
 
 
 
@@ -473,14 +641,6 @@ Find returns the int position of an Objects' element in the StringSlice
 
 
 
-### func (\*Objects) GetContent
-``` go
-func (o *Objects) GetContent() *Contents
-```
-GetContent returns a Content struct
-
-
-
 ### func (\*Objects) Len
 ``` go
 func (o *Objects) Len() int
@@ -500,14 +660,6 @@ func (o *Objects) Less(i, j int) bool
 func (o *Objects) Names() (s sort.StringSlice)
 ```
 Names returns a sorted slice of Objects names
-
-
-
-### func (\*Objects) Source
-``` go
-func (o *Objects) Source(ltype string) *Objects
-```
-Source returns a map of sources
 
 
 
@@ -581,6 +733,13 @@ func Debug(b bool) Option
 Debug toggles debug level on or off
 
 
+### func Dexcludes
+``` go
+func Dexcludes(l List) Option
+```
+Dexcludes sets blacklist domain exclusions
+
+
 ### func Dir
 ``` go
 func Dir(d string) Option
@@ -592,7 +751,7 @@ Dir sets directory location
 ``` go
 func Excludes(l List) Option
 ```
-Excludes sets nodes exclusions
+Excludes sets blacklist exclusions
 
 
 ### func Ext
@@ -621,6 +780,13 @@ FileNameFmt sets the EdgeOS configuration file name format
 func InCLI(in string) Option
 ```
 InCLI sets the CLI inSession command
+
+
+### func LTypes
+``` go
+func LTypes(s []string) Option
+```
+LTypes sets an array of legal types used by Source
 
 
 ### func Level
@@ -658,18 +824,18 @@ func Prefix(l string) Option
 Prefix sets the dnsmasq configuration address line prefix
 
 
-### func STypes
-``` go
-func STypes(s []string) Option
-```
-STypes sets an array of legal types used by Source
-
-
 ### func Test
 ``` go
 func Test(b bool) Option
 ```
 Test toggles testing mode on or off
+
+
+### func Timeout
+``` go
+func Timeout(t time.Duration) Option
+```
+Timeout sets how long before an unresponsive goroutine is aborted
 
 
 ### func Verbosity
@@ -691,6 +857,7 @@ WCard sets file globbing wildcard values
 ## type Parms
 ``` go
 type Parms struct {
+    Wildcard
     API       string
     Arch      string
     Bash      string
@@ -709,10 +876,10 @@ type Parms struct {
     Nodes     []string
     Pfx       string
     Poll      int
-    Stypes    []string
+    Ltypes    []string
     Test      bool
+    Timeout   time.Duration
     Verbosity int
-    Wildcard
 }
 ```
 Parms is struct of parameters
@@ -740,6 +907,150 @@ func (p *Parms) String() string
 ```
 String method to implement fmt.Print interface
 
+
+
+## type PreDomnObjects
+``` go
+type PreDomnObjects struct {
+    *Objects
+}
+```
+PreDomnObjects implements GetList for pre-configured domains content
+
+
+
+
+
+
+
+
+
+
+
+### func (\*PreDomnObjects) Find
+``` go
+func (p *PreDomnObjects) Find(elem string) int
+```
+Find returns the int position of an Objects' element
+
+
+
+### func (\*PreDomnObjects) GetList
+``` go
+func (p *PreDomnObjects) GetList() *Objects
+```
+GetList implements the Contenter interface for PreDomnObjects
+
+
+
+### func (\*PreDomnObjects) SetURL
+``` go
+func (p *PreDomnObjects) SetURL(name, url string)
+```
+SetURL sets the Object's url field value
+
+
+
+### func (\*PreDomnObjects) String
+``` go
+func (p *PreDomnObjects) String() string
+```
+
+
+## type PreHostObjects
+``` go
+type PreHostObjects struct {
+    *Objects
+}
+```
+PreHostObjects implements GetList for pre-configured hosts content
+
+
+
+
+
+
+
+
+
+
+
+### func (\*PreHostObjects) Find
+``` go
+func (p *PreHostObjects) Find(elem string) int
+```
+Find returns the int position of an Objects' element
+
+
+
+### func (\*PreHostObjects) GetList
+``` go
+func (p *PreHostObjects) GetList() *Objects
+```
+GetList implements the Contenter interface for PreHostObjects
+
+
+
+### func (\*PreHostObjects) SetURL
+``` go
+func (p *PreHostObjects) SetURL(name, url string)
+```
+SetURL sets the Object's url field value
+
+
+
+### func (\*PreHostObjects) String
+``` go
+func (p *PreHostObjects) String() string
+```
+
+
+## type URLDataObjects
+``` go
+type URLDataObjects struct {
+    *Objects
+}
+```
+URLDataObjects implements GetList for URLs
+
+
+
+
+
+
+
+
+
+
+
+### func (\*URLDataObjects) Find
+``` go
+func (u *URLDataObjects) Find(elem string) int
+```
+Find returns the int position of an Objects' element
+
+
+
+### func (\*URLDataObjects) GetList
+``` go
+func (u *URLDataObjects) GetList() *Objects
+```
+GetList implements the Contenter interface for URLDataObjects
+
+
+
+### func (\*URLDataObjects) SetURL
+``` go
+func (u *URLDataObjects) SetURL(name, url string)
+```
+SetURL sets the Object's url field value
+
+
+
+### func (\*URLDataObjects) String
+``` go
+func (u *URLDataObjects) String() string
+```
 
 
 ## type Wildcard

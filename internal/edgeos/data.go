@@ -1,11 +1,28 @@
 package edgeos
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"sort"
 	"strings"
+)
+
+// ntype for labeling blacklist source types
+type ntype int
+
+//go:generate stringer -type=ntype
+// ntypes label blacklist source types
+const (
+	unknown ntype = iota // denotes a coding error
+	domain               // Format type e.g. address=/.d.com/0.0.0.0
+	excDomn              // Won't be written to disk
+	excHost              // Won't be written to disk
+	excRoot              // Won't be written to disk
+	host                 // Format type e.g. address=/www.d.com/0.0.0.0
+	preDomn              // Pre-configured backlisted domains
+	preHost              // Pre-configured backlisted hosts
+	root                 // Topmost root node
+	zone                 // Unused - future application
 )
 
 // BooltoStr converts a boolean ("true" or "false") to a string equivalent
@@ -48,7 +65,8 @@ func formatData(fmttr string, data List) io.Reader {
 		lines = append(lines, fmt.Sprintf(fmttr+"\n", k))
 	}
 	lines.Sort()
-	return bytes.NewBuffer([]byte(strings.Join(lines, "")))
+
+	return strings.NewReader(strings.Join(lines, ""))
 }
 
 // getSeparator returns the dnsmasq conf file delimiter
@@ -93,6 +111,12 @@ func typeInt(i ntype) (s string) {
 	switch i {
 	case domain:
 		s = domains
+	case excDomn:
+		s = ExcDomns
+	case excHost:
+		s = ExcHosts
+	case excRoot:
+		s = ExcRoots
 	case host:
 		s = hosts
 	case preDomn:
@@ -113,6 +137,12 @@ func typeStr(s string) (i ntype) {
 	switch s {
 	case domains:
 		i = domain
+	case ExcDomns:
+		i = excDomn
+	case ExcHosts:
+		i = excHost
+	case ExcRoots:
+		i = excRoot
 	case hosts:
 		i = host
 	case notknown:

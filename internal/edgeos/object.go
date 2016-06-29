@@ -1,7 +1,6 @@
 package edgeos
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"sort"
@@ -11,9 +10,9 @@ import (
 // Object struct for normalizing EdgeOS data.
 type Object struct {
 	*Parms
-	Objects
 	desc     string
 	disabled bool
+	err      error
 	exc      []string
 	file     string
 	inc      []string
@@ -21,8 +20,10 @@ type Object struct {
 	ltype    string
 	name     string
 	nType    ntype
-	prefix   string
-	url      string
+	Objects
+	prefix string
+	r      io.Reader
+	url    string
 }
 
 // Objects is a struct of []*Object
@@ -39,6 +40,12 @@ func (o *Objects) addObj(c *Config, node string) {
 		o.S = append(o.S, obj)
 		o.S = append(o.S, c.bNodes.validate(node).S...)
 	}
+}
+
+// Excludes returns an io.Reader of blacklist Includes
+func (o *Object) Excludes() io.Reader {
+	sort.Strings(o.exc)
+	return strings.NewReader(strings.Join(o.exc, "\n"))
 }
 
 // Files returns a list of dnsmasq conf files from all srcs
@@ -66,7 +73,7 @@ func (o *Objects) Find(elem string) int {
 // Includes returns an io.Reader of blacklist Includes
 func (o *Object) Includes() io.Reader {
 	sort.Strings(o.inc)
-	return bytes.NewBuffer([]byte(strings.Join(o.inc, "\n")))
+	return strings.NewReader(strings.Join(o.inc, "\n"))
 }
 
 // Names returns a sorted slice of Objects names

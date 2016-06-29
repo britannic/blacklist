@@ -25,6 +25,7 @@ func TestObjectString(t *testing.T) {
 
 	Equals(t, exp, act.String())
 	Equals(t, 8, act.Find("sysctl.org"))
+	Equals(t, -1, act.Find("@#$%"))
 }
 
 func TestSortObject(t *testing.T) {

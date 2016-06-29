@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 // GetHTTP creates http requests to download data
@@ -25,7 +26,7 @@ func GetHTTP(method, URL string) (io.Reader, error) {
 		resp, err = (&http.Client{}).Do(req)
 		// resp, err = (&h{}).Do(req)
 	} else {
-		return bytes.NewBuffer([]byte(fmt.Sprintf("Unable to form request for %s...", URL))), err
+		return strings.NewReader(fmt.Sprintf("Unable to form request for %s...", URL)), err
 	}
 
 	if err == nil {
@@ -35,7 +36,7 @@ func GetHTTP(method, URL string) (io.Reader, error) {
 	}
 
 	if len(body) == 0 {
-		return bytes.NewBuffer([]byte(fmt.Sprintf("No data returned for %s...", URL))), err
+		return strings.NewReader(fmt.Sprintf("No data returned for %s...", URL)), err
 	}
 
 	return bytes.NewBuffer(body), err

@@ -36,21 +36,6 @@ type Config struct {
 	bNodes
 }
 
-// ntype for labeling blacklist source types
-type ntype int
-
-//go:generate stringer -type=ntype
-// ntypes label blacklist source types
-const (
-	unknown ntype = iota // denotes a coding error
-	domain               // Format e.g. address=/.d.com/0.0.0.0
-	host                 // Format e.g. address=/www.d.com/0.0.0.0
-	preDomn              // Pre-configured backlisted domains
-	preHost              // Pre-configured backlisted hosts
-	root                 // Topmost root node
-	zone                 // Unused - future application
-)
-
 const (
 	agent     = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/601.4.4 (KHTML, like Gecko) Version/9.0.3 Safari/601.4.4`
 	all       = "all"
@@ -63,20 +48,54 @@ const (
 	hosts     = "hosts"
 	notknown  = "unknown"
 	preNoun   = "pre-configured"
+	rootNode  = blacklist
+	src       = "source"
+	urls      = "url"
+	zones     = "zones"
+
+	// ExcDomns labels domain exclusions
+	ExcDomns = "domn-excludes"
+	// ExcHosts labels host exclusions
+	ExcHosts = "host-excludes"
+	// ExcRoots labels global domain exclusions
+	ExcRoots = "root-excludes"
+	// False is a string constant
+	False = "false"
 	// PreDomns designates string label for preconfigured blacklisted domains
 	PreDomns = preNoun + "-domain"
 	// PreHosts designates string label for preconfigured blacklisted hosts
 	PreHosts = preNoun + "-host"
-	rootNode = blacklist
-	src      = "source"
-	urls     = "url"
-	zones    = "zones"
-
-	// False is a string constant
-	False = "false"
 	// True is a string constant
 	True = "true"
 )
+
+func (c *Config) addExc(node string) *Objects {
+	var (
+		ltype string
+		o     = &Objects{}
+	)
+
+	switch node {
+	case domains:
+		ltype = ExcDomns
+	case hosts:
+		ltype = ExcHosts
+	case rootNode:
+		ltype = ExcRoots
+	}
+
+	o.Parms = c.Parms
+	o.S = append(o.S, &Object{
+		desc:  ltype + " exclusions",
+		exc:   c.bNodes[node].exc,
+		ip:    c.bNodes.getIP(node),
+		ltype: ltype,
+		name:  ltype,
+		nType: getType(ltype).(ntype),
+		Parms: c.Parms,
+	})
+	return o
+}
 
 func (c *Config) addInc(node string) *Object {
 	var (
@@ -84,7 +103,7 @@ func (c *Config) addInc(node string) *Object {
 		ltype string
 		n     ntype
 	)
-	if inc != nil {
+	if len(inc) > 0 {
 		switch node {
 		case domains:
 			ltype = getType(preDomn).(string)
@@ -108,21 +127,39 @@ func (c *Config) addInc(node string) *Object {
 
 // CreateObject returns an interface of the requested iFace type
 func (c *Config) CreateObject(i iFace) (Contenter, error) {
-	var o *Objects
-	if ltype := i.String(); ltype != cntnt {
+	var (
+		ltype = i.String()
+		o     *Objects
+	)
+
+	switch ltype {
+	case ExcDomns:
+		o = c.addExc(domains)
+	case ExcHosts:
+		o = c.addExc(hosts)
+	case ExcRoots:
+		o = c.addExc(rootNode)
+	case "contents":
+		o = c.GetAll()
+	default:
 		o = c.GetAll(ltype)
 	}
+
 	switch i {
-	case ContObj:
-		return &Contents{}, nil
+	case ExDmObj:
+		return &ExcDomnObjects{Objects: o}, nil
+	case ExHtObj:
+		return &ExcHostObjects{Objects: o}, nil
+	case ExRtObj:
+		return &ExcRootObjects{Objects: o}, nil
 	case FileObj:
-		return &FileObjects{Objects: o}, nil
-	case PreDomnObj:
-		return &PreDomainObjects{Objects: o}, nil
-	case PreHostObj:
+		return &FIODataObjects{Objects: o}, nil
+	case PreDObj:
+		return &PreDomnObjects{Objects: o}, nil
+	case PreHObj:
 		return &PreHostObjects{Objects: o}, nil
-	case URLObj:
-		return &URLObjects{Objects: o}, nil
+	case URLsObj:
+		return &URLDataObjects{Objects: o}, nil
 	default:
 		return nil, errors.New("Invalid interface requested")
 	}
@@ -152,7 +189,7 @@ func (c *Config) excludes(nodes ...string) (exc []string) {
 
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) *Objects {
-	o := &Objects{Parms: c.Parms}
+	o := &Objects{Parms: c.Parms, S: []*Object{}}
 
 	switch node {
 	case all:
@@ -160,8 +197,7 @@ func (c *Config) Get(node string) *Objects {
 			o.addObj(c, node)
 		}
 	default:
-		// o.addObj(c, node)
-		return c.GetAll()
+		o.addObj(c, node)
 	}
 	return o
 }
@@ -406,7 +442,6 @@ func (b bNodes) getIP(node string) (ip string) {
 	default:
 		ip = b[node].ip
 	}
-
 	return ip
 }
 
@@ -416,6 +451,5 @@ func (b bNodes) validate(node string) *Objects {
 			obj.ip = b.getIP(node)
 		}
 	}
-
 	return &b[node].Objects
 }
