@@ -77,10 +77,10 @@ func is(indent int, result, title, s string) string {
 
 func getJSONsrcArray(c *cfgJSON) (result string) {
 	var (
-		cnt    = len(c.bNodes[c.pk].Objects.S)
+		cnt    = len(c.bNodes[c.pk].objects.obs)
 		i      int
 		indent = c.indent
-		s      *Object
+		s      *object
 	)
 
 	if cnt == 0 {
@@ -90,7 +90,7 @@ func getJSONsrcArray(c *cfgJSON) (result string) {
 
 	result += fmt.Sprintf("%v%q: [{%v", tabs(c.indent), "sources", enter)
 
-	for i, s = range c.bNodes[c.pk].Objects.S {
+	for i, s = range c.bNodes[c.pk].objects.obs {
 		cmma := comma
 		indent = c.indent + 1
 

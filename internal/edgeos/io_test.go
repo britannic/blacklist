@@ -23,7 +23,7 @@ func TestLoad(t *testing.T) {
 	NotOK(t, err)
 
 	r := CFGcli{Config: c}
-	got, err := ioutil.ReadAll(r.Load())
+	got, err := ioutil.ReadAll(r.read())
 	OK(t, err)
 	Equals(t, "", string(got))
 

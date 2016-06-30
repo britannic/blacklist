@@ -41,24 +41,43 @@ func main() {
 		log.Printf("c.GetAll().Files().Remove() error: %v\n", err)
 	}
 
-	f, err := c.CreateObject(e.FileObj)
+	excRoots, err := c.CreateObject(e.ExRtObj)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	p, err := c.CreateObject(e.PreHObj)
+	excDomns, err := c.CreateObject(e.ExDmObj)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	u, err := c.CreateObject(e.URLsObj)
+	excHosts, err := c.CreateObject(e.ExHtObj)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	c.ProcessContent(p)
-	c.ProcessContent(f)
-	c.ProcessContent(u)
+	preDomns, err := c.CreateObject(e.PreDObj)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	preHosts, err := c.CreateObject(e.PreHObj)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	files, err := c.CreateObject(e.FileObj)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	urls, err := c.CreateObject(e.URLsObj)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	c.ProcessContent(excRoots, excDomns, excHosts, preDomns, preHosts)
+	c.ProcessContent(files, urls)
 
 	b, err := c.ReloadDNS()
 	if err != nil {
@@ -109,5 +128,4 @@ func (o *Opts) initEdgeOS() *e.Config {
 		e.Timeout(30*time.Second),
 		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
 	)
-
 }

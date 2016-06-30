@@ -25,12 +25,14 @@ type dummyConfig struct {
 	t *testing.T
 }
 
-func (d *dummyConfig) ProcessContent(ct Contenter) {
-	o := ct.GetList().S
-	for _, src := range o {
-		b, err := ioutil.ReadAll(src.process().r)
-		OK(d.t, err)
-		d.s = append(d.s, strings.TrimSuffix(string(b), "\n"))
+func (d *dummyConfig) ProcessContent(cts ...Contenter) {
+	for _, ct := range cts {
+		o := ct.GetList().obs
+		for _, src := range o {
+			b, err := ioutil.ReadAll(src.process().r)
+			OK(d.t, err)
+			d.s = append(d.s, strings.TrimSuffix(string(b), "\n"))
+		}
 	}
 }
 
@@ -267,6 +269,50 @@ func TestGetAllContent(t *testing.T) {
 	Equals(t, wantAll, act)
 }
 
+func TestMultiObjProcessContent(t *testing.T) {
+	dir, err := ioutil.TempDir("/tmp", "testBlacklist")
+	OK(t, err)
+	defer os.RemoveAll(dir)
+	//
+	var (
+		c = NewConfig(
+			Dir(dir),
+			Ext("blacklist.conf"),
+			FileNameFmt("%v/%v.%v.%v"),
+			Method("GET"),
+			Nodes([]string{domains, hosts}),
+			Prefix("address="),
+			LTypes([]string{PreDomns, PreHosts, files, urls}),
+		)
+	)
+
+	err = c.ReadCfg(&CFGstatic{Cfg: CfgMimimal})
+	OK(t, err)
+
+	excRoots, err := c.CreateObject(ExRtObj)
+	OK(t, err)
+
+	excDomns, err := c.CreateObject(ExDmObj)
+	OK(t, err)
+
+	excHosts, err := c.CreateObject(ExHtObj)
+	OK(t, err)
+
+	preDomns, err := c.CreateObject(PreDObj)
+	OK(t, err)
+
+	preHosts, err := c.CreateObject(PreHObj)
+	OK(t, err)
+
+	files, err := c.CreateObject(FileObj)
+	OK(t, err)
+
+	d := &dummyConfig{t: t}
+	d.ProcessContent(excRoots, excDomns, excHosts, preDomns, preHosts, files)
+
+	Equals(t, "address=/ytimg.com/0.0.0.0\n\n\naddress=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0\naddress=/beap.gemini.yahoo.com/192.168.168.1\naddress=/really.bad.phishing.site.ru/10.10.10.10\n", strings.Join(d.s, "\n"))
+}
+
 func TestProcessContent(t *testing.T) {
 	dir, err := ioutil.TempDir("/tmp", "testBlacklist")
 	OK(t, err)
@@ -278,7 +324,7 @@ func TestProcessContent(t *testing.T) {
 			Ext("blacklist.conf"),
 			FileNameFmt("%v/%v.%v.%v"),
 			Method("GET"),
-			Nodes([]string{"domains", "hosts"}),
+			Nodes([]string{domains, hosts}),
 			Prefix("address="),
 			LTypes([]string{PreDomns, PreHosts, files, urls}),
 		)
@@ -327,13 +373,13 @@ func TestProcessContent(t *testing.T) {
 				fdata: "address=/really.bad.phishing.site.ru/10.10.10.10\n",
 				obj:   FileObj,
 			},
-			{
-				err:   nil,
-				exp:   "[\nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domain\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://malc0de.com/bl/ZONES\"\n]",
-				f:     dir + "/domains.malc0de.blacklist.conf",
-				fdata: domainMin,
-				obj:   URLsObj,
-			},
+			// {
+			// 	err:   nil,
+			// 	exp:   "[\nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domain\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://malc0de.com/bl/ZONES\"\n]",
+			// 	f:     dir + "/domains.malc0de.blacklist.conf",
+			// 	fdata: domainMin,
+			// 	obj:   URLsObj,
+			// },
 		}
 	)
 
@@ -406,7 +452,7 @@ func TestWriteFile(t *testing.T) {
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
 		FileNameFmt("%v/%v.%v.%v"),
-		Nodes([]string{"domains", "hosts"}),
+		Nodes([]string{domains, hosts}),
 	)
 
 	for _, tt := range tests {

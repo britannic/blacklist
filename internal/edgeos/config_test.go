@@ -253,10 +253,10 @@ func TestGetAll(t *testing.T) {
 	err := c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg})
 	OK(t, err)
 
-	Equals(t, want, fmt.Sprint(c.GetAll().S))
-	Equals(t, wantURLS, fmt.Sprint(c.GetAll(urls).S))
-	Equals(t, wantFiles, fmt.Sprint(c.GetAll(files).S))
-	Equals(t, wantPre, fmt.Sprint(c.GetAll(PreDomns, PreHosts).S))
+	Equals(t, want, fmt.Sprint(c.GetAll().obs))
+	Equals(t, wantURLS, fmt.Sprint(c.GetAll(urls).obs))
+	Equals(t, wantFiles, fmt.Sprint(c.GetAll(files).obs))
+	Equals(t, wantPre, fmt.Sprint(c.GetAll(PreDomns, PreHosts).obs))
 	Equals(t, c.Get(all).String(), c.GetAll().String())
 	Equals(t, wantHostObj, c.Get(hosts).String())
 }

@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// Object struct for normalizing EdgeOS data.
-type Object struct {
+// object struct for normalizing EdgeOS data.
+type object struct {
 	*Parms
 	desc     string
 	disabled bool
@@ -20,38 +20,38 @@ type Object struct {
 	ltype    string
 	name     string
 	nType    ntype
-	Objects
+	objects
 	prefix string
 	r      io.Reader
 	url    string
 }
 
-// Objects is a struct of []*Object
-type Objects struct {
+// objects is a struct of []*Object
+type objects struct {
 	*Parms
-	S []*Object
+	obs []*object
 }
 
-func (o *Objects) addObj(c *Config, node string) {
+func (o *objects) addObj(c *Config, node string) {
 	switch obj := c.addInc(node); obj {
 	case nil:
-		o.S = append(o.S, c.bNodes.validate(node).S...)
+		o.obs = append(o.obs, c.bNodes.validate(node).obs...)
 	default:
-		o.S = append(o.S, obj)
-		o.S = append(o.S, c.bNodes.validate(node).S...)
+		o.obs = append(o.obs, obj)
+		o.obs = append(o.obs, c.bNodes.validate(node).obs...)
 	}
 }
 
 // excludes returns an io.Reader of blacklist includes
-func (o *Object) excludes() io.Reader {
+func (o *object) excludes() io.Reader {
 	sort.Strings(o.exc)
 	return strings.NewReader(strings.Join(o.exc, "\n"))
 }
 
 // Files returns a list of dnsmasq conf files from all srcs
-func (o *Objects) Files() *CFile {
+func (o *objects) Files() *CFile {
 	c := CFile{Parms: o.Parms}
-	for _, obj := range o.S {
+	for _, obj := range o.obs {
 		c.nType = obj.nType
 		format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
 		c.names = append(c.names, fmt.Sprintf(format, getType(obj.nType), obj.name))
@@ -61,8 +61,8 @@ func (o *Objects) Files() *CFile {
 }
 
 // Find returns the int position of an Objects' element in the StringSlice
-func (o *Objects) Find(elem string) int {
-	for i, obj := range o.S {
+func (o *objects) Find(elem string) int {
+	for i, obj := range o.obs {
 		if obj.name == elem {
 			return i
 		}
@@ -71,30 +71,30 @@ func (o *Objects) Find(elem string) int {
 }
 
 // includes returns an io.Reader of blacklist includes
-func (o *Object) includes() io.Reader {
+func (o *object) includes() io.Reader {
 	sort.Strings(o.inc)
 	return strings.NewReader(strings.Join(o.inc, "\n"))
 }
 
 // Names returns a sorted slice of Objects names
-func (o *Objects) Names() (s sort.StringSlice) {
-	for _, obj := range o.S {
+func (o *objects) Names() (s sort.StringSlice) {
+	for _, obj := range o.obs {
 		s = append(s, obj.name)
 	}
 	sort.Sort(s)
 	return s
 }
 
-func newObject() *Object {
-	return &Object{
-		Objects: Objects{},
+func newObject() *object {
+	return &object{
+		objects: objects{},
 		exc:     make([]string, 0),
 		inc:     make([]string, 0),
 	}
 }
 
 // Stringer for Object
-func (o *Object) String() (r string) {
+func (o *object) String() (r string) {
 	r += fmt.Sprintf("\nDesc:\t %q\n", o.desc)
 	r += fmt.Sprintf("Disabled: %v\n", o.disabled)
 	r += fmt.Sprintf("File:\t %q\n", o.file)
@@ -109,11 +109,11 @@ func (o *Object) String() (r string) {
 }
 
 // Stringer for Objects
-func (o *Objects) String() string {
-	return fmt.Sprint(o.S)
+func (o *objects) String() string {
+	return fmt.Sprint(o.obs)
 }
 
 // Implement Sort Interface for Objects
-func (o *Objects) Len() int           { return len(o.S) }
-func (o *Objects) Less(i, j int) bool { return o.S[i].name < o.S[j].name }
-func (o *Objects) Swap(i, j int)      { o.S[i], o.S[j] = o.S[j], o.S[i] }
+func (o *objects) Len() int           { return len(o.obs) }
+func (o *objects) Less(i, j int) bool { return o.obs[i].name < o.obs[j].name }
+func (o *objects) Swap(i, j int)      { o.obs[i], o.obs[j] = o.obs[j], o.obs[i] }

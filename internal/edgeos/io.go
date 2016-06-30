@@ -97,8 +97,8 @@ func getFile(fname string) (io.Reader, error) {
 	return os.Open(fname)
 }
 
-// Load returns an EdgeOS config file loaded in to a string
-func (c *CFGcli) Load() io.Reader {
+// read returns an EdgeOS config file loaded in to a string
+func (c *CFGcli) read() io.Reader {
 	b, err := c.load("showConfig", c.Level)
 	if err != nil {
 		log.Print(err)
@@ -106,8 +106,8 @@ func (c *CFGcli) Load() io.Reader {
 	return bytes.NewReader(b)
 }
 
-// Load returns an EdgeOS config file loaded in to a string
-func (c *CFGstatic) Load() io.Reader {
+// read returns an EdgeOS config file loaded in to a string
+func (c *CFGstatic) read() io.Reader {
 	return strings.NewReader(c.Cfg)
 }
 
@@ -129,3 +129,13 @@ NEXT:
 	}
 	return nil
 }
+
+// func (c *CFGcli) String() string {
+// 	c.ReadCfg(c)
+// 	return c.String()
+// }
+//
+// func (c *CFGstatic) String() string {
+// 	c.ReadCfg(c)
+// 	return c.String()
+// }

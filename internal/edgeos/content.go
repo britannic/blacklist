@@ -34,49 +34,49 @@ type blist struct {
 // Contenter is a Content interface
 type Contenter interface {
 	Find(elem string) int
-	GetList() *Objects
+	GetList() *objects
 	SetURL(name string, url string)
 	String() string
 }
 
 // FIODataObjects implements GetList for files
 type FIODataObjects struct {
-	*Objects
+	*objects
 }
 
 // ExcDomnObjects implements GetList for domain exclusions
 type ExcDomnObjects struct {
-	*Objects
+	*objects
 }
 
 // ExcHostObjects implements GetList for host exclusions
 type ExcHostObjects struct {
-	*Objects
+	*objects
 }
 
 // ExcRootObjects implements GetList for global domain exclusions
 type ExcRootObjects struct {
-	*Objects
+	*objects
 }
 
 // PreDomnObjects implements GetList for pre-configured domains content
 type PreDomnObjects struct {
-	*Objects
+	*objects
 }
 
 // PreHostObjects implements GetList for pre-configured hosts content
 type PreHostObjects struct {
-	*Objects
+	*objects
 }
 
 // URLDataObjects implements GetList for URLs
 type URLDataObjects struct {
-	*Objects
+	*objects
 }
 
 // Find returns the int position of an Objects' element
 func (e *ExcDomnObjects) Find(elem string) int {
-	for i, obj := range e.S {
+	for i, obj := range e.obs {
 		if obj.name == elem {
 			return i
 		}
@@ -86,7 +86,7 @@ func (e *ExcDomnObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (e *ExcHostObjects) Find(elem string) int {
-	for i, obj := range e.S {
+	for i, obj := range e.obs {
 		if obj.name == elem {
 			return i
 		}
@@ -96,7 +96,7 @@ func (e *ExcHostObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (e *ExcRootObjects) Find(elem string) int {
-	for i, obj := range e.S {
+	for i, obj := range e.obs {
 		if obj.name == elem {
 			return i
 		}
@@ -106,7 +106,7 @@ func (e *ExcRootObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (f *FIODataObjects) Find(elem string) int {
-	for i, obj := range f.S {
+	for i, obj := range f.obs {
 		if obj.name == elem {
 			return i
 		}
@@ -116,7 +116,7 @@ func (f *FIODataObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (p *PreDomnObjects) Find(elem string) int {
-	for i, obj := range p.S {
+	for i, obj := range p.obs {
 		if obj.name == elem {
 			return i
 		}
@@ -126,7 +126,7 @@ func (p *PreDomnObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (p *PreHostObjects) Find(elem string) int {
-	for i, obj := range p.S {
+	for i, obj := range p.obs {
 		if obj.name == elem {
 			return i
 		}
@@ -136,7 +136,7 @@ func (p *PreHostObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (u *URLDataObjects) Find(elem string) int {
-	for i, obj := range u.S {
+	for i, obj := range u.obs {
 		if obj.name == elem {
 			return i
 		}
@@ -145,97 +145,97 @@ func (u *URLDataObjects) Find(elem string) int {
 }
 
 // GetList implements the Contenter interface for ExcDomnObjects
-func (e *ExcDomnObjects) GetList() *Objects {
+func (e *ExcDomnObjects) GetList() *objects {
 	// var c Contents
-	for _, obj := range e.S {
+	for _, obj := range e.obs {
 		switch obj.nType {
 		case excDomn:
 			if obj.exc != nil {
 				obj.r = obj.excludes()
 				obj.err = nil
-				obj.Parms = e.Objects.Parms
+				obj.Parms = e.objects.Parms
 			}
 		}
 	}
-	return e.Objects
+	return e.objects
 }
 
-// GetList implements the Contenter interface for ExcDomnObjects
-func (e *ExcHostObjects) GetList() *Objects {
-	for _, obj := range e.S {
+// GetList implements the Contenter interface for ExcHostObjects
+func (e *ExcHostObjects) GetList() *objects {
+	for _, obj := range e.obs {
 		switch obj.nType {
 		case excHost:
 			if obj.exc != nil {
 				obj.r = obj.excludes()
 				obj.err = nil
-				obj.Parms = e.Objects.Parms
+				obj.Parms = e.objects.Parms
 			}
 		}
 	}
-	return e.Objects
+	return e.objects
 }
 
-// GetList implements the Contenter interface for ExcDomnObjects
-func (e *ExcRootObjects) GetList() *Objects {
+// GetList implements the Contenter interface for ExcRootObjects
+func (e *ExcRootObjects) GetList() *objects {
 	// var c Contents
-	for _, obj := range e.S {
+	for _, obj := range e.obs {
 		switch obj.nType {
 		case excRoot:
 			if obj.exc != nil {
 				obj.r = obj.excludes()
-				obj.Parms = e.Objects.Parms
+				obj.Parms = e.objects.Parms
 			}
 		}
 	}
-	return e.Objects
+	return e.objects
 }
 
 // GetList implements the Contenter interface for FIODataObjects
-func (f *FIODataObjects) GetList() *Objects {
-	for _, obj := range f.S {
+func (f *FIODataObjects) GetList() *objects {
+	for _, obj := range f.obs {
 		if obj.ltype == files && obj.file != "" {
 			obj.r, obj.err = getFile(obj.file)
-			obj.Parms = f.Objects.Parms
+			obj.Parms = f.objects.Parms
 		}
 	}
-	return f.Objects
+	return f.objects
 }
 
 // GetList implements the Contenter interface for PreDomnObjects
-func (p *PreDomnObjects) GetList() *Objects {
-	for _, obj := range p.S {
+func (p *PreDomnObjects) GetList() *objects {
+	for _, obj := range p.obs {
 		if obj.ltype == PreDomns && obj.inc != nil {
 			obj.r = obj.includes()
-			obj.Parms = p.Objects.Parms
+			obj.Parms = p.objects.Parms
 		}
 	}
-	return p.Objects
+	return p.objects
 }
 
 // GetList implements the Contenter interface for PreHostObjects
-func (p *PreHostObjects) GetList() *Objects {
-	for _, obj := range p.S {
+func (p *PreHostObjects) GetList() *objects {
+	for _, obj := range p.obs {
 		if obj.ltype == PreHosts && obj.inc != nil {
 			obj.r = obj.includes()
-			obj.Parms = p.Objects.Parms
+			obj.Parms = p.objects.Parms
 		}
 	}
-	return p.Objects
+	return p.objects
 }
 
 // GetList implements the Contenter interface for URLDataObjects
-func (u *URLDataObjects) GetList() *Objects {
-	for _, obj := range u.S {
+func (u *URLDataObjects) GetList() *objects {
+	for _, obj := range u.obs {
 		if obj.ltype == urls && obj.url != "" {
 			obj.r, obj.err = getHTTP(u.Parms.Method, obj.url)
-			obj.Parms = u.Objects.Parms
+			obj.Parms = u.objects.Parms
 		}
 	}
-	return u.Objects
+	return u.objects
 }
 
 // Process extracts hosts/domains from downloaded raw content
-func (o *Object) process() *blist {
+func (o *object) process() *blist {
 	var (
 		b     = bufio.NewScanner(o.r)
 		rx    = regx.Objects
@@ -298,20 +298,21 @@ NEXT:
 }
 
 // ProcessContent processes the Contents array
-func (c *Config) ProcessContent(ct Contenter) error {
+func (c *Config) ProcessContent(cts ...Contenter) error {
 	var errs []string
-	for _, src := range ct.GetList().S {
-		switch src.nType {
-		case excDomn, excHost, excRoot:
-			src.process()
+	for _, ct := range cts {
+		for _, src := range ct.GetList().obs {
+			switch src.nType {
+			case excDomn, excHost, excRoot:
+				src.process()
 
-		default:
-			if err := src.process().writeFile(); err != nil {
-				errs = append(errs, fmt.Sprint(err))
+			default:
+				if err := src.process().writeFile(); err != nil {
+					errs = append(errs, fmt.Sprint(err))
+				}
 			}
 		}
 	}
-
 	if errs != nil {
 		return errors.New(strings.Join(errs, "\n"))
 	}
@@ -321,7 +322,7 @@ func (c *Config) ProcessContent(ct Contenter) error {
 
 // SetURL sets the Object's url field value
 func (e *ExcDomnObjects) SetURL(name, url string) {
-	for _, obj := range e.S {
+	for _, obj := range e.obs {
 		if obj.name == name {
 			obj.url = url
 		}
@@ -330,7 +331,7 @@ func (e *ExcDomnObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (e *ExcHostObjects) SetURL(name, url string) {
-	for _, obj := range e.S {
+	for _, obj := range e.obs {
 		if obj.name == name {
 			obj.url = url
 		}
@@ -339,7 +340,7 @@ func (e *ExcHostObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (e *ExcRootObjects) SetURL(name, url string) {
-	for _, obj := range e.S {
+	for _, obj := range e.obs {
 		if obj.name == name {
 			obj.url = url
 		}
@@ -348,7 +349,7 @@ func (e *ExcRootObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (f *FIODataObjects) SetURL(name, url string) {
-	for _, obj := range f.S {
+	for _, obj := range f.obs {
 		if obj.name == name {
 			obj.url = url
 		}
@@ -357,7 +358,7 @@ func (f *FIODataObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (p *PreDomnObjects) SetURL(name, url string) {
-	for _, obj := range p.S {
+	for _, obj := range p.obs {
 		if obj.name == name {
 			obj.url = url
 		}
@@ -366,7 +367,7 @@ func (p *PreDomnObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (p *PreHostObjects) SetURL(name, url string) {
-	for _, obj := range p.S {
+	for _, obj := range p.obs {
 		if obj.name == name {
 			obj.url = url
 		}
@@ -375,20 +376,20 @@ func (p *PreHostObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (u *URLDataObjects) SetURL(name, url string) {
-	for _, obj := range u.S {
+	for _, obj := range u.obs {
 		if obj.name == name {
 			obj.url = url
 		}
 	}
 }
 
-func (e *ExcDomnObjects) String() string { return e.Objects.String() }
-func (e *ExcHostObjects) String() string { return e.Objects.String() }
-func (e *ExcRootObjects) String() string { return e.Objects.String() }
-func (f *FIODataObjects) String() string { return f.Objects.String() }
-func (p *PreDomnObjects) String() string { return p.Objects.String() }
-func (p *PreHostObjects) String() string { return p.Objects.String() }
-func (u *URLDataObjects) String() string { return u.Objects.String() }
+func (e *ExcDomnObjects) String() string { return e.objects.String() }
+func (e *ExcHostObjects) String() string { return e.objects.String() }
+func (e *ExcRootObjects) String() string { return e.objects.String() }
+func (f *FIODataObjects) String() string { return f.objects.String() }
+func (p *PreDomnObjects) String() string { return p.objects.String() }
+func (p *PreHostObjects) String() string { return p.objects.String() }
+func (u *URLDataObjects) String() string { return u.objects.String() }
 
 func (i iFace) String() (s string) {
 	switch i {

@@ -84,14 +84,6 @@ CFGcli is for configurations loaded via the EdgeOS CFGcli
 
 
 
-### func (\*CFGcli) Load
-``` go
-func (c *CFGcli) Load() io.Reader
-```
-Load returns an EdgeOS config file loaded in to a string
-
-
-
 ## type CFGstatic
 ``` go
 type CFGstatic struct {
@@ -108,14 +100,6 @@ CFGstatic is for configurations loaded via the EdgeOS CFGstatic
 
 
 
-
-
-
-### func (\*CFGstatic) Load
-``` go
-func (c *CFGstatic) Load() io.Reader
-```
-Load returns an EdgeOS config file loaded in to a string
 
 
 
@@ -165,7 +149,7 @@ Strings returns a sorted array of strings.
 ## type ConfLoader
 ``` go
 type ConfLoader interface {
-    Load() io.Reader
+    // contains filtered or unexported methods
 }
 ```
 ConfLoader interface defines configuration load method
@@ -216,7 +200,7 @@ CreateObject returns an interface of the requested iFace type
 
 ### func (\*Config) Get
 ``` go
-func (c *Config) Get(node string) *Objects
+func (c *Config) Get(node string) *objects
 ```
 Get returns an *Object for a given node
 
@@ -224,7 +208,7 @@ Get returns an *Object for a given node
 
 ### func (\*Config) GetAll
 ``` go
-func (c *Config) GetAll(ltypes ...string) *Objects
+func (c *Config) GetAll(ltypes ...string) *objects
 ```
 GetAll returns an array of Objects
 
@@ -256,7 +240,7 @@ Nodes returns an array of configured nodes
 
 ### func (\*Config) ProcessContent
 ``` go
-func (c *Config) ProcessContent(ct Contenter) error
+func (c *Config) ProcessContent(cts ...Contenter) error
 ```
 ProcessContent processes the Contents array
 
@@ -298,7 +282,7 @@ String returns pretty print for the Blacklist struct
 ``` go
 type Contenter interface {
     Find(elem string) int
-    GetList() *Objects
+    GetList() *objects
     SetURL(name string, url string)
     String() string
 }
@@ -318,7 +302,7 @@ Contenter is a Content interface
 ## type ExcDomnObjects
 ``` go
 type ExcDomnObjects struct {
-    *Objects
+    // contains filtered or unexported fields
 }
 ```
 ExcDomnObjects implements GetList for domain exclusions
@@ -333,6 +317,14 @@ ExcDomnObjects implements GetList for domain exclusions
 
 
 
+### func (ExcDomnObjects) Files
+``` go
+func (o ExcDomnObjects) Files() *CFile
+```
+Files returns a list of dnsmasq conf files from all srcs
+
+
+
 ### func (\*ExcDomnObjects) Find
 ``` go
 func (e *ExcDomnObjects) Find(elem string) int
@@ -343,9 +335,31 @@ Find returns the int position of an Objects' element
 
 ### func (\*ExcDomnObjects) GetList
 ``` go
-func (e *ExcDomnObjects) GetList() *Objects
+func (e *ExcDomnObjects) GetList() *objects
 ```
 GetList implements the Contenter interface for ExcDomnObjects
+
+
+
+### func (ExcDomnObjects) Len
+``` go
+func (o ExcDomnObjects) Len() int
+```
+Implement Sort Interface for Objects
+
+
+
+### func (ExcDomnObjects) Less
+``` go
+func (o ExcDomnObjects) Less(i, j int) bool
+```
+
+
+### func (ExcDomnObjects) Names
+``` go
+func (o ExcDomnObjects) Names() (s sort.StringSlice)
+```
+Names returns a sorted slice of Objects names
 
 
 
@@ -363,10 +377,16 @@ func (e *ExcDomnObjects) String() string
 ```
 
 
+### func (ExcDomnObjects) Swap
+``` go
+func (o ExcDomnObjects) Swap(i, j int)
+```
+
+
 ## type ExcHostObjects
 ``` go
 type ExcHostObjects struct {
-    *Objects
+    // contains filtered or unexported fields
 }
 ```
 ExcHostObjects implements GetList for host exclusions
@@ -381,6 +401,14 @@ ExcHostObjects implements GetList for host exclusions
 
 
 
+### func (ExcHostObjects) Files
+``` go
+func (o ExcHostObjects) Files() *CFile
+```
+Files returns a list of dnsmasq conf files from all srcs
+
+
+
 ### func (\*ExcHostObjects) Find
 ``` go
 func (e *ExcHostObjects) Find(elem string) int
@@ -391,9 +419,31 @@ Find returns the int position of an Objects' element
 
 ### func (\*ExcHostObjects) GetList
 ``` go
-func (e *ExcHostObjects) GetList() *Objects
+func (e *ExcHostObjects) GetList() *objects
 ```
-GetList implements the Contenter interface for ExcDomnObjects
+GetList implements the Contenter interface for ExcHostObjects
+
+
+
+### func (ExcHostObjects) Len
+``` go
+func (o ExcHostObjects) Len() int
+```
+Implement Sort Interface for Objects
+
+
+
+### func (ExcHostObjects) Less
+``` go
+func (o ExcHostObjects) Less(i, j int) bool
+```
+
+
+### func (ExcHostObjects) Names
+``` go
+func (o ExcHostObjects) Names() (s sort.StringSlice)
+```
+Names returns a sorted slice of Objects names
 
 
 
@@ -411,10 +461,16 @@ func (e *ExcHostObjects) String() string
 ```
 
 
+### func (ExcHostObjects) Swap
+``` go
+func (o ExcHostObjects) Swap(i, j int)
+```
+
+
 ## type ExcRootObjects
 ``` go
 type ExcRootObjects struct {
-    *Objects
+    // contains filtered or unexported fields
 }
 ```
 ExcRootObjects implements GetList for global domain exclusions
@@ -429,6 +485,14 @@ ExcRootObjects implements GetList for global domain exclusions
 
 
 
+### func (ExcRootObjects) Files
+``` go
+func (o ExcRootObjects) Files() *CFile
+```
+Files returns a list of dnsmasq conf files from all srcs
+
+
+
 ### func (\*ExcRootObjects) Find
 ``` go
 func (e *ExcRootObjects) Find(elem string) int
@@ -439,9 +503,31 @@ Find returns the int position of an Objects' element
 
 ### func (\*ExcRootObjects) GetList
 ``` go
-func (e *ExcRootObjects) GetList() *Objects
+func (e *ExcRootObjects) GetList() *objects
 ```
-GetList implements the Contenter interface for ExcDomnObjects
+GetList implements the Contenter interface for ExcRootObjects
+
+
+
+### func (ExcRootObjects) Len
+``` go
+func (o ExcRootObjects) Len() int
+```
+Implement Sort Interface for Objects
+
+
+
+### func (ExcRootObjects) Less
+``` go
+func (o ExcRootObjects) Less(i, j int) bool
+```
+
+
+### func (ExcRootObjects) Names
+``` go
+func (o ExcRootObjects) Names() (s sort.StringSlice)
+```
+Names returns a sorted slice of Objects names
 
 
 
@@ -459,10 +545,16 @@ func (e *ExcRootObjects) String() string
 ```
 
 
+### func (ExcRootObjects) Swap
+``` go
+func (o ExcRootObjects) Swap(i, j int)
+```
+
+
 ## type FIODataObjects
 ``` go
 type FIODataObjects struct {
-    *Objects
+    // contains filtered or unexported fields
 }
 ```
 FIODataObjects implements GetList for files
@@ -477,6 +569,14 @@ FIODataObjects implements GetList for files
 
 
 
+### func (FIODataObjects) Files
+``` go
+func (o FIODataObjects) Files() *CFile
+```
+Files returns a list of dnsmasq conf files from all srcs
+
+
+
 ### func (\*FIODataObjects) Find
 ``` go
 func (f *FIODataObjects) Find(elem string) int
@@ -487,9 +587,31 @@ Find returns the int position of an Objects' element
 
 ### func (\*FIODataObjects) GetList
 ``` go
-func (f *FIODataObjects) GetList() *Objects
+func (f *FIODataObjects) GetList() *objects
 ```
 GetList implements the Contenter interface for FIODataObjects
+
+
+
+### func (FIODataObjects) Len
+``` go
+func (o FIODataObjects) Len() int
+```
+Implement Sort Interface for Objects
+
+
+
+### func (FIODataObjects) Less
+``` go
+func (o FIODataObjects) Less(i, j int) bool
+```
+
+
+### func (FIODataObjects) Names
+``` go
+func (o FIODataObjects) Names() (s sort.StringSlice)
+```
+Names returns a sorted slice of Objects names
 
 
 
@@ -504,6 +626,12 @@ SetURL sets the Object's url field value
 ### func (\*FIODataObjects) String
 ``` go
 func (f *FIODataObjects) String() string
+```
+
+
+### func (FIODataObjects) Swap
+``` go
+func (o FIODataObjects) Swap(i, j int)
 ```
 
 
@@ -529,106 +657,6 @@ func (l List) String() string
 ```
 String implements fmt.Print interface
 
-
-
-## type Object
-``` go
-type Object struct {
-    *Parms
-
-    Objects
-    // contains filtered or unexported fields
-}
-```
-Object struct for normalizing EdgeOS data.
-
-
-
-
-
-
-
-
-
-
-
-### func (\*Object) String
-``` go
-func (o *Object) String() (r string)
-```
-Stringer for Object
-
-
-
-## type Objects
-``` go
-type Objects struct {
-    *Parms
-    S []*Object
-}
-```
-Objects is a struct of []*Object
-
-
-
-
-
-
-
-
-
-
-
-### func (\*Objects) Files
-``` go
-func (o *Objects) Files() *CFile
-```
-Files returns a list of dnsmasq conf files from all srcs
-
-
-
-### func (\*Objects) Find
-``` go
-func (o *Objects) Find(elem string) int
-```
-Find returns the int position of an Objects' element in the StringSlice
-
-
-
-### func (\*Objects) Len
-``` go
-func (o *Objects) Len() int
-```
-Implement Sort Interface for Objects
-
-
-
-### func (\*Objects) Less
-``` go
-func (o *Objects) Less(i, j int) bool
-```
-
-
-### func (\*Objects) Names
-``` go
-func (o *Objects) Names() (s sort.StringSlice)
-```
-Names returns a sorted slice of Objects names
-
-
-
-### func (\*Objects) String
-``` go
-func (o *Objects) String() string
-```
-Stringer for Objects
-
-
-
-### func (\*Objects) Swap
-``` go
-func (o *Objects) Swap(i, j int)
-```
 
 
 ## type Option
@@ -852,7 +880,7 @@ String method to implement fmt.Print interface
 ## type PreDomnObjects
 ``` go
 type PreDomnObjects struct {
-    *Objects
+    // contains filtered or unexported fields
 }
 ```
 PreDomnObjects implements GetList for pre-configured domains content
@@ -867,6 +895,14 @@ PreDomnObjects implements GetList for pre-configured domains content
 
 
 
+### func (PreDomnObjects) Files
+``` go
+func (o PreDomnObjects) Files() *CFile
+```
+Files returns a list of dnsmasq conf files from all srcs
+
+
+
 ### func (\*PreDomnObjects) Find
 ``` go
 func (p *PreDomnObjects) Find(elem string) int
@@ -877,9 +913,31 @@ Find returns the int position of an Objects' element
 
 ### func (\*PreDomnObjects) GetList
 ``` go
-func (p *PreDomnObjects) GetList() *Objects
+func (p *PreDomnObjects) GetList() *objects
 ```
 GetList implements the Contenter interface for PreDomnObjects
+
+
+
+### func (PreDomnObjects) Len
+``` go
+func (o PreDomnObjects) Len() int
+```
+Implement Sort Interface for Objects
+
+
+
+### func (PreDomnObjects) Less
+``` go
+func (o PreDomnObjects) Less(i, j int) bool
+```
+
+
+### func (PreDomnObjects) Names
+``` go
+func (o PreDomnObjects) Names() (s sort.StringSlice)
+```
+Names returns a sorted slice of Objects names
 
 
 
@@ -897,10 +955,16 @@ func (p *PreDomnObjects) String() string
 ```
 
 
+### func (PreDomnObjects) Swap
+``` go
+func (o PreDomnObjects) Swap(i, j int)
+```
+
+
 ## type PreHostObjects
 ``` go
 type PreHostObjects struct {
-    *Objects
+    // contains filtered or unexported fields
 }
 ```
 PreHostObjects implements GetList for pre-configured hosts content
@@ -915,6 +979,14 @@ PreHostObjects implements GetList for pre-configured hosts content
 
 
 
+### func (PreHostObjects) Files
+``` go
+func (o PreHostObjects) Files() *CFile
+```
+Files returns a list of dnsmasq conf files from all srcs
+
+
+
 ### func (\*PreHostObjects) Find
 ``` go
 func (p *PreHostObjects) Find(elem string) int
@@ -925,9 +997,31 @@ Find returns the int position of an Objects' element
 
 ### func (\*PreHostObjects) GetList
 ``` go
-func (p *PreHostObjects) GetList() *Objects
+func (p *PreHostObjects) GetList() *objects
 ```
 GetList implements the Contenter interface for PreHostObjects
+
+
+
+### func (PreHostObjects) Len
+``` go
+func (o PreHostObjects) Len() int
+```
+Implement Sort Interface for Objects
+
+
+
+### func (PreHostObjects) Less
+``` go
+func (o PreHostObjects) Less(i, j int) bool
+```
+
+
+### func (PreHostObjects) Names
+``` go
+func (o PreHostObjects) Names() (s sort.StringSlice)
+```
+Names returns a sorted slice of Objects names
 
 
 
@@ -945,10 +1039,16 @@ func (p *PreHostObjects) String() string
 ```
 
 
+### func (PreHostObjects) Swap
+``` go
+func (o PreHostObjects) Swap(i, j int)
+```
+
+
 ## type URLDataObjects
 ``` go
 type URLDataObjects struct {
-    *Objects
+    // contains filtered or unexported fields
 }
 ```
 URLDataObjects implements GetList for URLs
@@ -963,6 +1063,14 @@ URLDataObjects implements GetList for URLs
 
 
 
+### func (URLDataObjects) Files
+``` go
+func (o URLDataObjects) Files() *CFile
+```
+Files returns a list of dnsmasq conf files from all srcs
+
+
+
 ### func (\*URLDataObjects) Find
 ``` go
 func (u *URLDataObjects) Find(elem string) int
@@ -973,9 +1081,31 @@ Find returns the int position of an Objects' element
 
 ### func (\*URLDataObjects) GetList
 ``` go
-func (u *URLDataObjects) GetList() *Objects
+func (u *URLDataObjects) GetList() *objects
 ```
 GetList implements the Contenter interface for URLDataObjects
+
+
+
+### func (URLDataObjects) Len
+``` go
+func (o URLDataObjects) Len() int
+```
+Implement Sort Interface for Objects
+
+
+
+### func (URLDataObjects) Less
+``` go
+func (o URLDataObjects) Less(i, j int) bool
+```
+
+
+### func (URLDataObjects) Names
+``` go
+func (o URLDataObjects) Names() (s sort.StringSlice)
+```
+Names returns a sorted slice of Objects names
 
 
 
@@ -990,6 +1120,12 @@ SetURL sets the Object's url field value
 ### func (\*URLDataObjects) String
 ``` go
 func (u *URLDataObjects) String() string
+```
+
+
+### func (URLDataObjects) Swap
+``` go
+func (o URLDataObjects) Swap(i, j int)
 ```
 
 

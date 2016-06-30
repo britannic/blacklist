@@ -16,11 +16,11 @@ import (
 )
 
 // bNodes is a map of leaf nodes
-type bNodes map[string]*Object
+type bNodes map[string]*object
 
 // ConfLoader interface defines configuration load method
 type ConfLoader interface {
-	Load() io.Reader
+	read() io.Reader
 }
 
 // CFile holds an array of file names
@@ -69,10 +69,10 @@ const (
 	True = "true"
 )
 
-func (c *Config) addExc(node string) *Objects {
+func (c *Config) addExc(node string) *objects {
 	var (
 		ltype string
-		o     = &Objects{}
+		o     = &objects{}
 	)
 
 	switch node {
@@ -85,7 +85,7 @@ func (c *Config) addExc(node string) *Objects {
 	}
 
 	o.Parms = c.Parms
-	o.S = append(o.S, &Object{
+	o.obs = append(o.obs, &object{
 		desc:  ltype + " exclusions",
 		exc:   c.bNodes[node].exc,
 		ip:    c.bNodes.getIP(node),
@@ -97,7 +97,7 @@ func (c *Config) addExc(node string) *Objects {
 	return o
 }
 
-func (c *Config) addInc(node string) *Object {
+func (c *Config) addInc(node string) *object {
 	var (
 		inc   = c.bNodes[node].inc
 		ltype string
@@ -112,7 +112,7 @@ func (c *Config) addInc(node string) *Object {
 			ltype = getType(preHost).(string)
 			n = getType(ltype).(ntype)
 		}
-		return &Object{
+		return &object{
 			desc:  ltype + " blacklist content",
 			inc:   inc,
 			ip:    c.bNodes.getIP(node),
@@ -129,7 +129,7 @@ func (c *Config) addInc(node string) *Object {
 func (c *Config) CreateObject(i iFace) (Contenter, error) {
 	var (
 		ltype = i.String()
-		o     *Objects
+		o     *objects
 	)
 
 	switch ltype {
@@ -145,19 +145,19 @@ func (c *Config) CreateObject(i iFace) (Contenter, error) {
 
 	switch i {
 	case ExDmObj:
-		return &ExcDomnObjects{Objects: o}, nil
+		return &ExcDomnObjects{objects: o}, nil
 	case ExHtObj:
-		return &ExcHostObjects{Objects: o}, nil
+		return &ExcHostObjects{objects: o}, nil
 	case ExRtObj:
-		return &ExcRootObjects{Objects: o}, nil
+		return &ExcRootObjects{objects: o}, nil
 	case FileObj:
-		return &FIODataObjects{Objects: o}, nil
+		return &FIODataObjects{objects: o}, nil
 	case PreDObj:
-		return &PreDomnObjects{Objects: o}, nil
+		return &PreDomnObjects{objects: o}, nil
 	case PreHObj:
-		return &PreHostObjects{Objects: o}, nil
+		return &PreHostObjects{objects: o}, nil
 	case URLsObj:
-		return &URLDataObjects{Objects: o}, nil
+		return &URLDataObjects{objects: o}, nil
 	default:
 		return nil, errors.New("Invalid interface requested")
 	}
@@ -182,8 +182,8 @@ func (c *Config) excludes(nodes ...string) List {
 }
 
 // Get returns an *Object for a given node
-func (c *Config) Get(node string) *Objects {
-	o := &Objects{Parms: c.Parms, S: []*Object{}}
+func (c *Config) Get(node string) *objects {
+	o := &objects{Parms: c.Parms, obs: []*object{}}
 
 	switch node {
 	case all:
@@ -197,11 +197,11 @@ func (c *Config) Get(node string) *Objects {
 }
 
 // GetAll returns an array of Objects
-func (c *Config) GetAll(ltypes ...string) *Objects {
+func (c *Config) GetAll(ltypes ...string) *objects {
 	var (
 		newDomns = true
 		newHosts = true
-		o        = &Objects{Parms: c.Parms}
+		o        = &objects{Parms: c.Parms}
 	)
 
 	for _, node := range c.Parms.Nodes {
@@ -213,19 +213,19 @@ func (c *Config) GetAll(ltypes ...string) *Objects {
 				switch ltype {
 				case PreDomns:
 					if newDomns && node == domains {
-						o.S = append(o.S, c.addInc(node))
+						o.obs = append(o.obs, c.addInc(node))
 						newDomns = false
 					}
 				case PreHosts:
 					if newHosts && node == hosts {
-						o.S = append(o.S, c.addInc(node))
+						o.obs = append(o.obs, c.addInc(node))
 						newHosts = false
 					}
 				default:
-					obj := c.validate(node).S
+					obj := c.validate(node).obs
 					for i := range obj {
 						if obj[i].ltype == ltype {
-							o.S = append(o.S, obj[i])
+							o.obs = append(o.obs, obj[i])
 						}
 					}
 				}
@@ -262,11 +262,11 @@ func (c *Config) Nodes() (nodes []string) {
 func (c *Config) ReadCfg(r ConfLoader) error {
 	var (
 		tnode  string
-		b      = bufio.NewScanner(r.Load())
+		b      = bufio.NewScanner(r.read())
 		branch string
 		nodes  []string
 		rx     = regx.Objects
-		s      *Object
+		s      *object
 	)
 
 LINE:
@@ -321,7 +321,7 @@ LINE:
 			case files:
 				s.file = name[2]
 				s.ltype = name[1]
-				c.bNodes[tnode].Objects.S = append(c.bNodes[tnode].Objects.S, s)
+				c.bNodes[tnode].objects.obs = append(c.bNodes[tnode].objects.obs, s)
 				s = newObject() // reset s for the next loop
 
 			case "prefix":
@@ -330,7 +330,7 @@ LINE:
 			case urls:
 				s.ltype = name[1]
 				s.url = name[2]
-				c.bNodes[tnode].Objects.S = append(c.bNodes[tnode].Objects.S, s)
+				c.bNodes[tnode].objects.obs = append(c.bNodes[tnode].objects.obs, s)
 			}
 
 		case rx.DESC.MatchString(line) || rx.CMNT.MatchString(line) || rx.MISC.MatchString(line):
@@ -452,11 +452,11 @@ func (b bNodes) getIP(node string) (ip string) {
 	return ip
 }
 
-func (b bNodes) validate(node string) *Objects {
-	for _, obj := range b[node].Objects.S {
+func (b bNodes) validate(node string) *objects {
+	for _, obj := range b[node].objects.obs {
 		if obj.ip == "" {
 			obj.ip = b.getIP(node)
 		}
 	}
-	return &b[node].Objects
+	return &b[node].objects
 }
