@@ -311,6 +311,11 @@ func TestMultiObjProcessContent(t *testing.T) {
 	d.ProcessContent(excRoots, excDomns, excHosts, preDomns, preHosts, files)
 
 	Equals(t, "address=/ytimg.com/0.0.0.0\n\n\naddress=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0\naddress=/beap.gemini.yahoo.com/192.168.168.1\naddress=/really.bad.phishing.site.ru/10.10.10.10\n", strings.Join(d.s, "\n"))
+
+	urls, err := c.CreateObject(URLsObj)
+	OK(t, err)
+
+	Equals(t, "[\nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domain\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://malc0de.com/bl/ZONES\"\n]", urls.String())
 }
 
 func TestProcessContent(t *testing.T) {
