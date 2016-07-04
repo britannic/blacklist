@@ -47,7 +47,7 @@ func TestGetHTTP(t *testing.T) {
 		{ok: true, err: nil, method: method, URL: page, want: ""},
 	}
 
-	for _, test := range tests {
+	for i, test := range tests {
 		URL := h.NewHTTPServer().String()
 		h.Mux.HandleFunc(page,
 			func(w http.ResponseWriter, r *http.Request) {
@@ -60,8 +60,11 @@ func TestGetHTTP(t *testing.T) {
 		}
 
 		body, err := getHTTP(test.method, test.URL)
-		if err != nil {
+		switch {
+		case err != nil && test.err != nil:
 			Equals(t, test.err.Error(), err.Error())
+		case err != nil:
+			fmt.Printf("Test: %v, error: %v\n", i, err)
 		}
 
 		got, err = ioutil.ReadAll(body)
@@ -76,8 +79,6 @@ func TestGetHTTP(t *testing.T) {
 }
 
 var (
-	method = "GET"
-
 	HTTPDomainData = `
 // This bind zone is intended to be included in a running dns server for a local net
 // It will return 127.0.0.1 for domains serving malicious executables observed by malc0de.com/database/
