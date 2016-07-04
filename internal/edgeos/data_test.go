@@ -58,29 +58,29 @@ func TestFormatData(t *testing.T) {
 	for _, node := range c.Parms.Nodes {
 		var (
 			got       io.Reader
-			gotList   = make(List)
+			gotList   = make(list)
 			lines     []string
 			wantBytes []byte
 		)
 		eq := getSeparator(node)
 
 		getBytes := func() io.Reader {
-			sort.Strings(c.bNodes[node].inc)
-			return strings.NewReader(strings.Join(c.bNodes[node].inc, "\n"))
+			sort.Strings(c.tree[node].inc)
+			return strings.NewReader(strings.Join(c.tree[node].inc, "\n"))
 		}
 
 		b := bufio.NewScanner(getBytes())
 
 		for b.Scan() {
 			k := b.Text()
-			lines = append(lines, fmt.Sprintf("address=%v%v/%v", eq, k, c.bNodes[node].ip)+"\n")
+			lines = append(lines, fmt.Sprintf("address=%v%v/%v", eq, k, c.tree[node].ip)+"\n")
 			gotList[k] = 0
 		}
 
 		sort.Strings(lines)
 		wantBytes = []byte(strings.Join(lines, ""))
 
-		fmttr := "address=" + eq + "%v/" + c.bNodes[node].ip
+		fmttr := "address=" + eq + "%v/" + c.tree[node].ip
 		got = formatData(fmttr, gotList)
 		gotBytes, err := ioutil.ReadAll(got)
 		OK(t, err)
@@ -103,7 +103,7 @@ func TestGetType(t *testing.T) {
 		typestr  string
 	}{
 		{typeint: 100, typestr: notknown, ntypestr: "ntype(100)"},
-		{typeint: domain, typestr: domains, ntypestr: "domain"},
+		{typeint: domn, typestr: domains, ntypestr: "domain"},
 		{typeint: excDomn, typestr: ExcDomns, ntypestr: "excDomn"},
 		{typeint: excHost, typestr: ExcHosts, ntypestr: "excHost"},
 		{typeint: excRoot, typestr: ExcRoots, ntypestr: "excRoot"},

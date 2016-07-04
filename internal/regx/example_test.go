@@ -7,7 +7,7 @@ import (
 )
 
 func ExampleOBJ() {
-	rx := regx.Objects
+	rx := regx.Obj
 	fmt.Println(rx)
 	// Output: CMNT: ^(?:[\/*]+)(.*?)(?:[*\/]+)$
 	// DESC: ^(?:description)+\s"?([^"]+)?"?$

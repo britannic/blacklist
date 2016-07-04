@@ -31,8 +31,8 @@ func TestGetHTTP(t *testing.T) {
 			method string
 			url    string
 		}{
-			method: "Unable to form request for bad url...",
-			url:    "No data returned for bad url...",
+			method: "Unable to form request for www.zerror.pod...",
+			url:    "Unable to form request for bad url...",
 		}
 		got    []byte
 		h      = new(HTTPserver)
@@ -41,25 +41,30 @@ func TestGetHTTP(t *testing.T) {
 		want   = HTTPDomainData
 	)
 
-	URL := h.NewHTTPServer().String()
-	h.Mux.HandleFunc(page,
-		func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprint(w, want)
-		},
-	)
-
 	tests := []struct {
 		ok     bool
 		method string
 		URL    string
 		want   string
 	}{
-		{ok: true, method: method, URL: URL + page, want: want},
+		{ok: true, method: method, URL: page, want: want},
 		{ok: false, method: method, URL: "bad url", want: errs.url},
-		{ok: false, method: "bad method", URL: "bad url", want: errs.method},
+		{ok: false, method: "bad method", URL: "www.zerror.pod", want: errs.method},
+		{ok: true, method: method, URL: page, want: ""},
 	}
 
 	for _, test := range tests {
+		URL := h.NewHTTPServer().String()
+		h.Mux.HandleFunc(page,
+			func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprint(w, test.want)
+			},
+		)
+
+		if test.ok {
+			test.URL = URL + test.URL
+		}
+
 		body, err := getHTTP(test.method, test.URL)
 
 		switch test.ok {
@@ -71,8 +76,13 @@ func TestGetHTTP(t *testing.T) {
 
 		got, err = ioutil.ReadAll(body)
 		OK(t, err)
+
 		if runtime.GOOS == "linux" && test.method == "bad method" {
 			test.want = errs.url
+		}
+
+		if test.want == "" {
+			test.want = "No data returned for " + test.URL + "..."
 		}
 		Equals(t, test.want, string(got))
 		if t.Failed() {

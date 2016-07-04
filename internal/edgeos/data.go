@@ -14,7 +14,7 @@ type ntype int
 // ntypes label blacklist source types
 const (
 	unknown ntype = iota // denotes a coding error
-	domain               // Format type e.g. address=/.d.com/0.0.0.0
+	domn                 // Format type e.g. address=/.d.com/0.0.0.0
 	excDomn              // Won't be written to disk
 	excHost              // Won't be written to disk
 	excRoot              // Won't be written to disk
@@ -45,7 +45,7 @@ func DiffArray(a, b []string) (diff sort.StringSlice) {
 		biggest = b
 		smallest = a
 	}
-	dmap := make(List)
+	dmap := make(list)
 	for _, k := range smallest {
 		dmap[k] = 0
 	}
@@ -59,7 +59,7 @@ func DiffArray(a, b []string) (diff sort.StringSlice) {
 }
 
 // formatData returns an io.Reader loaded with dnsmasq formatted data
-func formatData(fmttr string, data List) io.Reader {
+func formatData(fmttr string, data list) io.Reader {
 	var lines sort.StringSlice
 	for k := range data {
 		lines = append(lines, fmt.Sprintf(fmttr+"\n", k))
@@ -78,8 +78,8 @@ func getSeparator(node string) string {
 }
 
 // getSubdomains returns a map of subdomains
-func getSubdomains(s string) (l List) {
-	l = make(List)
+func getSubdomains(s string) (l list) {
+	l = make(list)
 	keys := strings.Split(s, ".")
 	for i := 0; i < len(keys)-1; i++ {
 		key := strings.Join(keys[i:], ".")
@@ -99,7 +99,7 @@ func getType(in interface{}) (out interface{}) {
 	return out
 }
 
-// StrToBool converts a string ("true" or "false") to it's boolean equivalent
+// StrToBool converts a string ("true" or "false") to boolean
 func StrToBool(s string) bool {
 	if strings.ToLower(s) == True {
 		return true
@@ -107,9 +107,9 @@ func StrToBool(s string) bool {
 	return false
 }
 
-func typeInt(i ntype) (s string) {
-	switch i {
-	case domain:
+func typeInt(n ntype) (s string) {
+	switch n {
+	case domn:
 		s = domains
 	case excDomn:
 		s = ExcDomns
@@ -133,28 +133,28 @@ func typeInt(i ntype) (s string) {
 	return s
 }
 
-func typeStr(s string) (i ntype) {
+func typeStr(s string) (n ntype) {
 	switch s {
 	case domains:
-		i = domain
+		n = domn
 	case ExcDomns:
-		i = excDomn
+		n = excDomn
 	case ExcHosts:
-		i = excHost
+		n = excHost
 	case ExcRoots:
-		i = excRoot
+		n = excRoot
 	case hosts:
-		i = host
+		n = host
 	case notknown:
-		i = unknown
+		n = unknown
 	case PreDomns:
-		i = preDomn
+		n = preDomn
 	case PreHosts:
-		i = preHost
+		n = preHost
 	case rootNode:
-		i = root
+		n = root
 	case zones:
-		i = zone
+		n = zone
 	}
-	return i
+	return n
 }

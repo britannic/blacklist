@@ -40,9 +40,9 @@ func TestKeyExists(t *testing.T) {
 }
 
 func TestMergeList(t *testing.T) {
-	testList1 := make(List)
-	testList2 := make(List)
-	want := make(List)
+	testList1 := make(list)
+	testList2 := make(list)
+	want := make(list)
 
 	for i := 0; i < 20; i++ {
 		want[string(i)] = 1
@@ -107,7 +107,7 @@ func TestSubKeyExists(t *testing.T) {
 }
 
 var (
-	gotKeys = List{
+	gotKeys = list{
 		"a.applovin.com":         0,
 		"a.glcdn.co":             0,
 		"a.vserv.mobi":           0,

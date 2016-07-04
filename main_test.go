@@ -195,7 +195,7 @@ func TestSetArch(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		Equals(t, test.exp, o.SetDir(test.arch))
+		Equals(t, test.exp, o.setDir(test.arch))
 	}
 }
 

@@ -9,16 +9,6 @@ const (
 	tab   = "  "
 )
 
-func tabs(t int) (r string) {
-	if t <= 0 {
-		return r
-	}
-	for i := 0; i < t; i++ {
-		r += tab
-	}
-	return r
-}
-
 type cfgJSON struct {
 	array []string
 	*Config
@@ -26,91 +16,101 @@ type cfgJSON struct {
 	leaf, pk, sk string
 }
 
-func getJSONArray(c *cfgJSON) (result string) {
-	indent := c.indent
-	cmma := comma
+func tabs(t int) (s string) {
+	if t <= 0 {
+		return s
+	}
+	for i := 0; i < t; i++ {
+		s += tab
+	}
+	return s
+}
+
+func getJSONArray(c *cfgJSON) (js string) {
+	ind := c.indent
+	cma := comma
 	ret := enter
-	result += fmt.Sprintf("%v%q: [", tabs(indent), c.leaf)
+	js += fmt.Sprintf("%v%q: [", tabs(ind), c.leaf)
 	cnt := len(c.array)
 
 	switch {
 	case c.pk != rootNode && cnt == 0:
-		result += "],\n"
-		return result
+		js += "],\n"
+		return js
 
 	case cnt == 1:
 		ret = null
-		indent = 0
+		ind = 0
 
 	case cnt > 1:
-		result += enter
-		indent++
+		js += enter
+		ind++
 	}
 
 	if cnt > 0 {
 		for i, s := range c.array {
 			if i == cnt-1 {
-				cmma = null
+				cma = null
 			}
-			result += fmt.Sprintf("%v%q%v%v", tabs(indent), s, cmma, ret)
+			js += fmt.Sprintf("%v%q%v%v", tabs(ind), s, cma, ret)
 		}
 
-		cmma = comma
+		cma = comma
 
 		if c.pk == rootNode {
-			cmma = null
+			cma = null
 		}
 
-		result += fmt.Sprintf("%v]%v\n", tabs(indent), cmma)
+		js += fmt.Sprintf("%v]%v\n", tabs(ind), cma)
 	}
 
-	return result
+	return js
 }
 
-func is(indent int, result, title, s string) string {
+func is(ind int, js, title, s string) string {
 	if s != "" {
-		result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), title, s)
-		return result
+		js += fmt.Sprintf("%v%q: %q,\n", tabs(ind), title, s)
+		return js
 	}
-	return result
+	return js
 }
 
-func getJSONsrcArray(c *cfgJSON) (result string) {
+func getJSONsrcArray(c *cfgJSON) (js string) {
 	var (
-		cnt    = len(c.bNodes[c.pk].objects.obs)
-		i      int
-		indent = c.indent
-		s      *object
+		cnt = len(c.tree[c.pk].Objects.x)
+		i   int
+		ind = c.indent
+		o   *object
 	)
 
 	if cnt == 0 {
-		result += fmt.Sprintf("%v%q: [{}]\n", tabs(c.indent), "sources")
-		return result
+		js += fmt.Sprintf("%v%q: [{}]\n", tabs(c.indent), "sources")
+		return js
 	}
 
-	result += fmt.Sprintf("%v%q: [{%v", tabs(c.indent), "sources", enter)
+	js += fmt.Sprintf("%v%q: [{%v", tabs(c.indent), "sources", enter)
 
-	for i, s = range c.bNodes[c.pk].objects.obs {
-		cmma := comma
-		indent = c.indent + 1
+	for i, o = range c.tree[c.pk].Objects.x {
+		cma := comma
+		ind = c.indent + 1
 
 		if i == cnt-1 {
-			cmma = null
+			cma = null
 		}
 
-		result += fmt.Sprintf("%v%q: {\n", tabs(indent), s.name)
-		indent++
-		result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled, BooltoStr(s.disabled))
-		result = is(indent, result, "description", s.desc)
-		result = is(indent, result, "ip", s.ip)
-		result = is(indent, result, "prefix", s.prefix)
-		result = is(indent, result, files, s.file)
-		result = is(indent, result, urls, s.url)
-		indent--
-		result += fmt.Sprintf("%v}%v%v", tabs(indent), cmma, enter)
+		js += fmt.Sprintf("%v%q: {\n", tabs(ind), o.name)
+		ind++
+		js += fmt.Sprintf("%v%q: %q,\n", tabs(ind), disabled, BooltoStr(o.disabled))
+		js = is(ind, js, "description", o.desc)
+		js = is(ind, js, "ip", o.ip)
+		js = is(ind, js, "prefix", o.prefix)
+		js = is(ind, js, files, o.file)
+		js = is(ind, js, urls, o.url)
+		ind--
+		js += fmt.Sprintf("%v}%v%v", tabs(ind), cma, enter)
 	}
 
-	indent -= 2
-	result += fmt.Sprintf("%v}]%v", tabs(indent), enter)
-	return result
+	ind -= 2
+	js += fmt.Sprintf("%v}]%v", tabs(ind), enter)
+	return js
 }

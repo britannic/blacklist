@@ -16,10 +16,10 @@ type Parms struct {
 	Bash      string
 	Cores     int
 	Debug     bool
-	Dex       List
+	Dex       list
 	Dir       string
 	DNSsvc    string
-	Exc       List
+	Exc       list
 	Ext       string
 	File      string
 	FnFmt     string
@@ -47,10 +47,10 @@ type Option func(c *Config) Option
 // NewConfig returns a new *Config initialized with the parameter options passed to it
 func NewConfig(opts ...Option) *Config {
 	c := Config{
-		bNodes: make(bNodes),
+		tree: make(tree),
 		Parms: &Parms{
-			Dex: make(List),
-			Exc: make(List),
+			Dex: make(list),
+			Exc: make(list),
 		},
 	}
 	for _, opt := range opts {
@@ -184,6 +184,15 @@ func Level(s string) Option {
 	}
 }
 
+// LTypes sets an array of legal types used by Source
+func LTypes(s []string) Option {
+	return func(c *Config) Option {
+		previous := c.Ltypes
+		c.Ltypes = s
+		return LTypes(previous)
+	}
+}
+
 // Prefix sets the dnsmasq configuration address line prefix
 func Prefix(l string) Option {
 	return func(c *Config) Option {
@@ -205,8 +214,8 @@ func Method(method string) Option {
 // NewParms sets a new *Parms instance
 func NewParms() *Parms {
 	return &Parms{
-		Dex: make(List),
-		Exc: make(List),
+		Dex: make(list),
+		Exc: make(list),
 	}
 }
 
@@ -237,7 +246,6 @@ func (p *Parms) String() string {
 	}
 
 	var fields []pArray
-
 	maxLen := func(pA []pArray) int {
 		smallest := len(pA[0].n)
 		largest := len(pA[0].n)
@@ -257,7 +265,6 @@ func (p *Parms) String() string {
 	}
 
 	max := maxLen(fields)
-
 	pad := func(s string) string {
 		i := len(s)
 		repeat := max - i + 1
@@ -275,15 +282,6 @@ func (p *Parms) String() string {
 	r += fmt.Sprintln("}")
 
 	return r
-}
-
-// LTypes sets an array of legal types used by Source
-func LTypes(s []string) Option {
-	return func(c *Config) Option {
-		previous := c.Ltypes
-		c.Ltypes = s
-		return LTypes(previous)
-	}
 }
 
 // Test toggles testing mode on or off

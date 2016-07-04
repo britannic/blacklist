@@ -11,8 +11,8 @@ import (
 	"github.com/fatih/structs"
 )
 
-// Opts struct for command line options and setting initial variables
-type Opts struct {
+// opts struct for command line options and setting initial variables
+type opts struct {
 	*flag.FlagSet
 	ARCH    *string
 	Debug   *bool
@@ -27,8 +27,8 @@ type Opts struct {
 	Version *bool
 }
 
-// SetDir sets the directory according to the host CPU arch
-func (o *Opts) SetDir(arch string) (dir string) {
+// setDir sets the directory according to the host CPU arch
+func (o *opts) setDir(arch string) (dir string) {
 	switch arch {
 	case *o.MIPS64:
 		dir = *o.DNSdir
@@ -38,8 +38,8 @@ func (o *Opts) SetDir(arch string) (dir string) {
 	return dir
 }
 
-func (o *Opts) String() (r string) {
-	for _, name := range structs.Names(&Opts{}) {
+func (o *opts) String() (r string) {
+	for _, name := range structs.Names(&opts{}) {
 		r += name + "\n"
 	}
 
@@ -47,7 +47,7 @@ func (o *Opts) String() (r string) {
 }
 
 // getCFG returns a e.ConfLoader
-func (o *Opts) getCFG(c *edgeos.Config) (r edgeos.ConfLoader) {
+func (o *opts) getCFG(c *edgeos.Config) (r edgeos.ConfLoader) {
 	switch *o.ARCH {
 	case *o.MIPS64:
 		r = &edgeos.CFGcli{Config: c}
@@ -58,7 +58,7 @@ func (o *Opts) getCFG(c *edgeos.Config) (r edgeos.ConfLoader) {
 }
 
 // getOpts returns command line flags and values or displays help
-func getOpts() *Opts {
+func getOpts() *opts {
 	var flags flag.FlagSet
 	flags.Init("blacklist", flag.ExitOnError)
 	flags.Usage = func() {
@@ -66,7 +66,7 @@ func getOpts() *Opts {
 		flags.PrintDefaults()
 	}
 
-	return &Opts{
+	return &opts{
 		ARCH:    flags.String("arch", runtime.GOARCH, "Set EdgeOS CPU architecture"),
 		Debug:   flags.Bool("debug", false, "Enable debug mode"),
 		DNSdir:  flags.String("dir", "/etc/dnsmasq.d", "Override dnsmasq directory"),
@@ -82,7 +82,7 @@ func getOpts() *Opts {
 	}
 }
 
-func (o *Opts) setArgs(fn func(int)) {
+func (o *opts) setArgs(fn func(int)) {
 	if os.Args[1:] != nil {
 		if err := o.Parse(os.Args[1:]); err != nil {
 			o.Usage()

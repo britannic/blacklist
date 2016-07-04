@@ -26,7 +26,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestRegex(t *testing.T) {
-	got := regx.Objects
+	got := regx.Obj
 	want := rxout
 	Equals(t, want, fmt.Sprint(got))
 }
@@ -44,28 +44,28 @@ func TestStripPrefixAndSuffix(t *testing.T) {
 			line:   "/* This is a complete sentence and should not be a comment.",
 			ok:     true,
 			prefix: "/* ",
-			rx:     regx.Objects,
+			rx:     regx.Obj,
 		},
 		{
 			exp:    "verybad.phishing.sites.r.us.com",
 			line:   "https://verybad.phishing.sites.r.us.com",
 			ok:     true,
 			prefix: "https://",
-			rx:     regx.Objects,
+			rx:     regx.Obj,
 		},
 		{
 			exp:    "verybad.phishing.sites.r.us.com",
 			line:   "https://verybad.phishing.sites.r.us.com",
 			ok:     true,
 			prefix: "http",
-			rx:     regx.Objects,
+			rx:     regx.Obj,
 		},
 		{
 			exp:    "verybad.phishing.sites.r.us.com",
 			line:   "verybad.phishing.sites.r.us.com",
 			ok:     false,
 			prefix: "http",
-			rx:     regx.Objects,
+			rx:     regx.Obj,
 		},
 	}
 	for _, tt := range tests {

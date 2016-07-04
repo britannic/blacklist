@@ -29,8 +29,8 @@ func TestObjectString(t *testing.T) {
 }
 
 func TestSortObject(t *testing.T) {
-	act := &objects{
-		obs: []*object{
+	act := &Objects{
+		x: []*object{
 			{name: "eagle"},
 			{name: "aardvark"},
 			{name: "dog"},
@@ -39,8 +39,8 @@ func TestSortObject(t *testing.T) {
 		},
 	}
 
-	exp := &objects{
-		obs: []*object{
+	exp := &Objects{
+		x: []*object{
 			{name: "aardvark"},
 			{name: "beetle"},
 			{name: "crab"},

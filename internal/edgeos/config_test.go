@@ -57,18 +57,18 @@ func TestExcludes(t *testing.T) {
 	err := c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg})
 	OK(t, err)
 
-	excludes := List{"sstatic.net": 0, "yimg.com": 0, "ytimg.com": 0, "google.com": 0, "images-amazon.com": 0, "msdn.com": 0, "schema.org": 0, "skype.com": 0, "avast.com": 0, "bitdefender.com": 0, "cdn.visiblemeasures.com": 0, "cloudfront.net": 0, "microsoft.com": 0, "akamaihd.net": 0, "amazon.com": 0, "apple.com": 0, "shopify.com": 0, "storage.googleapis.com": 0, "msecnd.net": 0, "ssl-on9.com": 0, "windows.net": 0, "1e100.net": 0, "akamai.net": 0, "coremetrics.com": 0, "gstatic.com": 0, "gvt1.com": 0, "freedns.afraid.org": 0, "hb.disney.go.com": 0, "hp.com": 0, "live.com": 0, "rackcdn.com": 0, "edgesuite.net": 0, "googleapis.com": 0, "smacargo.com": 0, "static.chartbeat.com": 0, "gvt1.net": 0, "hulu.com": 0, "paypal.com": 0, "amazonaws.com": 0, "ask.com": 0, "github.com": 0, "githubusercontent.com": 0, "googletagmanager.com": 0, "sourceforge.net": 0, "xboxlive.com": 0, "2o7.net": 0, "adobedtm.com": 0, "googleadservices.com": 0, "googleusercontent.com": 0, "ssl-on9.net": 0}
+	excludes := list{"sstatic.net": 0, "yimg.com": 0, "ytimg.com": 0, "google.com": 0, "images-amazon.com": 0, "msdn.com": 0, "schema.org": 0, "skype.com": 0, "avast.com": 0, "bitdefender.com": 0, "cdn.visiblemeasures.com": 0, "cloudfront.net": 0, "microsoft.com": 0, "akamaihd.net": 0, "amazon.com": 0, "apple.com": 0, "shopify.com": 0, "storage.googleapis.com": 0, "msecnd.net": 0, "ssl-on9.com": 0, "windows.net": 0, "1e100.net": 0, "akamai.net": 0, "coremetrics.com": 0, "gstatic.com": 0, "gvt1.com": 0, "freedns.afraid.org": 0, "hb.disney.go.com": 0, "hp.com": 0, "live.com": 0, "rackcdn.com": 0, "edgesuite.net": 0, "googleapis.com": 0, "smacargo.com": 0, "static.chartbeat.com": 0, "gvt1.net": 0, "hulu.com": 0, "paypal.com": 0, "amazonaws.com": 0, "ask.com": 0, "github.com": 0, "githubusercontent.com": 0, "googletagmanager.com": 0, "sourceforge.net": 0, "xboxlive.com": 0, "2o7.net": 0, "adobedtm.com": 0, "googleadservices.com": 0, "googleusercontent.com": 0, "ssl-on9.net": 0}
 
 	tests := []struct {
-		get  List
-		list List
+		get  list
+		list list
 		raw  []string
 		node string
 	}{
 		{get: c.excludes(rootNode), list: excludes, node: rootNode},
 		{get: c.excludes(), list: excludes},
-		{get: c.excludes(domains), list: List{}, node: domains},
-		{get: c.excludes(hosts), list: List{}, node: hosts},
+		{get: c.excludes(domains), list: list{}, node: domains},
+		{get: c.excludes(hosts), list: list{}, node: hosts},
 	}
 
 	for _, test := range tests {
@@ -253,10 +253,10 @@ func TestGetAll(t *testing.T) {
 	err := c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg})
 	OK(t, err)
 
-	Equals(t, want, fmt.Sprint(c.GetAll().obs))
-	Equals(t, wantURLS, fmt.Sprint(c.GetAll(urls).obs))
-	Equals(t, wantFiles, fmt.Sprint(c.GetAll(files).obs))
-	Equals(t, wantPre, fmt.Sprint(c.GetAll(PreDomns, PreHosts).obs))
+	Equals(t, want, fmt.Sprint(c.GetAll().x))
+	Equals(t, wantURLS, fmt.Sprint(c.GetAll(urls).x))
+	Equals(t, wantFiles, fmt.Sprint(c.GetAll(files).x))
+	Equals(t, wantPre, fmt.Sprint(c.GetAll(PreDomns, PreHosts).x))
 	Equals(t, c.Get(all).String(), c.GetAll().String())
 	Equals(t, wantHostObj, c.Get(hosts).String())
 }

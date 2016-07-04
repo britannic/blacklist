@@ -16,7 +16,7 @@ import (
 )
 
 // bNodes is a map of leaf nodes
-type bNodes map[string]*object
+type tree map[string]*object
 
 // ConfLoader interface defines configuration load method
 type ConfLoader interface {
@@ -33,7 +33,7 @@ type CFile struct {
 // Config is a struct of configuration fields
 type Config struct {
 	*Parms
-	bNodes
+	tree
 }
 
 const (
@@ -69,10 +69,10 @@ const (
 	True = "true"
 )
 
-func (c *Config) addExc(node string) *objects {
+func (c *Config) addExc(node string) *Objects {
 	var (
 		ltype string
-		o     = &objects{}
+		o     = &Objects{}
 	)
 
 	switch node {
@@ -85,10 +85,10 @@ func (c *Config) addExc(node string) *objects {
 	}
 
 	o.Parms = c.Parms
-	o.obs = append(o.obs, &object{
+	o.x = append(o.x, &object{
 		desc:  ltype + " exclusions",
-		exc:   c.bNodes[node].exc,
-		ip:    c.bNodes.getIP(node),
+		exc:   c.tree[node].exc,
+		ip:    c.tree.getIP(node),
 		ltype: ltype,
 		name:  ltype,
 		nType: getType(ltype).(ntype),
@@ -99,7 +99,7 @@ func (c *Config) addExc(node string) *objects {
 
 func (c *Config) addInc(node string) *object {
 	var (
-		inc   = c.bNodes[node].inc
+		inc   = c.tree[node].inc
 		ltype string
 		n     ntype
 	)
@@ -115,7 +115,7 @@ func (c *Config) addInc(node string) *object {
 		return &object{
 			desc:  ltype + " blacklist content",
 			inc:   inc,
-			ip:    c.bNodes.getIP(node),
+			ip:    c.tree.getIP(node),
 			ltype: ltype,
 			name:  fmt.Sprintf("includes.[%v]", len(inc)),
 			nType: n,
@@ -125,11 +125,11 @@ func (c *Config) addInc(node string) *object {
 	return nil
 }
 
-// CreateObject returns an interface of the requested iFace type
-func (c *Config) CreateObject(i iFace) (Contenter, error) {
+// NewContent returns an interface of the requested IFace type
+func (c *Config) NewContent(iface IFace) (Contenter, error) {
 	var (
-		ltype = i.String()
-		o     *objects
+		ltype = iface.String()
+		o     *Objects
 	)
 
 	switch ltype {
@@ -143,47 +143,47 @@ func (c *Config) CreateObject(i iFace) (Contenter, error) {
 		o = c.GetAll(ltype)
 	}
 
-	switch i {
+	switch iface {
 	case ExDmObj:
-		return &ExcDomnObjects{objects: o}, nil
+		return &ExcDomnObjects{Objects: o}, nil
 	case ExHtObj:
-		return &ExcHostObjects{objects: o}, nil
+		return &ExcHostObjects{Objects: o}, nil
 	case ExRtObj:
-		return &ExcRootObjects{objects: o}, nil
+		return &ExcRootObjects{Objects: o}, nil
 	case FileObj:
-		return &FIODataObjects{objects: o}, nil
+		return &FIODataObjects{Objects: o}, nil
 	case PreDObj:
-		return &PreDomnObjects{objects: o}, nil
+		return &PreDomnObjects{Objects: o}, nil
 	case PreHObj:
-		return &PreHostObjects{objects: o}, nil
+		return &PreHostObjects{Objects: o}, nil
 	case URLsObj:
-		return &URLDataObjects{objects: o}, nil
+		return &URLDataObjects{Objects: o}, nil
 	default:
 		return nil, errors.New("Invalid interface requested")
 	}
 }
 
 // excludes returns a string array of excludes
-func (c *Config) excludes(nodes ...string) List {
+func (c *Config) excludes(nodes ...string) list {
 	var exc []string
 	switch nodes {
 	case nil:
 		for _, k := range c.Nodes() {
-			if len(c.bNodes[k].exc) != 0 {
-				exc = append(exc, c.bNodes[k].exc...)
+			if len(c.tree[k].exc) != 0 {
+				exc = append(exc, c.tree[k].exc...)
 			}
 		}
 	default:
 		for _, node := range nodes {
-			exc = append(exc, c.bNodes[node].exc...)
+			exc = append(exc, c.tree[node].exc...)
 		}
 	}
 	return updateList(exc)
 }
 
 // Get returns an *Object for a given node
-func (c *Config) Get(node string) *objects {
-	o := &objects{Parms: c.Parms, obs: []*object{}}
+func (c *Config) Get(node string) *Objects {
+	o := &Objects{Parms: c.Parms, x: []*object{}}
 
 	switch node {
 	case all:
@@ -197,11 +197,11 @@ func (c *Config) Get(node string) *objects {
 }
 
 // GetAll returns an array of Objects
-func (c *Config) GetAll(ltypes ...string) *objects {
+func (c *Config) GetAll(ltypes ...string) *Objects {
 	var (
 		newDomns = true
 		newHosts = true
-		o        = &objects{Parms: c.Parms}
+		o        = &Objects{Parms: c.Parms}
 	)
 
 	for _, node := range c.Parms.Nodes {
@@ -213,19 +213,19 @@ func (c *Config) GetAll(ltypes ...string) *objects {
 				switch ltype {
 				case PreDomns:
 					if newDomns && node == domains {
-						o.obs = append(o.obs, c.addInc(node))
+						o.x = append(o.x, c.addInc(node))
 						newDomns = false
 					}
 				case PreHosts:
 					if newHosts && node == hosts {
-						o.obs = append(o.obs, c.addInc(node))
+						o.x = append(o.x, c.addInc(node))
 						newHosts = false
 					}
 				default:
-					obj := c.validate(node).obs
+					obj := c.validate(node).x
 					for i := range obj {
 						if obj[i].ltype == ltype {
-							o.obs = append(o.obs, obj[i])
+							o.x = append(o.x, obj[i])
 						}
 					}
 				}
@@ -241,16 +241,16 @@ func (c *Config) InSession() bool {
 }
 
 // load reads the config using the EdgeOS/VyOS cli-shell-api
-func (c *Config) load(action string, level string) ([]byte, error) {
+func (c *Config) load(act, lvl string) ([]byte, error) {
 	cmd := exec.Command(c.Bash)
-	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v %v", c.API, apiCMD(action, c.InSession()), level))
+	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v %v", c.API, apiCMD(act, c.InSession()), lvl))
 
 	return cmd.Output()
 }
 
 // Nodes returns an array of configured nodes
 func (c *Config) Nodes() (nodes []string) {
-	for k := range c.bNodes {
+	for k := range c.tree {
 		nodes = append(nodes, k)
 	}
 	sort.Strings(nodes)
@@ -261,12 +261,12 @@ func (c *Config) Nodes() (nodes []string) {
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 func (c *Config) ReadCfg(r ConfLoader) error {
 	var (
-		tnode  string
-		b      = bufio.NewScanner(r.read())
-		branch string
-		nodes  []string
-		rx     = regx.Objects
-		s      *object
+		tnode string
+		b     = bufio.NewScanner(r.read())
+		leaf  string
+		nodes []string
+		rx    = regx.Objects
+		o     *object
 	)
 
 LINE:
@@ -278,59 +278,59 @@ LINE:
 			incExc := regx.Get("mlti", line)
 			switch incExc[1] {
 			case "exclude":
-				c.bNodes[tnode].exc = append(c.bNodes[tnode].exc, incExc[2])
+				c.tree[tnode].exc = append(c.tree[tnode].exc, incExc[2])
 
 			case "include":
-				c.bNodes[tnode].inc = append(c.bNodes[tnode].inc, incExc[2])
+				c.tree[tnode].inc = append(c.tree[tnode].inc, incExc[2])
 			}
 
 		case rx.NODE.MatchString(line):
 			node := regx.Get("node", line)
 			tnode = node[1]
 			nodes = append(nodes, tnode)
-			s = newObject()
-			c.bNodes[tnode] = s
+			o = newObject()
+			c.tree[tnode] = o
 
 		case rx.LEAF.MatchString(line):
 			srcName := regx.Get("leaf", line)
-			branch = srcName[2]
+			leaf = srcName[2]
 			nodes = append(nodes, srcName[1])
 
 			if srcName[1] == src {
-				s = newObject()
-				s.name = branch
-				s.nType = getType(tnode).(ntype)
+				o = newObject()
+				o.name = leaf
+				o.nType = getType(tnode).(ntype)
 			}
 
 		case rx.DSBL.MatchString(line):
-			c.bNodes[tnode].disabled = StrToBool(regx.Get("dsbl", line)[1])
+			c.tree[tnode].disabled = StrToBool(regx.Get("dsbl", line)[1])
 
 		case rx.IPBH.MatchString(line) && nodes[len(nodes)-1] != src:
-			c.bNodes[tnode].ip = regx.Get("ipbh", line)[1]
+			c.tree[tnode].ip = regx.Get("ipbh", line)[1]
 
 		case rx.NAME.MatchString(line):
 			name := regx.Get("name", line)
 
 			switch name[1] {
 			case "description":
-				s.desc = name[2]
+				o.desc = name[2]
 
 			case blackhole:
-				s.ip = name[2]
+				o.ip = name[2]
 
 			case files:
-				s.file = name[2]
-				s.ltype = name[1]
-				c.bNodes[tnode].objects.obs = append(c.bNodes[tnode].objects.obs, s)
-				s = newObject() // reset s for the next loop
+				o.file = name[2]
+				o.ltype = name[1]
+				c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
+				o = newObject() // reset o for the next loop
 
 			case "prefix":
-				s.prefix = name[2]
+				o.prefix = name[2]
 
 			case urls:
-				s.ltype = name[1]
-				s.url = name[2]
-				c.bNodes[tnode].objects.obs = append(c.bNodes[tnode].objects.obs, s)
+				o.ltype = name[1]
+				o.url = name[2]
+				c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
 			}
 
 		case rx.DESC.MatchString(line) || rx.CMNT.MatchString(line) || rx.MISC.MatchString(line):
@@ -344,7 +344,7 @@ LINE:
 		}
 	}
 
-	if len(c.bNodes) < 1 {
+	if len(c.tree) < 1 {
 		return errors.New("Configuration data is empty, cannot continue")
 	}
 
@@ -366,9 +366,7 @@ func (c *Config) ReloadDNS() ([]byte, error) {
 
 // Remove deletes a CFile array of file names
 func (c *CFile) Remove() error {
-
-	pattern := fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.Node, c.Wildcard.Name, c.Parms.Ext)
-	dlist, err := c.readDir(pattern)
+	dlist, err := c.readDir(fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.Node, c.Wildcard.Name, c.Parms.Ext))
 	if err != nil {
 		return err
 	}
@@ -378,9 +376,9 @@ func (c *CFile) Remove() error {
 
 // sortKeys returns a slice of keys in lexicographical sorted order.
 func (c *Config) sortKeys() (pkeys sort.StringSlice) {
-	pkeys = make(sort.StringSlice, len(c.bNodes))
+	pkeys = make(sort.StringSlice, len(c.tree))
 	i := 0
-	for k := range c.bNodes {
+	for k := range c.tree {
 		pkeys[i] = k
 		i++
 	}
@@ -390,11 +388,11 @@ func (c *Config) sortKeys() (pkeys sort.StringSlice) {
 }
 
 // String returns pretty print for the Blacklist struct
-func (c *Config) String() (result string) {
+func (c *Config) String() (s string) {
 	indent := 1
 	cmma := comma
 	cnt := len(c.sortKeys())
-	result += fmt.Sprintf("{\n%v%q: [{\n", tabs(indent), "nodes")
+	s += fmt.Sprintf("{\n%v%q: [{\n", tabs(indent), "nodes")
 
 	for i, pkey := range c.sortKeys() {
 		if i == cnt-1 {
@@ -402,27 +400,27 @@ func (c *Config) String() (result string) {
 		}
 
 		indent++
-		result += fmt.Sprintf("%v%q: {\n", tabs(indent), pkey)
+		s += fmt.Sprintf("%v%q: {\n", tabs(indent), pkey)
 		indent++
 
-		result += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled,
-			BooltoStr(c.bNodes[pkey].disabled))
-		result = is(indent, result, "ip", c.bNodes[pkey].ip)
-		result += getJSONArray(&cfgJSON{array: c.bNodes[pkey].exc, pk: pkey, leaf: "excludes", indent: indent})
+		s += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled,
+			BooltoStr(c.tree[pkey].disabled))
+		s = is(indent, s, "ip", c.tree[pkey].ip)
+		s += getJSONArray(&cfgJSON{array: c.tree[pkey].exc, pk: pkey, leaf: "excludes", indent: indent})
 
 		if pkey != rootNode {
-			result += getJSONArray(&cfgJSON{array: c.bNodes[pkey].inc, pk: pkey, leaf: "includes", indent: indent})
-			result += getJSONsrcArray(&cfgJSON{Config: c, pk: pkey, indent: indent})
+			s += getJSONArray(&cfgJSON{array: c.tree[pkey].inc, pk: pkey, leaf: "includes", indent: indent})
+			s += getJSONsrcArray(&cfgJSON{Config: c, pk: pkey, indent: indent})
 		}
 
 		indent--
-		result += fmt.Sprintf("%v}%v\n", tabs(indent), cmma)
+		s += fmt.Sprintf("%v}%v\n", tabs(indent), cmma)
 		indent--
 	}
 
-	result += tabs(indent) + "}]\n}"
+	s += tabs(indent) + "}]\n}"
 
-	return result
+	return s
 }
 
 // String implements string method
@@ -442,7 +440,7 @@ func (c *Config) LTypes() []string {
 	return c.Parms.Ltypes
 }
 
-func (b bNodes) getIP(node string) (ip string) {
+func (b tree) getIP(node string) (ip string) {
 	switch b[node].ip {
 	case "":
 		ip = b[rootNode].ip
@@ -452,11 +450,11 @@ func (b bNodes) getIP(node string) (ip string) {
 	return ip
 }
 
-func (b bNodes) validate(node string) *objects {
-	for _, obj := range b[node].objects.obs {
+func (b tree) validate(node string) *Objects {
+	for _, obj := range b[node].Objects.x {
 		if obj.ip == "" {
 			obj.ip = b.getIP(node)
 		}
 	}
-	return &b[node].objects
+	return &b[node].Objects
 }

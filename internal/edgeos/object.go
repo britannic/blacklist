@@ -20,25 +20,25 @@ type object struct {
 	ltype    string
 	name     string
 	nType    ntype
-	objects
+	Objects
 	prefix string
 	r      io.Reader
 	url    string
 }
 
-// objects is a struct of []*Object
-type objects struct {
+// Objects is a struct of []*Object
+type Objects struct {
 	*Parms
-	obs []*object
+	x []*object
 }
 
-func (o *objects) addObj(c *Config, node string) {
+func (o *Objects) addObj(c *Config, node string) {
 	switch obj := c.addInc(node); obj {
 	case nil:
-		o.obs = append(o.obs, c.bNodes.validate(node).obs...)
+		o.x = append(o.x, c.tree.validate(node).x...)
 	default:
-		o.obs = append(o.obs, obj)
-		o.obs = append(o.obs, c.bNodes.validate(node).obs...)
+		o.x = append(o.x, obj)
+		o.x = append(o.x, c.tree.validate(node).x...)
 	}
 }
 
@@ -49,9 +49,9 @@ func (o *object) excludes() io.Reader {
 }
 
 // Files returns a list of dnsmasq conf files from all srcs
-func (o *objects) Files() *CFile {
+func (o *Objects) Files() *CFile {
 	c := CFile{Parms: o.Parms}
-	for _, obj := range o.obs {
+	for _, obj := range o.x {
 		c.nType = obj.nType
 		format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
 		c.names = append(c.names, fmt.Sprintf(format, getType(obj.nType), obj.name))
@@ -60,9 +60,9 @@ func (o *objects) Files() *CFile {
 	return &c
 }
 
-// Find returns the int position of an Objects' element in the StringSlice
-func (o *objects) Find(elem string) int {
-	for i, obj := range o.obs {
+// Find returns the int position of an Objects' element
+func (o *Objects) Find(elem string) int {
+	for i, obj := range o.x {
 		if obj.name == elem {
 			return i
 		}
@@ -77,8 +77,8 @@ func (o *object) includes() io.Reader {
 }
 
 // Names returns a sorted slice of Objects names
-func (o *objects) Names() (s sort.StringSlice) {
-	for _, obj := range o.obs {
+func (o *Objects) Names() (s sort.StringSlice) {
+	for _, obj := range o.x {
 		s = append(s, obj.name)
 	}
 	sort.Sort(s)
@@ -87,33 +87,33 @@ func (o *objects) Names() (s sort.StringSlice) {
 
 func newObject() *object {
 	return &object{
-		objects: objects{},
+		Objects: Objects{},
 		exc:     make([]string, 0),
 		inc:     make([]string, 0),
 	}
 }
 
 // Stringer for Object
-func (o *object) String() (r string) {
-	r += fmt.Sprintf("\nDesc:\t %q\n", o.desc)
-	r += fmt.Sprintf("Disabled: %v\n", o.disabled)
-	r += fmt.Sprintf("File:\t %q\n", o.file)
-	r += fmt.Sprintf("IP:\t %q\n", o.ip)
-	r += fmt.Sprintf("Ltype:\t %q\n", o.ltype)
-	r += fmt.Sprintf("Name:\t %q\n", o.name)
-	r += fmt.Sprintf("nType:\t %q\n", o.nType)
-	r += fmt.Sprintf("Prefix:\t %q\n", o.prefix)
-	r += fmt.Sprintf("Type:\t %q\n", getType(o.nType))
-	r += fmt.Sprintf("URL:\t %q\n", o.url)
-	return r
+func (o *object) String() (s string) {
+	s += fmt.Sprintf("\nDesc:\t %q\n", o.desc)
+	s += fmt.Sprintf("Disabled: %v\n", o.disabled)
+	s += fmt.Sprintf("File:\t %q\n", o.file)
+	s += fmt.Sprintf("IP:\t %q\n", o.ip)
+	s += fmt.Sprintf("Ltype:\t %q\n", o.ltype)
+	s += fmt.Sprintf("Name:\t %q\n", o.name)
+	s += fmt.Sprintf("nType:\t %q\n", o.nType)
+	s += fmt.Sprintf("Prefix:\t %q\n", o.prefix)
+	s += fmt.Sprintf("Type:\t %q\n", getType(o.nType))
+	s += fmt.Sprintf("URL:\t %q\n", o.url)
+	return s
 }
 
 // Stringer for Objects
-func (o *objects) String() string {
-	return fmt.Sprint(o.obs)
+func (o *Objects) String() string {
+	return fmt.Sprint(o.x)
 }
 
 // Implement Sort Interface for Objects
-func (o *objects) Len() int           { return len(o.obs) }
-func (o *objects) Less(i, j int) bool { return o.obs[i].name < o.obs[j].name }
-func (o *objects) Swap(i, j int)      { o.obs[i], o.obs[j] = o.obs[j], o.obs[i] }
+func (o *Objects) Len() int           { return len(o.x) }
+func (o *Objects) Less(i, j int) bool { return o.x[i].name < o.x[j].name }
+func (o *Objects) Swap(i, j int)      { o.x[i], o.x[j] = o.x[j], o.x[i] }

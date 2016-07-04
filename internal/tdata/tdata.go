@@ -1,8 +1,6 @@
 package tdata
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // Get returns r
 func Get(s string) (r string, err error) {

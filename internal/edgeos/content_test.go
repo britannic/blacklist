@@ -27,7 +27,7 @@ type dummyConfig struct {
 
 func (d *dummyConfig) ProcessContent(cts ...Contenter) {
 	for _, ct := range cts {
-		o := ct.GetList().obs
+		o := ct.GetList().x
 		for _, src := range o {
 			b, err := ioutil.ReadAll(src.process().r)
 			OK(d.t, err)
@@ -36,12 +36,12 @@ func (d *dummyConfig) ProcessContent(cts ...Contenter) {
 	}
 }
 
-func TestCreateObject(t *testing.T) {
+func TestNewContent(t *testing.T) {
 	tests := []struct {
 		err       error
 		fail      bool
 		name      string
-		obj       iFace
+		obj       IFace
 		exp       string
 		leaf      string
 		ltype     string
@@ -208,7 +208,7 @@ func TestCreateObject(t *testing.T) {
 	OK(t, err)
 
 	for _, tt := range tests {
-		objs, err := c.CreateObject(tt.obj)
+		objs, err := c.NewContent(tt.obj)
 		if tt.ltype == urls {
 			uri1 := tt.svr.NewHTTPServer().String() + tt.page
 			objs.SetURL("adaway", uri1)
@@ -289,22 +289,22 @@ func TestMultiObjProcessContent(t *testing.T) {
 	err = c.ReadCfg(&CFGstatic{Cfg: CfgMimimal})
 	OK(t, err)
 
-	excRoots, err := c.CreateObject(ExRtObj)
+	excRoots, err := c.NewContent(ExRtObj)
 	OK(t, err)
 
-	excDomns, err := c.CreateObject(ExDmObj)
+	excDomns, err := c.NewContent(ExDmObj)
 	OK(t, err)
 
-	excHosts, err := c.CreateObject(ExHtObj)
+	excHosts, err := c.NewContent(ExHtObj)
 	OK(t, err)
 
-	preDomns, err := c.CreateObject(PreDObj)
+	preDomns, err := c.NewContent(PreDObj)
 	OK(t, err)
 
-	preHosts, err := c.CreateObject(PreHObj)
+	preHosts, err := c.NewContent(PreHObj)
 	OK(t, err)
 
-	files, err := c.CreateObject(FileObj)
+	files, err := c.NewContent(FileObj)
 	OK(t, err)
 
 	d := &dummyConfig{t: t}
@@ -312,7 +312,7 @@ func TestMultiObjProcessContent(t *testing.T) {
 
 	Equals(t, "address=/ytimg.com/0.0.0.0\n\n\naddress=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0\naddress=/beap.gemini.yahoo.com/192.168.168.1\naddress=/really.bad.phishing.site.ru/10.10.10.10\n", strings.Join(d.s, "\n"))
 
-	urls, err := c.CreateObject(URLsObj)
+	urls, err := c.NewContent(URLsObj)
 	OK(t, err)
 
 	Equals(t, "[\nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domain\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://malc0de.com/bl/ZONES\"\n]", urls.String())
@@ -337,24 +337,24 @@ func TestProcessContent(t *testing.T) {
 		tests = []struct {
 			err    error
 			exp    string
-			expMap List
+			expMap list
 			f      string
 			fdata  string
-			obj    iFace
+			obj    IFace
 		}{
 			{
 				exp:    "[\nDesc:\t \"root-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"root-excludes\"\nName:\t \"root-excludes\"\nnType:\t \"excRoot\"\nPrefix:\t \"\"\nType:\t \"root-excludes\"\nURL:\t \"\"\n]",
-				expMap: List{"ytimg.com": 0},
+				expMap: list{"ytimg.com": 0},
 				obj:    ExRtObj,
 			},
 			{
 				exp:    "[\nDesc:\t \"domn-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"domn-excludes\"\nName:\t \"domn-excludes\"\nnType:\t \"excDomn\"\nPrefix:\t \"\"\nType:\t \"domn-excludes\"\nURL:\t \"\"\n]",
-				expMap: List{"ytimg.com": 0},
+				expMap: list{"ytimg.com": 0},
 				obj:    ExDmObj,
 			},
 			{
 				exp:    "[\nDesc:\t \"host-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"host-excludes\"\nName:\t \"host-excludes\"\nnType:\t \"excHost\"\nPrefix:\t \"\"\nType:\t \"host-excludes\"\nURL:\t \"\"\n]",
-				expMap: List{"ytimg.com": 0},
+				expMap: list{"ytimg.com": 0},
 				obj:    ExHtObj,
 			},
 			{
@@ -372,19 +372,12 @@ func TestProcessContent(t *testing.T) {
 				obj:   PreHObj,
 			},
 			{
-				err:   errors.New("open " + dir + "/hosts./tasty.blacklist.conf: no such file or directory"),
+				err:   fmt.Errorf("open %v/hosts./tasty.blacklist.conf: no such file or directory", dir),
 				exp:   filesMin,
 				f:     dir + "/hosts.tasty.blacklist.conf",
 				fdata: "address=/really.bad.phishing.site.ru/10.10.10.10\n",
 				obj:   FileObj,
 			},
-			// {
-			// 	err:   nil,
-			// 	exp:   "[\nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domain\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://malc0de.com/bl/ZONES\"\n]",
-			// 	f:     dir + "/domains.malc0de.blacklist.conf",
-			// 	fdata: domainMin,
-			// 	obj:   URLsObj,
-			// },
 		}
 	)
 
@@ -392,7 +385,7 @@ func TestProcessContent(t *testing.T) {
 	OK(t, err)
 
 	for _, tt := range tests {
-		obj, err := c.CreateObject(tt.obj)
+		obj, err := c.NewContent(tt.obj)
 		OK(t, err)
 
 		if tt.f != "" {

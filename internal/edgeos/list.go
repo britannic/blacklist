@@ -6,25 +6,24 @@ import (
 	"strings"
 )
 
-// List is a map of int
-type List map[string]int
+// list is a map of int
+type list map[string]int
 
-// keyExists returns true if the key exists
-func (l List) keyExists(s string) bool {
+// keyExists returns true if the list key exists
+func (l list) keyExists(s string) bool {
 	_, ok := l[s]
 	return ok
 }
 
-// mergeList combines two List maps
-func mergeList(a, b List) List {
+// mergeList combines two list maps
+func mergeList(a, b list) list {
 	for k, v := range b {
 		a[k] = v
 	}
 	return a
 }
 
-// String implements fmt.Print interface
-func (l List) String() string {
+func (l list) String() string {
 	var lines sort.StringSlice
 	for k, v := range l {
 		lines = append(lines, fmt.Sprintf("%q:%v,\n", k, v))
@@ -34,7 +33,7 @@ func (l List) String() string {
 }
 
 // SubKeyExists returns true if part of all of the key matches
-func (l List) subKeyExists(s string) bool {
+func (l list) subKeyExists(s string) bool {
 	keys := getSubdomains(s)
 	for k := range keys {
 		if l.keyExists(k) {
@@ -45,8 +44,8 @@ func (l List) subKeyExists(s string) bool {
 }
 
 // updateList converts []string to map of List
-func updateList(data []string) (l List) {
-	l = make(List)
+func updateList(data []string) (l list) {
+	l = make(list)
 	for _, k := range data {
 		l[k] = 0
 	}

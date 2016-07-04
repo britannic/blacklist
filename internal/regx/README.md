@@ -10,7 +10,7 @@ Package regx provides regex objects for processing data in files and web content
 
 ## Variables
 ``` go
-var Objects = &OBJ{
+var Obj = &OBJ{
     CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
     DESC: regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
     DSBL: regexp.MustCompile(`^(?:disabled)+\s([\S]+)$`),
@@ -20,7 +20,6 @@ var Objects = &OBJ{
     HTTP: regexp.MustCompile(`(?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)`),
     IPBH: regexp.MustCompile(`^(?:dns-redirect-ip)+\s([\S]+)$`),
     LBRC: regexp.MustCompile(`[{]`),
-
     LEAF: regexp.MustCompile(`^([\S]+)+\s([\S]+)\s[{]{1}$`),
     MISC: regexp.MustCompile(`^([\w-]+)$`),
     MLTI: regexp.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`),
@@ -31,14 +30,14 @@ var Objects = &OBJ{
     SUFX: regexp.MustCompile(`(?:#.*|\{.*|[/[].*)\z`),
 }
 ```
-Objects is a struct of *OBJ populated with precompiled regex objects
+Obj is a struct of *OBJ populated with precompiled regex objects
 
 
 ## func Get
 ``` go
 func Get(t, s string) (r []string)
 ```
-Get returns an array of the string and submatch
+Get returns an array compiled regx OBJs
 
 
 
@@ -62,10 +61,8 @@ OBJ is a struct of regex precompiled objects
 
 ### func (\*OBJ) String
 ``` go
-func (rx *OBJ) String() (result string)
+func (rx *OBJ) String() (s string)
 ```
-String returns a formatted dump of *OBJ for fmt.Println and fmt.Printf
-
 
 
 ### func (\*OBJ) StripPrefixAndSuffix

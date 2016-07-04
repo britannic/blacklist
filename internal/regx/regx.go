@@ -12,8 +12,13 @@ import (
 	"strings"
 )
 
-// Objects is a struct of *OBJ populated with precompiled regex objects
-var Objects = &OBJ{
+// OBJ is a struct of regex precompiled objects
+type OBJ struct {
+	CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, IPBH, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
+}
+
+// Obj is a struct of *OBJ populated with precompiled regex objects
+var Obj = &OBJ{
 	CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
 	DESC: regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
 	DSBL: regexp.MustCompile(`^(?:disabled)+\s([\S]+)$`),
@@ -23,7 +28,6 @@ var Objects = &OBJ{
 	HTTP: regexp.MustCompile(`(?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)`),
 	IPBH: regexp.MustCompile(`^(?:dns-redirect-ip)+\s([\S]+)$`),
 	LBRC: regexp.MustCompile(`[{]`),
-	// LEAF: regexp.MustCompile(`^(source)+\s([\S]+)\s[{]{1}$`),
 	LEAF: regexp.MustCompile(`^([\S]+)+\s([\S]+)\s[{]{1}$`),
 	MISC: regexp.MustCompile(`^([\w-]+)$`),
 	MLTI: regexp.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`),
@@ -34,14 +38,9 @@ var Objects = &OBJ{
 	SUFX: regexp.MustCompile(`(?:#.*|\{.*|[/[].*)\z`),
 }
 
-// OBJ is a struct of regex precompiled objects
-type OBJ struct {
-	CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, IPBH, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
-}
-
-// Get returns an array of the string and submatch
+// Get returns an array compiled regx OBJs
 func Get(t, s string) (r []string) {
-	rx := Objects
+	rx := Obj
 	switch t {
 	case "cmnt":
 		r = rx.CMNT.FindStringSubmatch(s)
@@ -78,18 +77,15 @@ func Get(t, s string) (r []string) {
 	case "sufx":
 		r = rx.SUFX.FindStringSubmatch(s)
 	}
-	return
+	return r
 }
 
-// String returns a formatted dump of *OBJ for fmt.Println and fmt.Printf
-func (rx *OBJ) String() (result string) {
+func (rx *OBJ) String() (s string) {
 	v := reflect.ValueOf(rx).Elem()
-
 	for i := 0; i < v.NumField(); i++ {
-
-		result += fmt.Sprintf("%v: %v\n", v.Type().Field(i).Name, v.Field(i).Interface())
+		s += fmt.Sprintf("%v: %v\n", v.Type().Field(i).Name, v.Field(i).Interface())
 	}
-	return result
+	return s
 }
 
 // StripPrefixAndSuffix strips the prefix and suffix

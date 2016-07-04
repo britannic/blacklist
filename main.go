@@ -41,37 +41,37 @@ func main() {
 		log.Printf("c.GetAll().Files().Remove() error: %v\n", err)
 	}
 
-	excRoots, err := c.CreateObject(e.ExRtObj)
+	excRoots, err := c.NewContent(e.ExRtObj)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	excDomns, err := c.CreateObject(e.ExDmObj)
+	excDomns, err := c.NewContent(e.ExDmObj)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	excHosts, err := c.CreateObject(e.ExHtObj)
+	excHosts, err := c.NewContent(e.ExHtObj)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	preDomns, err := c.CreateObject(e.PreDObj)
+	preDomns, err := c.NewContent(e.PreDObj)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	preHosts, err := c.CreateObject(e.PreHObj)
+	preHosts, err := c.NewContent(e.PreHObj)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	files, err := c.CreateObject(e.FileObj)
+	files, err := c.NewContent(e.FileObj)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	urls, err := c.CreateObject(e.URLsObj)
+	urls, err := c.NewContent(e.URLsObj)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -106,14 +106,14 @@ func basename(s string) string {
 	return s
 }
 
-func (o *Opts) initEdgeOS() *e.Config {
+func (o *opts) initEdgeOS() *e.Config {
 	return e.NewConfig(
 		e.API("/bin/cli-shell-api"),
 		e.Arch(runtime.GOARCH),
 		e.Bash("/bin/bash"),
 		e.Cores(2),
 		e.Debug(*o.Debug),
-		e.Dir(o.SetDir(*o.ARCH)),
+		e.Dir(o.setDir(*o.ARCH)),
 		e.DNSsvc("service dnsmasq restart"),
 		e.Ext("blacklist.conf"),
 		e.File(*o.File),
@@ -124,7 +124,7 @@ func (o *Opts) initEdgeOS() *e.Config {
 		e.Nodes([]string{"domains", "hosts"}),
 		e.Poll(*o.Poll),
 		e.Prefix("address="),
-		e.LTypes([]string{"file", e.PreDomns, e.PreHosts, "url"}),
+		e.LTypes([]string{files, e.PreDomns, e.PreHosts, urls}),
 		e.Timeout(30*time.Second),
 		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
 	)
