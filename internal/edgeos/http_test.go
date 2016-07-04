@@ -1,11 +1,13 @@
 package edgeos
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"runtime"
 	"testing"
 
 	. "github.com/britannic/testutils"
@@ -43,7 +45,7 @@ func TestGetHTTP(t *testing.T) {
 		{ok: true, err: nil, method: method, URL: page, want: want},
 		{ok: false, err: fmt.Errorf("%v", `Get bad%20url: unsupported protocol scheme ""`), method: method, URL: "bad url", want: "Unable to get response for bad url..."},
 		{ok: false, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: page, want: "Unable to form request for /domains.txt..."},
-		{ok: false, err: nil, method: method, URL: "http://127.0.0.1:808/", want: "Unable to get response for http://127.0.0.1:808/..."},
+		{ok: false, err: errors.New("Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: getsockopt: connection refused"), method: method, URL: "http://127.0.0.1:808/", want: "Unable to get response for http://127.0.0.1:808/..."},
 		{ok: true, err: nil, method: method, URL: page, want: ""},
 		{ok: true, err: nil, method: method, URL: "/biccies.txt", want: "404 page not found\n"},
 	}
@@ -62,6 +64,9 @@ func TestGetHTTP(t *testing.T) {
 
 		body, err := getHTTP(test.method, test.URL)
 		switch {
+		case err != nil && i == 3 && runtime.GOOS == "linux":
+			exp := errors.New("Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connection refused")
+			Equals(t, exp, err.Error())
 		case err != nil && test.err != nil:
 			Equals(t, test.err.Error(), err.Error())
 		case err != nil:
