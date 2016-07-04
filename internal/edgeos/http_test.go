@@ -48,6 +48,7 @@ func TestGetHTTP(t *testing.T) {
 		{ok: false, err: errors.New("Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: getsockopt: connection refused"), method: method, URL: "http://127.0.0.1:808/", want: "Unable to get response for http://127.0.0.1:808/..."},
 		{ok: true, err: nil, method: method, URL: page, want: ""},
 		{ok: true, err: nil, method: method, URL: "/biccies.txt", want: "404 page not found\n"},
+		{ok: true, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: page, want: "Unable to form request for "},
 	}
 
 	for i, test := range tests {
@@ -60,9 +61,10 @@ func TestGetHTTP(t *testing.T) {
 
 		if test.ok {
 			test.URL = URL + test.URL
+			if test.method == "bad method" {
+				test.want += test.URL + "..."
+			}
 		}
-
-		body, err := getHTTP(test.method, test.URL)
 
 		if runtime.GOOS == "linux" {
 			switch i {
@@ -74,6 +76,8 @@ func TestGetHTTP(t *testing.T) {
 				test.want = "Unable to get response for http://127.0.0.1:808/..."
 			}
 		}
+
+		body, err := getHTTP(test.method, test.URL)
 
 		switch {
 		case err != nil && test.err != nil:
