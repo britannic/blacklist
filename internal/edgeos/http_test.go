@@ -64,9 +64,18 @@ func TestGetHTTP(t *testing.T) {
 
 		body, err := getHTTP(test.method, test.URL)
 		switch {
-		case err != nil && i == 3 && runtime.GOOS == "linux":
-			exp := errors.New("Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connection refused")
-			Equals(t, exp, err.Error())
+		case runtime.GOOS == "linux":
+			switch i {
+			case 2:
+				test.err = fmt.Errorf("%v", `unsupported protocol scheme ""`)
+			case 3:
+				test.err = fmt.Errorf("%v", "Unable to get response for /domains.txt...")
+			case 4:
+				test.err = fmt.Errorf("%v", "Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connection refused")
+			}
+		}
+
+		switch {
 		case err != nil && test.err != nil:
 			Equals(t, test.err.Error(), err.Error())
 		case err != nil:
