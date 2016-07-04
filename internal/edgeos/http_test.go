@@ -31,7 +31,7 @@ func TestGetHTTP(t *testing.T) {
 			url    string
 		}{
 			method: "Unable to form request for www.zerror.pod...",
-			url:    "Unable to form request for bad url...",
+			url:    "Unable to get response for bad url...",
 		}
 		got    []byte
 		h      = new(HTTPserver)
@@ -76,14 +76,12 @@ func TestGetHTTP(t *testing.T) {
 		got, err = ioutil.ReadAll(body)
 		OK(t, err)
 
-		// if runtime.GOOS == "linux" && test.method == "bad method" {
-		// 	test.want = errs.url
-		// }
-
 		if test.want == "" {
 			test.want = "No data returned for " + test.URL + "..."
 		}
+
 		Equals(t, test.want, string(got))
+
 		if t.Failed() {
 			t.Logf(fmt.Sprint(test))
 		}

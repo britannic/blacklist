@@ -26,7 +26,7 @@ func getHTTP(method, URL string) (io.Reader, error) {
 	req.Header.Set("User-Agent", agent)
 	resp, err = (&http.Client{}).Do(req)
 	if err != nil {
-		return strings.NewReader(fmt.Sprintf("Unable to form request for %s...", URL)), err
+		return strings.NewReader(fmt.Sprintf("Unable to get response for %s...", URL)), err
 	}
 
 	defer resp.Body.Close()
