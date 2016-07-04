@@ -70,6 +70,7 @@ func TestGetHTTP(t *testing.T) {
 				test.err = fmt.Errorf("%v", `unsupported protocol scheme ""`)
 			case 3:
 				test.err = fmt.Errorf("%v", "Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connection refused")
+				test.want = "Unable to get response for /domains.txt..."
 			}
 		}
 
