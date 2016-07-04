@@ -265,7 +265,7 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 		b     = bufio.NewScanner(r.read())
 		leaf  string
 		nodes []string
-		rx    = regx.Objects
+		rx    = regx.Obj
 		o     *object
 	)
 

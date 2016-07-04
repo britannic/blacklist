@@ -237,7 +237,7 @@ func (u *URLDataObjects) GetList() *Objects {
 func (o *object) process() *blist {
 	var (
 		b     = bufio.NewScanner(o.r)
-		rx    = regx.Objects
+		rx    = regx.Obj
 		sList = make(list)
 	)
 
