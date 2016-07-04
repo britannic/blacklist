@@ -44,6 +44,7 @@ func TestGetHTTP(t *testing.T) {
 		{ok: false, err: fmt.Errorf("%v", `Get bad%20url: unsupported protocol scheme ""`), method: method, URL: "bad url", want: "Unable to get response for bad url..."},
 		{ok: false, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: "www.zerror.pod", want: "Unable to form request for www.zerror.pod..."},
 		{ok: true, err: nil, method: method, URL: "www.zerror.pod", want: "404 page not found\n"},
+		{ok: true, err: nil, method: method, URL: page, want: ""},
 	}
 
 	for _, test := range tests {
@@ -66,6 +67,9 @@ func TestGetHTTP(t *testing.T) {
 		got, err = ioutil.ReadAll(body)
 		OK(t, err)
 
+		if test.want == "" {
+			test.want = "No data returned for " + test.URL + "..."
+		}
 		Equals(t, test.want, string(got))
 
 	}
