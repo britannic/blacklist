@@ -42,9 +42,10 @@ func TestGetHTTP(t *testing.T) {
 	}{
 		{ok: true, err: nil, method: method, URL: page, want: want},
 		{ok: false, err: fmt.Errorf("%v", `Get bad%20url: unsupported protocol scheme ""`), method: method, URL: "bad url", want: "Unable to get response for bad url..."},
-		{ok: false, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: "www.zerror.pod", want: "Unable to form request for www.zerror.pod..."},
-		{ok: true, err: nil, method: method, URL: "www.zerror.pod", want: "404 page not found\n"},
+		{ok: false, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: "http://www.zerror.pod/", want: "Unable to form request for http://www.zerror.pod/..."},
+		{ok: false, err: nil, method: method, URL: "http://www.zerror.pod/", want: "Unable to get response for http://www.zerror.pod/..."},
 		{ok: true, err: nil, method: method, URL: page, want: ""},
+		{ok: true, err: nil, method: method, URL: "/biccies.txt", want: "404 page not found\n"},
 	}
 
 	for i, test := range tests {
