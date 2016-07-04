@@ -26,13 +26,6 @@ func (h *HTTPserver) NewHTTPServer() *url.URL {
 
 func TestGetHTTP(t *testing.T) {
 	var (
-		errs = struct {
-			method string
-			url    string
-		}{
-			method: "Unable to form request for www.zerror.pod...",
-			url:    "Unable to get response for bad url...",
-		}
 		got    []byte
 		h      = new(HTTPserver)
 		method = "GET"
@@ -41,15 +34,16 @@ func TestGetHTTP(t *testing.T) {
 	)
 
 	tests := []struct {
-		ok     bool
+		err    error
 		method string
+		ok     bool
 		URL    string
 		want   string
 	}{
-		{ok: true, method: method, URL: page, want: want},
-		{ok: false, method: method, URL: "bad url", want: errs.url},
-		{ok: false, method: "bad method", URL: "www.zerror.pod", want: errs.method},
-		{ok: true, method: method, URL: page, want: ""},
+		{ok: true, err: nil, method: method, URL: page, want: want},
+		{ok: false, err: fmt.Errorf("%v", `Get bad%20url: unsupported protocol scheme ""`), method: method, URL: "bad url", want: "Unable to get response for bad url..."},
+		{ok: false, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: "www.zerror.pod", want: "Unable to form request for www.zerror.pod..."},
+		{ok: true, err: nil, method: method, URL: "www.zerror.pod", want: "404 page not found\n"},
 	}
 
 	for _, test := range tests {
@@ -65,26 +59,15 @@ func TestGetHTTP(t *testing.T) {
 		}
 
 		body, err := getHTTP(test.method, test.URL)
-
-		switch test.ok {
-		case true:
-			OK(t, err)
-		default:
-			NotOK(t, err)
+		if err != nil {
+			Equals(t, test.err.Error(), err.Error())
 		}
 
 		got, err = ioutil.ReadAll(body)
 		OK(t, err)
 
-		if test.want == "" {
-			test.want = "No data returned for " + test.URL + "..."
-		}
-
 		Equals(t, test.want, string(got))
 
-		if t.Failed() {
-			t.Logf(fmt.Sprint(test))
-		}
 	}
 }
 
