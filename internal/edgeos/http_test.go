@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"runtime"
 	"testing"
 
 	. "github.com/britannic/testutils"
@@ -77,9 +76,9 @@ func TestGetHTTP(t *testing.T) {
 		got, err = ioutil.ReadAll(body)
 		OK(t, err)
 
-		if runtime.GOOS == "linux" && test.method == "bad method" {
-			test.want = errs.url
-		}
+		// if runtime.GOOS == "linux" && test.method == "bad method" {
+		// 	test.want = errs.url
+		// }
 
 		if test.want == "" {
 			test.want = "No data returned for " + test.URL + "..."
