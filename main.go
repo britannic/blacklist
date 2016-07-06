@@ -71,13 +71,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	urls, err := c.NewContent(e.URLdObj)
+	urlsD, err := c.NewContent(e.URLdObj)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	urlsH, err := c.NewContent(e.URLdObj)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	c.ProcessContent(excRoots, excDomns, excHosts, preDomns, preHosts)
-	c.ProcessContent(files, urls)
+	c.ProcessContent(files, urlsD, urlsH)
 
 	b, err := c.ReloadDNS()
 	if err != nil {

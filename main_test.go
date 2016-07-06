@@ -130,6 +130,10 @@ func TestGetOpts(t *testing.T) {
 	o := getOpts()
 	want := "FlagSet\nARCH:    \"amd64\"\nDEBUG:   \"false\"\nDIR:     \"/etc/dnsmasq.d\"\nF:       \"**not initialized**\"\nI:       \"5\"\nMIPS64:  \"mips64\"\nOS:      \"darwin\"\nTEST:    \"false\"\nTMP:     \"/tmp\"\nV:       \"false\"\nVERSION: \"false\"\n"
 
+	if runtime.GOOS == "linux" {
+		want = "FlagSet\nARCH:    \"amd64\"\nDEBUG:   \"false\"\nDIR:     \"/etc/dnsmasq.d\"\nF:       \"**not initialized**\"\nI:       \"5\"\nMIPS64:  \"mips64\"\nOS:      \"linux\"\nTEST:    \"false\"\nTMP:     \"/tmp\"\nV:       \"false\"\nVERSION: \"false\"\n"
+	}
+
 	Equals(t, want, o.String())
 
 	tests := []struct {
