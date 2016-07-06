@@ -239,10 +239,8 @@ func (u *URLDataObjects) GetList(fn ...func()) *Objects {
 	}
 
 	go func() {
-		var i int
 		for response := range responses {
-			u.x[i] = response
-			i++
+			u.x[u.Find(response.name)] = response
 		}
 	}()
 
