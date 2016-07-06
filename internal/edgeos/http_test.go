@@ -28,7 +28,7 @@ func (h *HTTPserver) NewHTTPServer() *url.URL {
 
 func TestGetHTTP(t *testing.T) {
 	var (
-		got    []byte
+		// got    []byte
 		h      = new(HTTPserver)
 		method = "GET"
 		page   = "/domains.txt"
@@ -79,17 +79,17 @@ func TestGetHTTP(t *testing.T) {
 			}
 		}
 
-		body, err := getHTTP(test.method, test.URL)
+		o := getHTTP(&object{Parms: &Parms{Method: test.method}, url: test.URL})
 
 		switch {
-		case err != nil && test.err != nil:
-			fmt.Println("Test #", i)
-			Equals(t, test.err.Error(), err.Error())
-		case err != nil:
-			fmt.Printf("Test: %v, error: %v\n", i, err)
+		case o.err != nil && test.err != nil:
+			// fmt.Println("Test #", i)
+			Equals(t, test.err.Error(), o.err.Error())
+		case o.err != nil:
+			fmt.Printf("Test: %v, error: %v\n", i, o.err)
 		}
 
-		got, err = ioutil.ReadAll(body)
+		got, err := ioutil.ReadAll(o.r)
 		OK(t, err)
 
 		if test.want == "" {
