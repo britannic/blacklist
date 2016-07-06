@@ -41,3 +41,5 @@ browse.VC.db
 
 
 vendor/github.com/fatih/structs/
+
+*.lock

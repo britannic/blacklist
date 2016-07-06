@@ -271,17 +271,17 @@ func (p *Parms) String() string {
 		return strings.Repeat(" ", repeat)
 	}
 
-	r := fmt.Sprintln("edgeos.Parms{")
+	s := fmt.Sprintln("edgeos.Parms{")
 	for _, field := range fields {
 		if field.v == "" {
 			field.v = "**not initialized**"
 		}
-		r += fmt.Sprintf("%v:%v%q\n", field.n, pad(field.n), field.v)
+		s += fmt.Sprintf("%v:%v%q\n", field.n, pad(field.n), field.v)
 	}
 
-	r += fmt.Sprintln("}")
+	s += fmt.Sprintln("}")
 
-	return r
+	return s
 }
 
 // Test toggles testing mode on or off

@@ -48,7 +48,7 @@ func TestFormatData(t *testing.T) {
 	c := NewConfig(
 		Dir("/tmp"),
 		Ext("blacklist.conf"),
-		Nodes([]string{"domains", "hosts"}),
+		Nodes([]string{domains, hosts}),
 	)
 
 	l := &CFGstatic{Cfg: tdata.Cfg}
@@ -103,7 +103,7 @@ func TestGetType(t *testing.T) {
 		typestr  string
 	}{
 		{typeint: 100, typestr: notknown, ntypestr: "ntype(100)"},
-		{typeint: domn, typestr: domains, ntypestr: "domain"},
+		{typeint: domn, typestr: domains, ntypestr: "domn"},
 		{typeint: excDomn, typestr: ExcDomns, ntypestr: "excDomn"},
 		{typeint: excHost, typestr: ExcHosts, ntypestr: "excHost"},
 		{typeint: excRoot, typestr: ExcRoots, ntypestr: "excRoot"},

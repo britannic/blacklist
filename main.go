@@ -71,7 +71,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	urls, err := c.NewContent(e.URLsObj)
+	urls, err := c.NewContent(e.URLdObj)
 	if err != nil {
 		log.Fatal(err)
 	}

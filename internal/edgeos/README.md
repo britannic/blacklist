@@ -898,13 +898,13 @@ func (p *PreHostObjects) String() string
 ```
 
 
-## type URLDataObjects
+## type URLHostObjects
 ``` go
-type URLDataObjects struct {
+type URLHostObjects struct {
     *Objects
 }
 ```
-URLDataObjects implements GetList for URLs
+URLHostObjects implements GetList for URLs
 
 
 
@@ -916,33 +916,33 @@ URLDataObjects implements GetList for URLs
 
 
 
-### func (\*URLDataObjects) Find
+### func (\*URLHostObjects) Find
 ``` go
-func (u *URLDataObjects) Find(elem string) int
+func (u *URLHostObjects) Find(elem string) int
 ```
 Find returns the int position of an Objects' element
 
 
 
-### func (\*URLDataObjects) GetList
+### func (\*URLHostObjects) GetList
 ``` go
-func (u *URLDataObjects) GetList() *Objects
+func (u *URLHostObjects) GetList() *Objects
 ```
-GetList implements the Contenter interface for URLDataObjects
+GetList implements the Contenter interface for URLHostObjects
 
 
 
-### func (\*URLDataObjects) SetURL
+### func (\*URLHostObjects) SetURL
 ``` go
-func (u *URLDataObjects) SetURL(name, url string)
+func (u *URLHostObjects) SetURL(name, url string)
 ```
 SetURL sets the Object's url field value
 
 
 
-### func (\*URLDataObjects) String
+### func (\*URLHostObjects) String
 ``` go
-func (u *URLDataObjects) String() string
+func (u *URLHostObjects) String() string
 ```
 
 

@@ -24,7 +24,8 @@ const (
 	FileObj
 	PreDObj
 	PreHObj
-	URLsObj
+	URLdObj
+	URLhObj
 )
 
 type blist struct {
@@ -35,7 +36,7 @@ type blist struct {
 // Contenter is a Content interface
 type Contenter interface {
 	Find(elem string) int
-	GetList(...func()) *Objects
+	GetList() *Objects
 	SetURL(name string, url string)
 	String() string
 }
@@ -70,8 +71,13 @@ type PreHostObjects struct {
 	*Objects
 }
 
-// URLDataObjects implements GetList for URLs
-type URLDataObjects struct {
+// URLHostObjects implements GetList for URLs
+type URLHostObjects struct {
+	*Objects
+}
+
+// URLDomnObjects implements GetList for URLs
+type URLDomnObjects struct {
 	*Objects
 }
 
@@ -136,7 +142,17 @@ func (p *PreHostObjects) Find(elem string) int {
 }
 
 // Find returns the int position of an Objects' element
-func (u *URLDataObjects) Find(elem string) int {
+func (u *URLHostObjects) Find(elem string) int {
+	for i, o := range u.x {
+		if o.name == elem {
+			return i
+		}
+	}
+	return -1
+}
+
+// Find returns the int position of an Objects' element
+func (u *URLDomnObjects) Find(elem string) int {
 	for i, o := range u.x {
 		if o.name == elem {
 			return i
@@ -146,7 +162,7 @@ func (u *URLDataObjects) Find(elem string) int {
 }
 
 // GetList implements the Contenter interface for ExcDomnObjects
-func (e *ExcDomnObjects) GetList(fn ...func()) *Objects {
+func (e *ExcDomnObjects) GetList() *Objects {
 	for _, o := range e.x {
 		switch o.nType {
 		case excDomn:
@@ -161,7 +177,7 @@ func (e *ExcDomnObjects) GetList(fn ...func()) *Objects {
 }
 
 // GetList implements the Contenter interface for ExcHostObjects
-func (e *ExcHostObjects) GetList(fn ...func()) *Objects {
+func (e *ExcHostObjects) GetList() *Objects {
 	for _, o := range e.x {
 		switch o.nType {
 		case excHost:
@@ -176,7 +192,7 @@ func (e *ExcHostObjects) GetList(fn ...func()) *Objects {
 }
 
 // GetList implements the Contenter interface for ExcRootObjects
-func (e *ExcRootObjects) GetList(fn ...func()) *Objects {
+func (e *ExcRootObjects) GetList() *Objects {
 	for _, o := range e.x {
 		switch o.nType {
 		case excRoot:
@@ -190,7 +206,7 @@ func (e *ExcRootObjects) GetList(fn ...func()) *Objects {
 }
 
 // GetList implements the Contenter interface for FIODataObjects
-func (f *FIODataObjects) GetList(fn ...func()) *Objects {
+func (f *FIODataObjects) GetList() *Objects {
 	for _, o := range f.x {
 		if o.ltype == files && o.file != "" {
 			o.r, o.err = getFile(o.file)
@@ -201,7 +217,7 @@ func (f *FIODataObjects) GetList(fn ...func()) *Objects {
 }
 
 // GetList implements the Contenter interface for PreDomnObjects
-func (p *PreDomnObjects) GetList(fn ...func()) *Objects {
+func (p *PreDomnObjects) GetList() *Objects {
 	for _, o := range p.x {
 		if o.ltype == PreDomns && o.inc != nil {
 			o.r = o.includes()
@@ -212,7 +228,7 @@ func (p *PreDomnObjects) GetList(fn ...func()) *Objects {
 }
 
 // GetList implements the Contenter interface for PreHostObjects
-func (p *PreHostObjects) GetList(fn ...func()) *Objects {
+func (p *PreHostObjects) GetList() *Objects {
 	for _, o := range p.x {
 		if o.ltype == PreHosts && o.inc != nil {
 			o.r = o.includes()
@@ -222,20 +238,42 @@ func (p *PreHostObjects) GetList(fn ...func()) *Objects {
 	return p.Objects
 }
 
-// GetList implements the Contenter interface for URLDataObjects
-func (u *URLDataObjects) GetList(fn ...func()) *Objects {
+// GetList implements the Contenter interface for URLHostObjects
+func (u *URLDomnObjects) GetList() *Objects {
 	var wg sync.WaitGroup
-	responses := make(chan *object)
 	wg.Add(len(u.x))
+	responses := make(chan *object, len(u.x))
 
 	for _, o := range u.x {
-		if o.ltype == urls && o.url != "" {
-			o.Parms = u.Objects.Parms
-			go func(o *object) {
-				defer wg.Done()
-				responses <- getHTTP(o)
-			}(o)
+		o.Parms = u.Objects.Parms
+		go func(o *object) {
+			defer wg.Done()
+			responses <- getHTTP(o)
+		}(o)
+	}
+
+	go func() {
+		for response := range responses {
+			u.x[u.Find(response.name)] = response
 		}
+	}()
+
+	wg.Wait()
+	return u.Objects
+}
+
+// GetList implements the Contenter interface for URLHostObjects
+func (u *URLHostObjects) GetList() *Objects {
+	var wg sync.WaitGroup
+	wg.Add(len(u.x))
+	responses := make(chan *object, len(u.x))
+
+	for _, o := range u.x {
+		o.Parms = u.Objects.Parms
+		go func(o *object) {
+			defer wg.Done()
+			responses <- getHTTP(o)
+		}(o)
 	}
 
 	go func() {
@@ -315,7 +353,7 @@ NEXT:
 func (c *Config) ProcessContent(cts ...Contenter) error {
 	var errs []string
 	for _, ct := range cts {
-		for _, src := range ct.GetList(func() {}).x {
+		for _, src := range ct.GetList().x {
 			switch src.nType {
 			case excDomn, excHost, excRoot:
 				src.process()
@@ -390,7 +428,16 @@ func (p *PreHostObjects) SetURL(name, url string) {
 }
 
 // SetURL sets the Object's url field value
-func (u *URLDataObjects) SetURL(name, url string) {
+func (u *URLDomnObjects) SetURL(name, url string) {
+	for _, o := range u.x {
+		if o.name == name {
+			o.url = url
+		}
+	}
+}
+
+// SetURL sets the Object's url field value
+func (u *URLHostObjects) SetURL(name, url string) {
 	for _, o := range u.x {
 		if o.name == name {
 			o.url = url
@@ -404,7 +451,8 @@ func (e *ExcRootObjects) String() string { return e.Objects.String() }
 func (f *FIODataObjects) String() string { return f.Objects.String() }
 func (p *PreDomnObjects) String() string { return p.Objects.String() }
 func (p *PreHostObjects) String() string { return p.Objects.String() }
-func (u *URLDataObjects) String() string { return u.Objects.String() }
+func (u *URLDomnObjects) String() string { return u.Objects.String() }
+func (u *URLHostObjects) String() string { return u.Objects.String() }
 
 func (i IFace) String() (s string) {
 	switch i {
@@ -420,7 +468,7 @@ func (i IFace) String() (s string) {
 		s = PreDomns
 	case PreHObj:
 		s = PreHosts
-	case URLsObj:
+	case URLhObj, URLdObj:
 		s = urls
 	default:
 		s = notknown

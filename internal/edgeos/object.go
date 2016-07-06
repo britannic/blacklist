@@ -60,6 +60,45 @@ func (o *Objects) Files() *CFile {
 	return &c
 }
 
+// Filter returns a subset of Objects; ltypes with "-" prepended remove ltype
+func (o *Objects) Filter(ltype string) *Objects {
+	var (
+		objects = Objects{Parms: o.Parms}
+		xfiles  = "-" + files
+		xurls   = "-" + urls
+	)
+
+	switch ltype {
+	case files:
+		for _, obj := range o.x {
+			if obj.ltype == files && obj.file != "" {
+				objects.x = append(objects.x, obj)
+			}
+		}
+	case xfiles:
+		for _, obj := range o.x {
+			if obj.ltype != files {
+				objects.x = append(objects.x, obj)
+			}
+		}
+	case urls:
+		for _, obj := range o.x {
+			if obj.ltype == urls && obj.url != "" {
+				objects.x = append(objects.x, obj)
+			}
+		}
+	case xurls:
+		for _, obj := range o.x {
+			if obj.ltype != urls {
+				objects.x = append(objects.x, obj)
+			}
+		}
+	default:
+		objects = Objects{Parms: o.Parms}
+	}
+	return &objects
+}
+
 // Find returns the int position of an Objects' element
 func (o *Objects) Find(elem string) int {
 	for i, obj := range o.x {

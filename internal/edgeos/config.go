@@ -139,6 +139,15 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 		o = c.addExc(hosts)
 	case ExcRoots:
 		o = c.addExc(rootNode)
+	case urls:
+		switch iface {
+		case URLdObj:
+			o = c.Get(domains).Filter(urls)
+			return &URLDomnObjects{Objects: o}, nil
+		case URLhObj:
+			o = c.Get(hosts).Filter(urls)
+			return &URLHostObjects{Objects: o}, nil
+		}
 	default:
 		o = c.GetAll(ltype)
 	}
@@ -156,8 +165,6 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 		return &PreDomnObjects{Objects: o}, nil
 	case PreHObj:
 		return &PreHostObjects{Objects: o}, nil
-	case URLsObj:
-		return &URLDataObjects{Objects: o}, nil
 	default:
 		return nil, errors.New("Invalid interface requested")
 	}

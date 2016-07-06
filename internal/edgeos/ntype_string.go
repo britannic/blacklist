@@ -4,18 +4,18 @@ package edgeos
 
 import "fmt"
 
-const ntypeName = "unknowndomainexcDomnexcHostexcRoothostpreDomnpreHostrootzone"
+const _ntype_name = "unknowndomnexcDomnexcHostexcRoothostpreDomnpreHostrootzone"
 
-var ntypeIndex = [...]uint8{7, 13, 20, 27, 34, 38, 45, 52, 56, 60}
+var _ntype_index = [...]uint8{7, 11, 18, 25, 32, 36, 43, 50, 54, 58}
 
 func (i ntype) String() string {
-	if i < 0 || i >= ntype(len(ntypeIndex)) {
+	if i < 0 || i >= ntype(len(_ntype_index)) {
 		return fmt.Sprintf("ntype(%d)", i)
 	}
-	hi := ntypeIndex[i]
+	hi := _ntype_index[i]
 	lo := uint8(0)
 	if i > 0 {
-		lo = ntypeIndex[i-1]
+		lo = _ntype_index[i-1]
 	}
-	return ntypeName[lo:hi]
+	return _ntype_name[lo:hi]
 }

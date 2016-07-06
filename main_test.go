@@ -128,7 +128,8 @@ func TestGetCFG(t *testing.T) {
 func TestGetOpts(t *testing.T) {
 	// global.Args = []string{"-debug", "-i", "8", "-test", "-v", "-version", "-help"}
 	o := getOpts()
-	want := "FlagSet\nARCH\nDebug\nDNSdir\nDNStmp\nFile\nMIPS64\nOS\nPoll\nTest\nVerb\nVersion\n"
+	want := "FlagSet\nARCH:    \"amd64\"\nDEBUG:   \"false\"\nDIR:     \"/etc/dnsmasq.d\"\nF:       \"**not initialized**\"\nI:       \"5\"\nMIPS64:  \"mips64\"\nOS:      \"darwin\"\nTEST:    \"false\"\nTMP:     \"/tmp\"\nV:       \"false\"\nVERSION: \"false\"\n"
+
 	Equals(t, want, o.String())
 
 	tests := []struct {

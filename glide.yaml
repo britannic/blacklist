@@ -1,4 +1,1 @@
 package: github.com/britannic/blacklist
-import:
-- package: github.com/fatih/structs
-- package: runtime
