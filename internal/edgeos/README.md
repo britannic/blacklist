@@ -494,7 +494,8 @@ const (
     FileObj
     PreDObj
     PreHObj
-    URLsObj
+    URLdObj
+    URLhObj
 )
 ```
 IFace types for labeling interface types
@@ -537,6 +538,14 @@ Objects is a struct of []*Object
 func (o *Objects) Files() *CFile
 ```
 Files returns a list of dnsmasq conf files from all srcs
+
+
+
+### func (\*Objects) Filter
+``` go
+func (o *Objects) Filter(ltype string) *Objects
+```
+Filter returns a subset of Objects; ltypes with "-" prepended remove ltype
 
 
 
@@ -785,13 +794,6 @@ Parms is struct of parameters
 
 
 
-### func NewParms
-``` go
-func NewParms() *Parms
-```
-NewParms sets a new *Parms instance
-
-
 
 
 ### func (\*Parms) String
@@ -895,6 +897,54 @@ SetURL sets the Object's url field value
 ### func (\*PreHostObjects) String
 ``` go
 func (p *PreHostObjects) String() string
+```
+
+
+## type URLDomnObjects
+``` go
+type URLDomnObjects struct {
+    *Objects
+}
+```
+URLDomnObjects implements GetList for URLs
+
+
+
+
+
+
+
+
+
+
+
+### func (\*URLDomnObjects) Find
+``` go
+func (u *URLDomnObjects) Find(elem string) int
+```
+Find returns the int position of an Objects' element
+
+
+
+### func (\*URLDomnObjects) GetList
+``` go
+func (u *URLDomnObjects) GetList() *Objects
+```
+GetList implements the Contenter interface for URLHostObjects
+
+
+
+### func (\*URLDomnObjects) SetURL
+``` go
+func (u *URLDomnObjects) SetURL(name, url string)
+```
+SetURL sets the Object's url field value
+
+
+
+### func (\*URLDomnObjects) String
+``` go
+func (u *URLDomnObjects) String() string
 ```
 
 

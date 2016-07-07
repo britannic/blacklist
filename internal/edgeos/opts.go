@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -49,8 +50,8 @@ func NewConfig(opts ...Option) *Config {
 	c := Config{
 		tree: make(tree),
 		Parms: &Parms{
-			Dex: make(list),
-			Exc: make(list),
+			Dex: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+			Exc: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 		},
 	}
 	for _, opt := range opts {
@@ -208,14 +209,6 @@ func Method(method string) Option {
 		previous := c.Method
 		c.Method = method
 		return Method(previous)
-	}
-}
-
-// NewParms sets a new *Parms instance
-func NewParms() *Parms {
-	return &Parms{
-		Dex: make(list),
-		Exc: make(list),
 	}
 }
 

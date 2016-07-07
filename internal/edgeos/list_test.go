@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/britannic/blacklist/internal/tdata"
@@ -31,7 +32,9 @@ func TestKeys(t *testing.T) {
 func TestKeyExists(t *testing.T) {
 	full := "top.one.two.three.four.five.six.intellitxt.com"
 	d := getSubdomains(full)
-	for key := range d {
+	d.RWMutex = &sync.RWMutex{}
+
+	for key := range d.entry {
 		Assert(t, d.keyExists(key), fmt.Sprintf("%v key doesn't exist", key))
 	}
 
@@ -40,17 +43,17 @@ func TestKeyExists(t *testing.T) {
 }
 
 func TestMergeList(t *testing.T) {
-	testList1 := make(list)
-	testList2 := make(list)
-	want := make(list)
+	testList1 := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+	testList2 := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+	want := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 
 	for i := 0; i < 20; i++ {
-		want[string(i)] = 1
+		want.entry[string(i)] = 1
 		switch {
 		case i%2 == 0:
-			testList1[string(i)] = 1
+			testList1.entry[string(i)] = 1
 		case i%2 != 0:
-			testList2[string(i)] = 1
+			testList2.entry[string(i)] = 1
 		}
 	}
 	got := mergeList(testList1, testList2)
@@ -88,14 +91,16 @@ func TestString(t *testing.T) {
 func TestSubKeyExists(t *testing.T) {
 	full := "top.one.two.three.four.five.six.com"
 	d := getSubdomains(full)
+	d.RWMutex = &sync.RWMutex{}
+
 	key := `intellitxt.com`
-	d[key] = 0
-	got := len(d)
+	d.set(key, 0)
+	got := len(d.entry)
 	want := strings.Count(full, ".") + 1
 
 	Equals(t, want, got)
 
-	for key = range d {
+	for key = range d.entry {
 		Assert(t, d.subKeyExists(key), fmt.Sprintf("%v sub key doesn't exist", key), d)
 	}
 
@@ -107,7 +112,7 @@ func TestSubKeyExists(t *testing.T) {
 }
 
 var (
-	gotKeys = list{
+	gotKeys = list{entry: entry{
 		"a.applovin.com":         0,
 		"a.glcdn.co":             0,
 		"a.vserv.mobi":           0,
@@ -130,5 +135,6 @@ var (
 		"ads.mobgold.com":        0,
 		"ads.mobilityware.com":   0,
 		"ads.mopub.com":          0,
+	},
 	}
 )

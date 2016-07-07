@@ -156,3 +156,23 @@ func (o *Objects) String() string {
 func (o *Objects) Len() int           { return len(o.x) }
 func (o *Objects) Less(i, j int) bool { return o.x[i].name < o.x[j].name }
 func (o *Objects) Swap(i, j int)      { o.x[i], o.x[j] = o.x[j], o.x[i] }
+
+// keyExists returns true if the list key exists
+// func (o *object) keyExists(s string, l list) bool {
+// 	o.RLock()
+// 	defer o.RUnlock()
+// 	_, ok := l[s]
+// 	return ok
+// }
+
+// SubKeyExists returns true if part of all of the key matches
+// func (o *object) subKeyExists(s string, l list) bool {
+// 	keys := getSubdomains(s)
+// 	for k := range keys {
+// 		if o.keyExists(k, l) {
+// 			return true
+// 		}
+// 	}
+// 	b := o.keyExists(s, l)
+// 	return b
+// }

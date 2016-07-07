@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -58,7 +59,7 @@ func TestFormatData(t *testing.T) {
 	for _, node := range c.Parms.Nodes {
 		var (
 			got       io.Reader
-			gotList   = make(list)
+			gotList   = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 			lines     []string
 			wantBytes []byte
 		)
@@ -74,7 +75,7 @@ func TestFormatData(t *testing.T) {
 		for b.Scan() {
 			k := b.Text()
 			lines = append(lines, fmt.Sprintf("address=%v%v/%v", eq, k, c.tree[node].ip)+"\n")
-			gotList[k] = 0
+			gotList.set(k, 0)
 		}
 
 		sort.Strings(lines)
@@ -90,8 +91,9 @@ func TestFormatData(t *testing.T) {
 
 func TestGetSubdomains(t *testing.T) {
 	d := getSubdomains("top.one.two.three.four.five.six.intellitxt.com")
+	d.RWMutex = &sync.RWMutex{}
 
-	for key := range d {
+	for key := range d.entry {
 		Assert(t, d.keyExists(key), fmt.Sprintf("%v key doesn't exist", key), d)
 	}
 }

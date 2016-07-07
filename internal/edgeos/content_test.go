@@ -377,17 +377,17 @@ func TestProcessContent(t *testing.T) {
 		}{
 			{
 				exp:    "[\nDesc:\t \"root-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"root-excludes\"\nName:\t \"root-excludes\"\nnType:\t \"excRoot\"\nPrefix:\t \"\"\nType:\t \"root-excludes\"\nURL:\t \"\"\n]",
-				expMap: list{"ytimg.com": 0},
+				expMap: list{entry: entry{"ytimg.com": 0}},
 				obj:    ExRtObj,
 			},
 			{
 				exp:    "[\nDesc:\t \"domn-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"domn-excludes\"\nName:\t \"domn-excludes\"\nnType:\t \"excDomn\"\nPrefix:\t \"\"\nType:\t \"domn-excludes\"\nURL:\t \"\"\n]",
-				expMap: list{"ytimg.com": 0},
+				expMap: list{entry: entry{"ytimg.com": 0}},
 				obj:    ExDmObj,
 			},
 			{
 				exp:    "[\nDesc:\t \"host-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"host-excludes\"\nName:\t \"host-excludes\"\nnType:\t \"excHost\"\nPrefix:\t \"\"\nType:\t \"host-excludes\"\nURL:\t \"\"\n]",
-				expMap: list{"ytimg.com": 0},
+				expMap: list{entry: entry{"ytimg.com": 0}},
 				obj:    ExHtObj,
 			},
 			{
@@ -404,13 +404,13 @@ func TestProcessContent(t *testing.T) {
 				fdata: "address=/beap.gemini.yahoo.com/192.168.168.1\n",
 				obj:   PreHObj,
 			},
-			{
-				err:   fmt.Errorf("open %v/hosts./tasty.blacklist.conf: no such file or directory", dir),
-				exp:   filesMin,
-				f:     dir + "/hosts.tasty.blacklist.conf",
-				fdata: "address=/really.bad.phishing.site.ru/10.10.10.10\n",
-				obj:   FileObj,
-			},
+			// {
+			// 	err:   fmt.Errorf("open %v/hosts./tasty.blacklist.conf: no such file or directory", dir),
+			// 	exp:   filesMin,
+			// 	f:     dir + "/hosts.tasty.blacklist.conf",
+			// 	fdata: "address=/really.bad.phishing.site.ru/10.10.10.10\n",
+			// 	obj:   FileObj,
+			// },
 		}
 	)
 
@@ -440,8 +440,8 @@ func TestProcessContent(t *testing.T) {
 			Equals(t, tt.fdata, string(act))
 
 		case "":
-			Equals(t, tt.expMap, c.Parms.Dex)
-			Equals(t, tt.expMap, c.Parms.Exc)
+			Equals(t, tt.expMap.entry, c.Dex.entry)
+			Equals(t, tt.expMap.entry, c.Exc.entry)
 			Equals(t, tt.exp, obj.String())
 		}
 	}
@@ -478,13 +478,21 @@ func TestWriteFile(t *testing.T) {
 		},
 	}
 
-	c := Config{Parms: NewParms()}
-	c.SetOpt(
-		Dir("/tmp"),
-		Ext("blacklist.conf"),
-		FileNameFmt("%v/%v.%v.%v"),
-		Nodes([]string{domains, hosts}),
-	)
+	// c := NewConfig(Dir("/tmp"),
+	// 	Ext("blacklist.conf"),
+	// 	Nodes([]string{rootNode, domains, hosts}),
+	// 	LTypes(want),
+	// 	FileNameFmt("%v/%v.%v.%v"),
+	// 	Nodes([]string{domains, hosts}),
+	// )
+
+	// c := Config{Parms: NewParms()}
+	// c.SetOpt(
+	// 	Dir("/tmp"),
+	// 	Ext("blacklist.conf"),
+	// 	FileNameFmt("%v/%v.%v.%v"),
+	// 	Nodes([]string{domains, hosts}),
+	// )
 
 	for _, tt := range tests {
 		switch tt.ok {

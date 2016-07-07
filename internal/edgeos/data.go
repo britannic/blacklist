@@ -5,6 +5,7 @@ import (
 	"io"
 	"sort"
 	"strings"
+	"sync"
 )
 
 // ntype for labeling blacklist source types
@@ -45,23 +46,29 @@ func DiffArray(a, b []string) (diff sort.StringSlice) {
 		biggest = b
 		smallest = a
 	}
-	dmap := make(list)
+
+	dmap := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+
 	for _, k := range smallest {
-		dmap[k] = 0
+		dmap.set(k, 0)
 	}
+
 	for _, k := range biggest {
 		if !dmap.keyExists(k) {
 			diff = append(diff, k)
 		}
 	}
+
 	diff.Sort()
 	return diff
 }
 
 // formatData returns an io.Reader loaded with dnsmasq formatted data
-func formatData(fmttr string, data list) io.Reader {
+func formatData(fmttr string, l list) io.Reader {
 	var lines sort.StringSlice
-	for k := range data {
+	l.RLock()
+	defer l.RUnlock()
+	for k := range l.entry {
 		lines = append(lines, fmt.Sprintf(fmttr+"\n", k))
 	}
 	lines.Sort()
@@ -79,11 +86,11 @@ func getSeparator(node string) string {
 
 // getSubdomains returns a map of subdomains
 func getSubdomains(s string) (l list) {
-	l = make(list)
+	l.entry = make(entry)
 	keys := strings.Split(s, ".")
 	for i := 0; i < len(keys)-1; i++ {
 		key := strings.Join(keys[i:], ".")
-		l[key] = 0
+		l.entry[key] = 0
 	}
 	return l
 }

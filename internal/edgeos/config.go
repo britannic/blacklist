@@ -185,7 +185,7 @@ func (c *Config) excludes(nodes ...string) list {
 			exc = append(exc, c.tree[node].exc...)
 		}
 	}
-	return updateList(exc)
+	return updateEntry(exc)
 }
 
 // Get returns an *Object for a given node

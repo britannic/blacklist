@@ -289,9 +289,9 @@ func (u *URLHostObjects) GetList() *Objects {
 // Process extracts hosts/domains from downloaded raw content
 func (o *object) process() *blist {
 	var (
-		b     = bufio.NewScanner(o.r)
-		rx    = regx.Obj
-		sList = make(list)
+		b   = bufio.NewScanner(o.r)
+		rx  = regx.Obj
+		add = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 	)
 
 NEXT:
@@ -311,23 +311,23 @@ NEXT:
 
 			FQDN:
 				for _, fqdn := range fqdns {
-					isDEX := o.Parms.Dex.subKeyExists(fqdn)
-					isEX := o.Parms.Exc.keyExists(fqdn)
+					isDEX := o.Dex.subKeyExists(fqdn)
+					isEX := o.Exc.keyExists(fqdn)
 
 					switch {
 					case isDEX:
-						o.Parms.Dex[fqdn]++
+						o.Dex.inc(fqdn)
 						continue FQDN
 
 					case isEX:
-						if sList.keyExists(fqdn) {
-							sList[fqdn]++
+						if add.keyExists(fqdn) {
+							add.inc(fqdn)
 						}
-						o.Parms.Exc[fqdn]++
+						o.Exc.inc(fqdn)
 
 					case !isEX:
-						o.Parms.Exc[fqdn] = 0
-						sList[fqdn] = 0
+						o.Exc.set(fqdn, 0)
+						add.set(fqdn, 0)
 					}
 				}
 			}
@@ -338,33 +338,47 @@ NEXT:
 
 	switch o.nType {
 	case domn, excDomn, excRoot:
-		o.Parms.Dex = mergeList(o.Parms.Dex, sList)
+		o.Parms.Dex = mergeList(o.Parms.Dex, add)
 	}
 
 	fmttr := o.Parms.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
 
 	return &blist{
 		file: fmt.Sprintf(o.Parms.FnFmt, o.Parms.Dir, getType(o.nType).(string), o.name, o.Parms.Ext),
-		r:    formatData(fmttr, sList),
+		r:    formatData(fmttr, add),
 	}
 }
 
 // ProcessContent processes the Contents array
 func (c *Config) ProcessContent(cts ...Contenter) error {
-	var errs []string
-	for _, ct := range cts {
-		for _, src := range ct.GetList().x {
-			switch src.nType {
-			case excDomn, excHost, excRoot:
-				src.process()
+	var (
+		errs      []string
+		getErrors = make(chan error)
+		wg        sync.WaitGroup
+	)
 
-			default:
-				if err := src.process().writeFile(); err != nil {
-					errs = append(errs, fmt.Sprint(err))
+	for _, ct := range cts {
+		wg.Add(len(ct.GetList().x))
+		for _, o := range ct.GetList().x {
+			go func(o *object) {
+				defer wg.Done()
+				switch o.nType {
+				case excDomn, excHost, excRoot:
+					o.process()
+				default:
+					getErrors <- o.process().writeFile()
 				}
-			}
+			}(o)
 		}
 	}
+
+	go func(errs []string) {
+		for err := range getErrors {
+			errs = append(errs, fmt.Sprint(err))
+		}
+	}(errs)
+
+	wg.Wait()
 
 	if errs != nil {
 		return errors.New(strings.Join(errs, "\n"))

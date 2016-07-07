@@ -4,38 +4,64 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 )
 
-// list is a map of int
-type list map[string]int
+type entry map[string]int
+
+// list is a struct map of int
+type list struct {
+	*sync.RWMutex
+	entry
+}
+
+// inc increments the entry by +1
+func (l list) inc(k string) {
+	l.Lock()
+	defer l.Unlock()
+	l.entry[k]++
+}
+
+// set sets the int value of entry
+func (l list) set(k string, v int) {
+	l.Lock()
+	defer l.Unlock()
+	l.entry[k] = v
+}
 
 // keyExists returns true if the list key exists
 func (l list) keyExists(s string) bool {
-	_, ok := l[s]
+	l.RLock()
+	defer l.RUnlock()
+	_, ok := l.entry[s]
 	return ok
 }
 
 // mergeList combines two list maps
 func mergeList(a, b list) list {
-	for k, v := range b {
-		a[k] = v
+	a.Lock()
+	b.Lock()
+	defer a.Unlock()
+	defer b.Unlock()
+	for k, v := range b.entry {
+		a.entry[k] = v
 	}
 	return a
 }
 
 func (l list) String() string {
 	var lines sort.StringSlice
-	for k, v := range l {
+	for k, v := range l.entry {
 		lines = append(lines, fmt.Sprintf("%q:%v,\n", k, v))
 	}
 	lines.Sort()
 	return strings.Join(lines, "")
 }
 
-// SubKeyExists returns true if part of all of the key matches
+// subKeyExists returns true if part of all of the key matches
 func (l list) subKeyExists(s string) bool {
 	keys := getSubdomains(s)
-	for k := range keys {
+	for k := range keys.entry {
 		if l.keyExists(k) {
 			return true
 		}
@@ -43,11 +69,11 @@ func (l list) subKeyExists(s string) bool {
 	return l.keyExists(s)
 }
 
-// updateList converts []string to map of List
-func updateList(data []string) (l list) {
-	l = make(list)
+// updateEntry converts []string to map of List
+func updateEntry(data []string) (l list) {
+	l.entry = make(entry)
 	for _, k := range data {
-		l[k] = 0
+		l.entry[k] = 0
 	}
 	return l
 }

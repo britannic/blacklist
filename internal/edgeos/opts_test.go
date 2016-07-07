@@ -14,10 +14,10 @@ func TestOption(t *testing.T) {
 		Arch:      "",
 		Cores:     0,
 		Debug:     false,
-		Dex:       list{},
+		Dex:       list{entry: entry(nil)},
 		Dir:       "",
 		DNSsvc:    "",
-		Exc:       list{},
+		Exc:       list{entry: entry(nil)},
 		Ext:       "",
 		File:      "",
 		FnFmt:     "",
@@ -42,10 +42,10 @@ func TestOption(t *testing.T) {
 		Bash:      "/bin/bash",
 		Cores:     2,
 		Debug:     true,
-		Dex:       list{},
+		Dex:       list{entry: entry{}},
 		Dir:       "/tmp",
 		DNSsvc:    "service dnsmasq restart",
-		Exc:       list{},
+		Exc:       list{entry: entry{}},
 		Ext:       "blacklist.conf",
 		File:      "/config/config.boot",
 		FnFmt:     "%v/%v.%v.%v",
@@ -62,19 +62,16 @@ func TestOption(t *testing.T) {
 		Wildcard:  Wildcard{Node: "*s", Name: "*"},
 	}
 
-	c := NewConfig()
-	Equals(t, vanilla, *c.Parms)
+	Equals(t, vanilla, Parms{})
 
-	c = NewConfig(
+	c := NewConfig(
 		Arch(runtime.GOARCH),
 		API("/bin/cli-shell-api"),
 		Bash("/bin/bash"),
 		Cores(2),
 		Debug(true),
-		// Dexcludes(List{"synodal.com": 0}),
 		Dir("/tmp"),
 		DNSsvc("service dnsmasq restart"),
-		// excludes(List{"goodactor.com": 0}),
 		Ext("blacklist.conf"),
 		File("/config/config.boot"),
 		FileNameFmt("%v/%v.%v.%v"),
@@ -91,6 +88,8 @@ func TestOption(t *testing.T) {
 		WCard(Wildcard{Node: "*s", Name: "*"}),
 	)
 
+	wantRaw.Dex.RWMutex = c.Dex.RWMutex
+	wantRaw.Exc.RWMutex = c.Exc.RWMutex
 	Equals(t, wantRaw, *c.Parms)
 
 	Equals(t, want, c.Parms.String())

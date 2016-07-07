@@ -41,48 +41,62 @@ func main() {
 		log.Printf("c.GetAll().Files().Remove() error: %v\n", err)
 	}
 
-	excRoots, err := c.NewContent(e.ExRtObj)
-	if err != nil {
-		log.Fatal(err)
+	// excRoots, err := c.NewContent(e.ExRtObj)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// excDomns, err := c.NewContent(e.ExDmObj)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// excHosts, err := c.NewContent(e.ExHtObj)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// preDomns, err := c.NewContent(e.PreDObj)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// preHosts, err := c.NewContent(e.PreHObj)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// files, err := c.NewContent(e.FileObj)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// urlDomains, err := c.NewContent(e.URLdObj)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// urlHosts, err := c.NewContent(e.URLhObj)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	for _, object := range []e.IFace{e.ExRtObj, e.ExDmObj, e.ExHtObj, e.PreDObj, e.PreHObj, e.FileObj, e.URLdObj, e.URLhObj} {
+		content, err := c.NewContent(object)
+		if err != nil {
+			log.Fatal(err)
+		}
+		c.ProcessContent(content)
 	}
 
-	excDomns, err := c.NewContent(e.ExDmObj)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// for _, object := range []e.Contenter{excRoots, excDomns, excHosts, preDomns, preHosts, files, urlDomains, urlHosts} {
+	// 	c.ProcessContent(object)
+	// }
 
-	excHosts, err := c.NewContent(e.ExHtObj)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	preDomns, err := c.NewContent(e.PreDObj)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	preHosts, err := c.NewContent(e.PreHObj)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	files, err := c.NewContent(e.FileObj)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	urlsD, err := c.NewContent(e.URLdObj)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	urlsH, err := c.NewContent(e.URLdObj)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	c.ProcessContent(excRoots, excDomns, excHosts, preDomns, preHosts)
-	c.ProcessContent(files, urlsD, urlsH)
+	// c.ProcessContent(excRoots, excDomns, excHosts, preDomns, preHosts)
+	// c.ProcessContent(files)
+	// c.ProcessContent(urlDomains)
+	// c.ProcessContent(urlHosts)
 
 	b, err := c.ReloadDNS()
 	if err != nil {
