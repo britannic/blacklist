@@ -4,8 +4,7 @@
 #
 # go get github.com/axw/gocov/gocov
 # go get github.com/mattn/goveralls
-# COVERALLS="-service drone.io -repotoken $COVERALLS_TOKEN"
-#
+
 COVERALLS="-service drone.io -repotoken $COVERALLS_TOKEN"
 
 echo "mode: set" > acc.out

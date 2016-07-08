@@ -16,10 +16,6 @@ import (
 	. "github.com/britannic/testutils"
 )
 
-type ProcessorContenter interface {
-	ProcessContent()
-}
-
 type dummyConfig struct {
 	s []string
 	t *testing.T
@@ -36,15 +32,96 @@ func (d *dummyConfig) ProcessContent(cts ...Contenter) {
 	}
 }
 
+func TestConfigProcessContent(t *testing.T) {
+	testCfg := `blacklist {
+	disabled false
+	dns-redirect-ip 0.0.0.0
+	domains {
+			include adsrvr.org
+			include adtechus.net
+			include advertising.com
+			include centade.com
+			include doubleclick.net
+			include free-counter.co.uk
+			include intellitxt.com
+			include kiosked.com
+	}
+	exclude ytimg.com
+	hosts {
+			dns-redirect-ip 192.168.168.1
+			include beap.gemini.yahoo.com
+			source tasty {
+									description "File source"
+									dns-redirect-ip 10.10.10.10
+									file /:~/=../testdata/blist.hosts.src
+							}
+	}
+}`
+
+	newCfg := func() *Config {
+		return NewConfig(
+			API("/bin/cli-shell-api"),
+			Arch(runtime.GOARCH),
+			Bash("/bin/bash"),
+			Cores(runtime.NumCPU()),
+			Dir("/:~/"),
+			DNSsvc("service dnsmasq restart"),
+			Ext("blacklist.conf"),
+			FileNameFmt("%v/%v.%v.%v"),
+			InCLI("inSession"),
+			Level("service dns forwarding"),
+			Method("GET"),
+			Nodes([]string{domains, hosts}),
+			Prefix("address="),
+			LTypes([]string{files, PreDomns, PreHosts, urls}),
+			Timeout(30*time.Second),
+			WCard(Wildcard{Node: "*s", Name: "*"}),
+		)
+	}
+
+	tests := []struct {
+		c       *Config
+		cfg     string
+		ct      IFace
+		err     error
+		name    string
+		wantErr bool
+	}{
+		{
+			c:       newCfg(),
+			cfg:     testCfg,
+			ct:      FileObj,
+			err:     fmt.Errorf("open /:~/=../testdata/blist.hosts.src: no such file or directory"),
+			name:    "File",
+			wantErr: true,
+		},
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		err := tt.c.ReadCfg(&CFGstatic{Cfg: tt.cfg})
+		OK(t, err)
+
+		obj, err := tt.c.NewContent(tt.ct)
+		OK(t, err)
+		// err = tt.c.ProcessContent(obj)
+		// OK(t, err)
+		if err := tt.c.ProcessContent(obj); (err != nil) == tt.wantErr {
+			// t.Errorf("%q. Config.ProcessContent() error = %v, wantErr %v", tt.name, err, tt.wantErr)
+			Equals(t, tt.err.Error(), err.Error())
+		}
+	}
+}
+
 func TestNewContent(t *testing.T) {
 	tests := []struct {
 		err       error
-		fail      bool
-		name      string
-		obj       IFace
 		exp       string
+		fail      bool
+		i         int
 		leaf      string
 		ltype     string
+		name      string
+		obj       IFace
 		page      string
 		page2     string
 		pageData  string
@@ -54,6 +131,7 @@ func TestNewContent(t *testing.T) {
 		svr2      *HTTPserver
 	}{
 		{
+			i:     1,
 			exp:   excRootContent,
 			fail:  false,
 			ltype: ExcRoots,
@@ -62,6 +140,7 @@ func TestNewContent(t *testing.T) {
 			pos:   0,
 		},
 		{
+			i:     1,
 			exp:   "address=/adinfuse.com/192.1.1.1",
 			fail:  false,
 			ltype: ExcDomns,
@@ -70,6 +149,7 @@ func TestNewContent(t *testing.T) {
 			pos:   0,
 		},
 		{
+			i:     1,
 			exp:   "address=/wv.inner-active.mobi/0.0.0.0",
 			fail:  false,
 			ltype: ExcHosts,
@@ -78,6 +158,7 @@ func TestNewContent(t *testing.T) {
 			pos:   0,
 		},
 		{
+			i:     1,
 			exp:   "",
 			fail:  false,
 			ltype: ExcRoots,
@@ -86,6 +167,7 @@ func TestNewContent(t *testing.T) {
 			pos:   -1,
 		},
 		{
+			i:     1,
 			exp:   "",
 			fail:  false,
 			ltype: ExcDomns,
@@ -94,6 +176,7 @@ func TestNewContent(t *testing.T) {
 			pos:   -1,
 		},
 		{
+			i:     1,
 			exp:   "",
 			fail:  false,
 			ltype: ExcHosts,
@@ -102,6 +185,7 @@ func TestNewContent(t *testing.T) {
 			pos:   -1,
 		},
 		{
+			i:     1,
 			exp:   "address=/adsrvr.org/192.1.1.1\naddress=/adtechus.net/192.1.1.1\naddress=/advertising.com/192.1.1.1\naddress=/centade.com/192.1.1.1\naddress=/doubleclick.net/192.1.1.1\naddress=/free-counter.co.uk/192.1.1.1\naddress=/intellitxt.com/192.1.1.1\naddress=/kiosked.com/192.1.1.1",
 			fail:  false,
 			ltype: PreDomns,
@@ -110,6 +194,7 @@ func TestNewContent(t *testing.T) {
 			pos:   0,
 		},
 		{
+			i:     1,
 			exp:   "",
 			fail:  false,
 			ltype: PreDomns,
@@ -118,6 +203,7 @@ func TestNewContent(t *testing.T) {
 			pos:   -1,
 		},
 		{
+			i:     1,
 			exp:   "address=/beap.gemini.yahoo.com/0.0.0.0",
 			fail:  false,
 			ltype: PreHosts,
@@ -126,6 +212,7 @@ func TestNewContent(t *testing.T) {
 			pos:   0,
 		},
 		{
+			i:     1,
 			exp:   "",
 			fail:  false,
 			ltype: PreHosts,
@@ -134,6 +221,7 @@ func TestNewContent(t *testing.T) {
 			pos:   -1,
 		},
 		{
+			i:     1,
 			exp:   "address=/really.bad.phishing.site.ru/0.0.0.0",
 			fail:  false,
 			ltype: files,
@@ -142,6 +230,7 @@ func TestNewContent(t *testing.T) {
 			pos:   0,
 		},
 		{
+			i:     1,
 			exp:   "",
 			fail:  false,
 			ltype: files,
@@ -150,6 +239,7 @@ func TestNewContent(t *testing.T) {
 			pos:   -1,
 		},
 		{
+			i:         1,
 			exp:       domainsContent,
 			fail:      false,
 			ltype:     urls,
@@ -164,6 +254,7 @@ func TestNewContent(t *testing.T) {
 			svr2:      new(HTTPserver),
 		},
 		{
+			i:         1,
 			exp:       "",
 			fail:      false,
 			ltype:     urls,
@@ -178,6 +269,7 @@ func TestNewContent(t *testing.T) {
 			svr2:      new(HTTPserver),
 		},
 		{
+			i:         1,
 			exp:       hostsContent,
 			fail:      false,
 			ltype:     urls,
@@ -192,6 +284,7 @@ func TestNewContent(t *testing.T) {
 			svr2:      new(HTTPserver),
 		},
 		{
+			i:         1,
 			exp:       "",
 			fail:      false,
 			ltype:     urls,
@@ -206,6 +299,7 @@ func TestNewContent(t *testing.T) {
 			svr2:      new(HTTPserver),
 		},
 		{
+			i:    0,
 			err:  errors.New("Invalid interface requested"),
 			fail: true,
 			obj:  Invalid,
@@ -266,6 +360,8 @@ func TestNewContent(t *testing.T) {
 
 			objs.SetURL(tt.name, tt.name)
 			Equals(t, tt.pos, objs.Find(tt.name))
+
+			Equals(t, tt.i, objs.Len())
 
 		default:
 			Equals(t, tt.err, err)
@@ -376,16 +472,19 @@ func TestProcessContent(t *testing.T) {
 			obj    IFace
 		}{
 			{
+				err:    nil,
 				exp:    "[\nDesc:\t \"root-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"root-excludes\"\nName:\t \"root-excludes\"\nnType:\t \"excRoot\"\nPrefix:\t \"\"\nType:\t \"root-excludes\"\nURL:\t \"\"\n]",
 				expMap: list{entry: entry{"ytimg.com": 0}},
 				obj:    ExRtObj,
 			},
 			{
+				err:    nil,
 				exp:    "[\nDesc:\t \"domn-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"domn-excludes\"\nName:\t \"domn-excludes\"\nnType:\t \"excDomn\"\nPrefix:\t \"\"\nType:\t \"domn-excludes\"\nURL:\t \"\"\n]",
 				expMap: list{entry: entry{"ytimg.com": 0}},
 				obj:    ExDmObj,
 			},
 			{
+				err:    nil,
 				exp:    "[\nDesc:\t \"host-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"host-excludes\"\nName:\t \"host-excludes\"\nnType:\t \"excHost\"\nPrefix:\t \"\"\nType:\t \"host-excludes\"\nURL:\t \"\"\n]",
 				expMap: list{entry: entry{"ytimg.com": 0}},
 				obj:    ExHtObj,
@@ -404,13 +503,13 @@ func TestProcessContent(t *testing.T) {
 				fdata: "address=/beap.gemini.yahoo.com/192.168.168.1\n",
 				obj:   PreHObj,
 			},
-			// {
-			// 	err:   fmt.Errorf("open %v/hosts./tasty.blacklist.conf: no such file or directory", dir),
-			// 	exp:   filesMin,
-			// 	f:     dir + "/hosts.tasty.blacklist.conf",
-			// 	fdata: "address=/really.bad.phishing.site.ru/10.10.10.10\n",
-			// 	obj:   FileObj,
-			// },
+			{
+				err:   nil,
+				exp:   filesMin,
+				f:     dir + "/hosts.tasty.blacklist.conf",
+				fdata: "address=/really.bad.phishing.site.ru/10.10.10.10\n",
+				obj:   FileObj,
+			},
 		}
 	)
 
@@ -477,22 +576,6 @@ func TestWriteFile(t *testing.T) {
 			want:  "open /: is a directory",
 		},
 	}
-
-	// c := NewConfig(Dir("/tmp"),
-	// 	Ext("blacklist.conf"),
-	// 	Nodes([]string{rootNode, domains, hosts}),
-	// 	LTypes(want),
-	// 	FileNameFmt("%v/%v.%v.%v"),
-	// 	Nodes([]string{domains, hosts}),
-	// )
-
-	// c := Config{Parms: NewParms()}
-	// c.SetOpt(
-	// 	Dir("/tmp"),
-	// 	Ext("blacklist.conf"),
-	// 	FileNameFmt("%v/%v.%v.%v"),
-	// 	Nodes([]string{domains, hosts}),
-	// )
 
 	for _, tt := range tests {
 		switch tt.ok {
@@ -635,12 +718,12 @@ var (
 									dns-redirect-ip 10.10.10.10
 									file ../testdata/blist.hosts.src
 							}
-							source adaway {
-			            description "Blocking mobile ad providers and some analytics providers"
-							    dns-redirect-ip 192.168.168.1
-			            prefix "127.0.0.1 "
-			            url http://adaway.org/hosts.txt
-			        }
+			source adaway {
+          description "Blocking mobile ad providers and some analytics providers"
+			    dns-redirect-ip 192.168.168.1
+          prefix "127.0.0.1 "
+          url http://adaway.org/hosts.txt
+      }
 	}
 }`
 

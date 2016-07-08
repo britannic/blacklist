@@ -2,7 +2,6 @@ package edgeos
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -37,9 +36,23 @@ type blist struct {
 type Contenter interface {
 	Find(elem string) int
 	GetList() *Objects
+	Len() int
 	SetURL(name string, url string)
 	String() string
 }
+
+// type errata []error
+//
+// func (e errata) Error() (errs string) {
+// 	if len(e) == 1 {
+// 		return e[0].Error()
+// 	}
+//
+// 	for _, err := range e {
+// 		errs += "\n" + err.Error()
+// 	}
+// 	return errs
+// }
 
 // FIODataObjects implements GetList for files
 type FIODataObjects struct {
@@ -286,6 +299,30 @@ func (u *URLHostObjects) GetList() *Objects {
 	return u.Objects
 }
 
+// Len returns how many objects there are
+func (e *ExcDomnObjects) Len() int { return len(e.Objects.x) }
+
+// Len returns how many objects there are
+func (e *ExcHostObjects) Len() int { return len(e.Objects.x) }
+
+// Len returns how many objects there are
+func (e *ExcRootObjects) Len() int { return len(e.Objects.x) }
+
+// Len returns how many objects there are
+func (f *FIODataObjects) Len() int { return len(f.Objects.x) }
+
+// Len returns how many objects there are
+func (p *PreDomnObjects) Len() int { return len(p.Objects.x) }
+
+// Len returns how many objects there are
+func (p *PreHostObjects) Len() int { return len(p.Objects.x) }
+
+// Len returns how many objects there are
+func (u *URLDomnObjects) Len() int { return len(u.Objects.x) }
+
+// Len returns how many objects there are
+func (u *URLHostObjects) Len() int { return len(u.Objects.x) }
+
 // Process extracts hosts/domains from downloaded raw content
 func (o *object) process() *blist {
 	var (
@@ -312,20 +349,20 @@ NEXT:
 			FQDN:
 				for _, fqdn := range fqdns {
 					isDEX := o.Dex.subKeyExists(fqdn)
-					isEX := o.Exc.keyExists(fqdn)
+					isEXC := o.Exc.keyExists(fqdn)
 
 					switch {
 					case isDEX:
 						o.Dex.inc(fqdn)
 						continue FQDN
 
-					case isEX:
+					case isEXC:
 						if add.keyExists(fqdn) {
 							add.inc(fqdn)
 						}
 						o.Exc.inc(fqdn)
 
-					case !isEX:
+					case !isEXC:
 						o.Exc.set(fqdn, 0)
 						add.set(fqdn, 0)
 					}
@@ -358,8 +395,12 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 	)
 
 	for _, ct := range cts {
-		wg.Add(len(ct.GetList().x))
+		wg.Add(ct.Len())
 		for _, o := range ct.GetList().x {
+			if o.err != nil {
+				errs = append(errs, o.err.Error())
+			}
+
 			go func(o *object) {
 				defer wg.Done()
 				switch o.nType {
@@ -374,14 +415,16 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 
 	go func(errs []string) {
 		for err := range getErrors {
-			errs = append(errs, fmt.Sprint(err))
+			if err != nil {
+				errs = append(errs, err.Error())
+			}
 		}
 	}(errs)
 
 	wg.Wait()
 
 	if errs != nil {
-		return errors.New(strings.Join(errs, "\n"))
+		return fmt.Errorf(strings.Join(errs, "\n"))
 	}
 
 	return nil

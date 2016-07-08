@@ -269,6 +269,7 @@ String returns pretty print for the Blacklist struct
 type Contenter interface {
     Find(elem string) int
     GetList() *Objects
+    Len() int
     SetURL(name string, url string)
     String() string
 }
@@ -316,6 +317,14 @@ Find returns the int position of an Objects' element
 func (e *ExcDomnObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for ExcDomnObjects
+
+
+
+### func (\*ExcDomnObjects) Len
+``` go
+func (e *ExcDomnObjects) Len() int
+```
+Len returns how many objects there are
 
 
 
@@ -367,6 +376,14 @@ GetList implements the Contenter interface for ExcHostObjects
 
 
 
+### func (\*ExcHostObjects) Len
+``` go
+func (e *ExcHostObjects) Len() int
+```
+Len returns how many objects there are
+
+
+
 ### func (\*ExcHostObjects) SetURL
 ``` go
 func (e *ExcHostObjects) SetURL(name, url string)
@@ -415,6 +432,14 @@ GetList implements the Contenter interface for ExcRootObjects
 
 
 
+### func (\*ExcRootObjects) Len
+``` go
+func (e *ExcRootObjects) Len() int
+```
+Len returns how many objects there are
+
+
+
 ### func (\*ExcRootObjects) SetURL
 ``` go
 func (e *ExcRootObjects) SetURL(name, url string)
@@ -460,6 +485,14 @@ Find returns the int position of an Objects' element
 func (f *FIODataObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for FIODataObjects
+
+
+
+### func (\*FIODataObjects) Len
+``` go
+func (f *FIODataObjects) Len() int
+```
+Len returns how many objects there are
 
 
 
@@ -838,6 +871,14 @@ GetList implements the Contenter interface for PreDomnObjects
 
 
 
+### func (\*PreDomnObjects) Len
+``` go
+func (p *PreDomnObjects) Len() int
+```
+Len returns how many objects there are
+
+
+
 ### func (\*PreDomnObjects) SetURL
 ``` go
 func (p *PreDomnObjects) SetURL(name, url string)
@@ -883,6 +924,14 @@ Find returns the int position of an Objects' element
 func (p *PreHostObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for PreHostObjects
+
+
+
+### func (\*PreHostObjects) Len
+``` go
+func (p *PreHostObjects) Len() int
+```
+Len returns how many objects there are
 
 
 
@@ -934,6 +983,14 @@ GetList implements the Contenter interface for URLHostObjects
 
 
 
+### func (\*URLDomnObjects) Len
+``` go
+func (u *URLDomnObjects) Len() int
+```
+Len returns how many objects there are
+
+
+
 ### func (\*URLDomnObjects) SetURL
 ``` go
 func (u *URLDomnObjects) SetURL(name, url string)
@@ -979,6 +1036,14 @@ Find returns the int position of an Objects' element
 func (u *URLHostObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for URLHostObjects
+
+
+
+### func (\*URLHostObjects) Len
+``` go
+func (u *URLHostObjects) Len() int
+```
+Len returns how many objects there are
 
 
 
