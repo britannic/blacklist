@@ -43,6 +43,8 @@ func TestGetOptsConvey(t *testing.T) {
 		switch args {
 		case "-test.v=true":
 			So(string(act), ShouldEqual, testWithConveyMinusV)
+		case "-test.coverprofile":
+			So(string(act), ShouldEqual, testWithConveyCoverage)
 		default:
 			So(string(act), ShouldEqual, testWithConveyMinusH)
 		}
@@ -358,4 +360,40 @@ flag provided but not defined: -test.v
   -version
     	Show program version number
 `
+
+	testWithConveyCoverage = `  -arch="amd64": Set EdgeOS CPU architecture
+    -debug=false: Enable debug mode
+    -dir="/etc/dnsmasq.d": Override dnsmasq directory
+    -f="": <file> # Load a configuration file
+    -i=5: Polling interval
+    -mips64="mips64": Override target EdgeOS CPU architecture
+    -os="linux": Override native EdgeOS OS
+    -test=false: Run config and data validation tests
+    -tmp="/tmp": Override dnsmasq temporary directory
+    -v=false: Verbose display
+    -version=false: Show program version number
+  flag provided but not defined: -test.coverprofile
+    -arch="amd64": Set EdgeOS CPU architecture
+    -debug=false: Enable debug mode
+    -dir="/etc/dnsmasq.d": Override dnsmasq directory
+    -f="": <file> # Load a configuration file
+    -i=5: Polling interval
+    -mips64="mips64": Override target EdgeOS CPU architecture
+    -os="linux": Override native EdgeOS OS
+    -test=false: Run config and data validation tests
+    -tmp="/tmp": Override dnsmasq temporary directory
+    -v=false: Verbose display
+    -version=false: Show program version number
+    -arch="amd64": Set EdgeOS CPU architecture
+    -debug=false: Enable debug mode
+    -dir="/etc/dnsmasq.d": Override dnsmasq directory
+    -f="": <file> # Load a configuration file
+    -i=5: Polling interval
+    -mips64="mips64": Override target EdgeOS CPU architecture
+    -os="linux": Override native EdgeOS OS
+    -test=false: Run config and data validation tests
+    -tmp="/tmp": Override dnsmasq temporary directory
+    -v=false: Verbose display
+    -version=false: Show program version number
+  `
 )

@@ -227,8 +227,8 @@ func (f *FIODataObjects) GetList() *Objects {
 		wg        sync.WaitGroup
 	)
 
+	wg.Add(len(f.x))
 	defer close(responses)
-	// wg.Add(len(f.x))
 
 	for _, o := range f.x {
 		o.Parms = f.Objects.Parms
@@ -261,7 +261,6 @@ func (f *FIODataObjects) GetList() *Objects {
 	// 		return f.Objects
 	// 	}
 	// }
-	wg.Add(len(f.x))
 
 	select {
 	case response := <-responses:
@@ -306,6 +305,7 @@ func (u *URLDomnObjects) GetList() *Objects {
 		wg        sync.WaitGroup
 	)
 
+	wg.Add(len(u.x))
 	defer close(responses)
 
 	for _, o := range u.x {
@@ -315,8 +315,6 @@ func (u *URLDomnObjects) GetList() *Objects {
 			responses <- getHTTP(o)
 		}(o)
 	}
-
-	wg.Add(len(u.x))
 
 	select {
 	case response := <-responses:
@@ -335,6 +333,7 @@ func (u *URLHostObjects) GetList() *Objects {
 		wg        sync.WaitGroup
 	)
 
+	wg.Add(len(u.x))
 	defer close(responses)
 
 	for _, o := range u.x {
@@ -345,7 +344,7 @@ func (u *URLHostObjects) GetList() *Objects {
 		}(o)
 	}
 
-	wg.Add(len(u.x))
+	// wg.Add(len(u.x))
 
 	select {
 	case response := <-responses:
