@@ -3,7 +3,6 @@ sudo: false
 before_install:
 - go get github.com/mattn/goveralls
 - go get golang.org/x/tools/cmd/cover
-- go get github.com/fatih/structs
 before_script:
 - go vet ./...
 os:
