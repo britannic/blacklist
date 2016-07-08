@@ -43,3 +43,5 @@ browse.VC.db
 vendor/github.com/fatih/structs/
 
 *.lock
+
+vendor/github.com/smartystreets/goconvey/

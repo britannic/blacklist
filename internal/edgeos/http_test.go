@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"runtime"
+	"sync"
 	"testing"
 
 	. "github.com/britannic/testutils"
@@ -28,7 +29,6 @@ func (h *HTTPserver) NewHTTPServer() *url.URL {
 
 func TestGetHTTP(t *testing.T) {
 	var (
-		// got    []byte
 		h      = new(HTTPserver)
 		method = "GET"
 		page   = "/domains.txt"
@@ -83,7 +83,6 @@ func TestGetHTTP(t *testing.T) {
 
 		switch {
 		case o.err != nil && test.err != nil:
-			// fmt.Println("Test #", i)
 			Equals(t, test.err.Error(), o.err.Error())
 		case o.err != nil:
 			fmt.Printf("Test: %v, error: %v\n", i, o.err)
@@ -96,6 +95,45 @@ func TestGetHTTP(t *testing.T) {
 			test.want = "No data returned for " + test.URL + "..."
 		}
 		Equals(t, test.want, string(got))
+	}
+}
+
+type myHandler struct {
+	sync.Mutex
+	count int
+}
+
+func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var count int
+	h.Lock()
+	defer h.Unlock()
+	h.count++
+	count = h.count
+	fmt.Fprintf(w, "Visitor count: %d.", count)
+}
+
+func TestMyHandler(t *testing.T) {
+
+	// handler := &myHandler{}
+	server := httptest.NewServer(&myHandler{})
+	defer server.Close()
+
+	for _, i := range []int{1, 2} {
+		resp, err := http.Get(server.URL)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if resp.StatusCode != 200 {
+			t.Fatalf("Received non-200 response: %d\n", resp.StatusCode)
+		}
+		expected := fmt.Sprintf("Visitor count: %d.", i)
+		actual, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if expected != string(actual) {
+			t.Errorf("Expected the message '%s'\n", expected)
+		}
 	}
 }
 

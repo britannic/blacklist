@@ -220,12 +220,60 @@ func (e *ExcRootObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for FIODataObjects
 func (f *FIODataObjects) GetList() *Objects {
+	var (
+		// done      = make(chan struct{}, f.Cores)
+		// finish    = time.After(f.Timeout)
+		responses = make(chan *object, len(f.x))
+		wg        sync.WaitGroup
+	)
+
+	defer close(responses)
+	// wg.Add(len(f.x))
+
 	for _, o := range f.x {
-		if o.ltype == files && o.file != "" {
+		o.Parms = f.Objects.Parms
+		go func(o *object) {
+			defer wg.Done()
 			o.r, o.err = getFile(o.file)
-			o.Parms = f.Objects.Parms
-		}
+			responses <- o
+			// done <- struct{}{}
+		}(o)
 	}
+
+	// for working := f.Cores; working > 0; {
+	// 	select {
+	// 	case <-finish:
+	// 		log.Println("FIODataObjects: GetList() timed out")
+	// 	case response := <-responses:
+	// 		f.x[f.Find(response.name)] = response
+	// 	case <-done:
+	// 		working--
+	// 	}
+	// }
+
+	// for {
+	// 	select {
+	// 	case <-finish:
+	// 		log.Println("FIODataObjects: GetList() timed out")
+	// 	case response := <-responses:
+	// 		f.x[f.Find(response.name)] = response
+	// 	default:
+	// 		return f.Objects
+	// 	}
+	// }
+	wg.Add(len(f.x))
+
+	select {
+	case response := <-responses:
+		f.x[f.Find(response.name)] = response
+	}
+
+	wg.Wait()
+	// go func() {
+	// 	wg.Wait()
+	// 	close(responses)
+	// }()
+
 	return f.Objects
 }
 
@@ -253,9 +301,12 @@ func (p *PreHostObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLDomnObjects) GetList() *Objects {
-	var wg sync.WaitGroup
-	wg.Add(len(u.x))
-	responses := make(chan *object, len(u.x))
+	var (
+		responses = make(chan *object, len(u.x))
+		wg        sync.WaitGroup
+	)
+
+	defer close(responses)
 
 	for _, o := range u.x {
 		o.Parms = u.Objects.Parms
@@ -265,21 +316,26 @@ func (u *URLDomnObjects) GetList() *Objects {
 		}(o)
 	}
 
-	go func() {
-		for response := range responses {
-			u.x[u.Find(response.name)] = response
-		}
-	}()
+	wg.Add(len(u.x))
+
+	select {
+	case response := <-responses:
+		u.x[u.Find(response.name)] = response
+	}
 
 	wg.Wait()
+
 	return u.Objects
 }
 
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLHostObjects) GetList() *Objects {
-	var wg sync.WaitGroup
-	wg.Add(len(u.x))
-	responses := make(chan *object, len(u.x))
+	var (
+		responses = make(chan *object, len(u.x))
+		wg        sync.WaitGroup
+	)
+
+	defer close(responses)
 
 	for _, o := range u.x {
 		o.Parms = u.Objects.Parms
@@ -289,11 +345,12 @@ func (u *URLHostObjects) GetList() *Objects {
 		}(o)
 	}
 
-	go func() {
-		for response := range responses {
-			u.x[u.Find(response.name)] = response
-		}
-	}()
+	wg.Add(len(u.x))
+
+	select {
+	case response := <-responses:
+		u.x[u.Find(response.name)] = response
+	}
 
 	wg.Wait()
 	return u.Objects

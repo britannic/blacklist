@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"runtime"
 	"syscall"
@@ -35,7 +34,7 @@ func main() {
 
 	c := o.initEdgeOS()
 	c.ReadCfg(o.getCFG(c))
-	fmt.Println(c.String())
+	// fmt.Println(c.String())
 
 	if err := c.GetAll().Files().Remove(); err != nil {
 		log.Printf("c.GetAll().Files().Remove() error: %v\n", err)
