@@ -1,1 +1,8 @@
-{Usage:0x86760 name: parsed:true actual:map[] formal:map[] args:[-test.coverprofile=/Users/Neil/go/src/github.com/smartystreets/goconvey/web/client/reports/github.com-britannic-pixelserv.txt -test.timeout=0 -convey-json -test.outputdir /Users/Neil/go/src/github.com/britannic/pixelserv] errorHandling:0 output:<nil>}
+'  -h	Display program help
+    -ip string
+      	IP address for pixelserv to bind to (default "127.0.0.1")
+    -port string
+      	Port number for pixelserv to listen on (default "80")
+    -version
+      	Display program version number
+  '

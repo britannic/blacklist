@@ -19,6 +19,7 @@ type opts struct {
 	DNSdir  *string
 	DNStmp  *string
 	File    *string
+	Help    *bool
 	MIPS64  *string
 	OS      *string
 	Poll    *int
@@ -63,6 +64,7 @@ func getOpts() *opts {
 		Debug:   flags.Bool("debug", false, "Enable debug mode"),
 		DNSdir:  flags.String("dir", "/etc/dnsmasq.d", "Override dnsmasq directory"),
 		DNStmp:  flags.String("tmp", "/tmp", "Override dnsmasq temporary directory"),
+		Help:    flags.Bool("h", false, "Display help"),
 		File:    flags.String("f", "", "<file> # Load a configuration file"),
 		FlagSet: &flags,
 		MIPS64:  flags.String("mips64", "mips64", "Override target EdgeOS CPU architecture"),
@@ -70,25 +72,43 @@ func getOpts() *opts {
 		Poll:    flags.Int("i", 5, "Polling interval"),
 		Test:    flags.Bool("test", false, "Run config and data validation tests"),
 		Verb:    flags.Bool("v", false, "Verbose display"),
-		Version: flags.Bool("version", false, "Show program version number"),
+		Version: flags.Bool("version", false, "Show version"),
 	}
 }
 
-func (o *opts) setArgs(fn func(int)) {
-	if os.Args[1:] != nil {
-		if err := o.Parse(os.Args[1:]); err != nil {
-			o.Usage()
+func cleanArgs(args []string) []string {
+	var r []string
+NEXT:
+	for _, a := range args {
+		switch {
+		case strings.HasPrefix(a, "-test"):
+			continue NEXT
+		case strings.HasPrefix(a, "-convey"):
+			continue NEXT
+		default:
+			r = append(r, a)
 		}
+	}
+	return r
+}
+
+func (o *opts) setArgs() {
+	if err := o.Parse(cleanArgs((os.Args[1:]))); err != nil {
+		o.Usage()
 	}
 
 	switch {
+	case *o.Help:
+		o.Usage()
+		exitCmd(0)
+
 	case *o.Test:
 		fmt.Println("Test activated!")
-		fn(0)
+		exitCmd(0)
 
 	case *o.Version:
 		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n", version, build, githash)
-		fn(0)
+		exitCmd(0)
 	}
 }
 

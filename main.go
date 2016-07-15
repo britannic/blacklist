@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
 	"runtime"
-	"syscall"
 	"time"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
@@ -22,19 +22,16 @@ var (
 	build   = "UNKNOWN"
 	githash = "UNKNOWN"
 	version = "UNKNOWN"
+	exitCmd = os.Exit
 )
 
 func main() {
-
 	o := getOpts()
 	o.Init("blacklist", flag.ExitOnError)
-	o.setArgs(func(code int) {
-		syscall.Exit(code)
-	})
+	o.setArgs()
 
 	c := o.initEdgeOS()
 	c.ReadCfg(o.getCFG(c))
-	// fmt.Println(c.String())
 
 	if err := c.GetAll().Files().Remove(); err != nil {
 		log.Printf("c.GetAll().Files().Remove() error: %v\n", err)
