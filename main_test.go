@@ -133,7 +133,7 @@ func TestGetOpts(t *testing.T) {
 			o.SetOutput(act)
 			o.setArgs()
 
-			exp += "flag provided but not defined: -z\n" + exp + exp
+			exp = "flag provided but not defined: -z\n" + exp + exp
 			So(fmt.Sprint(act), ShouldEqual, exp)
 		})
 	})
