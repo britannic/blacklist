@@ -212,15 +212,23 @@ func TestGetCFG(t *testing.T) {
 
 func TestReloadDNS(t *testing.T) {
 	Convey("Testing ReloadDNS()", t, func() {
-		var exp string
+		var (
+			act string
+			exp = "ReloadDNS(): [/bin/bash: line 1: service: command not found\n]\n"
+		)
+
+		if IsDrone() {
+			exp = "ReloadDNS(): [dnsmasq: unrecognized service\n]\n"
+		}
+
 		c := setUpEnv()
 		exitCmd = func(int) { return }
 		logPrintf = func(s string, vals ...interface{}) {
-			exp = fmt.Sprintf(s, vals)
+			act = fmt.Sprintf(s, vals)
 		}
 
 		reloadDNS(c)
-		So(exp, ShouldEqual, "ReloadDNS(): [/bin/bash: line 1: service: command not found\n]\n")
+		So(act, ShouldEqual, exp)
 	})
 }
 

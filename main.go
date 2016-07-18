@@ -117,7 +117,6 @@ func reloadDNS(c *e.Config) {
 }
 
 func removeStaleFiles(c *e.Config) error {
-	fmt.Println(c.Wildcard)
 	if err := c.GetAll().Files().Remove(); err != nil {
 		return fmt.Errorf("c.GetAll().Files().Remove() error: %v\n", err)
 	}
