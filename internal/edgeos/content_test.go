@@ -10,10 +10,12 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	. "github.com/britannic/testutils"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 type dummyConfig struct {
@@ -33,38 +35,265 @@ func (d *dummyConfig) ProcessContent(cts ...Contenter) {
 }
 
 func TestConfigProcessContent(t *testing.T) {
-	testCfg := `blacklist {
-	disabled false
-	dns-redirect-ip 0.0.0.0
-	domains {
-			include adsrvr.org
-			include adtechus.net
-			include advertising.com
-			include centade.com
-			include doubleclick.net
-			include free-counter.co.uk
-			include intellitxt.com
-			include kiosked.com
-	}
-	exclude ytimg.com
-	hosts {
-			dns-redirect-ip 192.168.168.1
-			include beap.gemini.yahoo.com
-			source tasty {
-									description "File source"
-									dns-redirect-ip 10.10.10.10
-									file /:~/=../testdata/blist.hosts.src
-							}
-	}
-}`
+	Convey("Testing ProcessContent()", t, func() {
+		newCfg := func() *Config {
+			return NewConfig(
+				API("/bin/cli-shell-api"),
+				Arch(runtime.GOARCH),
+				Bash("/bin/bash"),
+				Cores(runtime.NumCPU()),
+				Dir("/:~/"),
+				DNSsvc("service dnsmasq restart"),
+				Ext("blacklist.conf"),
+				FileNameFmt("%v/%v.%v.%v"),
+				InCLI("inSession"),
+				Level("service dns forwarding"),
+				Method("GET"),
+				Nodes([]string{domains, hosts}),
+				Prefix("address="),
+				LTypes([]string{files, PreDomns, PreHosts, urls}),
+				Timeout(30*time.Second),
+				WCard(Wildcard{Node: "*s", Name: "*"}),
+			)
+		}
 
-	newCfg := func() *Config {
-		return NewConfig(
+		tests := []struct {
+			c       *Config
+			cfg     string
+			ct      IFace
+			err     error
+			name    string
+			wantErr bool
+		}{
+			{
+				c:       newCfg(),
+				cfg:     testCfg,
+				ct:      FileObj,
+				err:     fmt.Errorf("open /:~/=../testdata/blist.hosts.src: no such file or directory\nopen /:~//hosts.tasty.blacklist.conf: no such file or directory"),
+				name:    "File",
+				wantErr: true,
+			},
+			// TODO: Add test cases.
+		}
+		for _, tt := range tests {
+			err := tt.c.ReadCfg(&CFGstatic{Cfg: tt.cfg})
+			So(err, ShouldBeNil)
+
+			obj, err := tt.c.NewContent(tt.ct)
+			So(err, ShouldBeNil)
+			if err := tt.c.ProcessContent(obj); (err != nil) == tt.wantErr {
+				So(err.Error(), ShouldEqual, tt.err.Error())
+			}
+		}
+
+		Convey("Testing ProcessContent() if no arguments ", func() {
+			So(newCfg().ProcessContent().Error(), ShouldNotBeNil)
+		})
+	})
+}
+
+func TestNewContent(t *testing.T) {
+	Convey("Testing NewContent()", t, func() {
+		tests := []struct {
+			err       error
+			exp       string
+			fail      bool
+			i         int
+			leaf      string
+			ltype     string
+			name      string
+			obj       IFace
+			page      string
+			page2     string
+			pageData  string
+			pageData2 string
+			pos       int
+			svr       *HTTPserver
+			svr2      *HTTPserver
+		}{
+			{
+				i:     1,
+				exp:   excRootContent,
+				fail:  false,
+				ltype: ExcRoots,
+				name:  ExcRoots,
+				obj:   ExRtObj,
+				pos:   0,
+			},
+			{
+				i:     1,
+				exp:   "address=/adinfuse.com/192.1.1.1",
+				fail:  false,
+				ltype: ExcDomns,
+				name:  ExcDomns,
+				obj:   ExDmObj,
+				pos:   0,
+			},
+			{
+				i:     1,
+				exp:   "address=/wv.inner-active.mobi/0.0.0.0",
+				fail:  false,
+				ltype: ExcHosts,
+				name:  ExcHosts,
+				obj:   ExHtObj,
+				pos:   0,
+			},
+			{
+				i:     1,
+				exp:   "",
+				fail:  false,
+				ltype: ExcRoots,
+				name:  "exclusive root domains",
+				obj:   ExRtObj,
+				pos:   -1,
+			},
+			{
+				i:     1,
+				exp:   "",
+				fail:  false,
+				ltype: ExcDomns,
+				name:  "exclusive domains",
+				obj:   ExDmObj,
+				pos:   -1,
+			},
+			{
+				i:     1,
+				exp:   "",
+				fail:  false,
+				ltype: ExcHosts,
+				name:  "exclusive hosts",
+				obj:   ExHtObj,
+				pos:   -1,
+			},
+			{
+				i:     1,
+				exp:   "address=/adsrvr.org/192.1.1.1\naddress=/adtechus.net/192.1.1.1\naddress=/advertising.com/192.1.1.1\naddress=/centade.com/192.1.1.1\naddress=/doubleclick.net/192.1.1.1\naddress=/free-counter.co.uk/192.1.1.1\naddress=/intellitxt.com/192.1.1.1\naddress=/kiosked.com/192.1.1.1",
+				fail:  false,
+				ltype: PreDomns,
+				name:  fmt.Sprintf("includes.[8]"),
+				obj:   PreDObj,
+				pos:   0,
+			},
+			{
+				i:     1,
+				exp:   "",
+				fail:  false,
+				ltype: PreDomns,
+				name:  "pre",
+				obj:   PreDObj,
+				pos:   -1,
+			},
+			{
+				i:     1,
+				exp:   "address=/beap.gemini.yahoo.com/0.0.0.0",
+				fail:  false,
+				ltype: PreHosts,
+				name:  fmt.Sprintf("includes.[1]"),
+				obj:   PreHObj,
+				pos:   0,
+			},
+			{
+				i:     1,
+				exp:   "",
+				fail:  false,
+				ltype: PreHosts,
+				name:  "pre",
+				obj:   PreHObj,
+				pos:   -1,
+			},
+			{
+				i:     1,
+				exp:   "address=/cw.bad.ultraadverts.site.eu/0.0.0.0\naddress=/really.bad.phishing.site.ru/0.0.0.0",
+				fail:  false,
+				ltype: files,
+				name:  "tasty",
+				obj:   FileObj,
+				pos:   0,
+			},
+			{
+				i:     1,
+				exp:   "",
+				fail:  false,
+				ltype: files,
+				name:  "ztasty",
+				obj:   FileObj,
+				pos:   -1,
+			},
+			{
+				i:         1,
+				exp:       domainsContent,
+				fail:      false,
+				ltype:     urls,
+				name:      "malc0de",
+				obj:       URLdObj,
+				pos:       0,
+				page:      "/hosts.txt",
+				page2:     "/domains.txt",
+				pageData:  httpHostData,
+				pageData2: HTTPDomainData,
+				svr:       new(HTTPserver),
+				svr2:      new(HTTPserver),
+			},
+			{
+				i:         1,
+				exp:       "",
+				fail:      false,
+				ltype:     urls,
+				name:      "zmalc0de",
+				obj:       URLdObj,
+				pos:       -1,
+				page:      "/hosts.txt",
+				page2:     "/domains.txt",
+				pageData:  httpHostData,
+				pageData2: HTTPDomainData,
+				svr:       new(HTTPserver),
+				svr2:      new(HTTPserver),
+			},
+			{
+				i:         1,
+				exp:       hostsContent,
+				fail:      false,
+				ltype:     urls,
+				name:      "adaway",
+				obj:       URLhObj,
+				pos:       0,
+				page:      "/hosts.txt",
+				page2:     "/domains.txt",
+				pageData:  httpHostData,
+				pageData2: HTTPDomainData,
+				svr:       new(HTTPserver),
+				svr2:      new(HTTPserver),
+			},
+			{
+				i:         1,
+				exp:       "",
+				fail:      false,
+				ltype:     urls,
+				name:      "zadway",
+				obj:       URLhObj,
+				pos:       -1,
+				page:      "/hosts.txt",
+				page2:     "/domains.txt",
+				pageData:  httpHostData,
+				pageData2: HTTPDomainData,
+				svr:       new(HTTPserver),
+				svr2:      new(HTTPserver),
+			},
+			{
+				i:    0,
+				err:  errors.New("Invalid interface requested"),
+				fail: true,
+				obj:  Invalid,
+				pos:  -1,
+			},
+		}
+
+		c := NewConfig(
 			API("/bin/cli-shell-api"),
 			Arch(runtime.GOARCH),
 			Bash("/bin/bash"),
 			Cores(runtime.NumCPU()),
-			Dir("/:~/"),
+			Dir("/tmp"),
 			DNSsvc("service dnsmasq restart"),
 			Ext("blacklist.conf"),
 			FileNameFmt("%v/%v.%v.%v"),
@@ -77,473 +306,291 @@ func TestConfigProcessContent(t *testing.T) {
 			Timeout(30*time.Second),
 			WCard(Wildcard{Node: "*s", Name: "*"}),
 		)
-	}
 
-	tests := []struct {
-		c       *Config
-		cfg     string
-		ct      IFace
-		err     error
-		name    string
-		wantErr bool
-	}{
-		{
-			c:       newCfg(),
-			cfg:     testCfg,
-			ct:      FileObj,
-			err:     fmt.Errorf("open /:~/=../testdata/blist.hosts.src: no such file or directory"),
-			name:    "File",
-			wantErr: true,
-		},
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		err := tt.c.ReadCfg(&CFGstatic{Cfg: tt.cfg})
-		OK(t, err)
+		err := c.ReadCfg(&CFGstatic{Cfg: Cfg})
+		So(err, ShouldBeNil)
 
-		obj, err := tt.c.NewContent(tt.ct)
-		OK(t, err)
-		// err = tt.c.ProcessContent(obj)
-		// OK(t, err)
-		if err := tt.c.ProcessContent(obj); (err != nil) == tt.wantErr {
-			// t.Errorf("%q. Config.ProcessContent() error = %v, wantErr %v", tt.name, err, tt.wantErr)
-			Equals(t, tt.err.Error(), err.Error())
+		for _, tt := range tests {
+			objs, err := c.NewContent(tt.obj)
+			if tt.ltype == urls {
+				uri1 := tt.svr.NewHTTPServer().String() + tt.page
+				objs.SetURL("adaway", uri1)
+				uri2 := tt.svr2.NewHTTPServer().String() + tt.page2
+				objs.SetURL("malc0de", uri2)
+
+				go tt.svr.Mux.HandleFunc(tt.page,
+					func(w http.ResponseWriter, r *http.Request) {
+						fmt.Fprint(w, tt.pageData)
+					},
+				)
+
+				go tt.svr2.Mux.HandleFunc(tt.page2,
+					func(w http.ResponseWriter, r *http.Request) {
+						fmt.Fprint(w, tt.pageData2)
+					},
+				)
+			}
+
+			switch tt.fail {
+			case false:
+				So(err, ShouldBeNil)
+
+				d := &dummyConfig{t: t}
+				d.ProcessContent(objs)
+				So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
+
+				objs.SetURL(tt.name, tt.name)
+				So(objs.Find(tt.name), ShouldEqual, tt.pos)
+				So(objs.Len(), ShouldEqual, tt.i)
+
+			default:
+				So(err.Error(), ShouldEqual, tt.err.Error())
+			}
 		}
-	}
-}
-
-func TestNewContent(t *testing.T) {
-	tests := []struct {
-		err       error
-		exp       string
-		fail      bool
-		i         int
-		leaf      string
-		ltype     string
-		name      string
-		obj       IFace
-		page      string
-		page2     string
-		pageData  string
-		pageData2 string
-		pos       int
-		svr       *HTTPserver
-		svr2      *HTTPserver
-	}{
-		{
-			i:     1,
-			exp:   excRootContent,
-			fail:  false,
-			ltype: ExcRoots,
-			name:  ExcRoots,
-			obj:   ExRtObj,
-			pos:   0,
-		},
-		{
-			i:     1,
-			exp:   "address=/adinfuse.com/192.1.1.1",
-			fail:  false,
-			ltype: ExcDomns,
-			name:  ExcDomns,
-			obj:   ExDmObj,
-			pos:   0,
-		},
-		{
-			i:     1,
-			exp:   "address=/wv.inner-active.mobi/0.0.0.0",
-			fail:  false,
-			ltype: ExcHosts,
-			name:  ExcHosts,
-			obj:   ExHtObj,
-			pos:   0,
-		},
-		{
-			i:     1,
-			exp:   "",
-			fail:  false,
-			ltype: ExcRoots,
-			name:  "exclusive root domains",
-			obj:   ExRtObj,
-			pos:   -1,
-		},
-		{
-			i:     1,
-			exp:   "",
-			fail:  false,
-			ltype: ExcDomns,
-			name:  "exclusive domains",
-			obj:   ExDmObj,
-			pos:   -1,
-		},
-		{
-			i:     1,
-			exp:   "",
-			fail:  false,
-			ltype: ExcHosts,
-			name:  "exclusive hosts",
-			obj:   ExHtObj,
-			pos:   -1,
-		},
-		{
-			i:     1,
-			exp:   "address=/adsrvr.org/192.1.1.1\naddress=/adtechus.net/192.1.1.1\naddress=/advertising.com/192.1.1.1\naddress=/centade.com/192.1.1.1\naddress=/doubleclick.net/192.1.1.1\naddress=/free-counter.co.uk/192.1.1.1\naddress=/intellitxt.com/192.1.1.1\naddress=/kiosked.com/192.1.1.1",
-			fail:  false,
-			ltype: PreDomns,
-			name:  fmt.Sprintf("includes.[8]"),
-			obj:   PreDObj,
-			pos:   0,
-		},
-		{
-			i:     1,
-			exp:   "",
-			fail:  false,
-			ltype: PreDomns,
-			name:  "pre",
-			obj:   PreDObj,
-			pos:   -1,
-		},
-		{
-			i:     1,
-			exp:   "address=/beap.gemini.yahoo.com/0.0.0.0",
-			fail:  false,
-			ltype: PreHosts,
-			name:  fmt.Sprintf("includes.[1]"),
-			obj:   PreHObj,
-			pos:   0,
-		},
-		{
-			i:     1,
-			exp:   "",
-			fail:  false,
-			ltype: PreHosts,
-			name:  "pre",
-			obj:   PreHObj,
-			pos:   -1,
-		},
-		{
-			i:     1,
-			exp:   "address=/really.bad.phishing.site.ru/0.0.0.0",
-			fail:  false,
-			ltype: files,
-			name:  "tasty",
-			obj:   FileObj,
-			pos:   0,
-		},
-		{
-			i:     1,
-			exp:   "",
-			fail:  false,
-			ltype: files,
-			name:  "ztasty",
-			obj:   FileObj,
-			pos:   -1,
-		},
-		{
-			i:         1,
-			exp:       domainsContent,
-			fail:      false,
-			ltype:     urls,
-			name:      "malc0de",
-			obj:       URLdObj,
-			pos:       0,
-			page:      "/hosts.txt",
-			page2:     "/domains.txt",
-			pageData:  httpHostData,
-			pageData2: HTTPDomainData,
-			svr:       new(HTTPserver),
-			svr2:      new(HTTPserver),
-		},
-		{
-			i:         1,
-			exp:       "",
-			fail:      false,
-			ltype:     urls,
-			name:      "zmalc0de",
-			obj:       URLdObj,
-			pos:       -1,
-			page:      "/hosts.txt",
-			page2:     "/domains.txt",
-			pageData:  httpHostData,
-			pageData2: HTTPDomainData,
-			svr:       new(HTTPserver),
-			svr2:      new(HTTPserver),
-		},
-		{
-			i:         1,
-			exp:       hostsContent,
-			fail:      false,
-			ltype:     urls,
-			name:      "adaway",
-			obj:       URLhObj,
-			pos:       0,
-			page:      "/hosts.txt",
-			page2:     "/domains.txt",
-			pageData:  httpHostData,
-			pageData2: HTTPDomainData,
-			svr:       new(HTTPserver),
-			svr2:      new(HTTPserver),
-		},
-		{
-			i:         1,
-			exp:       "",
-			fail:      false,
-			ltype:     urls,
-			name:      "zadway",
-			obj:       URLhObj,
-			pos:       -1,
-			page:      "/hosts.txt",
-			page2:     "/domains.txt",
-			pageData:  httpHostData,
-			pageData2: HTTPDomainData,
-			svr:       new(HTTPserver),
-			svr2:      new(HTTPserver),
-		},
-		{
-			i:    0,
-			err:  errors.New("Invalid interface requested"),
-			fail: true,
-			obj:  Invalid,
-			pos:  -1,
-		},
-	}
-
-	c := NewConfig(
-		API("/bin/cli-shell-api"),
-		Arch(runtime.GOARCH),
-		Bash("/bin/bash"),
-		Cores(runtime.NumCPU()),
-		Dir("/tmp"),
-		DNSsvc("service dnsmasq restart"),
-		Ext("blacklist.conf"),
-		FileNameFmt("%v/%v.%v.%v"),
-		InCLI("inSession"),
-		Level("service dns forwarding"),
-		Method("GET"),
-		Nodes([]string{domains, hosts}),
-		Prefix("address="),
-		LTypes([]string{files, PreDomns, PreHosts, urls}),
-		Timeout(30*time.Second),
-		WCard(Wildcard{Node: "*s", Name: "*"}),
-	)
-
-	err := c.ReadCfg(&CFGstatic{Cfg: Cfg})
-	OK(t, err)
-
-	for _, tt := range tests {
-		objs, err := c.NewContent(tt.obj)
-		if tt.ltype == urls {
-			uri1 := tt.svr.NewHTTPServer().String() + tt.page
-			objs.SetURL("adaway", uri1)
-			uri2 := tt.svr2.NewHTTPServer().String() + tt.page2
-			objs.SetURL("malc0de", uri2)
-
-			go tt.svr.Mux.HandleFunc(tt.page,
-				func(w http.ResponseWriter, r *http.Request) {
-					fmt.Fprint(w, tt.pageData)
-				},
-			)
-
-			go tt.svr2.Mux.HandleFunc(tt.page2,
-				func(w http.ResponseWriter, r *http.Request) {
-					fmt.Fprint(w, tt.pageData2)
-				},
-			)
-		}
-
-		switch tt.fail {
-		case false:
-			OK(t, err)
-			d := &dummyConfig{t: t}
-			d.ProcessContent(objs)
-
-			Equals(t, tt.exp, strings.Join(d.s, "\n"))
-
-			objs.SetURL(tt.name, tt.name)
-			Equals(t, tt.pos, objs.Find(tt.name))
-
-			Equals(t, tt.i, objs.Len())
-
-		default:
-			Equals(t, tt.err, err)
-		}
-	}
+	})
 }
 
 func TestGetAllContent(t *testing.T) {
-	var (
-		r = &CFGstatic{Cfg: testallCfg}
-		c = NewConfig(
-			Dir("/tmp"),
-			Ext("blacklist.conf"),
-			FileNameFmt("%v/%v.%v.%v"),
-			Method("GET"),
-			Nodes([]string{"domains", "hosts"}),
-			Prefix("address="),
-			LTypes([]string{PreDomns, PreHosts, files, urls}),
+	Convey("Testing GetAllContent()", t, func() {
+		var (
+			r = &CFGstatic{Cfg: testallCfg}
+			c = NewConfig(
+				Dir("/tmp"),
+				Ext("blacklist.conf"),
+				FileNameFmt("%v/%v.%v.%v"),
+				Method("GET"),
+				Nodes([]string{"domains", "hosts"}),
+				Prefix("address="),
+				LTypes([]string{PreDomns, PreHosts, files, urls}),
+			)
 		)
-	)
 
-	err := c.ReadCfg(r)
-	OK(t, err)
+		err := c.ReadCfg(r)
+		// OK(t, err)
+		So(err, ShouldBeNil)
 
-	act := fmt.Sprint(c.GetAll(PreDomns, PreHosts))
-	Equals(t, wantPre, act)
+		act := fmt.Sprint(c.GetAll(PreDomns, PreHosts))
+		// Equals(t, wantPre, act)
+		So(act, ShouldEqual, wantPre)
 
-	act = fmt.Sprint(c.GetAll())
-	Equals(t, wantAll, act)
+		act = fmt.Sprint(c.GetAll())
+		// Equals(t, wantAll, act)
+		So(act, ShouldEqual, wantAll)
+
+	})
 }
 
-func TestMultiObjProcessContent(t *testing.T) {
-	dir, err := ioutil.TempDir("/tmp", "testBlacklist")
-	OK(t, err)
-	defer os.RemoveAll(dir)
-	//
-	var (
-		c = NewConfig(
-			Dir(dir),
-			Ext("blacklist.conf"),
-			FileNameFmt("%v/%v.%v.%v"),
-			Method("GET"),
-			Nodes([]string{domains, hosts}),
-			Prefix("address="),
-			LTypes([]string{PreDomns, PreHosts, files, urls}),
+func TestMultiObjNewContent(t *testing.T) {
+	Convey("Testing Multi Object NewContent()", t, func() {
+
+		dir, err := ioutil.TempDir("/tmp", "testBlacklist")
+		OK(t, err)
+		defer os.RemoveAll(dir)
+		//
+		var (
+			c = NewConfig(
+				Dir(dir),
+				Ext("blacklist.conf"),
+				FileNameFmt("%v/%v.%v.%v"),
+				Method("GET"),
+				Nodes([]string{domains, hosts}),
+				Prefix("address="),
+				LTypes([]string{PreDomns, PreHosts, files, urls}),
+			)
 		)
-	)
 
-	err = c.ReadCfg(&CFGstatic{Cfg: CfgMimimal})
-	OK(t, err)
+		err = c.ReadCfg(&CFGstatic{Cfg: CfgMimimal})
+		So(err, ShouldBeNil)
 
-	excRoots, err := c.NewContent(ExRtObj)
-	OK(t, err)
+		tests := []struct {
+			iFace IFace
+			exp   string
+			name  string
+		}{
+			{name: "ExRtObj", iFace: ExRtObj, exp: "address=/ytimg.com/0.0.0.0"},
+			{name: "ExDmObj", iFace: ExDmObj, exp: ""},
+			// {name: "ExHtObj", iFace: ExHtObj, exp: "address=/adsrvr.org/0.0.0.0\n address=/adtechus.net/0.0.0.0\n address=/advertising.com/0.0.0.0\n address=/centade.com/0.0.0.0\n address=/doubleclick.net/0.0.0.0\n address=/free-counter.co.uk/0.0.0.0\n address=/intellitxt.com/0.0.0.0\n address=/kiosked.com/0.0.0.0"},
+			// {name: "PreDObj", iFace: PreDObj, exp: "address=/adsrvr.org/0.0.0.0\n address=/adtechus.net/0.0.0.0\n address=/advertising.com/0.0.0.0\n address=/centade.com/0.0.0.0\n address=/doubleclick.net/0.0.0.0\n address=/free-counter.co.uk/0.0.0.0\n address=/intellitxt.com/0.0.0.0\n address=/kiosked.com/0.0.0.0"},
+			// {name: "PreHObj", iFace: PreHObj, exp: "address=/adsrvr.org/0.0.0.0\n address=/adtechus.net/0.0.0.0\n address=/advertising.com/0.0.0.0\n address=/centade.com/0.0.0.0\n address=/doubleclick.net/0.0.0.0\n address=/free-counter.co.uk/0.0.0.0\n address=/intellitxt.com/0.0.0.0\n address=/kiosked.com/0.0.0.0"},
+			// {name: "FileObj", iFace: FileObj},
+			// {name: "URLdObj", iFace: URLdObj},
+			// {name: "URLhObj", iFace: URLhObj},
+		}
 
-	excDomns, err := c.NewContent(ExDmObj)
-	OK(t, err)
+		for _, tt := range tests {
+			Convey("Testing "+tt.name+" ProcessContent()", func() {
+				ct, err := c.NewContent(tt.iFace)
+				So(err, ShouldBeNil)
 
-	excHosts, err := c.NewContent(ExHtObj)
-	OK(t, err)
+				d := &dummyConfig{t: t}
+				d.ProcessContent(ct)
+				So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
+			})
+		}
 
-	preDomns, err := c.NewContent(PreDObj)
-	OK(t, err)
+		urls, err := c.NewContent(URLdObj)
+		So(err, ShouldBeNil)
+		So(urls.String(), ShouldEqual, "[\nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domn\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://malc0de.com/bl/ZONES\"\n]")
 
-	preHosts, err := c.NewContent(PreHObj)
-	OK(t, err)
-
-	files, err := c.NewContent(FileObj)
-	OK(t, err)
-
-	d := &dummyConfig{t: t}
-	d.ProcessContent(excRoots, excDomns, excHosts, preDomns, preHosts, files)
-
-	Equals(t, "address=/ytimg.com/0.0.0.0\n\n\naddress=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0\naddress=/beap.gemini.yahoo.com/192.168.168.1\naddress=/really.bad.phishing.site.ru/10.10.10.10\n", strings.Join(d.s, "\n"))
-
-	urls, err := c.NewContent(URLdObj)
-	OK(t, err)
-
-	Equals(t, "[\nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domn\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://malc0de.com/bl/ZONES\"\n]", urls.String())
-
-	urls, err = c.NewContent(URLhObj)
-	OK(t, err)
-
-	Equals(t, "[\nDesc:\t \"Blocking mobile ad providers and some analytics providers\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"url\"\nName:\t \"adaway\"\nnType:\t \"host\"\nPrefix:\t \"127.0.0.1 \"\nType:\t \"hosts\"\nURL:\t \"http://adaway.org/hosts.txt\"\n]", urls.String())
+		urls, err = c.NewContent(URLhObj)
+		So(err, ShouldBeNil)
+		So(urls.String(), ShouldEqual, "[\nDesc:\t \"Blocking mobile ad providers and some analytics providers\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"url\"\nName:\t \"adaway\"\nnType:\t \"host\"\nPrefix:\t \"127.0.0.1 \"\nType:\t \"hosts\"\nURL:\t \"http://adaway.org/hosts.txt\"\n]")
+	})
 }
 
 func TestProcessContent(t *testing.T) {
 	dir, err := ioutil.TempDir("/tmp", "testBlacklist")
-	OK(t, err)
+	if err != nil {
+		t.Error(err)
+	}
 	defer os.RemoveAll(dir)
 
-	var (
-		c = NewConfig(
-			Dir(dir),
-			Ext("blacklist.conf"),
-			FileNameFmt("%v/%v.%v.%v"),
-			Method("GET"),
-			Nodes([]string{domains, hosts}),
-			Prefix("address="),
-			LTypes([]string{PreDomns, PreHosts, files, urls}),
-		)
+	Convey("Testing ProcessContent(), setting up temporary directory in /tmp", t, func() {
+		Convey("Testing ProcessContent()", func() {
+			var (
+				c = NewConfig(
+					Dir(dir),
+					Ext("blacklist.conf"),
+					FileNameFmt("%v/%v.%v.%v"),
+					Method("GET"),
+					Nodes([]string{domains, hosts}),
+					Prefix("address="),
+					LTypes([]string{PreDomns, PreHosts, files, urls}),
+				)
 
-		tests = []struct {
-			err    error
-			exp    string
-			expMap list
-			f      string
-			fdata  string
-			obj    IFace
-		}{
-			{
-				err:    nil,
-				exp:    "[\nDesc:\t \"root-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"root-excludes\"\nName:\t \"root-excludes\"\nnType:\t \"excRoot\"\nPrefix:\t \"\"\nType:\t \"root-excludes\"\nURL:\t \"\"\n]",
-				expMap: list{entry: entry{"ytimg.com": 0}},
-				obj:    ExRtObj,
-			},
-			{
-				err:    nil,
-				exp:    "[\nDesc:\t \"domn-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"domn-excludes\"\nName:\t \"domn-excludes\"\nnType:\t \"excDomn\"\nPrefix:\t \"\"\nType:\t \"domn-excludes\"\nURL:\t \"\"\n]",
-				expMap: list{entry: entry{"ytimg.com": 0}},
-				obj:    ExDmObj,
-			},
-			{
-				err:    nil,
-				exp:    "[\nDesc:\t \"host-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"host-excludes\"\nName:\t \"host-excludes\"\nnType:\t \"excHost\"\nPrefix:\t \"\"\nType:\t \"host-excludes\"\nURL:\t \"\"\n]",
-				expMap: list{entry: entry{"ytimg.com": 0}},
-				obj:    ExHtObj,
-			},
-			{
-				err:   nil,
-				exp:   "[\nDesc:\t \"pre-configured-domain blacklist content\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"pre-configured-domain\"\nName:\t \"includes.[8]\"\nnType:\t \"preDomn\"\nPrefix:\t \"\"\nType:\t \"pre-configured-domain\"\nURL:\t \"\"\n]",
-				f:     dir + "/pre-configured-domain.includes.[8].blacklist.conf",
-				fdata: "address=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0\n",
-				obj:   PreDObj,
-			},
-			{
-				err:   nil,
-				exp:   "[\nDesc:\t \"pre-configured-host blacklist content\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"pre-configured-host\"\nName:\t \"includes.[1]\"\nnType:\t \"preHost\"\nPrefix:\t \"\"\nType:\t \"pre-configured-host\"\nURL:\t \"\"\n]",
-				f:     dir + "/pre-configured-host.includes.[1].blacklist.conf",
-				fdata: "address=/beap.gemini.yahoo.com/192.168.168.1\n",
-				obj:   PreHObj,
-			},
-			{
-				err:   nil,
-				exp:   filesMin,
-				f:     dir + "/hosts.tasty.blacklist.conf",
-				fdata: "address=/really.bad.phishing.site.ru/10.10.10.10\n",
-				obj:   FileObj,
-			},
-		}
-	)
+				tests = []struct {
+					err       error
+					exp       string
+					expDexMap list
+					expExcMap list
+					f         string
+					fdata     string
+					name      string
+					obj       IFace
+				}{
+					{
+						name:      "ExRtObj",
+						err:       nil,
+						exp:       "[\nDesc:\t \"root-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"root-excludes\"\nName:\t \"root-excludes\"\nnType:\t \"excRoot\"\nPrefix:\t \"\"\nType:\t \"root-excludes\"\nURL:\t \"\"\n]",
+						expDexMap: list{entry: entry{"ytimg.com": 0}},
+						expExcMap: list{entry: entry{"ytimg.com": 0}},
+						obj:       ExRtObj,
+					},
+					{
+						name:      "ExDmObj",
+						err:       nil,
+						exp:       "[\nDesc:\t \"domn-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"domn-excludes\"\nName:\t \"domn-excludes\"\nnType:\t \"excDomn\"\nPrefix:\t \"\"\nType:\t \"domn-excludes\"\nURL:\t \"\"\n]",
+						expDexMap: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+						expExcMap: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+						obj:       ExDmObj,
+					},
+					{
+						name:      "ExHtObj",
+						err:       nil,
+						exp:       "[\nDesc:\t \"host-excludes exclusions\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"host-excludes\"\nName:\t \"host-excludes\"\nnType:\t \"excHost\"\nPrefix:\t \"\"\nType:\t \"host-excludes\"\nURL:\t \"\"\n]",
+						expDexMap: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+						expExcMap: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+						obj:       ExHtObj,
+					},
+					{
+						name: "PreDObj",
+						err:  nil,
+						exp:  "[\nDesc:\t \"pre-configured-domain blacklist content\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"pre-configured-domain\"\nName:\t \"includes.[8]\"\nnType:\t \"preDomn\"\nPrefix:\t \"\"\nType:\t \"pre-configured-domain\"\nURL:\t \"\"\n]",
+						expDexMap: list{
+							entry: entry{
+								"adsrvr.org":         0,
+								"adtechus.net":       0,
+								"advertising.com":    0,
+								"centade.com":        0,
+								"doubleclick.net":    0,
+								"free-counter.co.uk": 0,
+								"intellitxt.com":     0,
+								"kiosked.com":        0,
+							},
+						},
+						expExcMap: list{entry: entry{"ytimg.com": 0}},
+						f:         dir + "/pre-configured-domain.includes.[8].blacklist.conf",
+						fdata:     "address=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0\n",
+						obj:       PreDObj,
+					},
+					{
+						name:      "PreHObj",
+						err:       nil,
+						exp:       "[\nDesc:\t \"pre-configured-host blacklist content\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"pre-configured-host\"\nName:\t \"includes.[1]\"\nnType:\t \"preHost\"\nPrefix:\t \"\"\nType:\t \"pre-configured-host\"\nURL:\t \"\"\n]",
+						expDexMap: list{entry: entry{"ytimg.com": 0}},
+						expExcMap: list{entry: entry{"ytimg.com": 0}},
+						f:         dir + "/pre-configured-host.includes.[1].blacklist.conf",
+						fdata:     "address=/beap.gemini.yahoo.com/192.168.168.1\n",
+						obj:       PreHObj,
+					},
+					{
+						name: "FileObj",
+						err:  fmt.Errorf("open %v/hosts./tasty.blacklist.conf: no such file or directory", dir),
+						exp:  filesMin,
+						expDexMap: list{
+							entry: entry{
+								"cw.bad.ultraadverts.site.eu": 1,
+								"really.bad.phishing.site.ru": 1,
+							},
+						},
+						expExcMap: list{entry: entry{"ytimg.com": 0}},
+						f:         dir + "/hosts.tasty.blacklist.conf",
+						fdata:     "address=/cw.bad.ultraadverts.site.eu/10.10.10.10\naddress=/really.bad.phishing.site.ru/10.10.10.10\n",
+						obj:       FileObj,
+					},
+				}
+			)
 
-	err = c.ReadCfg(&CFGstatic{Cfg: CfgMimimal})
-	OK(t, err)
+			err = c.ReadCfg(&CFGstatic{Cfg: CfgMimimal})
+			So(err, ShouldBeNil)
+			for _, tt := range tests {
+				Convey("Testing "+tt.name+" ProcessContent()", func() {
+					obj, err := c.NewContent(tt.obj)
+					So(err, ShouldBeNil)
 
-	for _, tt := range tests {
-		obj, err := c.NewContent(tt.obj)
-		OK(t, err)
+					if tt.f != "" {
+						So(fmt.Sprint(obj), ShouldEqual, tt.exp)
+					}
 
-		if tt.f != "" {
-			Equals(t, tt.exp, fmt.Sprint(obj))
-		}
+					if err = c.ProcessContent(obj); err != nil {
+						Convey("Testing "+tt.name+" ProcessContent().Error():", func() {
+							Convey("Error should match expected", func() {
+								So(err, ShouldResemble, tt.err)
+							})
+						})
+					}
 
-		if err = c.ProcessContent(obj); err != nil {
-			Equals(t, tt.err, err)
-		}
+					switch tt.f {
+					default:
+						reader, err := getFile(tt.f)
+						So(err, ShouldBeNil)
 
-		switch tt.f {
-		default:
-			reader, err := getFile(tt.f)
-			OK(t, err)
+						act, err := ioutil.ReadAll(reader)
+						So(err, ShouldBeNil)
 
-			act, err := ioutil.ReadAll(reader)
-			OK(t, err)
+						Convey("Testing "+tt.name+" ProcessContent(): file data should match expected", func() {
+							So(string(act), ShouldEqual, tt.fdata)
+						})
 
-			Equals(t, tt.fdata, string(act))
+					case "":
+						Convey("Testing "+tt.name+" ProcessContent(): Dex map should match expected", func() {
+							// fmt.Printf("%#v", c.Dex.entry)
+							So(c.Dex.entry, ShouldResemble, tt.expDexMap.entry)
+						})
 
-		case "":
-			Equals(t, tt.expMap.entry, c.Dex.entry)
-			Equals(t, tt.expMap.entry, c.Exc.entry)
-			Equals(t, tt.exp, obj.String())
-		}
-	}
+						Convey("Testing "+tt.name+" ProcessContent(): Exc map should match expected", func() {
+							// fmt.Printf("%#v", c.Exc.entry)
+							So(c.Exc.entry, ShouldResemble, tt.expExcMap.entry)
+						})
+
+						Convey("Testing "+tt.name+" ProcessContent(): Obj should match expected", func() {
+							So(obj.String(), ShouldEqual, tt.exp)
+						})
+					}
+				})
+			}
+		})
+	})
 }
 
 func TestWriteFile(t *testing.T) {
@@ -822,4 +869,29 @@ var (
 	filesMin = "[\nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n \nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"/tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n]"
 
 	excRootContent = "address=/122.2o7.net/0.0.0.0\naddress=/1e100.net/0.0.0.0\naddress=/adobedtm.com/0.0.0.0\naddress=/akamai.net/0.0.0.0\naddress=/amazon.com/0.0.0.0\naddress=/amazonaws.com/0.0.0.0\naddress=/apple.com/0.0.0.0\naddress=/ask.com/0.0.0.0\naddress=/avast.com/0.0.0.0\naddress=/bitdefender.com/0.0.0.0\naddress=/cdn.visiblemeasures.com/0.0.0.0\naddress=/cloudfront.net/0.0.0.0\naddress=/coremetrics.com/0.0.0.0\naddress=/edgesuite.net/0.0.0.0\naddress=/freedns.afraid.org/0.0.0.0\naddress=/github.com/0.0.0.0\naddress=/githubusercontent.com/0.0.0.0\naddress=/google.com/0.0.0.0\naddress=/googleadservices.com/0.0.0.0\naddress=/googleapis.com/0.0.0.0\naddress=/googleusercontent.com/0.0.0.0\naddress=/gstatic.com/0.0.0.0\naddress=/gvt1.com/0.0.0.0\naddress=/gvt1.net/0.0.0.0\naddress=/hb.disney.go.com/0.0.0.0\naddress=/hp.com/0.0.0.0\naddress=/hulu.com/0.0.0.0\naddress=/images-amazon.com/0.0.0.0\naddress=/jumptap.com/0.0.0.0\naddress=/msdn.com/0.0.0.0\naddress=/paypal.com/0.0.0.0\naddress=/rackcdn.com/0.0.0.0\naddress=/schema.org/0.0.0.0\naddress=/skype.com/0.0.0.0\naddress=/smacargo.com/0.0.0.0\naddress=/sourceforge.net/0.0.0.0\naddress=/ssl-on9.com/0.0.0.0\naddress=/ssl-on9.net/0.0.0.0\naddress=/static.chartbeat.com/0.0.0.0\naddress=/storage.googleapis.com/0.0.0.0\naddress=/usemaxserver.de/0.0.0.0\naddress=/windows.net/0.0.0.0\naddress=/yimg.com/0.0.0.0\naddress=/ytimg.com/0.0.0.0"
+
+	testCfg = `blacklist {
+	disabled false
+	dns-redirect-ip 0.0.0.0
+	domains {
+			include adsrvr.org
+			include adtechus.net
+			include advertising.com
+			include centade.com
+			include doubleclick.net
+			include free-counter.co.uk
+			include intellitxt.com
+			include kiosked.com
+	}
+	exclude ytimg.com
+	hosts {
+			dns-redirect-ip 192.168.168.1
+			include beap.gemini.yahoo.com
+			source tasty {
+									description "File source"
+									dns-redirect-ip 10.10.10.10
+									file /:~/=../testdata/blist.hosts.src
+							}
+	}
+}`
 )

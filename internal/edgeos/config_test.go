@@ -135,16 +135,6 @@ func TestReadCfg(t *testing.T) {
 	Equals(t, want, got)
 }
 
-// type dummy struct{}
-//
-// func (d *dummy) readDir(s string) ([]os.FileInfo, error) {
-// 	return []os.FileInfo{}, fmt.Errorf("%v totally failed!", s)
-// }
-//
-// func (d *dummy) Remove() error {
-// 	return nil
-// }
-
 func TestReloadDNS(t *testing.T) {
 	c := NewConfig(DNSsvc("true"))
 	act, err := c.ReloadDNS()
@@ -218,13 +208,6 @@ func TestLTypes(t *testing.T) {
 		Nodes([]string{rootNode, domains, hosts}),
 		LTypes(want),
 	)
-
-	// c.SetOpt(
-	// 	Dir("/tmp"),
-	// 	Ext("blacklist.conf"),
-	// 	Nodes([]string{rootNode, domains, hosts}),
-	// 	LTypes(want),
-	// )
 	Equals(t, want, c.LTypes())
 }
 

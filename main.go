@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"runtime"
@@ -22,22 +23,11 @@ var (
 	build   = "UNKNOWN"
 	githash = "UNKNOWN"
 	version = "UNKNOWN"
-	exitCmd = os.Exit
-)
 
-func main() {
-	o := getOpts()
-	o.Init("blacklist", flag.ExitOnError)
-	o.setArgs()
-
-	c := o.initEdgeOS()
-	c.ReadCfg(o.getCFG(c))
-
-	if err := c.GetAll().Files().Remove(); err != nil {
-		log.Printf("c.GetAll().Files().Remove() error: %v\n", err)
-	}
-
-	objects := []e.IFace{
+	exitCmd    = os.Exit
+	logFatalln = log.Fatalln
+	logPrintf  = log.Printf
+	objex      = []e.IFace{
 		e.ExRtObj,
 		e.ExDmObj,
 		e.ExHtObj,
@@ -47,20 +37,14 @@ func main() {
 		e.URLdObj,
 		e.URLhObj,
 	}
+)
 
-	for _, o := range objects {
-		ct, err := c.NewContent(o)
-		if err != nil {
-			log.Fatal(err)
-		}
-		c.ProcessContent(ct)
-	}
+func main() {
+	c := setUpEnv()
+	logFatalln(removeStaleFiles(c))
+	logFatalln(processObjects(c, objex))
 
-	b, err := c.ReloadDNS()
-	if err != nil {
-		log.Printf("ReloadDNS(): %v\n error: %v\n", string(b), err)
-	}
-	log.Printf("ReloadDNS(): %v\n", string(b))
+	reloadDNS(c)
 }
 
 // basename removes directory components and file extensions.
@@ -105,4 +89,48 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.Timeout(30*time.Second),
 		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
 	)
+}
+
+func processObjects(c *e.Config, objects []e.IFace) error {
+	for _, o := range objects {
+		ct, err := c.NewContent(o)
+		if err != nil {
+			return err
+		}
+
+		err = c.ProcessContent(ct)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func reloadDNS(c *e.Config) {
+	b, err := c.ReloadDNS()
+	if err != nil {
+		logPrintf("ReloadDNS(): %v\n error: %v\n", string(b), err)
+		exitCmd(1)
+	}
+	logPrintf("ReloadDNS(): %v\n", string(b))
+	return
+}
+
+func removeStaleFiles(c *e.Config) error {
+	fmt.Println(c.Wildcard)
+	if err := c.GetAll().Files().Remove(); err != nil {
+		return fmt.Errorf("c.GetAll().Files().Remove() error: %v\n", err)
+	}
+	return nil
+}
+
+func setUpEnv() *e.Config {
+	o := getOpts()
+	o.Init("blacklist", flag.ExitOnError)
+	o.setArgs()
+
+	c := o.initEdgeOS()
+	c.ReadCfg(o.getCFG(c))
+
+	return c
 }

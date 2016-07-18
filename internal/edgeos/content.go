@@ -2,6 +2,7 @@ package edgeos
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -220,58 +221,24 @@ func (e *ExcRootObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for FIODataObjects
 func (f *FIODataObjects) GetList() *Objects {
-	var (
-		// done      = make(chan struct{}, f.Cores)
-		// finish    = time.After(f.Timeout)
-		responses = make(chan *object, len(f.x))
-		wg        sync.WaitGroup
-	)
+	var responses = make(chan *object, len(f.x))
 
-	wg.Add(len(f.x))
 	defer close(responses)
 
 	for _, o := range f.x {
 		o.Parms = f.Objects.Parms
 		go func(o *object) {
-			defer wg.Done()
 			o.r, o.err = getFile(o.file)
 			responses <- o
-			// done <- struct{}{}
 		}(o)
 	}
 
-	// for working := f.Cores; working > 0; {
-	// 	select {
-	// 	case <-finish:
-	// 		log.Println("FIODataObjects: GetList() timed out")
-	// 	case response := <-responses:
-	// 		f.x[f.Find(response.name)] = response
-	// 	case <-done:
-	// 		working--
-	// 	}
-	// }
-
-	// for {
-	// 	select {
-	// 	case <-finish:
-	// 		log.Println("FIODataObjects: GetList() timed out")
-	// 	case response := <-responses:
-	// 		f.x[f.Find(response.name)] = response
-	// 	default:
-	// 		return f.Objects
-	// 	}
-	// }
-
-	select {
-	case response := <-responses:
-		f.x[f.Find(response.name)] = response
+	for i := 0; i < len(f.x); i++ {
+		select {
+		case response := <-responses:
+			f.x[f.Find(response.name)] = response
+		}
 	}
-
-	wg.Wait()
-	// go func() {
-	// 	wg.Wait()
-	// 	close(responses)
-	// }()
 
 	return f.Objects
 }
@@ -300,58 +267,47 @@ func (p *PreHostObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLDomnObjects) GetList() *Objects {
-	var (
-		responses = make(chan *object, len(u.x))
-		wg        sync.WaitGroup
-	)
+	var responses = make(chan *object, len(u.x))
 
-	wg.Add(len(u.x))
 	defer close(responses)
 
 	for _, o := range u.x {
 		o.Parms = u.Objects.Parms
 		go func(o *object) {
-			defer wg.Done()
 			responses <- getHTTP(o)
 		}(o)
 	}
 
-	select {
-	case response := <-responses:
-		u.x[u.Find(response.name)] = response
+	for i := 0; i < len(u.x); i++ {
+		select {
+		case response := <-responses:
+			u.x[u.Find(response.name)] = response
+		}
 	}
-
-	wg.Wait()
 
 	return u.Objects
 }
 
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLHostObjects) GetList() *Objects {
-	var (
-		responses = make(chan *object, len(u.x))
-		wg        sync.WaitGroup
-	)
+	var responses = make(chan *object, len(u.x))
 
-	wg.Add(len(u.x))
 	defer close(responses)
 
 	for _, o := range u.x {
 		o.Parms = u.Objects.Parms
 		go func(o *object) {
-			defer wg.Done()
 			responses <- getHTTP(o)
 		}(o)
 	}
 
-	// wg.Add(len(u.x))
-
-	select {
-	case response := <-responses:
-		u.x[u.Find(response.name)] = response
+	for i := 0; i < len(u.x); i++ {
+		select {
+		case response := <-responses:
+			u.x[u.Find(response.name)] = response
+		}
 	}
 
-	wg.Wait()
 	return u.Objects
 }
 
@@ -431,13 +387,13 @@ NEXT:
 
 	switch o.nType {
 	case domn, excDomn, excRoot:
-		o.Parms.Dex = mergeList(o.Parms.Dex, add)
+		o.Dex = mergeList(o.Dex, add)
 	}
 
-	fmttr := o.Parms.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
+	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
 
 	return &blist{
-		file: fmt.Sprintf(o.Parms.FnFmt, o.Parms.Dir, getType(o.nType).(string), o.name, o.Parms.Ext),
+		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),
 		r:    formatData(fmttr, add),
 	}
 }
@@ -446,38 +402,42 @@ NEXT:
 func (c *Config) ProcessContent(cts ...Contenter) error {
 	var (
 		errs      []string
-		getErrors = make(chan error)
-		wg        sync.WaitGroup
+		getErrors chan error
 	)
 
+	if len(cts) < 1 {
+		return errors.New("Empty Contenter interface{} passed to ProcessContent()")
+	}
+
 	for _, ct := range cts {
-		wg.Add(ct.Len())
 		for _, o := range ct.GetList().x {
+			getErrors = make(chan error)
+			defer close(getErrors)
+
 			if o.err != nil {
 				errs = append(errs, o.err.Error())
 			}
 
 			go func(o *object) {
-				defer wg.Done()
 				switch o.nType {
 				case excDomn, excHost, excRoot:
 					o.process()
+					getErrors <- nil
 				default:
 					getErrors <- o.process().writeFile()
 				}
 			}(o)
-		}
-	}
 
-	go func(errs []string) {
-		for err := range getErrors {
-			if err != nil {
-				errs = append(errs, err.Error())
+			for i := 0; i < len(cts); i++ {
+				select {
+				case err := <-getErrors:
+					if err != nil {
+						errs = append(errs, err.Error())
+					}
+				}
 			}
 		}
-	}(errs)
-
-	wg.Wait()
+	}
 
 	if errs != nil {
 		return fmt.Errorf(strings.Join(errs, "\n"))

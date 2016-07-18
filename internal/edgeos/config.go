@@ -128,6 +128,7 @@ func (c *Config) addInc(node string) *object {
 // NewContent returns an interface of the requested IFace type
 func (c *Config) NewContent(iface IFace) (Contenter, error) {
 	var (
+		err   error
 		ltype = iface.String()
 		o     *Objects
 	)
@@ -148,6 +149,8 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 			o = c.Get(hosts).Filter(urls)
 			return &URLHostObjects{Objects: o}, nil
 		}
+	case "unknown":
+		err = errors.New("Invalid interface requested")
 	default:
 		o = c.GetAll(ltype)
 	}
@@ -165,9 +168,11 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 		return &PreDomnObjects{Objects: o}, nil
 	case PreHObj:
 		return &PreHostObjects{Objects: o}, nil
-	default:
-		return nil, errors.New("Invalid interface requested")
+		// default:
+		// 	return nil, errors.New("Invalid interface requested")
 	}
+
+	return nil, err
 }
 
 // excludes returns a string array of excludes

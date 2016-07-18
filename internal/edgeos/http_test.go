@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"runtime"
 	"sync"
 	"testing"
 
@@ -66,7 +65,7 @@ func TestGetHTTP(t *testing.T) {
 			}
 		}
 
-		if runtime.GOOS == "linux" {
+		if IsDrone() {
 			switch i {
 			case 2:
 				test.err = fmt.Errorf("%v", `unsupported protocol scheme ""`)

@@ -5,8 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
+	"path"
 	"runtime"
 	"strings"
 	"testing"
@@ -17,165 +17,232 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestGetOpts(t *testing.T) {
-	Convey("Testing commandline output", t, func() {
-		exp := vanillaArgs
+func TestMain(t *testing.T) {
+	Convey("Testing main()", t, func() {
+		var (
+			act          []error
+			actReloadDNS string
+		)
 
 		exitCmd = func(int) { return }
 
-		out := new(bytes.Buffer)
-		o := getOpts()
-		o.Init("blacklist", flag.ContinueOnError)
-		o.SetOutput(out)
+		logFatalln = func(vals ...interface{}) {
+			for _, v := range vals {
+				if v != nil {
+					act = append(act, v.(error))
+				}
+			}
+		}
 
-		os.Args = append(os.Args, "-h")
-		o.setArgs()
+		logPrintf = func(s string, vals ...interface{}) {
+			actReloadDNS = fmt.Sprintf(s, vals)
+		}
 
-		act, err := ioutil.ReadAll(out)
+		objex = []edgeos.IFace{edgeos.ExRtObj}
 
-		So(err, ShouldBeNil)
+		main()
+		So(act, ShouldBeNil)
+		So(actReloadDNS, ShouldNotBeNil)
+	})
+}
 
-		So(string(act), ShouldEqual, exp)
+func TestProcessObjects(t *testing.T) {
+	c := setUpEnv()
+	Convey("Testing processObjects", t, func() {
+		Convey("Testing that the config is correctly loaded ", func() {
+			So(c.String(), ShouldEqual, mainGetConfig)
+			err := processObjects(c,
+				[]edgeos.IFace{
+					edgeos.ExRtObj,
+					edgeos.ExDmObj,
+					edgeos.ExHtObj,
+				})
+			So(err, ShouldBeNil)
+		})
+		Convey("Testing that c.Dex is correct after the load ", func() {
+			So(c.Dex.String(), ShouldEqual, expMap)
+		})
+		Convey("Testing that c.Exc is correct after the load ", func() {
+			So(c.Exc.String(), ShouldEqual, expMap)
+		})
 
+		Convey("Forcing processObjects to fail ", func() {
+			So(processObjects(c, []edgeos.IFace{100}), ShouldNotBeNil)
+		})
+
+		Convey("Testing processObjects() with a non-existent directory ", func() {
+			c.Dir = "EinenSieAugenBlick"
+			So(processObjects(c, []edgeos.IFace{edgeos.FileObj}), ShouldNotBeNil)
+		})
+	})
+}
+
+func TestGetOpts(t *testing.T) {
+	exitCmd = func(int) { return }
+	origArgs := os.Args
+	defer func() { os.Args = origArgs; return }()
+
+	Convey("Testing commandline output", t, func() {
+		act := new(bytes.Buffer)
+		exp := vanillaArgs
+		prog := path.Base(os.Args[0])
+		os.Args = []string{prog, "-convey-json", "-h"}
+
+		Convey("Testing getOpts() with vanilla arguments", func() {
+			o := getOpts()
+			o.Init("blacklist", flag.ContinueOnError)
+			o.SetOutput(act)
+			o.setArgs()
+
+			So(act.String(), ShouldEqual, exp)
+
+			exp = optsString
+			So(o.String(), ShouldEqual, exp)
+		})
+
+		Convey("Testing getOpts() with -test", func() {
+			os.Args = []string{prog, "-t"}
+
+			o := getOpts()
+			o.Init("blacklist", flag.ContinueOnError)
+			o.SetOutput(act)
+			o.setArgs()
+
+			So(act.String(), ShouldEqual, "")
+		})
+
+		Convey("Testing getOpts() with -version", func() {
+			os.Args = []string{prog, "-version"}
+
+			o := getOpts()
+			o.Init("blacklist", flag.ContinueOnError)
+			o.SetOutput(act)
+			o.setArgs()
+
+			So(act.String(), ShouldEqual, "")
+		})
+
+		Convey("Now lets test with an invalid flag", func() {
+			os.Args = []string{prog, "-z"}
+			o := getOpts()
+			o.Init("pixelserv", flag.ContinueOnError)
+			o.SetOutput(act)
+			o.setArgs()
+
+			exp = "flag provided but not defined: -z\n" + vanillaArgs + vanillaArgs
+			So(fmt.Sprint(act), ShouldEqual, exp)
+		})
 	})
 }
 
 func TestBasename(t *testing.T) {
-	tests := []struct {
-		s   string
-		exp string
-	}{
-		{s: "e.txt", exp: "e"},
-		{s: "/github.com/britannic/blacklist/internal/edgeos", exp: "edgeos"},
-	}
-	for _, tt := range tests {
-		Equals(t, tt.exp, basename(tt.s))
-	}
+	Convey("Testing basename()", t, func() {
+		tests := []struct {
+			s   string
+			exp string
+		}{
+			{s: "e.txt", exp: "e"},
+			{s: "/github.com/britannic/blacklist/internal/edgeos", exp: "edgeos"},
+		}
+
+		for _, tt := range tests {
+			So(basename(tt.s), ShouldEqual, tt.exp)
+		}
+	})
 }
 
 func TestBuild(t *testing.T) {
-	want := map[string]string{
-		"build":   build,
-		"githash": githash,
-		"version": version,
-	}
+	Convey("Testing Build() variables", t, func() {
+		want := map[string]string{
+			"build":   build,
+			"githash": githash,
+			"version": version,
+		}
 
-	for k := range want {
-		Equals(t, "UNKNOWN", want[k])
-	}
+		for k := range want {
+			So(want[k], ShouldEqual, "UNKNOWN")
+		}
+	})
 }
 
 func TestCommandLineArgs(t *testing.T) {
-	exitCmd = func(int) { return }
-	out := new(bytes.Buffer)
-	want := vanillaArgs
-	fmt.Println(os.Args)
-	os.Args = append(os.Args, "-h")
-	o := getOpts()
-	o.Init("blacklist", flag.ContinueOnError)
-
-	o.SetOutput(out)
-	o.Parse(cleanArgs(os.Args[1:]))
-	o.setArgs()
-
-	got, err := ioutil.ReadAll(out)
-
 	Convey("Testing command line arguments", t, func() {
-		So(err, ShouldBeNil)
-		So(string(got), ShouldEqual, want)
+		origArgs := os.Args
+		defer func() { os.Args = origArgs; return }()
+		act := new(bytes.Buffer)
+		exitCmd = func(int) { return }
+		exp := vanillaArgs
+		prog := path.Base(os.Args[0])
+		os.Args = []string{prog, "-convey-json", "-h"}
+
+		o := getOpts()
+		o.Init("blacklist", flag.ContinueOnError)
+		o.SetOutput(act)
+		o.Parse(cleanArgs(os.Args[1:]))
+		o.setArgs()
+
+		So(act.String(), ShouldEqual, exp)
 	})
 }
 
 func TestGetCFG(t *testing.T) {
-	exitCmd = func(int) { return }
-	exp := mainGetConfig
-	o := getOpts()
-	c := o.initEdgeOS()
+	Convey("Testing getCFG()", t, func() {
+		exitCmd = func(int) { return }
+		o := getOpts()
+		c := o.initEdgeOS()
 
-	c.ReadCfg(o.getCFG(c))
-	Equals(t, exp, c.String())
-	o.Set("mips64", "amd64")
-	// *o.MIPS64 = "amd64"
+		c.ReadCfg(o.getCFG(c))
+		So(c.String(), ShouldEqual, mainGetConfig)
 
-	c = o.initEdgeOS()
-	c.ReadCfg(o.getCFG(c))
-	Equals(t, "{\n  \"nodes\": [{\n  }]\n}", c.String())
+		*o.MIPS64 = "amd64"
+		c = o.initEdgeOS()
+		c.ReadCfg(o.getCFG(c))
+		So(c.String(), ShouldEqual, "{\n  \"nodes\": [{\n  }]\n}")
+		Equals(t, "{\n  \"nodes\": [{\n  }]\n}", c.String())
+	})
 }
 
-// func TestGetOpts(t *testing.T) {
-// 	exitCmd = func(int) { return }
-// 	o := getOpts()
-// 	want := "FlagSet\nARCH:    \"amd64\"\nDEBUG:   \"false\"\nDIR:     \"/etc/dnsmasq.d\"\nF:       \"**not initialized**\"\nH:       \"false\"\nI:       \"5\"\nMIPS64:  \"mips64\"\nOS:      \"" + runtime.GOOS + "\"\nTEST:    \"false\"\nTMP:     \"/tmp\"\nV:       \"false\"\nVERSION: \"false\"\n"
-//
-// 	Equals(t, want, o.String())
-//
-// 	tests := []struct {
-// 		name string
-// 		test interface{}
-// 		exp  interface{}
-// 	}{
-// 		{
-// 			name: "o.Debug",
-// 			test: o.Debug,
-// 			exp:  true,
-// 		},
-// 		{
-// 			name: "o.File",
-// 			test: o.File,
-// 			exp:  "",
-// 		},
-// 		{
-// 			name: "o.Poll",
-// 			test: o.Poll,
-// 			exp:  8,
-// 		},
-// 		{
-// 			name: "o.Test",
-// 			test: o.Test,
-// 			exp:  true,
-// 		},
-// 		{
-// 			name: "o.Verb",
-// 			test: o.Verb,
-// 			exp:  true,
-// 		},
-// 		{
-// 			name: "o.Version",
-// 			test: o.Version,
-// 			exp:  true,
-// 		},
-// 	}
-//
-// 	for _, run := range tests {
-// 		switch run.test.(type) {
-// 		case bool:
-// 			Equals(t, run.exp.(bool), run.test.(bool))
-//
-// 		case string:
-// 			Equals(t, run.exp.(string), run.test.(string))
-//
-// 		case int:
-// 			Equals(t, run.exp.(int), run.test.(int))
-// 		}
-// 	}
-// }
+func TestReloadDNS(t *testing.T) {
+	Convey("Testing ReloadDNS()", t, func() {
+		var exp string
+		c := setUpEnv()
+		exitCmd = func(int) { return }
+		logPrintf = func(s string, vals ...interface{}) {
+			exp = fmt.Sprintf(s, vals)
+		}
+
+		reloadDNS(c)
+		So(exp, ShouldEqual, "ReloadDNS(): [/bin/bash: line 1: service: command not found\n]\n")
+	})
+}
+
+func TestRemoveStaleFiles(t *testing.T) {
+	Convey("Testing removeStaleFiles()", t, func() {
+		c := setUpEnv()
+		So(removeStaleFiles(c), ShouldBeNil)
+		c.SetOpt(edgeos.Dir("EinenSieAugenBlick"), edgeos.Ext("[]a]"), edgeos.FileNameFmt("[]a]"), edgeos.WCard(edgeos.Wildcard{Node: "[]a]", Name: "]"}))
+		So(removeStaleFiles(c), ShouldNotBeNil)
+	})
+}
 
 func TestSetArch(t *testing.T) {
-	exitCmd = func(int) { return }
-	o := getOpts()
+	Convey("Testing getCFG()", t, func() {
+		exitCmd = func(int) { return }
+		o := getOpts()
 
-	tests := []struct {
-		arch string
-		exp  string
-	}{
-		{arch: "mips64", exp: "/etc/dnsmasq.d"},
-		{arch: "linux", exp: "/tmp"},
-		{arch: "darwin", exp: "/tmp"},
-	}
+		tests := []struct {
+			arch string
+			exp  string
+		}{
+			{arch: "mips64", exp: "/etc/dnsmasq.d"},
+			{arch: "linux", exp: "/tmp"},
+			{arch: "darwin", exp: "/tmp"},
+		}
 
-	for _, test := range tests {
-		Equals(t, test.exp, o.setDir(test.arch))
-	}
+		for _, test := range tests {
+			So(o.setDir(test.arch), ShouldEqual, test.exp)
+		}
+	})
 }
 
 type cfgCLI struct {
@@ -187,12 +254,13 @@ func (c cfgCLI) Load() io.Reader {
 }
 
 func TestInitEdgeOS(t *testing.T) {
-	exitCmd = func(int) { return }
-	o := getOpts()
-	p := o.initEdgeOS()
-	exp := "edgeos.Parms{\nWildcard:  \"{*s *}\"\nAPI:       \"/bin/cli-shell-api\"\nArch:      \"amd64\"\nBash:      \"/bin/bash\"\nCores:     \"2\"\nDebug:     \"false\"\nDex:       \"**not initialized**\"\nDir:       \"/tmp\"\nDNSsvc:    \"service dnsmasq restart\"\nExc:       \"**not initialized**\"\nExt:       \"blacklist.conf\"\nFile:      \"**not initialized**\"\nFnFmt:     \"%v/%v.%v.%v\"\nInCLI:     \"inSession\"\nLevel:     \"service dns forwarding\"\nMethod:    \"GET\"\nNodes:     \"[domains hosts]\"\nPfx:       \"address=\"\nPoll:      \"5\"\nLtypes:    \"[file pre-configured-domain pre-configured-host url]\"\nTest:      \"false\"\nTimeout:   \"30s\"\nVerbosity: \"0\"\n}\n"
-
-	Equals(t, exp, fmt.Sprint(p.Parms))
+	Convey("Testing initEdgeOS", t, func() {
+		exitCmd = func(int) { return }
+		o := getOpts()
+		p := o.initEdgeOS()
+		exp := "edgeos.Parms{\nWildcard:  \"{*s *}\"\nAPI:       \"/bin/cli-shell-api\"\nArch:      \"amd64\"\nBash:      \"/bin/bash\"\nCores:     \"2\"\nDebug:     \"false\"\nDex:       \"**not initialized**\"\nDir:       \"/tmp\"\nDNSsvc:    \"service dnsmasq restart\"\nExc:       \"**not initialized**\"\nExt:       \"blacklist.conf\"\nFile:      \"**not initialized**\"\nFnFmt:     \"%v/%v.%v.%v\"\nInCLI:     \"inSession\"\nLevel:     \"service dns forwarding\"\nMethod:    \"GET\"\nNodes:     \"[domains hosts]\"\nPfx:       \"address=\"\nPoll:      \"5\"\nLtypes:    \"[file pre-configured-domain pre-configured-host url]\"\nTest:      \"false\"\nTimeout:   \"30s\"\nVerbosity: \"0\"\n}\n"
+		So(fmt.Sprint(p.Parms), ShouldEqual, exp)
+	})
 }
 
 var (
@@ -206,7 +274,7 @@ var (
     	Enable debug mode
   -dir string
     	Override dnsmasq directory (default "/etc/dnsmasq.d")
-  -f string
+  -f <file>
     	<file> # Load a configuration file
   -h	Display help
   -i int
@@ -215,12 +283,77 @@ var (
     	Override target EdgeOS CPU architecture (default "mips64")
   -os string
     	Override native EdgeOS OS (default "` + runtime.GOOS + `")
-  -test
-    	Run config and data validation tests
+  -t	Run config and data validation tests
   -tmp string
     	Override dnsmasq temporary directory (default "/tmp")
   -v	Verbose display
   -version
     	Show version
+`
+	expMap = `"1e100.net":0,
+"2o7.net":0,
+"adobedtm.com":0,
+"akamai.net":0,
+"akamaihd.net":0,
+"amazon.com":0,
+"amazonaws.com":0,
+"apple.com":0,
+"ask.com":0,
+"avast.com":0,
+"bitdefender.com":0,
+"cdn.visiblemeasures.com":0,
+"cloudfront.net":0,
+"coremetrics.com":0,
+"edgesuite.net":0,
+"freedns.afraid.org":0,
+"github.com":0,
+"githubusercontent.com":0,
+"google.com":0,
+"googleadservices.com":0,
+"googleapis.com":0,
+"googletagmanager.com":0,
+"googleusercontent.com":0,
+"gstatic.com":0,
+"gvt1.com":0,
+"gvt1.net":0,
+"hb.disney.go.com":0,
+"hp.com":0,
+"hulu.com":0,
+"images-amazon.com":0,
+"live.com":0,
+"microsoft.com":0,
+"msdn.com":0,
+"msecnd.net":0,
+"paypal.com":0,
+"rackcdn.com":0,
+"schema.org":0,
+"shopify.com":0,
+"skype.com":0,
+"smacargo.com":0,
+"sourceforge.net":0,
+"ssl-on9.com":0,
+"ssl-on9.net":0,
+"sstatic.net":0,
+"static.chartbeat.com":0,
+"storage.googleapis.com":0,
+"windows.net":0,
+"xboxlive.com":0,
+"yimg.com":0,
+"ytimg.com":0,
+`
+
+	optsString = `FlagSet
+ARCH:    "amd64"
+DEBUG:   "false"
+DIR:     "/etc/dnsmasq.d"
+F:       "**not initialized**"
+H:       "true"
+I:       "5"
+MIPS64:  "mips64"
+OS:      "` + runtime.GOOS + `"
+T:       "false"
+TMP:     "/tmp"
+V:       "false"
+VERSION: "false"
 `
 )
