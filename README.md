@@ -17,9 +17,37 @@ Generates configuration files used directly by dnsmasq to redirect DNS lookups
 Integrated with the EdgeMax OS CLI
 
 ### Any FQDN in the blacklist will force dnsmasq to return the configured DNS redirect IP address
-Compatibility
+
+### Compatibility
 
 blacklist has been tested on the EdgeRouter Lite family of routers, versions v1.6.0-v1.8.0.
+
+### Usage
+Usage: blacklist [options]
+
+	-arch string
+			Set EdgeOS CPU architecture (default "amd64")
+	-debug
+			Enable debug mode
+	-dir string
+			Override dnsmasq directory (default "/etc/dnsmasq.d")
+	-f <file>
+			<file> # Load a configuration file
+	-h	Display help
+	-i int
+			Polling interval (default 5)
+	-mips64 string
+			Override target EdgeOS CPU architecture (default "mips64")
+	-os string
+			Override native EdgeOS OS (default "darwin")
+	-t	Run config and data validation tests
+	-tmp string
+			Override dnsmasq temporary directory (default "/tmp")
+	-v	Verbose display
+	-version
+			Show version
+
+### Notes
 
 The script will also install a default blacklist setup, here is the stanza (show service dns forwarding):
 

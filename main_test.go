@@ -85,6 +85,10 @@ func TestGetOpts(t *testing.T) {
 	Convey("Testing commandline output", t, func() {
 		act := new(bytes.Buffer)
 		exp := vanillaArgs
+		if IsDrone() {
+			exp = vanillaArgsOnDrone
+		}
+
 		prog := path.Base(os.Args[0])
 		os.Args = []string{prog, "-convey-json", "-h"}
 
@@ -129,7 +133,7 @@ func TestGetOpts(t *testing.T) {
 			o.SetOutput(act)
 			o.setArgs()
 
-			exp = "flag provided but not defined: -z\n" + vanillaArgs + vanillaArgs
+			exp += "flag provided but not defined: -z\n" + exp + exp
 			So(fmt.Sprint(act), ShouldEqual, exp)
 		})
 	})
@@ -290,6 +294,9 @@ var (
   -version
     	Show version
 `
+
+	vanillaArgsOnDrone = "  -arch=\"amd64\": Set EdgeOS CPU architecture\n  -debug=false: Enable debug mode\n  -dir=\"/etc/dnsmasq.d\": Override dnsmasq directory\n  -f=\"\": `<file>` # Load a configuration file\n  -h=false: Display help\n  -i=5: Polling interval\n  -mips64=\"mips64\": Override target EdgeOS CPU architecture\n  -os=\"linux\": Override native EdgeOS OS\n  -t=false: Run config and data validation tests\n  -tmp=\"/tmp\": Override dnsmasq temporary directory\n  -v=false: Verbose display\n  -version=false: Show version\n"
+
 	expMap = `"1e100.net":0,
 "2o7.net":0,
 "adobedtm.com":0,
@@ -341,7 +348,6 @@ var (
 "yimg.com":0,
 "ytimg.com":0,
 `
-
 	optsString = `FlagSet
 ARCH:    "amd64"
 DEBUG:   "false"
