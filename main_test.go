@@ -176,6 +176,10 @@ func TestCommandLineArgs(t *testing.T) {
 		act := new(bytes.Buffer)
 		exitCmd = func(int) { return }
 		exp := vanillaArgs
+		if IsDrone() {
+			exp = vanillaArgsOnDrone
+		}
+
 		prog := path.Base(os.Args[0])
 		os.Args = []string{prog, "-convey-json", "-h"}
 
