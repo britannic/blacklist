@@ -5,45 +5,55 @@ import (
 	"testing"
 
 	"github.com/britannic/blacklist/internal/tdata"
-	. "github.com/britannic/testutils"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestTdataCfg(t *testing.T) {
-	want := map[string]string{
-		"cfg":  cfg,
-		"cfg2": cfg2,
-		"cfg3": cfg3,
-	}
+	Convey("Testing TdataCfg()", t, func() {
+		exp := map[string]string{
+			"cfg":  cfg,
+			"cfg2": cfg2,
+			"cfg3": cfg3,
+		}
 
-	for k := range want {
-		got, err := tdata.Get(k)
-		OK(t, err)
-		Equals(t, want[k], got)
-	}
+		for k := range exp {
+			act, err := tdata.Get(k)
+			So(err, ShouldBeNil)
+			So(act, ShouldEqual, exp[k])
+		}
+	})
 }
 
 func TestTdataCfg2(t *testing.T) {
-	r, err := tdata.Get("cfg2")
-	OK(t, err)
-	Equals(t, cfg2, r)
+	Convey("Testing TdataCfg2()", t, func() {
+		act, err := tdata.Get("cfg2")
+		So(err, ShouldBeNil)
+		So(act, ShouldEqual, cfg2)
+	})
 }
 
 func TestTdataCfg3(t *testing.T) {
-	r, err := tdata.Get("cfg3")
-	OK(t, err)
-	Equals(t, cfg3, r)
+	Convey("Testing TdataCfg3()", t, func() {
+		act, err := tdata.Get("cfg3")
+		So(err, ShouldBeNil)
+		So(act, ShouldEqual, cfg3)
+	})
 }
 
 func TestTdataFileManifest(t *testing.T) {
-	r, err := tdata.Get("fileManifest")
-	OK(t, err)
-	Equals(t, fileManifest, r)
+	Convey("Testing TdataFileManifest()", t, func() {
+		act, err := tdata.Get("fileManifest")
+		So(err, ShouldBeNil)
+		So(act, ShouldEqual, fileManifest)
+	})
 }
 
 func TestTdataDefault(t *testing.T) {
-	_, err := tdata.Get("default")
-	NotOK(t, err)
-	Equals(t, fmt.Errorf("Get(default) is unknown!"), err)
+	Convey("Testing TdataDefault()", t, func() {
+		_, err := tdata.Get("default")
+		So(err, ShouldNotBeNil)
+		So(err, ShouldResemble, fmt.Errorf("Get(default) is unknown!"))
+	})
 }
 
 var (

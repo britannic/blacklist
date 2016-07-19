@@ -206,7 +206,6 @@ func TestGetCFG(t *testing.T) {
 		c = o.initEdgeOS()
 		c.ReadCfg(o.getCFG(c))
 		So(c.String(), ShouldEqual, "{\n  \"nodes\": [{\n  }]\n}")
-		Equals(t, "{\n  \"nodes\": [{\n  }]\n}", c.String())
 	})
 }
 

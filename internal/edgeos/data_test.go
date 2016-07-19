@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/britannic/blacklist/internal/tdata"
-	. "github.com/britannic/testutils"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func shuffleArray(slice []string) {
@@ -26,105 +26,114 @@ func shuffleArray(slice []string) {
 }
 
 func TestDiffArray(t *testing.T) {
-	biggest := sort.StringSlice{"one", "two", "three", "four", "five", "six"}
-	smallest := sort.StringSlice{"one", "two", "three"}
-	want := sort.StringSlice{"five", "four", "six"}
+	Convey("Testing DiffArray()", t, func() {
+		biggest := sort.StringSlice{"one", "two", "three", "four", "five", "six"}
+		smallest := sort.StringSlice{"one", "two", "three"}
 
-	got := DiffArray(biggest, smallest)
-	Equals(t, want, got)
+		act := DiffArray(biggest, smallest)
+		exp := sort.StringSlice{"five", "four", "six"}
+		So(act, ShouldResemble, exp)
 
-	got = DiffArray(smallest, biggest)
-	Equals(t, want, got)
+		act = DiffArray(smallest, biggest)
+		So(act, ShouldResemble, exp)
 
-	shuffleArray(biggest)
-	got = DiffArray(smallest, biggest)
-	Equals(t, want, got)
+		shuffleArray(biggest)
+		act = DiffArray(smallest, biggest)
+		So(act, ShouldResemble, exp)
 
-	shuffleArray(smallest)
-	got = DiffArray(smallest, biggest)
-	Equals(t, want, got)
+		shuffleArray(smallest)
+		act = DiffArray(smallest, biggest)
+		So(act, ShouldResemble, exp)
+	})
 }
 
 func TestFormatData(t *testing.T) {
-	c := NewConfig(
-		Dir("/tmp"),
-		Ext("blacklist.conf"),
-		Nodes([]string{domains, hosts}),
-	)
-
-	l := &CFGstatic{Cfg: tdata.Cfg}
-	err := c.ReadCfg(l)
-	OK(t, err)
-
-	for _, node := range c.Parms.Nodes {
-		var (
-			got       io.Reader
-			gotList   = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
-			lines     []string
-			wantBytes []byte
+	Convey("Testing FormatData()", t, func() {
+		c := NewConfig(
+			Dir("/tmp"),
+			Ext("blacklist.conf"),
+			Nodes([]string{domains, hosts}),
 		)
-		eq := getSeparator(node)
 
-		getBytes := func() io.Reader {
-			sort.Strings(c.tree[node].inc)
-			return strings.NewReader(strings.Join(c.tree[node].inc, "\n"))
+		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+
+		for _, node := range c.Parms.Nodes {
+			var (
+				act      io.Reader
+				actList  = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+				lines    []string
+				expBytes []byte
+			)
+
+			eq := getSeparator(node)
+
+			r := func() io.Reader {
+				sort.Strings(c.tree[node].inc)
+				return strings.NewReader(strings.Join(c.tree[node].inc, "\n"))
+			}
+
+			b := bufio.NewScanner(r())
+
+			for b.Scan() {
+				k := b.Text()
+				lines = append(lines, fmt.Sprintf("address=%v%v/%v", eq, k, c.tree[node].ip)+"\n")
+				actList.set(k, 0)
+			}
+
+			sort.Strings(lines)
+			expBytes = []byte(strings.Join(lines, ""))
+
+			fmttr := "address=" + eq + "%v/" + c.tree[node].ip
+			act = formatData(fmttr, actList)
+			actBytes, err := ioutil.ReadAll(act)
+
+			So(err, ShouldBeNil)
+			So(actBytes, ShouldResemble, expBytes)
 		}
-
-		b := bufio.NewScanner(getBytes())
-
-		for b.Scan() {
-			k := b.Text()
-			lines = append(lines, fmt.Sprintf("address=%v%v/%v", eq, k, c.tree[node].ip)+"\n")
-			gotList.set(k, 0)
-		}
-
-		sort.Strings(lines)
-		wantBytes = []byte(strings.Join(lines, ""))
-
-		fmttr := "address=" + eq + "%v/" + c.tree[node].ip
-		got = formatData(fmttr, gotList)
-		gotBytes, err := ioutil.ReadAll(got)
-		OK(t, err)
-		Equals(t, wantBytes, gotBytes)
-	}
+	})
 }
 
 func TestGetSubdomains(t *testing.T) {
-	d := getSubdomains("top.one.two.three.four.five.six.intellitxt.com")
-	d.RWMutex = &sync.RWMutex{}
+	Convey("Testing GetSubdomains()", t, func() {
+		d := getSubdomains("top.one.two.three.four.five.six.intellitxt.com")
+		d.RWMutex = &sync.RWMutex{}
 
-	for key := range d.entry {
-		Assert(t, d.keyExists(key), fmt.Sprintf("%v key doesn't exist", key), d)
-	}
+		for key := range d.entry {
+			So(d.keyExists(key), ShouldBeTrue)
+		}
+	})
 }
 
 func TestGetType(t *testing.T) {
-	tests := []struct {
-		ntypestr string
-		typeint  ntype
-		typestr  string
-	}{
-		{typeint: 100, typestr: notknown, ntypestr: "ntype(100)"},
-		{typeint: domn, typestr: domains, ntypestr: "domn"},
-		{typeint: excDomn, typestr: ExcDomns, ntypestr: "excDomn"},
-		{typeint: excHost, typestr: ExcHosts, ntypestr: "excHost"},
-		{typeint: excRoot, typestr: ExcRoots, ntypestr: "excRoot"},
-		{typeint: host, typestr: hosts, ntypestr: "host"},
-		{typeint: preDomn, typestr: PreDomns, ntypestr: "preDomn"},
-		{typeint: preHost, typestr: PreHosts, ntypestr: "preHost"},
-		{typeint: root, typestr: blacklist, ntypestr: "root"},
-		{typeint: unknown, typestr: notknown, ntypestr: "unknown"},
-		{typeint: zone, typestr: zones, ntypestr: "zone"},
-	}
-
-	for _, test := range tests {
-		if test.typeint != 100 {
-			Equals(t, test.typeint, typeStr(test.typestr))
-			Equals(t, test.typestr, typeInt(test.typeint))
-			Equals(t, test.typestr, getType(test.typeint))
-			Equals(t, test.typeint, getType(test.typestr))
+	Convey("Testing GetType()", t, func() {
+		tests := []struct {
+			ntypestr string
+			typeint  ntype
+			typestr  string
+		}{
+			{typeint: 100, typestr: notknown, ntypestr: "ntype(100)"},
+			{typeint: domn, typestr: domains, ntypestr: "domn"},
+			{typeint: excDomn, typestr: ExcDomns, ntypestr: "excDomn"},
+			{typeint: excHost, typestr: ExcHosts, ntypestr: "excHost"},
+			{typeint: excRoot, typestr: ExcRoots, ntypestr: "excRoot"},
+			{typeint: host, typestr: hosts, ntypestr: "host"},
+			{typeint: preDomn, typestr: PreDomns, ntypestr: "preDomn"},
+			{typeint: preHost, typestr: PreHosts, ntypestr: "preHost"},
+			{typeint: root, typestr: blacklist, ntypestr: "root"},
+			{typeint: unknown, typestr: notknown, ntypestr: "unknown"},
+			{typeint: zone, typestr: zones, ntypestr: "zone"},
 		}
-		Equals(t, test.ntypestr, fmt.Sprint(test.typeint))
-	}
 
+		for _, tt := range tests {
+			Convey("Testing GetType("+tt.ntypestr+")", func() {
+				if tt.typeint != 100 {
+					So(typeStr(tt.typestr), ShouldEqual, tt.typeint)
+					So(typeInt(tt.typeint), ShouldEqual, tt.typestr)
+					So(getType(tt.typeint), ShouldEqual, tt.typestr)
+					So(getType(tt.typestr), ShouldEqual, tt.typeint)
+				}
+				So(fmt.Sprint(tt.typeint), ShouldEqual, tt.ntypestr)
+			})
+		}
+	})
 }

@@ -366,15 +366,12 @@ func TestGetAllContent(t *testing.T) {
 		)
 
 		err := c.ReadCfg(r)
-		// OK(t, err)
 		So(err, ShouldBeNil)
 
 		act := fmt.Sprint(c.GetAll(PreDomns, PreHosts))
-		// Equals(t, wantPre, act)
 		So(act, ShouldEqual, wantPre)
 
 		act = fmt.Sprint(c.GetAll())
-		// Equals(t, wantAll, act)
 		So(act, ShouldEqual, wantAll)
 
 	})
@@ -594,59 +591,59 @@ func TestProcessContent(t *testing.T) {
 }
 
 func TestWriteFile(t *testing.T) {
-	tests := []struct {
-		data  io.Reader
-		dir   string
-		fname string
-		ok    bool
-		want  string
-	}{
-		{
-			data:  strings.NewReader("The rest is history!"),
-			dir:   "/tmp",
-			fname: "Test.util.writeFile",
-			ok:    true,
-			want:  "",
-		},
-		{
-			data:  bytes.NewBuffer([]byte{84, 104, 101, 32, 114, 101, 115, 116, 32, 105, 115, 32, 104, 105, 115, 116, 111, 114, 121, 33}),
-			dir:   "/tmp",
-			fname: "Test.util.writeFile",
-			ok:    true,
-			want:  "",
-		},
-		{
-			data:  bytes.NewBufferString("This shouldn't be written!"),
-			dir:   "",
-			fname: "/",
-			ok:    false,
-			want:  "open /: is a directory",
-		},
-	}
+	Convey("Testing WriteFile()", t, func() {
 
-	for _, tt := range tests {
-		switch tt.ok {
-		case true:
-			f, err := ioutil.TempFile(tt.dir, tt.fname)
-			OK(t, err)
-			b := &blist{
-				file: f.Name(),
-				r:    tt.data,
-			}
-			err = b.writeFile()
-			OK(t, err)
-			os.Remove(f.Name())
-
-		default:
-			b := &blist{
-				file: tt.dir + tt.fname,
-				r:    tt.data,
-			}
-			err := b.writeFile()
-			NotOK(t, err)
-			Equals(t, tt.want, err.Error())
+		tests := []struct {
+			data  io.Reader
+			dir   string
+			fname string
+			ok    bool
+			want  string
+		}{
+			{
+				data:  strings.NewReader("The rest is history!"),
+				dir:   "/tmp",
+				fname: "Test.util.writeFile",
+				ok:    true,
+				want:  "",
+			},
+			{
+				data:  bytes.NewBuffer([]byte{84, 104, 101, 32, 114, 101, 115, 116, 32, 105, 115, 32, 104, 105, 115, 116, 111, 114, 121, 33}),
+				dir:   "/tmp",
+				fname: "Test.util.writeFile",
+				ok:    true,
+				want:  "",
+			},
+			{
+				data:  bytes.NewBufferString("This shouldn't be written!"),
+				dir:   "",
+				fname: "/",
+				ok:    false,
+				want:  "open /: is a directory",
+			},
 		}
-	}
+
+		for _, tt := range tests {
+			switch tt.ok {
+			case true:
+				f, err := ioutil.TempFile(tt.dir, tt.fname)
+				So(err, ShouldBeNil)
+				b := &blist{
+					file: f.Name(),
+					r:    tt.data,
+				}
+				So(b.writeFile(), ShouldBeNil)
+				os.Remove(f.Name())
+
+			default:
+				b := &blist{
+					file: tt.dir + tt.fname,
+					r:    tt.data,
+				}
+				So(b.writeFile().Error(), ShouldResemble, tt.want)
+			}
+		}
+	})
 }
 
 var (

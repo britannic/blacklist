@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	. "github.com/britannic/testutils"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 type HTTPserver struct {
@@ -19,7 +20,6 @@ type HTTPserver struct {
 }
 
 func (h *HTTPserver) NewHTTPServer() *url.URL {
-	// test server
 	h.Mux = http.NewServeMux()
 	h.Server = httptest.NewServer(h.Mux)
 	URL, _ := url.Parse(h.Server.URL)
@@ -27,74 +27,76 @@ func (h *HTTPserver) NewHTTPServer() *url.URL {
 }
 
 func TestGetHTTP(t *testing.T) {
-	var (
-		h      = new(HTTPserver)
-		method = "GET"
-		page   = "/domains.txt"
-		want   = HTTPDomainData
-	)
-
-	tests := []struct {
-		err    error
-		method string
-		ok     bool
-		URL    string
-		want   string
-	}{
-		{ok: true, err: nil, method: method, URL: page, want: want},
-		{ok: false, err: fmt.Errorf("%v", `Get bad%20url: unsupported protocol scheme ""`), method: method, URL: "bad url", want: "Unable to get response for bad url..."},
-		{ok: false, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: page, want: "Unable to form request for /domains.txt..."},
-		{ok: false, err: errors.New("Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: getsockopt: connection refused"), method: method, URL: "http://127.0.0.1:808/", want: "Unable to get response for http://127.0.0.1:808/..."},
-		{ok: true, err: nil, method: method, URL: page, want: ""},
-		{ok: true, err: nil, method: method, URL: "/biccies.txt", want: "404 page not found\n"},
-		{ok: true, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: page, want: "Unable to form request for "},
-	}
-
-	for i, test := range tests {
-		URL := h.NewHTTPServer().String()
-		h.Mux.HandleFunc(page,
-			func(w http.ResponseWriter, r *http.Request) {
-				fmt.Fprint(w, test.want)
-			},
+	Convey("Testing GetHTTP()", t, func() {
+		var (
+			h      = new(HTTPserver)
+			method = "GET"
+			page   = "/domains.txt"
+			want   = HTTPDomainData
 		)
 
-		if test.ok {
-			test.URL = URL + test.URL
-			if test.method == "bad method" {
-				test.want += test.URL + "..."
+		tests := []struct {
+			err    error
+			method string
+			ok     bool
+			URL    string
+			exp    string
+		}{
+			{ok: true, err: nil, method: method, URL: page, exp: want},
+			{ok: false, err: fmt.Errorf("%v", `Get bad%20url: unsupported protocol scheme ""`), method: method, URL: "bad url", exp: "Unable to get response for bad url..."},
+			{ok: false, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: page, exp: "Unable to form request for /domains.txt..."},
+			{ok: false, err: errors.New("Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: getsockopt: connection refused"), method: method, URL: "http://127.0.0.1:808/", exp: "Unable to get response for http://127.0.0.1:808/..."},
+			{ok: true, err: nil, method: method, URL: page, exp: ""},
+			{ok: true, err: nil, method: method, URL: "/biccies.txt", exp: "404 page not found\n"},
+			{ok: true, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: page, exp: "Unable to form request for "},
+		}
+
+		for i, tt := range tests {
+			URL := h.NewHTTPServer().String()
+			h.Mux.HandleFunc(page,
+				func(w http.ResponseWriter, r *http.Request) {
+					fmt.Fprint(w, tt.exp)
+				},
+			)
+
+			if tt.ok {
+				tt.URL = URL + tt.URL
+				if tt.method == "bad method" {
+					tt.exp += tt.URL + "..."
+				}
 			}
-		}
 
-		if IsDrone() {
-			switch i {
-			case 2:
-				test.err = fmt.Errorf("%v", `unsupported protocol scheme ""`)
-				test.want = "Unable to get response for /domains.txt..."
-			case 3:
-				test.err = fmt.Errorf("%v", "Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connection refused")
-				test.want = "Unable to get response for http://127.0.0.1:808/..."
-			case 6:
-				test.want = "No data returned for " + test.URL + "..."
+			if IsDrone() {
+				switch i {
+				case 2:
+					tt.err = fmt.Errorf("%v", `unsupported protocol scheme ""`)
+					tt.exp = "Unable to get response for /domains.txt..."
+				case 3:
+					tt.err = fmt.Errorf("%v", "Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connection refused")
+					tt.exp = "Unable to get response for http://127.0.0.1:808/..."
+				case 6:
+					tt.exp = "No data returned for " + tt.URL + "..."
+				}
 			}
+
+			o := getHTTP(&object{Parms: &Parms{Method: tt.method}, url: tt.URL})
+
+			switch {
+			case o.err != nil && tt.err != nil:
+				So(o.err.Error(), ShouldResemble, tt.err.Error())
+			case o.err != nil:
+				fmt.Printf("Test: %v, error: %v\n", i, o.err)
+			}
+
+			act, err := ioutil.ReadAll(o.r)
+			So(err, ShouldBeNil)
+
+			if tt.exp == "" {
+				tt.exp = "No data returned for " + tt.URL + "..."
+			}
+			So(string(act), ShouldEqual, tt.exp)
 		}
-
-		o := getHTTP(&object{Parms: &Parms{Method: test.method}, url: test.URL})
-
-		switch {
-		case o.err != nil && test.err != nil:
-			Equals(t, test.err.Error(), o.err.Error())
-		case o.err != nil:
-			fmt.Printf("Test: %v, error: %v\n", i, o.err)
-		}
-
-		got, err := ioutil.ReadAll(o.r)
-		OK(t, err)
-
-		if test.want == "" {
-			test.want = "No data returned for " + test.URL + "..."
-		}
-		Equals(t, test.want, string(got))
-	}
+	})
 }
 
 type myHandler struct {
@@ -112,28 +114,21 @@ func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestMyHandler(t *testing.T) {
+	Convey("Testing MyHandler()", t, func() {
+		server := httptest.NewServer(&myHandler{})
+		defer server.Close()
 
-	// handler := &myHandler{}
-	server := httptest.NewServer(&myHandler{})
-	defer server.Close()
+		for _, i := range []int{1, 2} {
+			resp, err := http.Get(server.URL)
+			So(err, ShouldBeNil)
+			So(resp.StatusCode, ShouldEqual, 200)
 
-	for _, i := range []int{1, 2} {
-		resp, err := http.Get(server.URL)
-		if err != nil {
-			t.Fatal(err)
+			exp := fmt.Sprintf("Visitor count: %d.", i)
+			act, err := ioutil.ReadAll(resp.Body)
+			So(err, ShouldBeNil)
+			So(string(act), ShouldEqual, exp)
 		}
-		if resp.StatusCode != 200 {
-			t.Fatalf("Received non-200 response: %d\n", resp.StatusCode)
-		}
-		expected := fmt.Sprintf("Visitor count: %d.", i)
-		actual, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if expected != string(actual) {
-			t.Errorf("Expected the message '%s'\n", expected)
-		}
-	}
+	})
 }
 
 var (

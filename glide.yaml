@@ -3,8 +3,8 @@
 # package
 github.com/britannic/blacklist
 
-github.com/britannic/testutils	ee7596f
-github.com/gopherjs/gopherjs	go1.5-87-g0904034
+github.com/britannic/testutils	79647e5
+github.com/gopherjs/gopherjs	go1.5-88-g72e303c
 github.com/jtolds/gls	v4.2.0
 github.com/pmezard/go-difflib	792786c
 github.com/smartystreets/assertions	1.6.0-10-g2063fd1

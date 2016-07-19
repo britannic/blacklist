@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/britannic/blacklist/internal/regx"
-	. "github.com/britannic/testutils"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 type test struct {
@@ -17,62 +17,67 @@ type test struct {
 type config map[string]test
 
 func TestGet(t *testing.T) {
-
-	for k := range c {
-		got := regx.Get(k, c[k].input)
-		Assert(t, len(got) > 0, fmt.Sprintf("%v results fail: %v", k, got), c[k])
-		Equals(t, c[k].result, got[c[k].index])
-	}
+	Convey("Testing Get()", t, func() {
+		for k := range c {
+			act := regx.Get(k, c[k].input)
+			So(len(act) > 0, ShouldBeTrue)
+			So(act[c[k].index], ShouldEqual, c[k].result)
+		}
+	})
 }
 
 func TestRegex(t *testing.T) {
-	got := regx.Obj
-	want := rxout
-	Equals(t, want, fmt.Sprint(got))
+	Convey("Testing Regex()", t, func() {
+		act := regx.Obj
+		exp := rxout
+		So(fmt.Sprint(act), ShouldEqual, exp)
+	})
 }
 
 func TestStripPrefixAndSuffix(t *testing.T) {
-	tests := []struct {
-		exp    string
-		line   string
-		ok     bool
-		prefix string
-		rx     *regx.OBJ
-	}{
-		{
-			exp:    "This is a complete sentence and should not be a comment.",
-			line:   "/* This is a complete sentence and should not be a comment.",
-			ok:     true,
-			prefix: "/* ",
-			rx:     regx.Obj,
-		},
-		{
-			exp:    "verybad.phishing.sites.r.us.com",
-			line:   "https://verybad.phishing.sites.r.us.com",
-			ok:     true,
-			prefix: "https://",
-			rx:     regx.Obj,
-		},
-		{
-			exp:    "verybad.phishing.sites.r.us.com",
-			line:   "https://verybad.phishing.sites.r.us.com",
-			ok:     true,
-			prefix: "http",
-			rx:     regx.Obj,
-		},
-		{
-			exp:    "verybad.phishing.sites.r.us.com",
-			line:   "verybad.phishing.sites.r.us.com",
-			ok:     false,
-			prefix: "http",
-			rx:     regx.Obj,
-		},
-	}
-	for _, tt := range tests {
-		act, ok := tt.rx.StripPrefixAndSuffix(tt.line, tt.prefix)
-		Equals(t, tt.exp, act)
-		Equals(t, tt.ok, ok)
-	}
+	Convey("Testing StripPrefixAndSuffix()", t, func() {
+		tests := []struct {
+			exp    string
+			line   string
+			ok     bool
+			prefix string
+			rx     *regx.OBJ
+		}{
+			{
+				exp:    "This is a complete sentence and should not be a comment.",
+				line:   "/* This is a complete sentence and should not be a comment.",
+				ok:     true,
+				prefix: "/* ",
+				rx:     regx.Obj,
+			},
+			{
+				exp:    "verybad.phishing.sites.r.us.com",
+				line:   "https://verybad.phishing.sites.r.us.com",
+				ok:     true,
+				prefix: "https://",
+				rx:     regx.Obj,
+			},
+			{
+				exp:    "verybad.phishing.sites.r.us.com",
+				line:   "https://verybad.phishing.sites.r.us.com",
+				ok:     true,
+				prefix: "http",
+				rx:     regx.Obj,
+			},
+			{
+				exp:    "verybad.phishing.sites.r.us.com",
+				line:   "verybad.phishing.sites.r.us.com",
+				ok:     false,
+				prefix: "http",
+				rx:     regx.Obj,
+			},
+		}
+		for _, tt := range tests {
+			act, ok := tt.rx.StripPrefixAndSuffix(tt.line, tt.prefix)
+			So(act, ShouldEqual, tt.exp)
+			So(ok, ShouldEqual, tt.ok)
+		}
+	})
 }
 
 var (
