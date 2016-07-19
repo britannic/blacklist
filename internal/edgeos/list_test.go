@@ -57,8 +57,8 @@ func TestMergeList(t *testing.T) {
 				testList2.entry[string(i)] = 1
 			}
 		}
-		act := mergeList(testList1, testList2)
-		So(act, ShouldResemble, exp)
+
+		So(mergeList(testList1, testList2), ShouldResemble, exp)
 	})
 }
 

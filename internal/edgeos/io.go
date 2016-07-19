@@ -114,15 +114,14 @@ func (c *CFGstatic) read() io.Reader {
 // purgeFiles removes any orphaned blacklist files that don't have sources
 func purgeFiles(files []string) error {
 	var errs []string
-NEXT:
 	for _, f := range files {
-		if _, err := os.Stat(f); os.IsNotExist(err) {
-			continue NEXT
-		}
-		if !deleteFile(f) {
-			errs = append(errs, fmt.Sprintf("could not remove %q", f))
+		if _, err := os.Stat(f); !os.IsNotExist(err) {
+			if !deleteFile(f) {
+				errs = append(errs, fmt.Sprintf("could not remove %q", f))
+			}
 		}
 	}
+
 	if errs != nil {
 		return errors.New(strings.Join(errs, "\n"))
 	}

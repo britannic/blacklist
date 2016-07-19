@@ -20,7 +20,7 @@ func TestGet(t *testing.T) {
 	Convey("Testing Get()", t, func() {
 		for k := range c {
 			act := regx.Get(k, c[k].input)
-			So(len(act) > 0, ShouldBeTrue)
+			So(len(act), ShouldBeGreaterThan, 0)
 			So(act[c[k].index], ShouldEqual, c[k].result)
 		}
 	})
@@ -28,9 +28,7 @@ func TestGet(t *testing.T) {
 
 func TestRegex(t *testing.T) {
 	Convey("Testing Regex()", t, func() {
-		act := regx.Obj
-		exp := rxout
-		So(fmt.Sprint(act), ShouldEqual, exp)
+		So(fmt.Sprint(regx.Obj), ShouldEqual, rxout)
 	})
 }
 

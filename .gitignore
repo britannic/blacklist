@@ -45,3 +45,9 @@ vendor/github.com/fatih/structs/
 *.lock
 
 vendor/github.com/smartystreets/goconvey/
+
+internal/edgeos/bkp
+
+internal/edgeos/bkp
+
+internal/edgeos/bkp

@@ -40,25 +40,17 @@ func TestPurgeFiles(t *testing.T) {
 			dir       = "/tmp"
 			ext       = ".delete"
 			purgeList []string
-			exp       error
 		)
 
 		for i := 0; i < 10; i++ {
-			fname := fmt.Sprintf("%v%v", i, ext)
-			f, err := ioutil.TempFile(dir, fname)
+			f, err := ioutil.TempFile(dir, fmt.Sprintf("%v%v", i, ext))
 			So(err, ShouldBeNil)
 			purgeList = append(purgeList, f.Name())
 		}
 
-		err := purgeFiles(purgeList)
-		So(err, ShouldBeNil)
-
-		act := purgeFiles(purgeList)
-		So(act, ShouldEqual, exp)
-
-		act = purgeFiles([]string{"/dev/null"})
-		exp = fmt.Errorf(`could not remove "/dev/null"`)
-		So(act, ShouldResemble, exp)
+		So(purgeFiles(purgeList), ShouldBeNil)
+		So(purgeFiles([]string{"/dev/null"}), ShouldNotBeNil)
+		So(purgeFiles([]string{"SpiegelAdlerIstHier"}), ShouldBeNil)
 	})
 }
 
@@ -162,7 +154,6 @@ func TestAPICMD(t *testing.T) {
 
 func TestDeleteFile(t *testing.T) {
 	Convey("Testing DeleteFile()", t, func() {
-
 		dir := "../testdata"
 		ext := "delete.me"
 

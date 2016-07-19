@@ -29,21 +29,16 @@ func TestDiffArray(t *testing.T) {
 	Convey("Testing DiffArray()", t, func() {
 		biggest := sort.StringSlice{"one", "two", "three", "four", "five", "six"}
 		smallest := sort.StringSlice{"one", "two", "three"}
-
-		act := DiffArray(biggest, smallest)
 		exp := sort.StringSlice{"five", "four", "six"}
-		So(act, ShouldResemble, exp)
 
-		act = DiffArray(smallest, biggest)
-		So(act, ShouldResemble, exp)
+		So(DiffArray(biggest, smallest), ShouldResemble, exp)
+		So(DiffArray(smallest, biggest), ShouldResemble, exp)
 
 		shuffleArray(biggest)
-		act = DiffArray(smallest, biggest)
-		So(act, ShouldResemble, exp)
+		So(DiffArray(smallest, biggest), ShouldResemble, exp)
 
 		shuffleArray(smallest)
-		act = DiffArray(smallest, biggest)
-		So(act, ShouldResemble, exp)
+		So(DiffArray(smallest, biggest), ShouldResemble, exp)
 	})
 }
 
@@ -59,13 +54,11 @@ func TestFormatData(t *testing.T) {
 
 		for _, node := range c.Parms.Nodes {
 			var (
-				act      io.Reader
 				actList  = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
-				lines    []string
+				eq       = getSeparator(node)
 				expBytes []byte
+				lines    []string
 			)
-
-			eq := getSeparator(node)
 
 			r := func() io.Reader {
 				sort.Strings(c.tree[node].inc)
@@ -73,7 +66,6 @@ func TestFormatData(t *testing.T) {
 			}
 
 			b := bufio.NewScanner(r())
-
 			for b.Scan() {
 				k := b.Text()
 				lines = append(lines, fmt.Sprintf("address=%v%v/%v", eq, k, c.tree[node].ip)+"\n")
@@ -84,8 +76,7 @@ func TestFormatData(t *testing.T) {
 			expBytes = []byte(strings.Join(lines, ""))
 
 			fmttr := "address=" + eq + "%v/" + c.tree[node].ip
-			act = formatData(fmttr, actList)
-			actBytes, err := ioutil.ReadAll(act)
+			actBytes, err := ioutil.ReadAll(formatData(fmttr, actList))
 
 			So(err, ShouldBeNil)
 			So(actBytes, ShouldResemble, expBytes)

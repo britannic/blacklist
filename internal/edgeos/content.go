@@ -42,19 +42,6 @@ type Contenter interface {
 	String() string
 }
 
-// type errata []error
-//
-// func (e errata) Error() (errs string) {
-// 	if len(e) == 1 {
-// 		return e[0].Error()
-// 	}
-//
-// 	for _, err := range e {
-// 		errs += "\n" + err.Error()
-// 	}
-// 	return errs
-// }
-
 // FIODataObjects implements GetList for files
 type FIODataObjects struct {
 	*Objects

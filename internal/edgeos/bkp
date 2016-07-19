@@ -1,3 +1,0 @@
-#! /bin/bash
-
-cp -R $GOPATH/src/github.com/britannic/blacklist/ ~/Dropbox/Golang/src/github.com/britannic/
