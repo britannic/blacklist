@@ -203,7 +203,7 @@ func TestLTypes(t *testing.T) {
 	})
 }
 
-func TestbooltoString(t *testing.T) {
+func TestBooltoString(t *testing.T) {
 	Convey("Testing booltoString()", t, func() {
 		So(booltoStr(true), ShouldEqual, True)
 		So(booltoStr(false), ShouldEqual, False)
