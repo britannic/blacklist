@@ -23,9 +23,7 @@ type object struct {
 	Objects
 	prefix string
 	r      io.Reader
-	// stats  io.Reader
-	// sync.RWMutex
-	url string
+	url    string
 }
 
 // Objects is a struct of []*Object

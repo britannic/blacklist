@@ -26,29 +26,25 @@ const (
 	zone                 // Unused - future application
 )
 
-// BooltoStr converts a boolean ("true" or "false") to a string equivalent
-func BooltoStr(b bool) string {
+// booltoStr converts a boolean ("true" or "false") to a string equivalent
+func booltoStr(b bool) string {
 	if b {
 		return True
 	}
 	return False
 }
 
-// DiffArray returns the delta of two arrays
-func DiffArray(a, b []string) (diff sort.StringSlice) {
+// diffArray returns the delta of two arrays
+func diffArray(a, b []string) (diff sort.StringSlice) {
 	var biggest, smallest []string
-
 	switch {
 	case len(a) > len(b), len(a) == len(b):
-		biggest = a
-		smallest = b
+		biggest, smallest = a, b
 	case len(a) < len(b):
-		biggest = b
-		smallest = a
+		biggest, smallest = b, a
 	}
 
 	dmap := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
-
 	for _, k := range smallest {
 		dmap.set(k, 0)
 	}
@@ -106,8 +102,8 @@ func getType(in interface{}) (out interface{}) {
 	return out
 }
 
-// StrToBool converts a string ("true" or "false") to boolean
-func StrToBool(s string) bool {
+// strToBool converts a string ("true" or "false") to boolean
+func strToBool(s string) bool {
 	if strings.ToLower(s) == True {
 		return true
 	}

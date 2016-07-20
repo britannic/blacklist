@@ -83,16 +83,13 @@ func apiCMD(a string, inCLI bool) string {
 
 // deleteFile removes a file if it exists
 func deleteFile(f string) bool {
-	if _, err := os.Stat(f); os.IsNotExist(err) {
-		return true
-	}
 	if err := os.Remove(f); err != nil {
 		return false
 	}
 	return true
 }
 
-// getFile reads a file and returns a *bufio.Scanner instance
+// getFile reads a file and returns an io.Reader
 func getFile(f string) (io.Reader, error) {
 	return os.Open(f)
 }

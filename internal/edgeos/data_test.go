@@ -26,19 +26,19 @@ func shuffleArray(slice []string) {
 }
 
 func TestDiffArray(t *testing.T) {
-	Convey("Testing DiffArray()", t, func() {
+	Convey("Testing diffArray()", t, func() {
 		biggest := sort.StringSlice{"one", "two", "three", "four", "five", "six"}
 		smallest := sort.StringSlice{"one", "two", "three"}
 		exp := sort.StringSlice{"five", "four", "six"}
 
-		So(DiffArray(biggest, smallest), ShouldResemble, exp)
-		So(DiffArray(smallest, biggest), ShouldResemble, exp)
+		So(diffArray(biggest, smallest), ShouldResemble, exp)
+		So(diffArray(smallest, biggest), ShouldResemble, exp)
 
 		shuffleArray(biggest)
-		So(DiffArray(smallest, biggest), ShouldResemble, exp)
+		So(diffArray(smallest, biggest), ShouldResemble, exp)
 
 		shuffleArray(smallest)
-		So(DiffArray(smallest, biggest), ShouldResemble, exp)
+		So(diffArray(smallest, biggest), ShouldResemble, exp)
 	})
 }
 
@@ -110,7 +110,7 @@ func TestGetType(t *testing.T) {
 			{typeint: host, typestr: hosts, ntypestr: "host"},
 			{typeint: preDomn, typestr: PreDomns, ntypestr: "preDomn"},
 			{typeint: preHost, typestr: PreHosts, ntypestr: "preHost"},
-			{typeint: root, typestr: blacklist, ntypestr: "root"},
+			{typeint: root, typestr: rootNode, ntypestr: "root"},
 			{typeint: unknown, typestr: notknown, ntypestr: "unknown"},
 			{typeint: zone, typestr: zones, ntypestr: "zone"},
 		}

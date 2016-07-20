@@ -10,8 +10,8 @@ const (
 )
 
 type cfgJSON struct {
-	array []string
 	*Config
+	array        []string
 	indent       int
 	leaf, pk, sk string
 }
@@ -27,11 +27,11 @@ func tabs(t int) (s string) {
 }
 
 func getJSONArray(c *cfgJSON) (js string) {
-	ind := c.indent
 	cma := comma
-	ret := enter
-	js += fmt.Sprintf("%v%q: [", tabs(ind), c.leaf)
 	cnt := len(c.array)
+	ind := c.indent
+	js += fmt.Sprintf("%v%q: [", tabs(ind), c.leaf)
+	ret := enter
 
 	switch {
 	case c.pk != rootNode && cnt == 0:
@@ -56,7 +56,6 @@ func getJSONArray(c *cfgJSON) (js string) {
 		}
 
 		cma = comma
-
 		if c.pk == rootNode {
 			cma = null
 		}
@@ -100,7 +99,7 @@ func getJSONsrcArray(c *cfgJSON) (js string) {
 
 		js += fmt.Sprintf("%v%q: {\n", tabs(ind), o.name)
 		ind++
-		js += fmt.Sprintf("%v%q: %q,\n", tabs(ind), disabled, BooltoStr(o.disabled))
+		js += fmt.Sprintf("%v%q: %q,\n", tabs(ind), disabled, booltoStr(o.disabled))
 		js = is(ind, js, "description", o.desc)
 		js = is(ind, js, "ip", o.ip)
 		js = is(ind, js, "prefix", o.prefix)

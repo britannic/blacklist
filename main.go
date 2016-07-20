@@ -19,10 +19,11 @@ const (
 )
 
 var (
-	// Version vars updated by go build -ldflags
+	// These vars updated by go build -ldflags
 	build   = "UNKNOWN"
 	githash = "UNKNOWN"
 	version = "UNKNOWN"
+	// ---
 
 	exitCmd    = os.Exit
 	logFatalln = log.Fatalln
@@ -57,7 +58,7 @@ func basename(s string) string {
 		}
 	}
 
-	// Preserve everything before last '.'.
+	// Preserve everything before last '.'
 	for i := len(s) - 1; i >= 0; i-- {
 		if s[i] == '.' {
 			s = s[:i]
@@ -98,8 +99,7 @@ func processObjects(c *e.Config, objects []e.IFace) error {
 			return err
 		}
 
-		err = c.ProcessContent(ct)
-		if err != nil {
+		if err = c.ProcessContent(ct); err != nil {
 			return err
 		}
 	}
@@ -122,6 +122,14 @@ func removeStaleFiles(c *e.Config) error {
 	}
 	return nil
 }
+
+// func jsonPrint(in string) string {
+// 	var out bytes.Buffer
+// 	if err := json.Indent(&out, []byte(in), "", "\t"); err != nil {
+// 		return in
+// 	}
+// 	return out.String()
+// }
 
 func setUpEnv() *e.Config {
 	o := getOpts()

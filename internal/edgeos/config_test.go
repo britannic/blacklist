@@ -3,6 +3,7 @@ package edgeos
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"sync"
 	"testing"
@@ -135,17 +136,16 @@ func TestReloadDNS(t *testing.T) {
 
 func TestRemove(t *testing.T) {
 	Convey("Testing c.GetAll().Files().Remove()", t, func() {
+		dir, _ := ioutil.TempDir("/tmp", "testBlacklist")
+		defer os.RemoveAll(dir)
+
 		var (
-			dir    = "../testdata"
-			ext    = "blacklist.conf"
-			nodes  = []string{rootNode, domains, hosts}
-			Ltypes = []string{files, PreDomns, PreHosts, urls}
-			c      = NewConfig(
+			c = NewConfig(
 				Dir(dir),
-				Ext(ext),
+				Ext("blacklist.conf"),
 				FileNameFmt("%v/%v.%v.%v"),
-				Nodes(nodes),
-				LTypes(Ltypes),
+				Nodes([]string{domains, hosts}),
+				LTypes([]string{files, PreDomns, PreHosts, urls}),
 				WCard(Wildcard{Node: "*s", Name: "*"}),
 			)
 			exp []string
@@ -159,9 +159,9 @@ func TestRemove(t *testing.T) {
 			f.Close()
 		})
 
-		for _, node := range nodes {
+		for _, node := range c.Nodes() {
 			for i := 1; i < 10; i++ {
-				fname := fmt.Sprintf("%v/%v.%v.%v", dir, node, i, ext)
+				fname := fmt.Sprintf("%v/%v.%v.%v", dir, node, i, c.Ext)
 				f, err := os.Create(fname)
 				So(err, ShouldBeNil)
 				f.Close()
@@ -203,17 +203,17 @@ func TestLTypes(t *testing.T) {
 	})
 }
 
-func TestBoolToString(t *testing.T) {
-	Convey("Testing BoolToString()", t, func() {
-		So(BooltoStr(true), ShouldEqual, True)
-		So(BooltoStr(false), ShouldEqual, False)
+func TestbooltoString(t *testing.T) {
+	Convey("Testing booltoString()", t, func() {
+		So(booltoStr(true), ShouldEqual, True)
+		So(booltoStr(false), ShouldEqual, False)
 	})
 }
 
 func TestToBool(t *testing.T) {
-	Convey("Testing StrToBool()", t, func() {
-		So(StrToBool(True), ShouldBeTrue)
-		So(StrToBool(False), ShouldBeFalse)
+	Convey("Testing strToBool()", t, func() {
+		So(strToBool(True), ShouldBeTrue)
+		So(strToBool(False), ShouldBeFalse)
 	})
 }
 

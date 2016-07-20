@@ -17,18 +17,14 @@ func getHTTP(o *object) *object {
 		req  *http.Request
 	)
 
-	req, err = http.NewRequest(o.Method, o.url, nil)
-	if err != nil {
-		o.r = strings.NewReader(fmt.Sprintf("Unable to form request for %s...", o.url))
-		o.err = err
+	if req, err = http.NewRequest(o.Method, o.url, nil); err != nil {
+		o.r, o.err = strings.NewReader(fmt.Sprintf("Unable to form request for %s...", o.url)), err
 		return o
 	}
 
 	req.Header.Set("User-Agent", agent)
-	resp, err = (&http.Client{}).Do(req)
-	if err != nil {
-		o.r = strings.NewReader(fmt.Sprintf("Unable to get response for %s...", o.url))
-		o.err = err
+	if resp, err = (&http.Client{}).Do(req); err != nil {
+		o.r, o.err = strings.NewReader(fmt.Sprintf("Unable to get response for %s...", o.url)), err
 		return o
 	}
 
@@ -36,13 +32,11 @@ func getHTTP(o *object) *object {
 	body, err = ioutil.ReadAll(resp.Body)
 
 	if len(body) == 0 {
-		o.r = strings.NewReader(fmt.Sprintf("No data returned for %s...", o.url))
-		o.err = err
+		o.r, o.err = strings.NewReader(fmt.Sprintf("No data returned for %s...", o.url)), err
 		return o
 	}
 
-	o.r = bytes.NewBuffer(body)
-	o.err = err
+	o.r, o.err = bytes.NewBuffer(body), err
 
 	return o
 }

@@ -1,8 +1,8 @@
-'  -h	Display program help
-    -ip string
-      	IP address for pixelserv to bind to (default "127.0.0.1")
-    -port string
-      	Port number for pixelserv to listen on (default "80")
-    -version
-      	Display program version number
-  '
+address=/adsrvr.org/0.0.0.0
+ address=/adtechus.net/0.0.0.0
+address=/advertising.com/0.0.0.0
+ address=/centade.com/0.0.0.0
+address=/doubleclick.net/0.0.0.0
+ address=/free-counter.co.uk/0.0.0.0
+ address=/intellitxt.com/0.0.0.0
+address=/kiosked.com/0.0.0.0

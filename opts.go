@@ -76,8 +76,7 @@ func getOpts() *opts {
 	}
 }
 
-func cleanArgs(args []string) []string {
-	var r []string
+func cleanArgs(args []string) (r []string) {
 NEXT:
 	for _, a := range args {
 		switch {

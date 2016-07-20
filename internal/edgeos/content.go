@@ -35,10 +35,10 @@ type blist struct {
 
 // Contenter is a Content interface
 type Contenter interface {
-	Find(elem string) int
+	Find(string) int
 	GetList() *Objects
 	Len() int
-	SetURL(name string, url string)
+	SetURL(string, string)
 	String() string
 }
 
@@ -169,7 +169,6 @@ func (e *ExcDomnObjects) GetList() *Objects {
 		case excDomn:
 			if o.exc != nil {
 				o.r = o.excludes()
-				o.err = nil
 				o.Parms = e.Objects.Parms
 			}
 		}
@@ -184,7 +183,6 @@ func (e *ExcHostObjects) GetList() *Objects {
 		case excHost:
 			if o.exc != nil {
 				o.r = o.excludes()
-				o.err = nil
 				o.Parms = e.Objects.Parms
 			}
 		}

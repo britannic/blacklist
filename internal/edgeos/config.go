@@ -37,10 +37,9 @@ type Config struct {
 }
 
 const (
-	agent     = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/601.4.4 (KHTML, like Gecko) Version/9.0.3 Safari/601.4.4`
+	agent     = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/601.7.7 (KHTML, like Gecko) Version/9.1.2 Safari/601.7.7`
 	all       = "all"
 	blackhole = "dns-redirect-ip"
-	blacklist = "blacklist"
 	dbg       = false
 	disabled  = "disabled"
 	domains   = "domains"
@@ -48,7 +47,7 @@ const (
 	hosts     = "hosts"
 	notknown  = "unknown"
 	preNoun   = "pre-configured"
-	rootNode  = blacklist
+	rootNode  = "blacklist"
 	src       = "source"
 	urls      = "url"
 	zones     = "zones"
@@ -59,12 +58,12 @@ const (
 	ExcHosts = "host-excludes"
 	// ExcRoots labels global domain exclusions
 	ExcRoots = "root-excludes"
-	// False is a string constant
-	False = "false"
 	// PreDomns designates string label for preconfigured blacklisted domains
 	PreDomns = preNoun + "-domain"
 	// PreHosts designates string label for preconfigured blacklisted hosts
 	PreHosts = preNoun + "-host"
+	// False is a string constant
+	False = "false"
 	// True is a string constant
 	True = "true"
 )
@@ -72,7 +71,7 @@ const (
 func (c *Config) addExc(node string) *Objects {
 	var (
 		ltype string
-		o     = &Objects{}
+		o     = &Objects{Parms: c.Parms}
 	)
 
 	switch node {
@@ -84,7 +83,6 @@ func (c *Config) addExc(node string) *Objects {
 		ltype = ExcRoots
 	}
 
-	o.Parms = c.Parms
 	o.x = append(o.x, &object{
 		desc:  ltype + " exclusions",
 		exc:   c.tree[node].exc,
@@ -103,6 +101,7 @@ func (c *Config) addInc(node string) *object {
 		ltype string
 		n     ntype
 	)
+
 	if len(inc) > 0 {
 		switch node {
 		case domains:
@@ -112,6 +111,7 @@ func (c *Config) addInc(node string) *object {
 			ltype = getType(preHost).(string)
 			n = getType(ltype).(ntype)
 		}
+
 		return &object{
 			desc:  ltype + " blacklist content",
 			inc:   inc,
@@ -168,8 +168,6 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 		return &PreDomnObjects{Objects: o}, nil
 	case PreHObj:
 		return &PreHostObjects{Objects: o}, nil
-		// default:
-		// 	return nil, errors.New("Invalid interface requested")
 	}
 
 	return nil, err
@@ -216,7 +214,7 @@ func (c *Config) GetAll(ltypes ...string) *Objects {
 		o        = &Objects{Parms: c.Parms}
 	)
 
-	for _, node := range c.Parms.Nodes {
+	for _, node := range o.Nodes {
 		switch ltypes {
 		case nil:
 			o.addObj(c, node)
@@ -300,8 +298,7 @@ LINE:
 			node := regx.Get("node", line)
 			tnode = node[1]
 			nodes = append(nodes, tnode)
-			o = newObject()
-			c.tree[tnode] = o
+			c.tree[tnode] = newObject()
 
 		case rx.LEAF.MatchString(line):
 			srcName := regx.Get("leaf", line)
@@ -315,14 +312,13 @@ LINE:
 			}
 
 		case rx.DSBL.MatchString(line):
-			c.tree[tnode].disabled = StrToBool(regx.Get("dsbl", line)[1])
+			c.tree[tnode].disabled = strToBool(regx.Get("dsbl", line)[1])
 
 		case rx.IPBH.MatchString(line) && nodes[len(nodes)-1] != src:
 			c.tree[tnode].ip = regx.Get("ipbh", line)[1]
 
 		case rx.NAME.MatchString(line):
 			name := regx.Get("name", line)
-
 			switch name[1] {
 			case "description":
 				o.desc = name[2]
@@ -334,7 +330,6 @@ LINE:
 				o.file = name[2]
 				o.ltype = name[1]
 				c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
-				o = newObject() // reset o for the next loop
 
 			case "prefix":
 				o.prefix = name[2]
@@ -363,7 +358,7 @@ LINE:
 	return nil
 }
 
-// readDir returns a listing of dnsmasq formatted blacklist configuration files
+// readDir returns a listing of dnsmasq blacklist configuration files
 func (c *CFile) readDir(pattern string) ([]string, error) {
 	return filepath.Glob(pattern)
 }
@@ -378,12 +373,12 @@ func (c *Config) ReloadDNS() ([]byte, error) {
 
 // Remove deletes a CFile array of file names
 func (c *CFile) Remove() error {
-	dlist, err := c.readDir(fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.Node, c.Wildcard.Name, c.Parms.Ext))
+	d, err := c.readDir(fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.Node, c.Wildcard.Name, c.Parms.Ext))
 	if err != nil {
 		return err
 	}
 
-	return purgeFiles(DiffArray(c.names, dlist))
+	return purgeFiles(diffArray(c.names, d))
 }
 
 // sortKeys returns a slice of keys in lexicographical sorted order.
@@ -416,7 +411,7 @@ func (c *Config) String() (s string) {
 		indent++
 
 		s += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled,
-			BooltoStr(c.tree[pkey].disabled))
+			booltoStr(c.tree[pkey].disabled))
 		s = is(indent, s, "ip", c.tree[pkey].ip)
 		s += getJSONArray(&cfgJSON{array: c.tree[pkey].exc, pk: pkey, leaf: "excludes", indent: indent})
 
@@ -443,7 +438,6 @@ func (c *CFile) String() string {
 // Strings returns a sorted array of strings.
 func (c *CFile) Strings() []string {
 	sort.Strings(c.names)
-
 	return c.names
 }
 

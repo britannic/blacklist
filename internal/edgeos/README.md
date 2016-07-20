@@ -17,37 +17,16 @@ const (
     ExcHosts = "host-excludes"
     // ExcRoots labels global domain exclusions
     ExcRoots = "root-excludes"
-    // False is a string constant
-    False = "false"
     // PreDomns designates string label for preconfigured blacklisted domains
     PreDomns = preNoun + "-domain"
     // PreHosts designates string label for preconfigured blacklisted hosts
     PreHosts = preNoun + "-host"
+    // False is a string constant
+    False = "false"
     // True is a string constant
     True = "true"
 )
 ```
-
-
-## func BooltoStr
-``` go
-func BooltoStr(b bool) string
-```
-BooltoStr converts a boolean ("true" or "false") to a string equivalent
-
-
-## func DiffArray
-``` go
-func DiffArray(a, b []string) (diff sort.StringSlice)
-```
-DiffArray returns the delta of two arrays
-
-
-## func StrToBool
-``` go
-func StrToBool(s string) bool
-```
-StrToBool converts a string ("true" or "false") to boolean
 
 
 
@@ -267,10 +246,10 @@ String returns pretty print for the Blacklist struct
 ## type Contenter
 ``` go
 type Contenter interface {
-    Find(elem string) int
+    Find(string) int
     GetList() *Objects
     Len() int
-    SetURL(name string, url string)
+    SetURL(string, string)
     String() string
 }
 ```

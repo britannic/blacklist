@@ -3,6 +3,7 @@ package edgeos
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -154,7 +155,9 @@ func TestAPICMD(t *testing.T) {
 
 func TestDeleteFile(t *testing.T) {
 	Convey("Testing DeleteFile()", t, func() {
-		dir := "../testdata"
+		dir, _ := ioutil.TempDir("/tmp", "testBlacklist")
+		defer os.RemoveAll(dir)
+
 		ext := "delete.me"
 
 		tests := []struct {
@@ -170,7 +173,7 @@ func TestDeleteFile(t *testing.T) {
 			{
 				name: "non-existent",
 				f:    fmt.Sprintf("%v%v", "badFile", ext),
-				exp:  true,
+				exp:  false,
 			},
 		}
 
