@@ -273,7 +273,7 @@ func TestInitEdgeOS(t *testing.T) {
 		exitCmd = func(int) { return }
 		o := getOpts()
 		p := o.initEdgeOS()
-		exp := "edgeos.Parms{\nWildcard:  \"{*s *}\"\nAPI:       \"/bin/cli-shell-api\"\nArch:      \"amd64\"\nBash:      \"/bin/bash\"\nCores:     \"2\"\nDebug:     \"false\"\nDex:       \"**not initialized**\"\nDir:       \"/tmp\"\nDNSsvc:    \"service dnsmasq restart\"\nExc:       \"**not initialized**\"\nExt:       \"blacklist.conf\"\nFile:      \"**not initialized**\"\nFnFmt:     \"%v/%v.%v.%v\"\nInCLI:     \"inSession\"\nLevel:     \"service dns forwarding\"\nMethod:    \"GET\"\nNodes:     \"[domains hosts]\"\nPfx:       \"address=\"\nPoll:      \"5\"\nLtypes:    \"[file pre-configured-domain pre-configured-host url]\"\nTest:      \"false\"\nTimeout:   \"30s\"\nVerbosity: \"0\"\n}\n"
+		exp := "edgeos.Parms{\nWildcard:  \"{*s *}\"\nAPI:       \"/bin/cli-shell-api\"\nArch:      \"amd64\"\nBash:      \"/bin/bash\"\nCores:     \"2\"\nDebug:     \"false\"\nDex:       \"**not initialized**\"\nDir:       \"/tmp\"\nDNSsvc:    \"service dnsmasq restart\"\nExc:       \"**not initialized**\"\nExt:       \"blacklist.conf\"\nFile:      \"**not initialized**\"\nFnFmt:     \"%v/%v.%v.%v\"\nInCLI:     \"inSession\"\nIOWriter:  \"0\"\nLevel:     \"service dns forwarding\"\nLtypes:    \"[file pre-configured-domain pre-configured-host url]\"\nMethod:    \"GET\"\nNodes:     \"[domains hosts]\"\nPfx:       \"address=\"\nPoll:      \"5\"\nTest:      \"false\"\nTimeout:   \"30s\"\nVerbosity: \"0\"\n}\n"
 		So(fmt.Sprint(p.Parms), ShouldEqual, exp)
 	})
 }

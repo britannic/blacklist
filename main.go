@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"runtime"
@@ -89,6 +90,7 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.LTypes([]string{files, e.PreDomns, e.PreHosts, urls}),
 		e.Timeout(30*time.Second),
 		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
+		e.Writer(ioutil.Discard),
 	)
 }
 

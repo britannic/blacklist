@@ -2,6 +2,7 @@ package edgeos
 
 import (
 	"fmt"
+	"io"
 	"reflect"
 	"runtime"
 	"strings"
@@ -25,12 +26,13 @@ type Parms struct {
 	File      string
 	FnFmt     string
 	InCLI     string
+	IOWriter  io.Writer
 	Level     string
+	Ltypes    []string
 	Method    string
 	Nodes     []string
 	Pfx       string
 	Poll      int
-	Ltypes    []string
 	Test      bool
 	Timeout   time.Duration
 	Verbosity int
@@ -310,5 +312,14 @@ func WCard(w Wildcard) Option {
 		previous := c.Wildcard
 		c.Wildcard = w
 		return WCard(previous)
+	}
+}
+
+// Writer provides an address for anything that can use io.Writer
+func Writer(w io.Writer) Option {
+	return func(c *Config) Option {
+		previous := c.IOWriter
+		c.IOWriter = w
+		return Writer(previous)
 	}
 }

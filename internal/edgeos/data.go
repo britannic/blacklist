@@ -1,6 +1,8 @@
 package edgeos
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"sort"
@@ -100,6 +102,17 @@ func getType(in interface{}) (out interface{}) {
 		out = typeStr(in.(string))
 	}
 	return out
+}
+
+// newWriter returns an io.Writer
+func newWriter() io.Writer {
+	var b bytes.Buffer
+	return bufio.NewWriter(&b)
+}
+
+// logIt writes to io.Writer
+func logIt(w io.Writer, s string) {
+	io.Copy(w, strings.NewReader(s))
 }
 
 // strToBool converts a string ("true" or "false") to boolean

@@ -2,6 +2,7 @@ package edgeos
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -124,6 +125,37 @@ func TestGetType(t *testing.T) {
 					So(getType(tt.typestr), ShouldEqual, tt.typeint)
 				}
 				So(fmt.Sprint(tt.typeint), ShouldEqual, tt.ntypestr)
+			})
+		}
+	})
+}
+
+func TestNewWriter(t *testing.T) {
+	Convey("Testing newWriter()", t, func() {
+
+		tests := []struct {
+			name   string
+			exp    io.Writer
+			expStr string
+		}{
+			{
+				name: "vanilla",
+				exp: func() io.Writer {
+					var b bytes.Buffer
+					return bufio.NewWriter(&b)
+				}(),
+				expStr: "Es ist Krieg!",
+			},
+		}
+		for _, tt := range tests {
+			act := newWriter()
+			Convey("Testing "+tt.name, func() {
+				So(act, ShouldResemble, tt.exp)
+				logIt(act, tt.expStr)
+				var b bytes.Buffer
+				want := bufio.NewWriter(&b)
+				io.Copy(want, strings.NewReader(tt.expStr))
+				So(act, ShouldResemble, want)
 			})
 		}
 	})

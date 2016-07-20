@@ -23,6 +23,7 @@ func TestOption(t *testing.T) {
 			File:      "",
 			FnFmt:     "",
 			InCLI:     "",
+			IOWriter:  nil,
 			Level:     "",
 			Method:    "",
 			Nodes:     []string(nil),
@@ -35,7 +36,7 @@ func TestOption(t *testing.T) {
 			Wildcard:  Wildcard{},
 		}
 
-		exp := "edgeos.Parms{\nWildcard:  \"{*s *}\"\nAPI:       \"/bin/cli-shell-api\"\nArch:      \"amd64\"\nBash:      \"/bin/bash\"\nCores:     \"2\"\nDebug:     \"true\"\nDex:       \"**not initialized**\"\nDir:       \"/tmp\"\nDNSsvc:    \"service dnsmasq restart\"\nExc:       \"**not initialized**\"\nExt:       \"blacklist.conf\"\nFile:      \"/config/config.boot\"\nFnFmt:     \"%v/%v.%v.%v\"\nInCLI:     \"inSession\"\nLevel:     \"service dns forwarding\"\nMethod:    \"GET\"\nNodes:     \"[domains hosts]\"\nPfx:       \"address=\"\nPoll:      \"10\"\nLtypes:    \"[file pre-configured-domain pre-configured-host url]\"\nTest:      \"true\"\nTimeout:   \"30s\"\nVerbosity: \"2\"\n}\n"
+		exp := "edgeos.Parms{\nWildcard:  \"{*s *}\"\nAPI:       \"/bin/cli-shell-api\"\nArch:      \"amd64\"\nBash:      \"/bin/bash\"\nCores:     \"2\"\nDebug:     \"true\"\nDex:       \"**not initialized**\"\nDir:       \"/tmp\"\nDNSsvc:    \"service dnsmasq restart\"\nExc:       \"**not initialized**\"\nExt:       \"blacklist.conf\"\nFile:      \"/config/config.boot\"\nFnFmt:     \"%v/%v.%v.%v\"\nInCLI:     \"inSession\"\nIOWriter:  \"<nil>\"\nLevel:     \"service dns forwarding\"\nLtypes:    \"[file pre-configured-domain pre-configured-host url]\"\nMethod:    \"GET\"\nNodes:     \"[domains hosts]\"\nPfx:       \"address=\"\nPoll:      \"10\"\nTest:      \"true\"\nTimeout:   \"30s\"\nVerbosity: \"2\"\n}\n"
 
 		expRaw := Parms{
 			API:       "/bin/cli-shell-api",
@@ -51,12 +52,13 @@ func TestOption(t *testing.T) {
 			File:      "/config/config.boot",
 			FnFmt:     "%v/%v.%v.%v",
 			InCLI:     "inSession",
+			IOWriter:  nil,
 			Level:     "service dns forwarding",
+			Ltypes:    []string{files, PreDomns, PreHosts, urls},
 			Method:    "GET",
 			Nodes:     []string{domains, hosts},
 			Pfx:       "address=",
 			Poll:      10,
-			Ltypes:    []string{files, PreDomns, PreHosts, urls},
 			Test:      true,
 			Timeout:   30000000000,
 			Verbosity: 2,
@@ -87,6 +89,7 @@ func TestOption(t *testing.T) {
 			Timeout(30*time.Second),
 			Verbosity(2),
 			WCard(Wildcard{Node: "*s", Name: "*"}),
+			Writer(nil),
 		)
 
 		expRaw.Dex.RWMutex = c.Dex.RWMutex
