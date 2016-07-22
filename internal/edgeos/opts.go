@@ -1,47 +1,48 @@
 package edgeos
 
 import (
-	"fmt"
+	"encoding/json"
 	"io"
-	"reflect"
 	"runtime"
-	"strings"
 	"sync"
 	"time"
+
+	logging "github.com/op/go-logging"
 )
 
 // Parms is struct of parameters
 type Parms struct {
-	Wildcard
-	API       string
-	Arch      string
-	Bash      string
-	Cores     int
-	Debug     bool
-	Dex       list
-	Dir       string
-	DNSsvc    string
-	Exc       list
-	Ext       string
-	File      string
-	FnFmt     string
-	InCLI     string
-	IOWriter  io.Writer
-	Level     string
-	Ltypes    []string
-	Method    string
-	Nodes     []string
-	Pfx       string
-	Poll      int
-	Test      bool
-	Timeout   time.Duration
-	Verbosity int
+	ioWriter io.Writer
+	*logging.Logger
+	API     string        `json:"API, omitempty"`
+	Arch    string        `json:"Arch, omitempty"`
+	Bash    string        `json:"Bash, omitempty"`
+	Cores   int           `json:"Cores, omitempty"`
+	Debug   bool          `json:"Debug, omitempty"`
+	Dex     list          `json:"Dex, omitempty"`
+	Dir     string        `json:"Dir, omitempty"`
+	DNSsvc  string        `json:"dnsmasq service, omitempty"`
+	Exc     list          `json:"Exc, omitempty"`
+	Ext     string        `json:"dnsmasq fileExt., omitempty"`
+	File    string        `json:"File, omitempty"`
+	FnFmt   string        `json:"File name fmt, omitempty"`
+	InCLI   string        `json:"-"`
+	Level   string        `json:"CLI Path, omitempty"`
+	Ltypes  []string      `json:"Leaf nodes, omitempty"`
+	Method  string        `json:"HTTP method, omitempty"`
+	Nodes   []string      `json:"Nodes, omitempty"`
+	Pfx     string        `json:"Prefix, omitempty"`
+	Poll    int           `json:"Poll, omitempty"`
+	Test    bool          `json:"Test, omitempty"`
+	Timeout time.Duration `json:"Timeout, omitempty"`
+	Verb    bool          `json:"Verbosity, omitempty"`
+	Wildcard/*..........*/ `json:"Wildcard, omitempty"`
 }
 
 // Wildcard struct sets globbing wildcards for filename searches
 type Wildcard struct {
-	Node string
-	Name string
+	Node string `json:"omitempty"`
+	Name string `json:"omitempty"`
 }
 
 // Option is a recursive function
@@ -187,6 +188,15 @@ func Level(s string) Option {
 	}
 }
 
+// Logger sets the EdgeOS API CLI level
+func Logger(l *logging.Logger) Option {
+	return func(c *Config) Option {
+		previous := c.Logger
+		c.Logger = l
+		return Logger(previous)
+	}
+}
+
 // LTypes sets an array of legal types used by Source
 func LTypes(s []string) Option {
 	return func(c *Config) Option {
@@ -234,49 +244,8 @@ func Poll(t int) Option {
 
 // String method to implement fmt.Print interface
 func (p *Parms) String() string {
-	type pArray struct {
-		n string
-		i int
-		v string
-	}
-
-	var fields []pArray
-	maxLen := func(pA []pArray) int {
-		smallest := len(pA[0].n)
-		largest := len(pA[0].n)
-		for i := range pA {
-			if len(pA[i].n) > largest {
-				largest = len(pA[i].n)
-			} else if len(pA[i].n) < smallest {
-				smallest = len(pA[i].n)
-			}
-		}
-		return largest
-	}
-
-	v := reflect.ValueOf(p).Elem()
-	for i := 0; i < v.NumField(); i++ {
-		fields = append(fields, pArray{n: v.Type().Field(i).Name, v: strings.Replace(fmt.Sprint(v.Field(i).Interface()), "\n", "", -1)})
-	}
-
-	max := maxLen(fields)
-	pad := func(s string) string {
-		i := len(s)
-		repeat := max - i + 1
-		return strings.Repeat(" ", repeat)
-	}
-
-	s := fmt.Sprintln("edgeos.Parms{")
-	for _, field := range fields {
-		if field.v == "" {
-			field.v = "**not initialized**"
-		}
-		s += fmt.Sprintf("%v:%v%q\n", field.n, pad(field.n), field.v)
-	}
-
-	s += fmt.Sprintln("}")
-
-	return s
+	out, _ := json.MarshalIndent(p, "", "\t")
+	return string(out)
 }
 
 // Test toggles testing mode on or off
@@ -297,12 +266,12 @@ func Timeout(t time.Duration) Option {
 	}
 }
 
-// Verbosity sets the verbosity level to v
-func Verbosity(i int) Option {
+// Verb sets the verbosity level to v
+func Verb(b bool) Option {
 	return func(c *Config) Option {
-		previous := c.Verbosity
-		c.Verbosity = i
-		return Verbosity(previous)
+		previous := c.Verb
+		c.Verb = b
+		return Verb(previous)
 	}
 }
 
@@ -318,8 +287,8 @@ func WCard(w Wildcard) Option {
 // Writer provides an address for anything that can use io.Writer
 func Writer(w io.Writer) Option {
 	return func(c *Config) Option {
-		previous := c.IOWriter
-		c.IOWriter = w
+		previous := c.ioWriter
+		c.ioWriter = w
 		return Writer(previous)
 	}
 }

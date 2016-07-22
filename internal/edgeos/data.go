@@ -104,8 +104,8 @@ func getType(in interface{}) (out interface{}) {
 	return out
 }
 
-// newWriter returns an io.Writer
-func newWriter() io.Writer {
+// NewWriter returns an io.Writer
+func NewWriter() io.Writer {
 	var b bytes.Buffer
 	return bufio.NewWriter(&b)
 }

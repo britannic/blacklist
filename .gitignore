@@ -51,3 +51,5 @@ internal/edgeos/bkp
 internal/edgeos/bkp
 
 internal/edgeos/bkp
+
+*.log

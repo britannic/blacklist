@@ -4,12 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"runtime"
 	"time"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
+	logging "github.com/op/go-logging"
 )
 
 const (
@@ -26,10 +26,30 @@ var (
 	version = "UNKNOWN"
 	// ---
 
-	exitCmd    = os.Exit
-	logFatalln = log.Fatalln
-	logPrintf  = log.Printf
-	objex      = []e.IFace{
+	exitCmd = os.Exit
+	log     = newLog()
+
+	logError = func(args ...interface{}) {
+		log.Error(args)
+	}
+
+	logErrorf = func(s string, args ...interface{}) {
+		log.Errorf(s, args)
+	}
+
+	logCrit    = log.Critical
+	logFatalln = func(args ...interface{}) {
+		logCrit(args)
+		exitCmd(1)
+	}
+
+	logFile    = "blacklist.log"
+	logInfo    = log.Info
+	logInfof   = log.Infof
+	logPrintf  = logInfof
+	logPrintln = logInfo
+
+	objex = []e.IFace{
 		e.ExRtObj,
 		e.ExDmObj,
 		e.ExHtObj,
@@ -41,12 +61,50 @@ var (
 	}
 )
 
+func newLog() *logging.Logger {
+	fdFmt := logging.MustStringFormatter(
+		`%{time:2006-01-02 15:04:05.000} ▶ %{level:.4s} %{id:03x} %{message}`,
+	)
+	scrFmt := logging.MustStringFormatter(
+		`%{color}[%{level:.4s}] %{time:15:04:05.000} ▶ %{id:03x}%{color:reset} %{message}`,
+	)
+
+	log := logging.MustGetLogger(basename(os.Args[0]))
+
+	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		log.Error(err)
+	}
+
+	fdlog := logging.NewLogBackend(fd, "", 0)
+	fdFmttr := logging.NewBackendFormatter(fdlog, fdFmt)
+
+	scr := logging.NewLogBackend(os.Stderr, "", 0)
+	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
+
+	logging.SetBackend(fdFmttr, scrFmttr)
+
+	return log
+}
+
 func main() {
 	c := setUpEnv()
-	logFatalln(removeStaleFiles(c))
-	logFatalln(processObjects(c, objex))
 
-	reloadDNS(c)
+	logInfo("Firing up")
+	log.Debug("We have some bugs, get the exterminator!")
+	log.Warning("You have been warned!!!!")
+	logCrit("We only have 6 hours to save the ship!")
+	log.Notice("You're on notice, Mr. Tweedy!")
+
+	if err := removeStaleFiles(c); err != nil {
+		logFatalln(err)
+	}
+	// if err := processObjects(c, objex); err != nil {
+	// 	logFatalln(err)
+	// }
+
+	logPrintln("Shutting down...")
+	// reloadDNS(c)
 }
 
 // basename removes directory components and file extensions.
@@ -87,8 +145,10 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.Nodes([]string{"domains", "hosts"}),
 		e.Poll(*o.Poll),
 		e.Prefix("address="),
+		e.Logger(log),
 		e.LTypes([]string{files, e.PreDomns, e.PreHosts, urls}),
 		e.Timeout(30*time.Second),
+		e.Verb(*o.Verb),
 		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
 		e.Writer(ioutil.Discard),
 	)
@@ -111,11 +171,10 @@ func processObjects(c *e.Config, objects []e.IFace) error {
 func reloadDNS(c *e.Config) {
 	b, err := c.ReloadDNS()
 	if err != nil {
-		logPrintf("ReloadDNS(): %v\n error: %v\n", string(b), err)
+		logErrorf("ReloadDNS(): \n error: %v\n", string(b), err)
 		exitCmd(1)
 	}
 	logPrintf("ReloadDNS(): %v\n", string(b))
-	return
 }
 
 func removeStaleFiles(c *e.Config) error {
@@ -124,14 +183,6 @@ func removeStaleFiles(c *e.Config) error {
 	}
 	return nil
 }
-
-// func jsonPrint(in string) string {
-// 	var out bytes.Buffer
-// 	if err := json.Indent(&out, []byte(in), "", "\t"); err != nil {
-// 		return in
-// 	}
-// 	return out.String()
-// }
 
 func setUpEnv() *e.Config {
 	o := getOpts()

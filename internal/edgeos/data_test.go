@@ -148,7 +148,7 @@ func TestNewWriter(t *testing.T) {
 			},
 		}
 		for _, tt := range tests {
-			act := newWriter()
+			act := NewWriter()
 			Convey("Testing "+tt.name, func() {
 				So(act, ShouldResemble, tt.exp)
 				logIt(act, tt.expStr)
