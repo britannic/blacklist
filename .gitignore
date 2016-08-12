@@ -16,6 +16,20 @@
 
 *.bkp
 
+vendor/golang.org/x/crypto/
+
+vendor/github.com/golang/glog/
+
+vendor/gopkg.in/gemnasium/logrus-airbrake-hook.v2/
+
+vendor/gopkg.in/airbrake/gobrake.v2/
+
+vendor/github.com/Sirupsen/logrus/
+
+vendor/github.com/mattn/go-colorable/
+
+testdata/blacklist.log
+
 .coveralls.yml
 
 vendor/github.com/britannic/testutils/
@@ -24,24 +38,18 @@ vendor/github.com/britannic/testutils/
 
 browse.VC.db
 
+
+
+vendor/github.com/fatih/structs/
+
 *.lock
 
 vendor/github.com/smartystreets/goconvey/
 
 internal/edgeos/bkp
 
+internal/edgeos/bkp
+
+internal/edgeos/bkp
+
 *.log
-
-*.xml
-
-*.iml
-
-vendor/github.com/gopherjs/gopherjs/js/js.go
-
-vendor/github.com/op/go-logging/
-
-*.xml
-
-.idea/inspectionProfiles/profiles_settings.xml
-
-.idea/inspectionProfiles/Project_Default.xml

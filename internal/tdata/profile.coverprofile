@@ -1,0 +1,8 @@
+mode: count
+github.com/britannic/blacklist/internal/tdata/tdata.go:8.42,9.11 1 7
+github.com/britannic/blacklist/internal/tdata/tdata.go:21.2,21.15 1 7
+github.com/britannic/blacklist/internal/tdata/tdata.go:10.2,11.10 1 1
+github.com/britannic/blacklist/internal/tdata/tdata.go:12.2,13.17 1 2
+github.com/britannic/blacklist/internal/tdata/tdata.go:14.2,15.17 1 2
+github.com/britannic/blacklist/internal/tdata/tdata.go:16.2,17.19 1 1
+github.com/britannic/blacklist/internal/tdata/tdata.go:18.2,19.45 1 1
