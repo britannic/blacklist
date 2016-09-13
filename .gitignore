@@ -5,6 +5,7 @@
 !*.*
 !*/
 !testcoverage
+!.travis.yml
 
 # Ignore debug
 *.debug
@@ -16,40 +17,20 @@
 
 *.bkp
 
-vendor/golang.org/x/crypto/
-
-vendor/github.com/golang/glog/
-
-vendor/gopkg.in/gemnasium/logrus-airbrake-hook.v2/
-
-vendor/gopkg.in/airbrake/gobrake.v2/
-
-vendor/github.com/Sirupsen/logrus/
-
-vendor/github.com/mattn/go-colorable/
+vendor/
 
 testdata/blacklist.log
 
 .coveralls.yml
 
-vendor/github.com/britannic/testutils/
+.vscode/
 
-.vscode/launch.json
-
-browse.VC.db
-
-
-
-vendor/github.com/fatih/structs/
+*.VC.db
 
 *.lock
-
-vendor/github.com/smartystreets/goconvey/
-
-internal/edgeos/bkp
-
-internal/edgeos/bkp
 
 internal/edgeos/bkp
 
 *.log
+
+.idea/
