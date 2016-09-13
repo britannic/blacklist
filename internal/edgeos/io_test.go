@@ -43,7 +43,7 @@ func TestPurgeFiles(t *testing.T) {
 			purgeList []string
 		)
 
-		for i := 0; i < 10; i++ {
+		for i := range Iter(10) {
 			f, err := ioutil.TempFile(dir, fmt.Sprintf("%v%v", i, ext))
 			So(err, ShouldBeNil)
 			purgeList = append(purgeList, f.Name())

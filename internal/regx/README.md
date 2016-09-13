@@ -1,14 +1,31 @@
 
-# regx
-    import "github.com/britannic/blacklist/internal/regx"
 
+# regx
+`import "github.com/britannic/blacklist/internal/regx"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+
+## <a name="pkg-overview">Overview</a>
 Package regx provides regex objects for processing data in files and web content
 
 
 
 
+## <a name="pkg-index">Index</a>
+* [Variables](#pkg-variables)
+* [func Get(t, s string) (r []string)](#Get)
+* [type OBJ](#OBJ)
+  * [func (rx *OBJ) String() (s string)](#OBJ.String)
+  * [func (rx *OBJ) StripPrefixAndSuffix(line, prefix string) (string, bool)](#OBJ.StripPrefixAndSuffix)
 
-## Variables
+
+#### <a name="pkg-files">Package files</a>
+[regx.go](/src/github.com/britannic/blacklist/internal/regx/regx.go) 
+
+
+
+## <a name="pkg-variables">Variables</a>
 ``` go
 var Obj = &OBJ{
     CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
@@ -33,7 +50,8 @@ var Obj = &OBJ{
 Obj is a struct of *OBJ populated with precompiled regex objects
 
 
-## func Get
+
+## <a name="Get">func</a> [Get](/src/target/regx.go?s=1610:1644#L32)
 ``` go
 func Get(t, s string) (r []string)
 ```
@@ -41,7 +59,8 @@ Get returns an array compiled regx OBJs
 
 
 
-## type OBJ
+
+## <a name="OBJ">type</a> [OBJ](/src/target/regx.go?s=358:494#L6)
 ``` go
 type OBJ struct {
     CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, IPBH, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
@@ -58,19 +77,18 @@ OBJ is a struct of regex precompiled objects
 
 
 
-
-### func (\*OBJ) String
+### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=2646:2680#L78)
 ``` go
 func (rx *OBJ) String() (s string)
 ```
 
 
-### func (\*OBJ) StripPrefixAndSuffix
+
+### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2901:2972#L87)
 ``` go
 func (rx *OBJ) StripPrefixAndSuffix(line, prefix string) (string, bool)
 ```
 StripPrefixAndSuffix strips the prefix and suffix
-
 
 
 

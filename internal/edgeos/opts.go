@@ -18,7 +18,7 @@ type Parms struct {
 	Arch    string        `json:"Arch, omitempty"`
 	Bash    string        `json:"Bash, omitempty"`
 	Cores   int           `json:"Cores, omitempty"`
-	Debug   bool          `json:"Debug, omitempty"`
+	Dbug    bool          `json:"Dbug, omitempty"`
 	Dex     list          `json:"Dex, omitempty"`
 	Dir     string        `json:"Dir, omitempty"`
 	DNSsvc  string        `json:"dnsmasq service, omitempty"`
@@ -36,7 +36,7 @@ type Parms struct {
 	Test    bool          `json:"Test, omitempty"`
 	Timeout time.Duration `json:"Timeout, omitempty"`
 	Verb    bool          `json:"Verbosity, omitempty"`
-	Wildcard/*..........*/ `json:"Wildcard, omitempty"`
+	Wildcard/*.........*/ `json:"Wildcard, omitempty"`
 }
 
 // Wildcard struct sets globbing wildcards for filename searches
@@ -48,23 +48,21 @@ type Wildcard struct {
 // Option is a recursive function
 type Option func(c *Config) Option
 
-// NewConfig returns a new *Config initialized with the parameter options passed to it
-func NewConfig(opts ...Option) *Config {
-	c := Config{
-		tree: make(tree),
-		Parms: &Parms{
-			Dex: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
-			Exc: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
-		},
+func (p *Parms) debug(s string) {
+	if p.Dbug {
+		p.Debug(s)
+		// p.Debug(s)
 	}
-	for _, opt := range opts {
-		opt(&c)
+}
+
+func (p *Parms) log(s string) {
+	if p.Verb {
+		p.Info(s)
 	}
-	return &c
 }
 
 // SetOpt sets the specified options passed as Parms and returns an option to restore the last set of arg's previous values
-func (c *Config) SetOpt(opts ...Option) (previous Option) {
+func (c *Config) SetOpt(opts ...Option) Option {
 	// apply all the options, and replace each with its inverse
 	for i, opt := range opts {
 		opts[i] = opt(c)
@@ -116,12 +114,12 @@ func Cores(i int) Option {
 	}
 }
 
-// Debug toggles debug level on or off
-func Debug(b bool) Option {
+// Dbug toggles debug level on or off
+func Dbug(b bool) Option {
 	return func(c *Config) Option {
-		previous := c.Debug
-		c.Debug = b
-		return Debug(previous)
+		previous := c.Dbug
+		c.Dbug = b
+		return Dbug(previous)
 	}
 }
 
@@ -152,7 +150,7 @@ func Ext(e string) Option {
 	}
 }
 
-// File sets the EdgeOS configuration file n
+// File sets the EdgeOS configuration file
 func File(f string) Option {
 	return func(c *Config) Option {
 		previous := c.File
@@ -188,7 +186,7 @@ func Level(s string) Option {
 	}
 }
 
-// Logger sets the EdgeOS API CLI level
+// Logger sets a pointer to the logger
 func Logger(l *logging.Logger) Option {
 	return func(c *Config) Option {
 		previous := c.Logger
@@ -206,15 +204,6 @@ func LTypes(s []string) Option {
 	}
 }
 
-// Prefix sets the dnsmasq configuration address line prefix
-func Prefix(l string) Option {
-	return func(c *Config) Option {
-		previous := c.Pfx
-		c.Pfx = l
-		return Prefix(previous)
-	}
-}
-
 // Method sets the HTTP method
 func Method(method string) Option {
 	return func(c *Config) Option {
@@ -222,6 +211,21 @@ func Method(method string) Option {
 		c.Method = method
 		return Method(previous)
 	}
+}
+
+// NewConfig returns a new *Config initialized with the parameter options passed to it
+func NewConfig(opts ...Option) *Config {
+	c := Config{
+		tree: make(tree),
+		Parms: &Parms{
+			Dex: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+			Exc: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+		},
+	}
+	for _, opt := range opts {
+		opt(&c)
+	}
+	return &c
 }
 
 // Nodes sets the node ns array
@@ -239,6 +243,15 @@ func Poll(t int) Option {
 		previous := c.Poll
 		c.Poll = t
 		return Poll(previous)
+	}
+}
+
+// Prefix sets the dnsmasq configuration address line prefix
+func Prefix(l string) Option {
+	return func(c *Config) Option {
+		previous := c.Pfx
+		c.Pfx = l
+		return Prefix(previous)
 	}
 }
 

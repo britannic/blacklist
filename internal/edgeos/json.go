@@ -20,7 +20,7 @@ func tabs(t int) (s string) {
 	if t <= 0 {
 		return s
 	}
-	for i := 0; i < t; i++ {
+	for _ = range Iter(t) {
 		s += tab
 	}
 	return s

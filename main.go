@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"runtime"
+	"strconv"
 	"time"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
@@ -20,15 +21,14 @@ const (
 )
 
 var (
-	// These vars updated by go build -ldflags
+	// updated by go build -ldflags
 	build   = "UNKNOWN"
 	githash = "UNKNOWN"
 	version = "UNKNOWN"
 	// ---
 
-	exitCmd = os.Exit
-	log     = newLog()
-
+	exitCmd  = os.Exit
+	log, err = newLog()
 	logError = func(args ...interface{}) {
 		log.Error(args)
 	}
@@ -61,21 +61,16 @@ var (
 	}
 )
 
-func newLog() *logging.Logger {
+func newLog() (*logging.Logger, error) {
 	fdFmt := logging.MustStringFormatter(
-		`%{time:2006-01-02 15:04:05.000} ▶ %{level:.4s} %{id:03x} %{message}`,
-	)
-	scrFmt := logging.MustStringFormatter(
-		`%{color}[%{level:.4s}] %{time:15:04:05.000} ▶ %{id:03x}%{color:reset} %{message}`,
+		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000} ▶ %{message}`,
 	)
 
-	log := logging.MustGetLogger(basename(os.Args[0]))
+	scrFmt := logging.MustStringFormatter(
+		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
+	)
 
 	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-	if err != nil {
-		log.Error(err)
-	}
-
 	fdlog := logging.NewLogBackend(fd, "", 0)
 	fdFmttr := logging.NewBackendFormatter(fdlog, fdFmt)
 
@@ -84,18 +79,13 @@ func newLog() *logging.Logger {
 
 	logging.SetBackend(fdFmttr, scrFmttr)
 
-	return log
+	return logging.MustGetLogger(basename(os.Args[0])), err
 }
 
 func main() {
+
 	c := setUpEnv()
-
-	logInfo("Firing up")
-	log.Debug("We have some bugs, get the exterminator!")
-	log.Warning("You have been warned!!!!")
-	logCrit("We only have 6 hours to save the ship!")
-	log.Notice("You're on notice, Mr. Tweedy!")
-
+	logInfo("Starting up...")
 	if err := removeStaleFiles(c); err != nil {
 		logFatalln(err)
 	}
@@ -103,7 +93,7 @@ func main() {
 	// 	logFatalln(err)
 	// }
 
-	logPrintln("Shutting down...")
+	logInfo("Shutting down...")
 	// reloadDNS(c)
 }
 
@@ -133,7 +123,7 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.Arch(runtime.GOARCH),
 		e.Bash("/bin/bash"),
 		e.Cores(2),
-		e.Debug(*o.Debug),
+		e.Dbug(*o.Dbug),
 		e.Dir(o.setDir(*o.ARCH)),
 		e.DNSsvc("service dnsmasq restart"),
 		e.Ext("blacklist.conf"),
@@ -155,13 +145,16 @@ func (o *opts) initEdgeOS() *e.Config {
 }
 
 func processObjects(c *e.Config, objects []e.IFace) error {
-	for _, o := range objects {
+	for i, o := range objects {
 		ct, err := c.NewContent(o)
 		if err != nil {
 			return err
 		}
 
-		if err = c.ProcessContent(ct); err != nil {
+		// TODO: build out messaging
+		_ = e.NewMsg(strconv.Itoa(i))
+		m := make(chan *e.Msg)
+		if err = c.ProcessContent(m, ct); err != nil {
 			return err
 		}
 	}

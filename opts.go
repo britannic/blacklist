@@ -15,7 +15,7 @@ import (
 type opts struct {
 	*flag.FlagSet
 	ARCH    *string
-	Debug   *bool
+	Dbug    *bool
 	DNSdir  *string
 	DNStmp  *string
 	File    *string
@@ -61,7 +61,7 @@ func getOpts() *opts {
 
 	return &opts{
 		ARCH:    flags.String("arch", runtime.GOARCH, "Set EdgeOS CPU architecture"),
-		Debug:   flags.Bool("debug", false, "Enable debug mode"),
+		Dbug:    flags.Bool("debug", false, "Enable debug mode"),
 		DNSdir:  flags.String("dir", "/etc/dnsmasq.d", "Override dnsmasq directory"),
 		DNStmp:  flags.String("tmp", "/tmp", "Override dnsmasq temporary directory"),
 		Help:    flags.Bool("h", false, "Display help"),

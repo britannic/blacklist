@@ -6,66 +6,87 @@ import (
 )
 
 // Rec holds stats on the current job
-type Rec struct {
-	*sync.RWMutex
-	Dupes int32 `json:"dupes"`
-	New   int32 `json:"new"`
-	Total int32 `json:"total"`
-	Uniq  int32 `json:"uniq"`
-}
+// type Rec struct {
+// 	*sync.RWMutex
+// 	Dupes int `json:"dupes"`
+// 	New   int `json:"new"`
+// 	Total int `json:"total"`
+// 	Uniq  int `json:"uniq"`
+// }
 
-// Msg is a struct for relaying stats from ProcessContent
+// Msg is a struct for recording stats from ProcessContent
 type Msg struct {
-	Name string
-	*Rec
+	*sync.RWMutex
+	Name  string
+	Done  bool
+	Dupes int `json:"dupes"`
+	New   int `json:"new"`
+	Total int `json:"total"`
+	Uniq  int `json:"uniq"`
 }
 
-type messenger interface {
-	incDupe()
-	incNew()
-	getTotal()
-	incUniq()
-}
-
-// GetTotal returns total records
-func (m *Msg) GetTotal() {
+// GetTotal returns total m.New records
+func (m *Msg) GetTotal() int {
 	m.Lock()
 	m.Total += m.New
 	m.Unlock()
+	return m.Total
 }
 
-// IncDupe increments Dupe by 1
-func (m *Msg) IncDupe() {
+// incDupe increments Dupe by 1
+func (m *Msg) incDupe() {
 	m.Lock()
 	m.Dupes++
 	m.Unlock()
 }
 
-// IncNew increments New by 1
-func (m *Msg) IncNew() {
+// incNew increments New by 1
+func (m *Msg) incNew() {
 	m.Lock()
 	m.New++
 	m.Unlock()
 }
 
-// IncUniq increments Uniq by 1
-func (m *Msg) IncUniq() {
+// incUniq increments Uniq by 1
+func (m *Msg) incUniq() {
 	m.Lock()
 	m.Uniq++
 	m.Unlock()
 }
 
-// NewMsg initializes a new Msg struct
+// NewMsg initializes and returns a new Msg struct
 func NewMsg(s string) *Msg {
 	return &Msg{
-		Name: s,
-		Rec: &Rec{
-			RWMutex: &sync.RWMutex{},
-		},
+		RWMutex: &sync.RWMutex{},
+		Name:    s,
 	}
+}
+
+// ReadDupes returns current value of Msg.Dupes
+func (m *Msg) ReadDupes() int {
+	m.RLock()
+	defer m.RUnlock()
+	return m.Dupes
+}
+
+// ReadNew returns current value of Msg.New
+func (m *Msg) ReadNew() int {
+	m.RLock()
+	defer m.RUnlock()
+	return m.New
+}
+
+// ReadUniq returns current value of msg.Uniq
+func (m *Msg) ReadUniq() int {
+	m.RLock()
+	defer m.RUnlock()
+	return m.Uniq
 }
 
 func (m *Msg) String() string {
 	out, _ := json.MarshalIndent(m, "", "\t")
+	// if err != nil {
+	// 	return fmt.Sprint("cannot create string, error:", err)
+	// }
 	return string(out)
 }

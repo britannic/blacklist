@@ -22,11 +22,12 @@ type dummyConfig struct {
 	t *testing.T
 }
 
-func (d *dummyConfig) ProcessContent(cts ...Contenter) {
+func (d *dummyConfig) ProcessContent(m chan *Msg, cts ...Contenter) {
 	for _, ct := range cts {
 		o := ct.GetList().x
 		for _, src := range o {
-			b, _ := ioutil.ReadAll(src.process().r)
+			_ = NewMsg(src.Name) //TODO
+			b, _ := ioutil.ReadAll(src.process(m).r)
 			d.s = append(d.s, strings.TrimSuffix(string(b), "\n"))
 		}
 	}
@@ -77,13 +78,30 @@ func TestConfigProcessContent(t *testing.T) {
 
 			obj, err := tt.c.NewContent(tt.ct)
 			So(err, ShouldBeNil)
-			if err := tt.c.ProcessContent(obj); (err != nil) == tt.expErr {
+			_ = NewMsg(tt.name)
+
+			m := make(chan *Msg)
+			if err := tt.c.ProcessContent(m, obj); (err != nil) == tt.expErr {
 				So(err.Error(), ShouldEqual, tt.err.Error())
 			}
+
+			d := <-m
+			for d.Done {
+				d = <-m
+				fmt.Println(d)
+			}
+
 		}
 
 		Convey("Testing ProcessContent() if no arguments ", func() {
-			So(newCfg().ProcessContent().Error(), ShouldNotBeNil)
+			_ = NewMsg("No Args") //TODO
+			m := make(chan *Msg)
+			So(newCfg().ProcessContent(m).Error(), ShouldNotBeNil)
+			d := <-m
+			for d.Done {
+				d = <-m
+				fmt.Println(d)
+			}
 		})
 	})
 }
@@ -330,8 +348,16 @@ func TestNewContent(t *testing.T) {
 			case false:
 				So(err, ShouldBeNil)
 
+				m := make(chan *Msg)
 				d := &dummyConfig{t: t}
-				d.ProcessContent(objs)
+				d.ProcessContent(m, objs)
+
+				v := <-m
+				for v.Done {
+					v = <-m
+					fmt.Println(d)
+				}
+
 				So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
 
 				objs.SetURL(tt.name, tt.name)
@@ -403,8 +429,12 @@ func TestMultiObjNewContent(t *testing.T) {
 
 				switch tt.iFace {
 				case ExRtObj, ExDmObj, ExHtObj, PreDObj, PreHObj:
+					m := make(chan *Msg)
 					d := &dummyConfig{t: t}
-					d.ProcessContent(ct)
+					d.ProcessContent(m, ct)
+					for v := range m {
+						fmt.Println(v)
+					}
 					So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
 				default:
 					So(ct.String(), ShouldEqual, tt.exp)
@@ -524,12 +554,27 @@ func TestProcessContent(t *testing.T) {
 						So(fmt.Sprint(obj), ShouldEqual, tt.exp)
 					}
 
-					if err = c.ProcessContent(obj); err != nil {
+					// _ = NewMsg(tt.name) //TODO
+					m := make(chan *Msg)
+					// d := NewMsg(tt.name)
+
+					if err = c.ProcessContent(m, obj); err != nil {
+						d := <-m
+						for d.Done {
+							d = <-m
+							fmt.Println(d)
+						}
 						Convey("Testing "+tt.name+" ProcessContent().Error():", func() {
 							Convey("Error should match expected", func() {
 								So(err, ShouldResemble, tt.err)
 							})
 						})
+					}
+
+					d := <-m
+					for d.Done {
+						d = <-m
+						fmt.Println(d)
 					}
 
 					switch tt.f {
@@ -600,7 +645,7 @@ func TestWriteFile(t *testing.T) {
 			case true:
 				f, err := ioutil.TempFile(tt.dir, tt.fname)
 				So(err, ShouldBeNil)
-				b := &blist{
+				b := &bList{
 					file: f.Name(),
 					r:    tt.data,
 				}
@@ -608,7 +653,7 @@ func TestWriteFile(t *testing.T) {
 				os.Remove(f.Name())
 
 			default:
-				b := &blist{
+				b := &bList{
 					file: tt.dir + tt.fname,
 					r:    tt.data,
 				}

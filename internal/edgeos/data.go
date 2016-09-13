@@ -14,16 +14,16 @@ import (
 type ntype int
 
 //go:generate stringer -type=ntype
-// ntypes label blacklist source types
+// ntype label blacklist source types
 const (
 	unknown ntype = iota // denotes a coding error
 	domn                 // Format type e.g. address=/.d.com/0.0.0.0
-	excDomn              // Won't be written to disk
-	excHost              // Won't be written to disk
-	excRoot              // Won't be written to disk
+	excDomn              // Excluded from domains
+	excHost              // Excluded from hosts
+	excRoot              // Excluded globally
 	host                 // Format type e.g. address=/www.d.com/0.0.0.0
-	preDomn              // Pre-configured backlisted domains
-	preHost              // Pre-configured backlisted hosts
+	preDomn              // Pre-configured blacklisted domains
+	preHost              // Pre-configured blacklisted hosts
 	root                 // Topmost root node
 	zone                 // Unused - future application
 )
@@ -65,12 +65,13 @@ func diffArray(a, b []string) (diff sort.StringSlice) {
 func formatData(fmttr string, l list) io.Reader {
 	var lines sort.StringSlice
 	l.RLock()
-	defer l.RUnlock()
+
 	for k := range l.entry {
 		lines = append(lines, fmt.Sprintf(fmttr+"\n", k))
 	}
-	lines.Sort()
 
+	lines.Sort()
+	l.RUnlock()
 	return strings.NewReader(strings.Join(lines, ""))
 }
 
@@ -86,7 +87,7 @@ func getSeparator(node string) string {
 func getSubdomains(s string) (l list) {
 	l.entry = make(entry)
 	keys := strings.Split(s, ".")
-	for i := 0; i < len(keys)-1; i++ {
+	for i := range Iter(len(keys) - 1) {
 		key := strings.Join(keys[i:], ".")
 		l.entry[key] = 0
 	}
@@ -102,6 +103,11 @@ func getType(in interface{}) (out interface{}) {
 		out = typeStr(in.(string))
 	}
 	return out
+}
+
+// Iter iterates over ints - use it in for loops
+func Iter(i int) []struct{} {
+	return make([]struct{}, i)
 }
 
 // NewWriter returns an io.Writer

@@ -38,7 +38,7 @@ func TestAddInc(t *testing.T) {
 						Arch:  "",
 						Bash:  "",
 						Cores: 0,
-						Debug: false,
+						Dbug:  false,
 						Dex: list{
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
@@ -94,7 +94,7 @@ func TestAddInc(t *testing.T) {
 						Arch:  "",
 						Bash:  "",
 						Cores: 0,
-						Debug: false,
+						Dbug:  false,
 						Dex: list{
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
@@ -244,7 +244,7 @@ func TestReadCfg(t *testing.T) {
 
 func TestReloadDNS(t *testing.T) {
 	Convey("Testing ReloadDNS()", t, func() {
-		act, err := NewConfig(DNSsvc("true")).ReloadDNS()
+		act, err := NewConfig(Bash("/bin/bash"), DNSsvc("true")).ReloadDNS()
 		So(err, ShouldBeNil)
 		So(string(act), ShouldEqual, "")
 	})
@@ -276,7 +276,7 @@ func TestRemove(t *testing.T) {
 		})
 
 		for _, node := range c.Nodes() {
-			for i := 1; i < 10; i++ {
+			for i := range Iter(10) {
 				fname := fmt.Sprintf("%v/%v.%v.%v", dir, node, i, c.Ext)
 				f, err := os.Create(fname)
 				So(err, ShouldBeNil)

@@ -365,7 +365,7 @@ func (c *CFile) readDir(pattern string) ([]string, error) {
 
 // ReloadDNS reloads the dnsmasq configuration
 func (c *Config) ReloadDNS() ([]byte, error) {
-	cmd := exec.Command("/bin/bash")
+	cmd := exec.Command(c.Bash)
 	cmd.Stdin = strings.NewReader(c.DNSsvc)
 
 	return cmd.CombinedOutput()

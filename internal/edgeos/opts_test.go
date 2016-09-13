@@ -1,12 +1,70 @@
 package edgeos
 
 import (
+	"bytes"
+	"fmt"
 	"runtime"
 	"testing"
 	"time"
 
+	logging "github.com/op/go-logging"
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+func TestParmsLog(t *testing.T) {
+	Convey("Testing log()", t, func() {
+		tests := []struct {
+			dbug bool
+			name string
+			str  string
+			verb bool
+		}{
+			{name: "Info", str: "This is a log.Info test", dbug: false, verb: true},
+			{name: "Debug", str: "This is a log.Debug test", dbug: true, verb: false},
+			{name: "Debug & Info", str: "This is both a log.Debug and log.Info test ", dbug: true, verb: true},
+			{name: "Both Debug or Info", str: "This is both a log.Debug and log.Info test and there should be output", dbug: true, verb: true},
+			{name: "Neither Debug or Info", str: "This is both a log.Debug and log.Info test and there shouldn't be any output", dbug: false, verb: false},
+		}
+
+		var (
+			scrFmt = logging.MustStringFormatter(`%{level:.4s}[%{id:03x}] ▶ %{message}`)
+
+			act      = &bytes.Buffer{}
+			p        = &Parms{Logger: logging.MustGetLogger("TestParmsLog"), Verb: true}
+			scr      = logging.NewLogBackend(act, "", 0)
+			scrFmttr = logging.NewBackendFormatter(scr, scrFmt)
+		)
+
+		logging.SetBackend(scrFmttr)
+
+		for i, tt := range tests {
+			Convey("Testing "+tt.name, func() {
+				p.Dbug = tt.dbug
+				p.Verb = tt.verb
+
+				switch {
+				case tt.dbug:
+					p.debug(tt.str)
+					So(act.String(), ShouldEqual, fmt.Sprintf("DEBU[00%d] ▶ %v\n", i+1, tt.str))
+				case tt.verb:
+					p.log(tt.str)
+					So(act.String(), ShouldEqual, fmt.Sprintf("INFO[00%d] ▶ %v\n", i+1, tt.str))
+				case tt.dbug && tt.verb:
+					exp := fmt.Sprintf("DEBU[00%d] ▶ %v\n", i+1, tt.str)
+					exp += fmt.Sprintf("INFO[00%d] ▶ %v\n", i+1, tt.str)
+					p.debug(tt.str)
+					p.log(tt.str)
+					So(act.String(), ShouldEqual, exp)
+				default:
+					p.debug(tt.str)
+					p.log(tt.str)
+					So(act.String(), ShouldEqual, "")
+				}
+				act.Reset()
+			})
+		}
+	})
+}
 
 func TestOption(t *testing.T) {
 	Convey("Testing Option()", t, func() {
@@ -17,7 +75,7 @@ func TestOption(t *testing.T) {
 	"Arch": "amd64",
 	"Bash": "/bin/bash",
 	"Cores": 2,
-	"Debug": true,
+	"Dbug": true,
 	"Dex": {
 		"entry": {}
 	},
@@ -54,7 +112,7 @@ func TestOption(t *testing.T) {
 			Arch:     "amd64",
 			Bash:     "/bin/bash",
 			Cores:    2,
-			Debug:    true,
+			Dbug:     true,
 			Dex:      list{entry: entry{}},
 			Dir:      "/tmp",
 			DNSsvc:   "service dnsmasq restart",
@@ -84,7 +142,7 @@ func TestOption(t *testing.T) {
 			API("/bin/cli-shell-api"),
 			Bash("/bin/bash"),
 			Cores(2),
-			Debug(true),
+			Dbug(true),
 			Dir("/tmp"),
 			DNSsvc("service dnsmasq restart"),
 			Ext("blacklist.conf"),
