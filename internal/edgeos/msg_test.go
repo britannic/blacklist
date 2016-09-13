@@ -8,16 +8,15 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestMsgGetTotal(t *testing.T) {
-	Convey("Testing GetTotal()", t, func() {
-		// sum := func(a int32, b int32) int32 { return a + b }
+func TestMsgMethods(t *testing.T) {
+	Convey("Testing Msg methods...", t, func() {
 		tests := []struct {
 			name  string
-			dupes int32
-			gt    int32
-			new   int32
-			total int32
-			uniq  int32
+			dupes int
+			gt    int
+			new   int
+			total int
+			uniq  int
 		}{
 			{
 				name:  "test-1",
@@ -43,24 +42,41 @@ func TestMsgGetTotal(t *testing.T) {
 				total: 17,
 				uniq:  0,
 			},
+			{
+				name:  "test-4",
+				dupes: 51,
+				gt:    103400,
+				new:   101700,
+				total: 1700,
+				uniq:  103000,
+			},
 		}
 
 		for _, tt := range tests {
-			m := NewMsg("test-1")
+			m := NewMsg(tt.name)
 			m.New = tt.new
 			m.Total = tt.total
 			m.GetTotal()
 			So(m.Total, ShouldEqual, tt.gt)
+
+			m.Dupes = tt.dupes
+			So(m.ReadDupes(), ShouldEqual, tt.dupes)
+
+			m.New = tt.new
+			So(m.ReadNew(), ShouldEqual, tt.new)
+
+			m.Uniq = tt.uniq
+			So(m.ReadUniq(), ShouldEqual, tt.uniq)
 		}
 	})
 }
 
 func TestMsgIncDupe(t *testing.T) {
-	Convey("Testing IncDupe()", t, func() {
+	Convey("Testing incDupe()", t, func() {
 		tests := []struct {
 			name  string
-			dupes int32
-			gt    int32
+			dupes int
+			gt    int
 		}{
 			{
 				name:  "test-1",
@@ -81,18 +97,18 @@ func TestMsgIncDupe(t *testing.T) {
 		for _, tt := range tests {
 			m := NewMsg(tt.name)
 			m.Dupes = tt.dupes
-			m.IncDupe()
+			m.incDupe()
 			So(m.Dupes, ShouldEqual, tt.gt)
 		}
 	})
 }
 
 func TestMsgIncNew(t *testing.T) {
-	Convey("Testing IncNew()", t, func() {
+	Convey("Testing incNew()", t, func() {
 		tests := []struct {
 			name string
-			new  int32
-			gt   int32
+			new  int
+			gt   int
 		}{
 			{
 				name: "test-1",
@@ -113,7 +129,7 @@ func TestMsgIncNew(t *testing.T) {
 		for _, tt := range tests {
 			m := NewMsg(tt.name)
 			m.New = tt.new
-			m.IncNew()
+			m.incNew()
 			So(m.New, ShouldEqual, tt.gt)
 		}
 	})
@@ -123,8 +139,8 @@ func TestMsgIncUniq(t *testing.T) {
 	Convey("Testing IncUniq()", t, func() {
 		tests := []struct {
 			name string
-			uniq int32
-			gt   int32
+			uniq int
+			gt   int
 		}{
 			{
 				name: "test-1",
@@ -145,7 +161,7 @@ func TestMsgIncUniq(t *testing.T) {
 		for _, tt := range tests {
 			m := NewMsg(tt.name)
 			m.Uniq = tt.uniq
-			m.IncUniq()
+			m.incUniq()
 			So(m.Uniq, ShouldEqual, tt.gt)
 		}
 	})
@@ -154,10 +170,8 @@ func TestMsgIncUniq(t *testing.T) {
 func TestNewMsg(t *testing.T) {
 	Convey("Testing NewMsg('Vanilla')", t, func() {
 		exp := &Msg{
-			Name: "Vanilla",
-			Rec: &Rec{
-				RWMutex: &sync.RWMutex{},
-			},
+			Name:    "Vanilla",
+			RWMutex: &sync.RWMutex{},
 		}
 		So(NewMsg("Vanilla"), ShouldResemble, exp)
 	})

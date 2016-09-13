@@ -16,20 +16,13 @@ type list struct {
 }
 
 // inc increments the entry by +1
-func (l list) inc(k string) {
-	l.Lock()
-	defer l.Unlock()
-	l.entry[k]++
-}
+// func (l list) inc(k string) {
+// 	l.Lock()
+// 	l.entry[k]++
+// 	l.Unlock()
+// }
 
 // set sets the int value of entry
-func (l list) set(k string, v int) {
-	l.Lock()
-	defer l.Unlock()
-	l.entry[k] = v
-}
-
-// keyExists returns true if the list key exists
 func (l list) keyExists(s string) bool {
 	l.RLock()
 	defer l.RUnlock()
@@ -37,7 +30,7 @@ func (l list) keyExists(s string) bool {
 	return ok
 }
 
-// mergeList combines two list maps
+// keyExists returns true if the list key exists
 func mergeList(a, b list) list {
 	a.Lock()
 	b.Lock()
@@ -47,6 +40,13 @@ func mergeList(a, b list) list {
 		a.entry[k] = v
 	}
 	return a
+}
+
+// mergeList combines two list maps
+func (l list) set(k string, v int) {
+	l.Lock()
+	l.entry[k] = v
+	l.Unlock()
 }
 
 func (l list) String() string {

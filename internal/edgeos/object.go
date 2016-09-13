@@ -64,8 +64,8 @@ func (o *Objects) Files() *CFile {
 func (o *Objects) Filter(ltype string) *Objects {
 	var (
 		objects = Objects{Parms: o.Parms}
-		xfiles  = "-" + files
-		xurls   = "-" + urls
+		xFiles = "-" + files
+		xURLs = "-" + urls
 	)
 
 	switch ltype {
@@ -75,7 +75,7 @@ func (o *Objects) Filter(ltype string) *Objects {
 				objects.x = append(objects.x, obj)
 			}
 		}
-	case xfiles:
+	case xFiles:
 		for _, obj := range o.x {
 			if obj.ltype != files {
 				objects.x = append(objects.x, obj)
@@ -87,7 +87,7 @@ func (o *Objects) Filter(ltype string) *Objects {
 				objects.x = append(objects.x, obj)
 			}
 		}
-	case xurls:
+	case xURLs:
 		for _, obj := range o.x {
 			if obj.ltype != urls {
 				objects.x = append(objects.x, obj)

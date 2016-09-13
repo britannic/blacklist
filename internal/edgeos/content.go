@@ -28,7 +28,7 @@ const (
 	URLhObj
 )
 
-type blist struct {
+type bList struct {
 	file string
 	r    io.Reader
 }
@@ -40,11 +40,6 @@ type Contenter interface {
 	Len() int
 	SetURL(string, string)
 	String() string
-}
-
-// FIODataObjects implements GetList for files
-type FIODataObjects struct {
-	*Objects
 }
 
 // ExcDomnObjects implements GetList for domain exclusions
@@ -62,6 +57,11 @@ type ExcRootObjects struct {
 	*Objects
 }
 
+// FIODataObjects implements GetList for files
+type FIODataObjects struct {
+	*Objects
+}
+
 // PreDomnObjects implements GetList for pre-configured domains content
 type PreDomnObjects struct {
 	*Objects
@@ -72,13 +72,13 @@ type PreHostObjects struct {
 	*Objects
 }
 
-// URLHostObjects implements GetList for URLs
-type URLHostObjects struct {
+// URLDomnObjects implements GetList for URLs
+type URLDomnObjects struct {
 	*Objects
 }
 
-// URLDomnObjects implements GetList for URLs
-type URLDomnObjects struct {
+// URLHostObjects implements GetList for URLs
+type URLHostObjects struct {
 	*Objects
 }
 
@@ -218,7 +218,7 @@ func (f *FIODataObjects) GetList() *Objects {
 		}(o)
 	}
 
-	for i := 0; i < len(f.x); i++ {
+	for _ = range Iter(len(f.x)) {
 		select {
 		case response := <-responses:
 			f.x[f.Find(response.name)] = response
@@ -321,11 +321,12 @@ func (u *URLDomnObjects) Len() int { return len(u.Objects.x) }
 func (u *URLHostObjects) Len() int { return len(u.Objects.x) }
 
 // Process extracts hosts/domains from downloaded raw content
-func (o *object) process() *blist {
+func (o *object) process(m chan *Msg) *bList {
 	var (
-		b   = bufio.NewScanner(o.r)
-		rx  = regx.Obj
 		add = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+		b   = bufio.NewScanner(o.r)
+		d   = NewMsg(o.Name)
+		rx  = regx.Obj
 	)
 
 NEXT:
@@ -350,18 +351,24 @@ NEXT:
 
 					switch {
 					case isDEX:
-						o.Dex.inc(fqdn)
+						// o.Dex.inc(fqdn)
+						d.incDupe()
+						m <- d
 						continue FQDN
 
 					case isEXC:
 						if add.keyExists(fqdn) {
-							add.inc(fqdn)
+							// add.inc(fqdn)
+							d.incDupe()
+							m <- d
 						}
-						o.Exc.inc(fqdn)
+						// o.Exc.inc(fqdn)
 
 					case !isEXC:
 						o.Exc.set(fqdn, 0)
 						add.set(fqdn, 0)
+						d.incNew()
+						m <- d
 					}
 				}
 			}
@@ -377,14 +384,17 @@ NEXT:
 
 	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
 
-	return &blist{
+	d.Done = true
+	m <- d
+
+	return &bList{
 		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),
 		r:    formatData(fmttr, add),
 	}
 }
 
 // ProcessContent processes the Contents array
-func (c *Config) ProcessContent(cts ...Contenter) error {
+func (c *Config) ProcessContent(m chan *Msg, cts ...Contenter) error {
 	var (
 		errs      []string
 		getErrors chan error
@@ -397,7 +407,7 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 	for _, ct := range cts {
 		for _, o := range ct.GetList().x {
 			getErrors = make(chan error)
-			defer close(getErrors)
+			_ = NewMsg(o.Name) //TODO
 
 			if o.err != nil {
 				errs = append(errs, o.err.Error())
@@ -406,10 +416,10 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 			go func(o *object) {
 				switch o.nType {
 				case excDomn, excHost, excRoot:
-					o.process()
+					o.process(m)
 					getErrors <- nil
 				default:
-					getErrors <- o.process().writeFile()
+					getErrors <- o.process(m).writeFile()
 				}
 			}(o)
 
@@ -422,6 +432,7 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 				}
 			}
 		}
+		close(getErrors)
 	}
 
 	if errs != nil {
@@ -535,7 +546,7 @@ func (i IFace) String() (s string) {
 }
 
 // writeFile saves hosts/domains data to disk
-func (b *blist) writeFile() error {
+func (b *bList) writeFile() error {
 	w, err := os.Create(b.file)
 	if err != nil {
 		return err

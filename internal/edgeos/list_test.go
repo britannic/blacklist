@@ -48,7 +48,7 @@ func TestMergeList(t *testing.T) {
 		testList2 := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		exp := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 
-		for i := 0; i < 20; i++ {
+		for i := range Iter(20) {
 			exp.entry[string(i)] = 1
 			switch {
 			case i%2 == 0:

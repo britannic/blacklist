@@ -1,12 +1,26 @@
 
+
 # tdata
-    import "github.com/britannic/blacklist/internal/tdata"
+`import "github.com/britannic/blacklist/internal/tdata"`
+
+* [Overview](#pkg-overview)
+* [Index](#pkg-index)
+
+## <a name="pkg-overview">Overview</a>
 
 
 
+## <a name="pkg-index">Index</a>
+* [Variables](#pkg-variables)
+* [func Get(s string) (r string, err error)](#Get)
 
 
-## Variables
+#### <a name="pkg-files">Package files</a>
+[tdata.go](/src/github.com/britannic/blacklist/internal/tdata/tdata.go) 
+
+
+
+## <a name="pkg-variables">Variables</a>
 ``` go
 var (
     // Cfg contains a valid full EdgeOS blacklist configuration
@@ -468,12 +482,12 @@ var (
 )
 ```
 
-## func Get
+
+## <a name="Get">func</a> [Get](/src/target/tdata.go?s=46:86#L1)
 ``` go
 func Get(s string) (r string, err error)
 ```
 Get returns r
-
 
 
 

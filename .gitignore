@@ -17,6 +17,7 @@
 
 *.bkp
 
+<<<<<<< HEAD
 vendor/
 
 testdata/blacklist.log
@@ -29,8 +30,39 @@ testdata/blacklist.log
 
 *.lock
 
+=======
+.coveralls.yml
+
+vendor/github.com/britannic/testutils/
+
+.vscode/launch.json
+
+browse.VC.db
+
+*.lock
+
+vendor/github.com/smartystreets/goconvey/
+
+>>>>>>> origin/master
 internal/edgeos/bkp
 
 *.log
 
 .idea/
+*.iml
+
+.idea/blacklist.iml
+
+.idea/compiler.xml
+
+.idea/copyright/profiles_settings.xml
+
+.idea/libraries/GOPATH__blacklist_.xml
+
+.idea/misc.xml
+
+.idea/modules.xml
+
+.idea/vcs.xml
+
+.idea/workspace.xml

@@ -95,20 +95,6 @@ func getFile(f string) (io.Reader, error) {
 }
 
 // read returns an EdgeOS config file io.Reader
-func (c *CFGcli) read() io.Reader {
-	b, err := c.load("showConfig", c.Level)
-	if err != nil {
-		log.Print(err)
-	}
-	return bytes.NewReader(b)
-}
-
-// read returns an EdgeOS config file io.Reader
-func (c *CFGstatic) read() io.Reader {
-	return strings.NewReader(c.Cfg)
-}
-
-// purgeFiles removes any orphaned blacklist files that don't have sources
 func purgeFiles(files []string) error {
 	var errs []string
 	for _, f := range files {
@@ -123,4 +109,18 @@ func purgeFiles(files []string) error {
 		return errors.New(strings.Join(errs, "\n"))
 	}
 	return nil
+}
+
+// read returns an EdgeOS config file io.Reader
+func (c *CFGcli) read() io.Reader {
+	b, err := c.load("showConfig", c.Level)
+	if err != nil {
+		log.Print(err)
+	}
+	return bytes.NewReader(b)
+}
+
+// purgeFiles removes any orphaned blacklist files that don't have sources
+func (c *CFGstatic) read() io.Reader {
+	return strings.NewReader(c.Cfg)
 }

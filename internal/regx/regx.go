@@ -80,9 +80,14 @@ func Get(t, s string) (r []string) {
 	return r
 }
 
+// iter iterates over ints - use it in for loops
+func iter(i int) []struct{} {
+	return make([]struct{}, i)
+}
+
 func (rx *OBJ) String() (s string) {
 	v := reflect.ValueOf(rx).Elem()
-	for i := 0; i < v.NumField(); i++ {
+	for i := range iter(v.NumField()) {
 		s += fmt.Sprintf("%v: %v\n", v.Type().Field(i).Name, v.Field(i).Interface())
 	}
 	return s
