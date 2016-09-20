@@ -1,8 +1,8 @@
 package edgeos
 
 import (
+	"bytes"
 	"sort"
-	"strings"
 	"sync"
 	"testing"
 
@@ -30,7 +30,7 @@ func TestKeys(t *testing.T) {
 
 func TestKeyExists(t *testing.T) {
 	Convey("Testing KeyExists()", t, func() {
-		full := "top.one.two.three.four.five.six.intellitxt.com"
+		full := []byte("top.one.two.three.four.five.six.intellitxt.com")
 		d := getSubdomains(full)
 		d.RWMutex = &sync.RWMutex{}
 
@@ -93,7 +93,7 @@ func TestString(t *testing.T) {
 
 func TestSubKeyExists(t *testing.T) {
 	Convey("Testing SubKeyExists()", t, func() {
-		full := "top.one.two.three.four.five.six.com"
+		full := []byte("top.one.two.three.four.five.six.com")
 		d := getSubdomains(full)
 		d.RWMutex = &sync.RWMutex{}
 
@@ -102,7 +102,7 @@ func TestSubKeyExists(t *testing.T) {
 		So(d.subKeyExists(key), ShouldBeTrue)
 
 		act := len(d.entry)
-		exp := strings.Count(full, ".") + 1
+		exp := bytes.Count(full, []byte(".")) + 1
 		So(act, ShouldEqual, exp)
 
 		for key = range d.entry {

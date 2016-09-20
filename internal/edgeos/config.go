@@ -3,6 +3,7 @@ package edgeos
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -281,69 +282,69 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 
 LINE:
 	for b.Scan() {
-		line := strings.TrimSpace(b.Text())
+		line := bytes.TrimSpace(b.Bytes())
 
 		switch {
-		case rx.MLTI.MatchString(line):
-			incExc := regx.Get("mlti", line)
-			switch incExc[1] {
+		case rx.MLTI.Match(line):
+			incExc := regx.Get([]byte("mlti"), line)
+			switch string(incExc[1]) {
 			case "exclude":
-				c.tree[tnode].exc = append(c.tree[tnode].exc, incExc[2])
+				c.tree[tnode].exc = append(c.tree[tnode].exc, string(incExc[2]))
 
 			case "include":
-				c.tree[tnode].inc = append(c.tree[tnode].inc, incExc[2])
+				c.tree[tnode].inc = append(c.tree[tnode].inc, string(incExc[2]))
 			}
 
-		case rx.NODE.MatchString(line):
-			node := regx.Get("node", line)
-			tnode = node[1]
+		case rx.NODE.Match(line):
+			node := regx.Get([]byte("node"), line)
+			tnode = string(node[1])
 			nodes = append(nodes, tnode)
 			c.tree[tnode] = newObject()
 
-		case rx.LEAF.MatchString(line):
-			srcName := regx.Get("leaf", line)
-			leaf = srcName[2]
-			nodes = append(nodes, srcName[1])
+		case rx.LEAF.Match(line):
+			srcName := regx.Get([]byte("leaf"), line)
+			leaf = string(srcName[2])
+			nodes = append(nodes, string(srcName[1]))
 
-			if srcName[1] == src {
+			if bytes.Equal(srcName[1], []byte(src)) {
 				o = newObject()
 				o.name = leaf
 				o.nType = getType(tnode).(ntype)
 			}
 
-		case rx.DSBL.MatchString(line):
-			c.tree[tnode].disabled = strToBool(regx.Get("dsbl", line)[1])
+		case rx.DSBL.Match(line):
+			c.tree[tnode].disabled = strToBool(string(regx.Get([]byte("dsbl"), line)[1]))
 
-		case rx.IPBH.MatchString(line) && nodes[len(nodes)-1] != src:
-			c.tree[tnode].ip = regx.Get("ipbh", line)[1]
+		case rx.IPBH.Match(line) && nodes[len(nodes)-1] != src:
+			c.tree[tnode].ip = string(regx.Get([]byte("ipbh"), line)[1])
 
-		case rx.NAME.MatchString(line):
-			name := regx.Get("name", line)
-			switch name[1] {
+		case rx.NAME.Match(line):
+			name := regx.Get([]byte("name"), line)
+			switch string(name[1]) {
 			case "description":
-				o.desc = name[2]
+				o.desc = string(name[2])
 
 			case blackhole:
-				o.ip = name[2]
+				o.ip = string(name[2])
 
 			case files:
-				o.file = name[2]
-				o.ltype = name[1]
+				o.file = string(name[2])
+				o.ltype = string(name[1])
 				c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
 
 			case "prefix":
-				o.prefix = name[2]
+				o.prefix = string(name[2])
 
 			case urls:
-				o.ltype = name[1]
-				o.url = name[2]
+				o.ltype = string(name[1])
+				o.url = string(name[2])
 				c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
 			}
 
-		case rx.DESC.MatchString(line) || rx.CMNT.MatchString(line) || rx.MISC.MatchString(line):
+		case rx.DESC.Match(line) || rx.CMNT.Match(line) || rx.MISC.Match(line):
 			continue LINE
 
-		case rx.RBRC.MatchString(line):
+		case rx.RBRC.Match(line):
 			if len(nodes) > 1 {
 				nodes = nodes[:len(nodes)-1] // pop last node
 				tnode = nodes[len(nodes)-1]

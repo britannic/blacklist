@@ -10,8 +10,8 @@ import (
 
 type test struct {
 	index  int
-	input  string
-	result string
+	input  []byte
+	result []byte
 }
 
 type config map[string]test
@@ -19,9 +19,9 @@ type config map[string]test
 func TestGet(t *testing.T) {
 	Convey("Testing Get()", t, func() {
 		for k := range c {
-			act := regx.Get(k, c[k].input)
+			act := regx.Get([]byte(k), c[k].input)
 			So(len(act), ShouldBeGreaterThan, 0)
-			So(act[c[k].index], ShouldEqual, c[k].result)
+			So(act[c[k].index], ShouldResemble, c[k].result)
 		}
 	})
 }
@@ -35,36 +35,36 @@ func TestRegex(t *testing.T) {
 func TestStripPrefixAndSuffix(t *testing.T) {
 	Convey("Testing StripPrefixAndSuffix()", t, func() {
 		tests := []struct {
-			exp    string
-			line   string
+			exp    []byte
+			line   []byte
 			ok     bool
 			prefix string
 			rx     *regx.OBJ
 		}{
 			{
-				exp:    "This is a complete sentence and should not be a comment.",
-				line:   "/* This is a complete sentence and should not be a comment.",
+				exp:    []byte("This is a complete sentence and should not be a comment."),
+				line:   []byte("/* This is a complete sentence and should not be a comment."),
 				ok:     true,
 				prefix: "/* ",
 				rx:     regx.Obj,
 			},
 			{
-				exp:    "verybad.phishing.sites.r.us.com",
-				line:   "https://verybad.phishing.sites.r.us.com",
+				exp:    []byte("verybad.phishing.sites.r.us.com"),
+				line:   []byte("https://verybad.phishing.sites.r.us.com"),
 				ok:     true,
 				prefix: "https://",
 				rx:     regx.Obj,
 			},
 			{
-				exp:    "verybad.phishing.sites.r.us.com",
-				line:   "https://verybad.phishing.sites.r.us.com",
+				exp:    []byte("verybad.phishing.sites.r.us.com"),
+				line:   []byte("https://verybad.phishing.sites.r.us.com"),
 				ok:     true,
 				prefix: "http",
 				rx:     regx.Obj,
 			},
 			{
-				exp:    "verybad.phishing.sites.r.us.com",
-				line:   "verybad.phishing.sites.r.us.com",
+				exp:    []byte("verybad.phishing.sites.r.us.com"),
+				line:   []byte("verybad.phishing.sites.r.us.com"),
 				ok:     false,
 				prefix: "http",
 				rx:     regx.Obj,
@@ -72,7 +72,7 @@ func TestStripPrefixAndSuffix(t *testing.T) {
 		}
 		for _, tt := range tests {
 			act, ok := tt.rx.StripPrefixAndSuffix(tt.line, tt.prefix)
-			So(act, ShouldEqual, tt.exp)
+			So(act, ShouldResemble, tt.exp)
 			So(ok, ShouldEqual, tt.ok)
 		}
 	})
@@ -82,88 +82,88 @@ var (
 	c = config{
 		"cmnt": test{
 			index:  1,
-			input:  `/*Comment*/`,
-			result: `Comment`,
+			input:  []byte(`/*Comment*/`),
+			result: []byte(`Comment`),
 		},
 		"desc": test{
 			index:  1,
-			input:  `description "Descriptive text"`,
-			result: `Descriptive text`,
+			input:  []byte(`description "Descriptive text"`),
+			result: []byte(`Descriptive text`),
 		},
 		"dsbl": test{
 			index:  1,
-			input:  `disabled false`,
-			result: `false`,
+			input:  []byte(`disabled false`),
+			result: []byte(`false`),
 		},
 		"flip": test{
 			index:  1,
-			input:  `address=/.xunlei.com/0.0.0.0`,
-			result: `0.0.0.0`,
+			input:  []byte(`address=/.xunlei.com/0.0.0.0`),
+			result: []byte(`0.0.0.0`),
 		},
 		"fqdn": test{
 			index:  1,
-			input:  `http:/123pagerank.com/*=UUID:272`,
-			result: `123pagerank.com`,
+			input:  []byte(`http:/123pagerank.com/*=UUID:272`),
+			result: []byte(`123pagerank.com`),
 		},
 		"host": test{
 			index:  1,
-			input:  `address=/.xunlei.com/0.0.0.0`,
-			result: `xunlei.com`,
+			input:  []byte(`address=/.xunlei.com/0.0.0.0`),
+			result: []byte(`xunlei.com`),
 		},
 		"http": test{
 			index:  1,
-			input:  `https:/123pagerank.com/*=UUID:272`,
-			result: `123pagerank.com/*=UUID:272`,
+			input:  []byte(`https:/123pagerank.com/*=UUID:272`),
+			result: []byte(`123pagerank.com/*=UUID:272`),
 		},
 		"ipbh": test{
 			index:  1,
-			input:  `dns-redirect-ip 0.0.0.0`,
-			result: `0.0.0.0`,
+			input:  []byte(`dns-redirect-ip 0.0.0.0`),
+			result: []byte(`0.0.0.0`),
 		},
 		"lbrc": test{
 			index:  0,
-			input:  `blacklist {`,
-			result: `{`,
+			input:  []byte(`blacklist {`),
+			result: []byte(`{`),
 		},
 		"leaf": test{
 			index:  1,
-			input:  `source volkerschatz {`,
-			result: `source`,
+			input:  []byte(`source volkerschatz {`),
+			result: []byte(`source`),
 		},
 		"misc": test{
 			index:  0,
-			input:  `blacklist-bigot`,
-			result: `blacklist-bigot`,
+			input:  []byte(`blacklist-bigot`),
+			result: []byte(`blacklist-bigot`),
 		},
 		"mlti": test{
 			index:  2,
-			input:  `include adsrvr.org`,
-			result: `adsrvr.org`,
+			input:  []byte(`include adsrvr.org`),
+			result: []byte(`adsrvr.org`),
 		},
 		"mpty": test{
 			index:  0,
-			input:  ``,
-			result: ``,
+			input:  []byte{},
+			result: []byte{},
 		},
 		"name": test{
 			index:  1,
-			input:  `Test "System"`,
-			result: `Test`,
+			input:  []byte(`Test "System"`),
+			result: []byte(`Test`),
 		},
 		"node": test{
 			index:  1,
-			input:  `hosts {`,
-			result: `hosts`,
+			input:  []byte(`hosts {`),
+			result: []byte(`hosts`),
 		},
 		"rbrc": test{
 			index:  0,
-			input:  `} blacklist`,
-			result: `}`,
+			input:  []byte(`} blacklist`),
+			result: []byte(`}`),
 		},
 		"sufx": test{
 			index:  0,
-			input:  `www.123pagerank.com/*=UUID`,
-			result: `/*=UUID`,
+			input:  []byte(`www.123pagerank.com/*=UUID`),
+			result: []byte(`/*=UUID`),
 		},
 	}
 

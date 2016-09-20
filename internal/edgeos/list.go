@@ -23,10 +23,10 @@ type list struct {
 // }
 
 // set sets the int value of entry
-func (l list) keyExists(s string) bool {
+func (l list) keyExists(k string) bool {
 	l.RLock()
 	defer l.RUnlock()
-	_, ok := l.entry[s]
+	_, ok := l.entry[k]
 	return ok
 }
 
@@ -59,14 +59,14 @@ func (l list) String() string {
 }
 
 // subKeyExists returns true if part of all of the key matches
-func (l list) subKeyExists(s string) bool {
-	keys := getSubdomains(s)
+func (l list) subKeyExists(k string) bool {
+	keys := getSubdomains([]byte(k))
 	for k := range keys.entry {
 		if l.keyExists(k) {
 			return true
 		}
 	}
-	return l.keyExists(s)
+	return l.keyExists(k)
 }
 
 // updateEntry converts []string to map of List

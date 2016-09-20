@@ -88,6 +88,7 @@ func main() {
 	if err := removeStaleFiles(c); err != nil {
 		logFatalln(err)
 	}
+
 	// if err := processObjects(c, objex); err != nil {
 	// 	logFatalln(err)
 	// }

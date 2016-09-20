@@ -87,7 +87,7 @@ func TestFormatData(t *testing.T) {
 
 func TestGetSubdomains(t *testing.T) {
 	Convey("Testing GetSubdomains()", t, func() {
-		d := getSubdomains("top.one.two.three.four.five.six.intellitxt.com")
+		d := getSubdomains([]byte("top.one.two.three.four.five.six.intellitxt.com"))
 		d.RWMutex = &sync.RWMutex{}
 
 		for key := range d.entry {

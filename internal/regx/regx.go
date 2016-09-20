@@ -6,10 +6,10 @@
 package regx
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
 	"regexp"
-	"strings"
 )
 
 // OBJ is a struct of regex precompiled objects
@@ -39,43 +39,43 @@ var Obj = &OBJ{
 }
 
 // Get returns an array compiled regx OBJs
-func Get(t, s string) (r []string) {
+func Get(t, b []byte) (r [][]byte) {
 	rx := Obj
-	switch t {
+	switch string(t) {
 	case "cmnt":
-		r = rx.CMNT.FindStringSubmatch(s)
+		r = rx.CMNT.FindSubmatch(b)
 	case "desc":
-		r = rx.DESC.FindStringSubmatch(s)
+		r = rx.DESC.FindSubmatch(b)
 	case "dsbl":
-		r = rx.DSBL.FindStringSubmatch(s)
+		r = rx.DSBL.FindSubmatch(b)
 	case "flip":
-		r = rx.FLIP.FindStringSubmatch(s)
+		r = rx.FLIP.FindSubmatch(b)
 	case "fqdn":
-		r = rx.FQDN.FindStringSubmatch(s)
+		r = rx.FQDN.FindSubmatch(b)
 	case "host":
-		r = rx.HOST.FindStringSubmatch(s)
+		r = rx.HOST.FindSubmatch(b)
 	case "http":
-		r = rx.HTTP.FindStringSubmatch(s)
+		r = rx.HTTP.FindSubmatch(b)
 	case "ipbh":
-		r = rx.IPBH.FindStringSubmatch(s)
+		r = rx.IPBH.FindSubmatch(b)
 	case "lbrc":
-		r = rx.LBRC.FindStringSubmatch(s)
+		r = rx.LBRC.FindSubmatch(b)
 	case "leaf":
-		r = rx.LEAF.FindStringSubmatch(s)
+		r = rx.LEAF.FindSubmatch(b)
 	case "misc":
-		r = rx.MISC.FindStringSubmatch(s)
+		r = rx.MISC.FindSubmatch(b)
 	case "mlti":
-		r = rx.MLTI.FindStringSubmatch(s)
+		r = rx.MLTI.FindSubmatch(b)
 	case "mpty":
-		r = rx.MPTY.FindStringSubmatch(s)
+		r = rx.MPTY.FindSubmatch(b)
 	case "name":
-		r = rx.NAME.FindStringSubmatch(s)
+		r = rx.NAME.FindSubmatch(b)
 	case "node":
-		r = rx.NODE.FindStringSubmatch(s)
+		r = rx.NODE.FindSubmatch(b)
 	case "rbrc":
-		r = rx.RBRC.FindStringSubmatch(s)
+		r = rx.RBRC.FindSubmatch(b)
 	case "sufx":
-		r = rx.SUFX.FindStringSubmatch(s)
+		r = rx.SUFX.FindSubmatch(b)
 	}
 	return r
 }
@@ -94,20 +94,20 @@ func (rx *OBJ) String() (s string) {
 }
 
 // StripPrefixAndSuffix strips the prefix and suffix
-func (rx *OBJ) StripPrefixAndSuffix(line, prefix string) (string, bool) {
+func (rx *OBJ) StripPrefixAndSuffix(line []byte, prefix string) ([]byte, bool) {
 	switch {
 	case prefix == "http", prefix == "https":
-		if !rx.HTTP.MatchString(line) {
+		if !rx.HTTP.Match(line) {
 			return line, false
 		}
-		line = rx.HTTP.FindStringSubmatch(line)[1]
+		line = rx.HTTP.FindSubmatch(line)[1]
 
-	case strings.HasPrefix(line, prefix):
-		line = strings.TrimPrefix(line, prefix)
+	case bytes.HasPrefix(line, []byte(prefix)):
+		line = bytes.TrimPrefix(line, []byte(prefix))
 	}
 
-	line = rx.SUFX.ReplaceAllString(line, "")
-	line = strings.Replace(line, `"`, "", -1)
-	line = strings.TrimSpace(line)
+	line = rx.SUFX.ReplaceAll(line, []byte{})
+	line = bytes.Replace(line, []byte(`"`), []byte{}, -1)
+	line = bytes.TrimSpace(line)
 	return line, true
 }

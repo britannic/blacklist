@@ -84,12 +84,12 @@ func getSeparator(node string) string {
 }
 
 // getSubdomains returns a map of subdomains
-func getSubdomains(s string) (l list) {
+func getSubdomains(b []byte) (l list) {
 	l.entry = make(entry)
-	keys := strings.Split(s, ".")
+	keys := bytes.Split(b, []byte("."))
 	for i := range Iter(len(keys) - 1) {
-		key := strings.Join(keys[i:], ".")
-		l.entry[key] = 0
+		key := bytes.Join(keys[i:], []byte("."))
+		l.entry[string(key)] = 0
 	}
 	return l
 }

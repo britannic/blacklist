@@ -2,6 +2,7 @@ package edgeos
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -331,44 +332,34 @@ func (o *object) process() *bList {
 
 NEXT:
 	for b.Scan() {
-		line := strings.ToLower(b.Text())
-		line = strings.TrimSpace(line)
+		line := bytes.TrimSpace(bytes.ToLower(b.Bytes()))
 
 		switch {
-		case strings.HasPrefix(line, "#"), strings.HasPrefix(line, "//"):
+		case bytes.HasPrefix(line, []byte("#")), bytes.HasPrefix(line, []byte("//")):
 			continue NEXT
 
-		case strings.HasPrefix(line, o.prefix):
+		case bytes.HasPrefix(line, []byte(o.prefix)):
 			var ok bool
 
 			if line, ok = rx.StripPrefixAndSuffix(line, o.prefix); ok {
-				fqdns := rx.FQDN.FindAllString(line, -1)
+				fqdns := rx.FQDN.FindAll(line, -1)
 
 			FQDN:
 				for _, fqdn := range fqdns {
-					isDEX := o.Dex.subKeyExists(fqdn)
-					isEXC := o.Exc.keyExists(fqdn)
+					isDEX := o.Dex.subKeyExists(string(fqdn))
+					isEXC := o.Exc.keyExists(string(fqdn))
 
 					switch {
 					case isDEX:
-						// o.Dex.inc(fqdn)
-						// d.incDupe()
-						// m <- d
 						continue FQDN
 
 					case isEXC:
-						if add.keyExists(fqdn) {
-							// add.inc(fqdn)
-							// d.incDupe()
-							// m <- d
+						if add.keyExists(string(fqdn)) {
 						}
-						// o.Exc.inc(fqdn)
 
 					case !isEXC:
-						o.Exc.set(fqdn, 0)
-						add.set(fqdn, 0)
-						// d.incNew()
-						// m <- d
+						o.Exc.set(string(fqdn), 0)
+						add.set(string(fqdn), 0)
 					}
 				}
 			}
@@ -383,9 +374,6 @@ NEXT:
 	}
 
 	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
-
-	// d.Done = true
-	// m <- d
 
 	return &bList{
 		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),
@@ -407,8 +395,6 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 	for _, ct := range cts {
 		for _, o := range ct.GetList().x {
 			getErrors = make(chan error)
-			_ = NewMsg(o.Name) //TODO
-
 			if o.err != nil {
 				errs = append(errs, o.err.Error())
 			}
