@@ -5,6 +5,7 @@
 !*.*
 !*/
 !testcoverage
+!.travis.yml
 
 # Ignore debug
 *.debug
@@ -12,28 +13,13 @@
 # Ignore test
 *.test
 
-.DS_Store
-
-*.bkp
-
+.idea/
+.vscode/
+vendor/
 .coveralls.yml
-
-vendor/github.com/britannic/testutils/
-
-.vscode/launch.json
-
-browse.VC.db
-
+.DS_Store
+*.bkp
 *.lock
-
-vendor/github.com/smartystreets/goconvey/
-
-internal/edgeos/bkp
-
 *.log
+*.VC.db
 
-.idea/workspace.xml
-
-.idea/workspace.xml
-
-.idea/workspace.xml
