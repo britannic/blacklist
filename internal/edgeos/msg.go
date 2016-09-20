@@ -5,24 +5,15 @@ import (
 	"sync"
 )
 
-// Rec holds stats on the current job
-// type Rec struct {
-// 	*sync.RWMutex
-// 	Dupes int `json:"dupes"`
-// 	New   int `json:"new"`
-// 	Total int `json:"total"`
-// 	Uniq  int `json:"uniq"`
-// }
-
 // Msg is a struct for recording stats from ProcessContent
 type Msg struct {
 	*sync.RWMutex
-	Name  string
-	Done  bool
-	Dupes int `json:"dupes"`
-	New   int `json:"new"`
-	Total int `json:"total"`
-	Uniq  int `json:"uniq"`
+	Name  string `json:"name"`
+	Done  bool   `json:"done"`
+	Dupes int    `json:"dupes"`
+	New   int    `json:"new"`
+	Total int    `json:"total"`
+	Uniq  int    `json:"uniq"`
 }
 
 // GetTotal returns total m.New records

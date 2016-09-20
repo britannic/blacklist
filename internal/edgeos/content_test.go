@@ -15,6 +15,7 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"golang.org/x/sync/errgroup"
 )
 
 type dummyConfig struct {
@@ -22,15 +23,15 @@ type dummyConfig struct {
 	t *testing.T
 }
 
-func (d *dummyConfig) ProcessContent(m chan *Msg, cts ...Contenter) {
+func (d *dummyConfig) ProcessContent(cts ...Contenter) error {
 	for _, ct := range cts {
 		o := ct.GetList().x
 		for _, src := range o {
-			_ = NewMsg(src.Name) //TODO
-			b, _ := ioutil.ReadAll(src.process(m).r)
+			b, _ := ioutil.ReadAll(src.process().r)
 			d.s = append(d.s, strings.TrimSuffix(string(b), "\n"))
 		}
 	}
+	return nil
 }
 
 func TestConfigProcessContent(t *testing.T) {
@@ -75,33 +76,21 @@ func TestConfigProcessContent(t *testing.T) {
 		}
 		for _, tt := range tests {
 			So(tt.c.ReadCfg(&CFGstatic{Cfg: tt.cfg}), ShouldBeNil)
-
+			var g errgroup.Group
 			obj, err := tt.c.NewContent(tt.ct)
 			So(err, ShouldBeNil)
-			_ = NewMsg(tt.name)
-
-			m := make(chan *Msg)
-			if err := tt.c.ProcessContent(m, obj); (err != nil) == tt.expErr {
+			g.Go(func() error { return tt.c.ProcessContent(obj) })
+			err = g.Wait()
+			if (err != nil) == tt.expErr {
 				So(err.Error(), ShouldEqual, tt.err.Error())
 			}
-
-			d := <-m
-			for d.Done {
-				d = <-m
-				fmt.Println(d)
-			}
-
 		}
 
 		Convey("Testing ProcessContent() if no arguments ", func() {
-			_ = NewMsg("No Args") //TODO
-			m := make(chan *Msg)
-			So(newCfg().ProcessContent(m).Error(), ShouldNotBeNil)
-			d := <-m
-			for d.Done {
-				d = <-m
-				fmt.Println(d)
-			}
+			var g errgroup.Group
+			g.Go(func() error { return newCfg().ProcessContent() })
+			err := g.Wait()
+			So(err, ShouldNotBeNil)
 		})
 	})
 }
@@ -350,12 +339,23 @@ func TestNewContent(t *testing.T) {
 
 				m := make(chan *Msg)
 				d := &dummyConfig{t: t}
-				d.ProcessContent(m, objs)
+				d.ProcessContent(objs)
 
-				v := <-m
-				for v.Done {
-					v = <-m
-					fmt.Println(d)
+				v := NewMsg(tt.name)
+			drainLoop:
+				for !v.Done {
+					select {
+					case v = <-m:
+						fmt.Println(v.Total)
+					default:
+						break drainLoop
+					}
+				}
+
+				select {
+				case v = <-m:
+					fmt.Println(v.Total)
+				default:
 				}
 
 				So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
@@ -429,12 +429,9 @@ func TestMultiObjNewContent(t *testing.T) {
 
 				switch tt.iFace {
 				case ExRtObj, ExDmObj, ExHtObj, PreDObj, PreHObj:
-					m := make(chan *Msg)
 					d := &dummyConfig{t: t}
-					d.ProcessContent(m, ct)
-					for v := range m {
-						fmt.Println(v)
-					}
+					d.ProcessContent(ct)
+
 					So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
 				default:
 					So(ct.String(), ShouldEqual, tt.exp)
@@ -554,27 +551,16 @@ func TestProcessContent(t *testing.T) {
 						So(fmt.Sprint(obj), ShouldEqual, tt.exp)
 					}
 
-					// _ = NewMsg(tt.name) //TODO
-					m := make(chan *Msg)
-					// d := NewMsg(tt.name)
+					var g errgroup.Group
+					g.Go(func() error { return c.ProcessContent(obj) })
+					err = g.Wait()
 
-					if err = c.ProcessContent(m, obj); err != nil {
-						d := <-m
-						for d.Done {
-							d = <-m
-							fmt.Println(d)
-						}
+					if err != nil {
 						Convey("Testing "+tt.name+" ProcessContent().Error():", func() {
 							Convey("Error should match expected", func() {
 								So(err, ShouldResemble, tt.err)
 							})
 						})
-					}
-
-					d := <-m
-					for d.Done {
-						d = <-m
-						fmt.Println(d)
 					}
 
 					switch tt.f {

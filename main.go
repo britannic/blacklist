@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"runtime"
-	"strconv"
 	"time"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
@@ -145,16 +144,13 @@ func (o *opts) initEdgeOS() *e.Config {
 }
 
 func processObjects(c *e.Config, objects []e.IFace) error {
-	for i, o := range objects {
+	for _, o := range objects {
 		ct, err := c.NewContent(o)
 		if err != nil {
 			return err
 		}
 
-		// TODO: build out messaging
-		_ = e.NewMsg(strconv.Itoa(i))
-		m := make(chan *e.Msg)
-		if err = c.ProcessContent(m, ct); err != nil {
+		if err = c.ProcessContent(ct); err != nil {
 			return err
 		}
 	}

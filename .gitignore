@@ -31,3 +31,9 @@ vendor/github.com/smartystreets/goconvey/
 internal/edgeos/bkp
 
 *.log
+
+.idea/workspace.xml
+
+.idea/workspace.xml
+
+.idea/workspace.xml

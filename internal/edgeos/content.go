@@ -321,12 +321,12 @@ func (u *URLDomnObjects) Len() int { return len(u.Objects.x) }
 func (u *URLHostObjects) Len() int { return len(u.Objects.x) }
 
 // Process extracts hosts/domains from downloaded raw content
-func (o *object) process(m chan *Msg) *bList {
+func (o *object) process() *bList {
 	var (
 		add = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		b   = bufio.NewScanner(o.r)
-		d   = NewMsg(o.Name)
-		rx  = regx.Obj
+		// d   = NewMsg(o.Name)
+		rx = regx.Obj
 	)
 
 NEXT:
@@ -352,23 +352,23 @@ NEXT:
 					switch {
 					case isDEX:
 						// o.Dex.inc(fqdn)
-						d.incDupe()
-						m <- d
+						// d.incDupe()
+						// m <- d
 						continue FQDN
 
 					case isEXC:
 						if add.keyExists(fqdn) {
 							// add.inc(fqdn)
-							d.incDupe()
-							m <- d
+							// d.incDupe()
+							// m <- d
 						}
 						// o.Exc.inc(fqdn)
 
 					case !isEXC:
 						o.Exc.set(fqdn, 0)
 						add.set(fqdn, 0)
-						d.incNew()
-						m <- d
+						// d.incNew()
+						// m <- d
 					}
 				}
 			}
@@ -384,8 +384,8 @@ NEXT:
 
 	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
 
-	d.Done = true
-	m <- d
+	// d.Done = true
+	// m <- d
 
 	return &bList{
 		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),
@@ -394,7 +394,7 @@ NEXT:
 }
 
 // ProcessContent processes the Contents array
-func (c *Config) ProcessContent(m chan *Msg, cts ...Contenter) error {
+func (c *Config) ProcessContent(cts ...Contenter) error {
 	var (
 		errs      []string
 		getErrors chan error
@@ -416,10 +416,10 @@ func (c *Config) ProcessContent(m chan *Msg, cts ...Contenter) error {
 			go func(o *object) {
 				switch o.nType {
 				case excDomn, excHost, excRoot:
-					o.process(m)
+					o.process()
 					getErrors <- nil
 				default:
-					getErrors <- o.process(m).writeFile()
+					getErrors <- o.process().writeFile()
 				}
 			}(o)
 

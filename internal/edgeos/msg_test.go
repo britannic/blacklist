@@ -181,7 +181,8 @@ func TestMsgString(t *testing.T) {
 	Convey("Testing Msg.String()", t, func() {
 		act := NewMsg("JSON-Print")
 		exp := `{
-	"Name": "JSON-Print",
+	"name": "JSON-Print",
+	"done": false,
 	"dupes": 0,
 	"new": 0,
 	"total": 0,
