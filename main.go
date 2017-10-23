@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -89,7 +88,7 @@ func main() {
 		logFatalln(err)
 	}
 
-	_, _ = context.WithTimeout(context.Background(), c.Timeout)
+	// _, _ = context.WithTimeout(context.Background(), c.Timeout)
 
 	// if err := processObjects(c, objex); err != nil {
 	// 	logFatalln(err)
