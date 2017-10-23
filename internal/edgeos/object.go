@@ -64,8 +64,8 @@ func (o *Objects) Files() *CFile {
 func (o *Objects) Filter(ltype string) *Objects {
 	var (
 		objects = Objects{Parms: o.Parms}
-		xFiles = "-" + files
-		xURLs = "-" + urls
+		xFiles  = "-" + files
+		xURLs   = "-" + urls
 	)
 
 	switch ltype {

@@ -15,18 +15,11 @@ type list struct {
 	entry
 }
 
-// inc increments the entry by +1
-// func (l list) inc(k string) {
-// 	l.Lock()
-// 	l.entry[k]++
-// 	l.Unlock()
-// }
-
 // set sets the int value of entry
 func (l list) keyExists(k string) bool {
 	l.RLock()
-	defer l.RUnlock()
 	_, ok := l.entry[k]
+	l.RUnlock()
 	return ok
 }
 
@@ -34,11 +27,13 @@ func (l list) keyExists(k string) bool {
 func mergeList(a, b list) list {
 	a.Lock()
 	b.Lock()
-	defer a.Unlock()
-	defer b.Unlock()
+
 	for k, v := range b.entry {
 		a.entry[k] = v
 	}
+
+	a.Unlock()
+	b.Unlock()
 	return a
 }
 

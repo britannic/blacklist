@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -82,18 +83,19 @@ func newLog() (*logging.Logger, error) {
 }
 
 func main() {
-
 	c := setUpEnv()
-	logInfo("Starting up...")
+	logInfo("Starting up" + os.Args[0] + "...")
 	if err := removeStaleFiles(c); err != nil {
 		logFatalln(err)
 	}
+
+	_, _ = context.WithTimeout(context.Background(), c.Timeout)
 
 	// if err := processObjects(c, objex); err != nil {
 	// 	logFatalln(err)
 	// }
 
-	logInfo("Shutting down...")
+	logInfo("Shutting down" + os.Args[0] + "...")
 	// reloadDNS(c)
 }
 

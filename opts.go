@@ -99,7 +99,6 @@ func (o *opts) setArgs() {
 	switch {
 	case *o.Help:
 		o.Usage()
-		exitCmd(0)
 
 	case *o.Test:
 		fmt.Println("Test activated!")

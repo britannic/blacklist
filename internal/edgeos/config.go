@@ -368,7 +368,6 @@ func (c *CFile) readDir(pattern string) ([]string, error) {
 func (c *Config) ReloadDNS() ([]byte, error) {
 	cmd := exec.Command(c.Bash)
 	cmd.Stdin = strings.NewReader(c.DNSsvc)
-
 	return cmd.CombinedOutput()
 }
 
@@ -378,7 +377,6 @@ func (c *CFile) Remove() error {
 	if err != nil {
 		return err
 	}
-
 	return purgeFiles(diffArray(c.names, d))
 }
 
@@ -391,7 +389,6 @@ func (c *Config) sortKeys() (pkeys sort.StringSlice) {
 		i++
 	}
 	pkeys.Sort()
-
 	return pkeys
 }
 
@@ -427,7 +424,6 @@ func (c *Config) String() (s string) {
 	}
 
 	s += tabs(indent) + "}]\n}"
-
 	return s
 }
 

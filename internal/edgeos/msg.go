@@ -7,13 +7,13 @@ import (
 
 // Msg is a struct for recording stats from ProcessContent
 type Msg struct {
+	Name string `json:"name"`
+	Done bool   `json:"done"`
 	*sync.RWMutex
-	Name  string `json:"name"`
-	Done  bool   `json:"done"`
-	Dupes int    `json:"dupes"`
-	New   int    `json:"new"`
-	Total int    `json:"total"`
-	Uniq  int    `json:"uniq"`
+	Dupes int `json:"dupes"`
+	New   int `json:"new"`
+	Total int `json:"total"`
+	Uniq  int `json:"uniq"`
 }
 
 // GetTotal returns total m.New records

@@ -208,7 +208,6 @@ func (e *ExcRootObjects) GetList() *Objects {
 // GetList implements the Contenter interface for FIODataObjects
 func (f *FIODataObjects) GetList() *Objects {
 	var responses = make(chan *object, len(f.x))
-
 	defer close(responses)
 
 	for _, o := range f.x {
@@ -326,8 +325,7 @@ func (o *object) process() *bList {
 	var (
 		add = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		b   = bufio.NewScanner(o.r)
-		// d   = NewMsg(o.Name)
-		rx = regx.Obj
+		rx  = regx.Obj
 	)
 
 NEXT:
@@ -340,7 +338,6 @@ NEXT:
 
 		case bytes.HasPrefix(line, []byte(o.prefix)):
 			var ok bool
-
 			if line, ok = rx.StripPrefixAndSuffix(line, o.prefix); ok {
 				fqdns := rx.FQDN.FindAll(line, -1)
 
@@ -374,7 +371,6 @@ NEXT:
 	}
 
 	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
-
 	return &bList{
 		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),
 		r:    formatData(fmttr, add),
@@ -534,10 +530,11 @@ func (i IFace) String() (s string) {
 // writeFile saves hosts/domains data to disk
 func (b *bList) writeFile() error {
 	w, err := os.Create(b.file)
+	defer w.Close()
+
 	if err != nil {
 		return err
 	}
-	defer w.Close()
 
 	_, err = io.Copy(w, b.r)
 	return err

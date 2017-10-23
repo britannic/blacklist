@@ -107,10 +107,10 @@ type myHandler struct {
 func (h *myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var count int
 	h.Lock()
-	defer h.Unlock()
 	h.count++
 	count = h.count
 	fmt.Fprintf(w, "Visitor count: %d.", count)
+	h.Unlock()
 }
 
 func TestMyHandler(t *testing.T) {
