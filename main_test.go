@@ -280,17 +280,11 @@ func TestInitEdgeOS(t *testing.T) {
 	"Arch": "amd64",
 	"Bash": "/bin/bash",
 	"Cores": 2,
-	"Dbug": false,
-	"Dex": {
-		"entry": {}
-	},
+	"Dex": {},
 	"Dir": "/tmp",
 	"dnsmasq service": "service dnsmasq restart",
-	"Exc": {
-		"entry": {}
-	},
+	"Exc": {},
 	"dnsmasq fileExt.": "blacklist.conf",
-	"File": "",
 	"File name fmt": "%v/%v.%v.%v",
 	"CLI Path": "service dns forwarding",
 	"Leaf nodes": [
@@ -306,10 +300,11 @@ func TestInitEdgeOS(t *testing.T) {
 	],
 	"Prefix": "address=",
 	"Poll": 5,
-	"Test": false,
 	"Timeout": 30000000000,
-	"Verbosity": false,
-	"Wildcard": {}
+	"Wildcard": {
+		"Node": "*s",
+		"Name": "*"
+	}
 }`
 		So(fmt.Sprint(p.Parms), ShouldEqual, exp)
 	})

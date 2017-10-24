@@ -76,14 +76,10 @@ func TestOption(t *testing.T) {
 	"Bash": "/bin/bash",
 	"Cores": 2,
 	"Dbug": true,
-	"Dex": {
-		"entry": {}
-	},
+	"Dex": {},
 	"Dir": "/tmp",
 	"dnsmasq service": "service dnsmasq restart",
-	"Exc": {
-		"entry": {}
-	},
+	"Exc": {},
 	"dnsmasq fileExt.": "blacklist.conf",
 	"File": "/config/config.boot",
 	"File name fmt": "%v/%v.%v.%v",
@@ -103,8 +99,10 @@ func TestOption(t *testing.T) {
 	"Poll": 10,
 	"Test": true,
 	"Timeout": 30000000000,
-	"Verbosity": false,
-	"Wildcard": {}
+	"Wildcard": {
+		"Node": "*s",
+		"Name": "*"
+	}
 }`
 
 		expRaw := Parms{

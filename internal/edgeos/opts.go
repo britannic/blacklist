@@ -41,8 +41,8 @@ type Parms struct {
 
 // Wildcard struct sets globbing wildcards for filename searches
 type Wildcard struct {
-	Node string `json:"omitempty"`
-	Name string `json:"omitempty"`
+	Node string `json:"Node,omitempty"`
+	Name string `json:"Name,omitempty"`
 }
 
 // Option is a recursive function
