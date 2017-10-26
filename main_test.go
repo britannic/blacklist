@@ -274,8 +274,10 @@ func TestInitEdgeOS(t *testing.T) {
 		o := getOpts()
 		p := o.initEdgeOS()
 		exp := `{
-	"Module": "blacklist",
-	"ExtraCalldepth": 0,
+	"Log": {
+		"Module": "blacklist",
+		"ExtraCalldepth": 0
+	},
 	"API": "/bin/cli-shell-api",
 	"Arch": "amd64",
 	"Bash": "/bin/bash",
@@ -311,9 +313,163 @@ func TestInitEdgeOS(t *testing.T) {
 }
 
 var (
-	// JSONcfg = "{\n  \"nodes\": [{\n    \"blacklist\": {\n      \"disabled\": \"false\",\n      \"ip\": \"0.0.0.0\",\n      \"excludes\": [\n        \"122.2o7.net\",\n        \"1e100.net\",\n        \"adobedtm.com\",\n        \"akamai.net\",\n        \"amazon.com\",\n        \"amazonaws.com\",\n        \"apple.com\",\n        \"ask.com\",\n        \"avast.com\",\n        \"bitdefender.com\",\n        \"cdn.visiblemeasures.com\",\n        \"cloudfront.net\",\n        \"coremetrics.com\",\n        \"edgesuite.net\",\n        \"freedns.afraid.org\",\n        \"github.com\",\n        \"githubusercontent.com\",\n        \"google.com\",\n        \"googleadservices.com\",\n        \"googleapis.com\",\n        \"googleusercontent.com\",\n        \"gstatic.com\",\n        \"gvt1.com\",\n        \"gvt1.net\",\n        \"hb.disney.go.com\",\n        \"hp.com\",\n        \"hulu.com\",\n        \"images-amazon.com\",\n        \"msdn.com\",\n        \"paypal.com\",\n        \"rackcdn.com\",\n        \"schema.org\",\n        \"skype.com\",\n        \"smacargo.com\",\n        \"sourceforge.net\",\n        \"ssl-on9.com\",\n        \"ssl-on9.net\",\n        \"static.chartbeat.com\",\n        \"storage.googleapis.com\",\n        \"windows.net\",\n        \"yimg.com\",\n        \"ytimg.com\"\n        ]\n    },\n    \"domains\": {\n      \"disabled\": \"false\",\n      \"ip\": \"0.0.0.0\",\n      \"excludes\": [],\n      \"includes\": [\n        \"adsrvr.org\",\n        \"adtechus.net\",\n        \"advertising.com\",\n        \"centade.com\",\n        \"doubleclick.net\",\n        \"free-counter.co.uk\",\n        \"intellitxt.com\",\n        \"kiosked.com\"\n        ],\n      \"sources\": [{\n        \"malc0de\": {\n          \"disabled\": \"false\",\n          \"description\": \"List of zones serving malicious executables observed by malc0de.com/database/\",\n          \"prefix\": \"zone \",\n          \"file\": \"\",\n          \"url\": \"http://malc0de.com/bl/ZONES\"\n        }\n    }]\n    },\n    \"hosts\": {\n      \"disabled\": \"false\",\n      \"ip\": \"192.168.168.1\",\n      \"excludes\": [],\n      \"includes\": [\"beap.gemini.yahoo.com\"],\n      \"sources\": [{\n        \"adaway\": {\n          \"disabled\": \"false\",\n          \"description\": \"Blocking mobile ad providers and some analytics providers\",\n          \"prefix\": \"127.0.0.1 \",\n          \"file\": \"\",\n          \"url\": \"http://adaway.org/hosts.txt\"\n        },\n        \"malwaredomainlist\": {\n          \"disabled\": \"false\",\n          \"description\": \"127.0.0.1 based host and domain list\",\n          \"prefix\": \"127.0.0.1 \",\n          \"file\": \"\",\n          \"url\": \"http://www.malwaredomainlist.com/hostslist/hosts.txt\"\n        },\n        \"openphish\": {\n          \"disabled\": \"false\",\n          \"description\": \"OpenPhish automatic phishing detection\",\n          \"prefix\": \"http\",\n          \"file\": \"\",\n          \"url\": \"https://openphish.com/feed.txt\"\n        },\n        \"someonewhocares\": {\n          \"disabled\": \"false\",\n          \"description\": \"Zero based host and domain list\",\n          \"prefix\": \"0.0.0.0\",\n          \"file\": \"\",\n          \"url\": \"http://someonewhocares.org/hosts/zero/\"\n        },\n        \"tasty\": {\n          \"disabled\": \"false\",\n          \"description\": \"File source\",\n          \"prefix\": \"\",\n          \"file\": \"../testdata/blist.hosts.src\",\n          \"url\": \"\"\n        },\n        \"volkerschatz\": {\n          \"disabled\": \"false\",\n          \"description\": \"Ad server blacklists\",\n          \"prefix\": \"http\",\n          \"file\": \"\",\n          \"url\": \"http://www.volkerschatz.com/net/adpaths\"\n        },\n        \"winhelp2002\": {\n          \"disabled\": \"false\",\n          \"description\": \"Zero based host and domain list\",\n          \"prefix\": \"0.0.0.0 \",\n          \"file\": \"\",\n          \"url\": \"http://winhelp2002.mvps.org/hosts.txt\"\n        },\n        \"yoyo\": {\n          \"disabled\": \"false\",\n          \"description\": \"Fully Qualified Domain Names only - no prefix to strip\",\n          \"prefix\": \"\",\n          \"file\": \"\",\n          \"url\": \"http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext\"\n        }\n    }]\n    }\n  }]\n}"
+	// JSONcfg = "{\n  \"nodes\": [{\n    \"blacklist\": {\n      \"disabled\": \"false\",\n      \"ip\": \"0.0.0.0\",\n      \"excludes\": [\n        \"122.2o7.net\",\n        \"1e100.net\",\n        \"adobedtm.com\",\n        \"akamai.net\",\n        \"amazon.com\",\n        \"amazonaws.com\",\n        \"apple.com\",\n        \"ask.com\",\n        \"avast.com\",\n        \"bitdefender.com\",\n        \"cdn.visiblemeasures.com\",\n        \"cloudfront.net\",\n        \"coremetrics.com\",\n        \"edgesuite.net\",\n        \"freedns.afraid.org\",\n        \"github.com\",\n        \"githubusercontent.com\",\n        \"google.com\",\n        \"googleadservices.com\",\n        \"googleapis.com\",\n        \"googleusercontent.com\",\n        \"gstatic.com\",\n        \"gvt1.com\",\n        \"gvt1.net\",\n        \"hb.disney.go.com\",\n        \"hp.com\",\n        \"hulu.com\",\n        \"images-amazon.com\",\n        \"msdn.com\",\n        \"paypal.com\",\n        \"rackcdn.com\",\n        \"schema.org\",\n        \"skype.com\",\n        \"smacargo.com\",\n        \"sourceforge.net\",\n        \"ssl-on9.com\",\n        \"ssl-on9.net\",\n        \"static.chartbeat.com\",\n        \"storage.googleapis.com\",\n        \"windows.net\",\n        \"yimg.com\",\n        \"ytimg.com\"\n        ]\n    },\n    \"domains\": {\n      \"disabled\": \"false\",\n      \"ip\": \"0.0.0.0\",\n      \"excludes\": [],\n      \"includes\": [\n        \"adsrvr.org\",\n        \"adtechus.net\",\n        \"advertising.com\",\n        \"centade.com\",\n        \"doubleclick.net\",\n        \"free-counter.co.uk\",\n        \"intellitxt.com\",\n        \"kiosked.com\"\n        ],\n      \"sources\": [{\n        \"malc0de\": {\n          \"disabled\": \"false\",\n          \"description\": \"List of zones serving malicious executables observed by malc0de.com/database/\",\n          \"prefix\": \"zone \",\n          \"file\": \"\",\n          \"url\": \"http://malc0de.com/bl/ZONES\"\n        }\n    }]\n    },\n    \"hosts\": {\n      \"disabled\": \"false\",\n      \"ip\": \"192.168.168.1\",\n      \"excludes\": [],\n      \"includes\": [\"beap.gemini.yahoo.com\"],\n      \"sources\": [{\n        \"adaway\": {\n          \"disabled\": \"false\",\n          \"description\": \"Blocking mobile ad providers and some analytics providers\",\n          \"prefix\": \"127.0.0.1 \",\n          \"file\": \"\",\n          \"url\": \"http://adaway.org/hosts.txt\"\n        },\n        \"malwaredomainlist\": {\n          \"disabled\": \"false\",\n          \"description\": \"127.0.0.1 based host and domain list\",\n          \"prefix\": \"127.0.0.1 \",\n          \"file\": \"\",\n          \"url\": \"http://www.malwaredomainlist.com/hostslist/hosts.txt\"\n        },\n        \"openphish\": {\n          \"disabled\": \"false\",\n          \"description\": \"OpenPhish automatic phishing detection\",\n          \"prefix\": \"http\",\n          \"file\": \"\",\n          \"url\": \"https://openphish.com/feed.txt\"\n        },\n        \"someonewhocares\": {\n          \"disabled\": \"false\",\n          \"description\": \"Zero based host and domain list\",\n          \"prefix\": \"0.0.0.0\",\n          \"file\": \"\",\n          \"url\": \"http://someonewhocares.org/hosts/zero/\"\n        },\n        \"tasty\": {\n          \"disabled\": \"false\",\n          \"description\": \"File source\",\n          \"prefix\": \"\",\n          \"file\": \"../internal/testdata/blist.hosts.src\",\n          \"url\": \"\"\n        },\n        \"volkerschatz\": {\n          \"disabled\": \"false\",\n          \"description\": \"Ad server blacklists\",\n          \"prefix\": \"http\",\n          \"file\": \"\",\n          \"url\": \"http://www.volkerschatz.com/net/adpaths\"\n        },\n        \"winhelp2002\": {\n          \"disabled\": \"false\",\n          \"description\": \"Zero based host and domain list\",\n          \"prefix\": \"0.0.0.0 \",\n          \"file\": \"\",\n          \"url\": \"http://winhelp2002.mvps.org/hosts.txt\"\n        },\n        \"yoyo\": {\n          \"disabled\": \"false\",\n          \"description\": \"Fully Qualified Domain Names only - no prefix to strip\",\n          \"prefix\": \"\",\n          \"file\": \"\",\n          \"url\": \"http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext\"\n        }\n    }]\n    }\n  }]\n}"
 
-	mainGetConfig = "{\n  \"nodes\": [{\n    \"blacklist\": {\n      \"disabled\": \"false\",\n      \"ip\": \"0.0.0.0\",\n      \"excludes\": [\n        \"1e100.net\",\n        \"2o7.net\",\n        \"adobedtm.com\",\n        \"akamai.net\",\n        \"akamaihd.net\",\n        \"amazon.com\",\n        \"amazonaws.com\",\n        \"apple.com\",\n        \"ask.com\",\n        \"avast.com\",\n        \"bitdefender.com\",\n        \"cdn.visiblemeasures.com\",\n        \"cloudfront.net\",\n        \"coremetrics.com\",\n        \"edgesuite.net\",\n        \"freedns.afraid.org\",\n        \"github.com\",\n        \"githubusercontent.com\",\n        \"google.com\",\n        \"googleadservices.com\",\n        \"googleapis.com\",\n        \"googletagmanager.com\",\n        \"googleusercontent.com\",\n        \"gstatic.com\",\n        \"gvt1.com\",\n        \"gvt1.net\",\n        \"hb.disney.go.com\",\n        \"hp.com\",\n        \"hulu.com\",\n        \"images-amazon.com\",\n        \"live.com\",\n        \"microsoft.com\",\n        \"msdn.com\",\n        \"msecnd.net\",\n        \"paypal.com\",\n        \"rackcdn.com\",\n        \"schema.org\",\n        \"shopify.com\",\n        \"skype.com\",\n        \"smacargo.com\",\n        \"sourceforge.net\",\n        \"ssl-on9.com\",\n        \"ssl-on9.net\",\n        \"sstatic.net\",\n        \"static.chartbeat.com\",\n        \"storage.googleapis.com\",\n        \"windows.net\",\n        \"xboxlive.com\",\n        \"yimg.com\",\n        \"ytimg.com\"\n        ]\n    },\n    \"domains\": {\n      \"disabled\": \"false\",\n      \"ip\": \"192.168.100.1\",\n      \"excludes\": [],\n      \"includes\": [\n        \"adsrvr.org\",\n        \"adtechus.net\",\n        \"advertising.com\",\n        \"centade.com\",\n        \"doubleclick.net\",\n        \"free-counter.co.uk\",\n        \"intellitxt.com\",\n        \"kiosked.com\",\n        \"patoghee.in\"\n        ],\n      \"sources\": [{\n        \"malc0de\": {\n          \"disabled\": \"false\",\n          \"description\": \"List of zones serving malicious executables observed by malc0de.com/database/\",\n          \"ip\": \"192.168.168.1\",\n          \"prefix\": \"zone \",\n          \"url\": \"http://malc0de.com/bl/ZONES\",\n        },\n        \"malwaredomains.com\": {\n          \"disabled\": \"false\",\n          \"description\": \"Just domains\",\n          \"ip\": \"10.0.0.1\",\n          \"url\": \"http://mirror1.malwaredomains.com/files/justdomains\",\n        },\n        \"simple_tracking\": {\n          \"disabled\": \"false\",\n          \"description\": \"Basic tracking list by Disconnect\",\n          \"url\": \"https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt\",\n        },\n        \"zeus\": {\n          \"disabled\": \"false\",\n          \"description\": \"abuse.ch ZeuS domain blocklist\",\n          \"url\": \"https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist\",\n        }\n    }]\n    },\n    \"hosts\": {\n      \"disabled\": \"false\",\n      \"excludes\": [],\n      \"includes\": [\"beap.gemini.yahoo.com\"],\n      \"sources\": [{\n        \"openphish\": {\n          \"disabled\": \"false\",\n          \"description\": \"OpenPhish automatic phishing detection\",\n          \"prefix\": \"http\",\n          \"url\": \"https://openphish.com/feed.txt\",\n        },\n        \"raw.github.com\": {\n          \"disabled\": \"false\",\n          \"description\": \"This hosts file is a merged collection of hosts from reputable sources\",\n          \"prefix\": \"0.0.0.0 \",\n          \"url\": \"https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts\",\n        },\n        \"sysctl.org\": {\n          \"disabled\": \"false\",\n          \"description\": \"This hosts file is a merged collection of hosts from cameleon\",\n          \"ip\": \"172.16.16.1\",\n          \"prefix\": \"127.0.0.1\\t \",\n          \"url\": \"http://sysctl.org/cameleon/hosts\",\n        },\n        \"tasty\": {\n          \"disabled\": \"false\",\n          \"description\": \"File source\",\n          \"ip\": \"10.10.10.10\",\n          \"file\": \"../testdata/blist.hosts.src\",\n        },\n        \"volkerschatz\": {\n          \"disabled\": \"false\",\n          \"description\": \"Ad server blacklists\",\n          \"prefix\": \"http\",\n          \"url\": \"http://www.volkerschatz.com/net/adpaths\",\n        },\n        \"yoyo\": {\n          \"disabled\": \"false\",\n          \"description\": \"Fully Qualified Domain Names only - no prefix to strip\",\n          \"url\": \"http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext\",\n        }\n    }]\n    }\n  }]\n}"
+	mainGetConfig = `{
+  "nodes": [{
+    "blacklist": {
+      "disabled": "false",
+      "ip": "192.168.168.1",
+      "excludes": [
+        "1e100.net",
+        "2o7.net",
+        "adobedtm.com",
+        "akamai.net",
+        "akamaihd.net",
+        "amazon.com",
+        "amazonaws.com",
+        "apple.com",
+        "ask.com",
+        "avast.com",
+        "avira-update.com",
+        "bannerbank.com",
+        "bing.com",
+        "bit.ly",
+        "bitdefender.com",
+        "cdn.ravenjs.com",
+        "cdn.visiblemeasures.com",
+        "cloudfront.net",
+        "coremetrics.com",
+        "ebay.com",
+        "edgesuite.net",
+        "freedns.afraid.org",
+        "github.com",
+        "githubusercontent.com",
+        "global.ssl.fastly.net",
+        "google.com",
+        "googleadservices.com",
+        "googleapis.com",
+        "googletagmanager.com",
+        "googleusercontent.com",
+        "gstatic.com",
+        "gvt1.com",
+        "gvt1.net",
+        "hb.disney.go.com",
+        "help.evernote.com",
+        "herokuapp.com",
+        "hp.com",
+        "hulu.com",
+        "images-amazon.com",
+        "live.com",
+        "microsoft.com",
+        "msdn.com",
+        "msecnd.net",
+        "msftncsi.com",
+        "paypal.com",
+        "pop.h-cdn.co",
+        "rackcdn.com",
+        "rarlab.com",
+        "schema.org",
+        "shopify.com",
+        "skype.com",
+        "smacargo.com",
+        "sourceforge.net",
+        "spotify.com",
+        "spotify.edgekey.net",
+        "spotilocal.com",
+        "ssl-on9.com",
+        "ssl-on9.net",
+        "sstatic.net",
+        "static.chartbeat.com",
+        "storage.googleapis.com",
+        "windows.net",
+        "xboxlive.com",
+        "yimg.com",
+        "ytimg.com"
+        ]
+    },
+    "domains": {
+      "disabled": "false",
+      "excludes": ["bing.com"],
+      "includes": [
+        "adk2x.com",
+        "adsrvr.org",
+        "adtechus.net",
+        "advertising.com",
+        "centade.com",
+        "doubleclick.net",
+        "fastplayz.com",
+        "free-counter.co.uk",
+        "hilltopads.net",
+        "intellitxt.com",
+        "kiosked.com",
+        "patoghee.in",
+        "themillionaireinpjs.com",
+        "traktrafficflow.com",
+        "wwwpromoter.com"
+        ],
+      "sources": [{
+        "malc0de": {
+          "disabled": "false",
+          "description": "List of zones serving malicious executables observed by malc0de.com/database/",
+          "prefix": "zone ",
+          "url": "http://malc0de.com/bl/ZONES",
+        },
+        "malwaredomains.com": {
+          "disabled": "false",
+          "description": "Just domains",
+          "url": "http://mirror1.malwaredomains.com/files/justdomains",
+        },
+        "simple_tracking": {
+          "disabled": "false",
+          "description": "Basic tracking list by Disconnect",
+          "url": "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt",
+        },
+        "zeus": {
+          "disabled": "false",
+          "description": "abuse.ch ZeuS domain blocklist",
+          "url": "https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist",
+        }
+    }]
+    },
+    "hosts": {
+      "disabled": "false",
+      "excludes": [],
+      "includes": ["beap.gemini.yahoo.com"],
+      "sources": [{
+        "openphish": {
+          "disabled": "false",
+          "description": "OpenPhish automatic phishing detection",
+          "prefix": "http",
+          "url": "https://openphish.com/feed.txt",
+        },
+        "raw.github.com": {
+          "disabled": "false",
+          "description": "This hosts file is a merged collection of hosts from reputable sources",
+          "prefix": "0.0.0.0 ",
+          "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
+        },
+        "sysctl.org": {
+          "disabled": "false",
+          "description": "This hosts file is a merged collection of hosts from cameleon",
+          "prefix": "127.0.0.1\t ",
+          "url": "http://sysctl.org/cameleon/hosts",
+        },
+        "yoyo": {
+          "disabled": "false",
+          "description": "Fully Qualified Domain Names only - no prefix to strip",
+          "url": "http://pgl.yoyo.org/as/serverlist.phphostformat=nohtml&showintro=1&mimetype=plaintext",
+        },
+        "tasty": {
+          "disabled": "false",
+          "description": "File source",
+          "ip": "10.10.10.10",
+          "file": "./internal/testdata/blist.hosts.src",
+        }
+    }]
+    }
+  }]
+}`
 
 	vanillaArgs = `  -arch string
     	Set EdgeOS CPU architecture (default "amd64")
@@ -350,14 +506,21 @@ var (
 "apple.com":0,
 "ask.com":0,
 "avast.com":0,
+"avira-update.com":0,
+"bannerbank.com":0,
+"bing.com":0,
+"bit.ly":0,
 "bitdefender.com":0,
+"cdn.ravenjs.com":0,
 "cdn.visiblemeasures.com":0,
 "cloudfront.net":0,
 "coremetrics.com":0,
+"ebay.com":0,
 "edgesuite.net":0,
 "freedns.afraid.org":0,
 "github.com":0,
 "githubusercontent.com":0,
+"global.ssl.fastly.net":0,
 "google.com":0,
 "googleadservices.com":0,
 "googleapis.com":0,
@@ -367,6 +530,8 @@ var (
 "gvt1.com":0,
 "gvt1.net":0,
 "hb.disney.go.com":0,
+"help.evernote.com":0,
+"herokuapp.com":0,
 "hp.com":0,
 "hulu.com":0,
 "images-amazon.com":0,
@@ -374,13 +539,19 @@ var (
 "microsoft.com":0,
 "msdn.com":0,
 "msecnd.net":0,
+"msftncsi.com":0,
 "paypal.com":0,
+"pop.h-cdn.co":0,
 "rackcdn.com":0,
+"rarlab.com":0,
 "schema.org":0,
 "shopify.com":0,
 "skype.com":0,
 "smacargo.com":0,
 "sourceforge.net":0,
+"spotify.com":0,
+"spotify.edgekey.net":0,
+"spotilocal.com":0,
 "ssl-on9.com":0,
 "ssl-on9.net":0,
 "sstatic.net":0,

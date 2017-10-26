@@ -30,7 +30,7 @@ func TestParmsLog(t *testing.T) {
 			scrFmt = logging.MustStringFormatter(`%{level:.4s}[%{id:03x}] ▶ %{message}`)
 
 			act      = &bytes.Buffer{}
-			p        = &Parms{Logger: logging.MustGetLogger("TestParmsLog"), Verb: true}
+			p        = &Parms{Log: logging.MustGetLogger("TestParmsLog"), Verb: true}
 			scr      = logging.NewLogBackend(act, "", 0)
 			scrFmttr = logging.NewBackendFormatter(scr, scrFmt)
 		)

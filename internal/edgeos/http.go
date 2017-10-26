@@ -22,6 +22,8 @@ func getHTTP(o *object) *object {
 		return o
 	}
 
+	o.Log.Info(fmt.Sprintf("Downloading %s", o.url))
+
 	req.Header.Set("User-Agent", agent)
 	if resp, err = (&http.Client{}).Do(req); err != nil {
 		o.r, o.err = strings.NewReader(fmt.Sprintf("Unable to get response for %s...", o.url)), err

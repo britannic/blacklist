@@ -322,6 +322,8 @@ LINE:
 			name := regx.Get([]byte("name"), line)
 			switch string(name[1]) {
 			case "description":
+				// println(string(line))
+				// println(name[1])
 				o.desc = string(name[2])
 
 			case blackhole:

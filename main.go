@@ -26,19 +26,24 @@ var (
 	version = "UNKNOWN"
 	// ---
 
-	exitCmd  = os.Exit
+	exitCmd = os.Exit
+
 	log, err = newLog()
+
 	logError = func(args ...interface{}) {
-		log.Error(args)
+		errType := fmt.Sprintf("%v", args[0])
+		log.Error(errType, args[1:len(args)])
 	}
 
 	logErrorf = func(s string, args ...interface{}) {
 		log.Errorf(s, args)
 	}
 
-	logCrit    = log.Critical
+	logCrit = log.Critical
+
 	logFatalln = func(args ...interface{}) {
-		logCrit(args)
+		err := fmt.Sprintf("%v", args)
+		logCrit(err)
 		exitCmd(1)
 	}
 
@@ -60,39 +65,18 @@ var (
 	}
 )
 
-func newLog() (*logging.Logger, error) {
-	fdFmt := logging.MustStringFormatter(
-		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000} ▶ %{message}`,
-	)
-
-	scrFmt := logging.MustStringFormatter(
-		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
-	)
-
-	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-	fdlog := logging.NewLogBackend(fd, "", 0)
-	fdFmttr := logging.NewBackendFormatter(fdlog, fdFmt)
-
-	scr := logging.NewLogBackend(os.Stderr, "", 0)
-	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
-
-	logging.SetBackend(fdFmttr, scrFmttr)
-
-	return logging.MustGetLogger(basename(os.Args[0])), err
-}
-
 func main() {
-	c := setUpEnv()
+	env := setUpEnv()
 	logInfo("Starting up" + os.Args[0] + "...")
-	if err := removeStaleFiles(c); err != nil {
+	if err := removeStaleFiles(env); err != nil {
 		logFatalln(err)
 	}
 
 	// _, _ = context.WithTimeout(context.Background(), c.Timeout)
 
-	// if err := processObjects(c, objex); err != nil {
-	// 	logFatalln(err)
-	// }
+	if err := processObjects(env, objex); err != nil {
+		logFatalln(err)
+	}
 
 	logInfo("Shutting down" + os.Args[0] + "...")
 	// reloadDNS(c)
@@ -116,6 +100,27 @@ func basename(s string) string {
 		}
 	}
 	return s
+}
+
+func newLog() (*logging.Logger, error) {
+	fdFmt := logging.MustStringFormatter(
+		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000} ▶ %{message}`,
+	)
+
+	scrFmt := logging.MustStringFormatter(
+		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
+	)
+
+	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	fdlog := logging.NewLogBackend(fd, "", 0)
+	fdFmttr := logging.NewBackendFormatter(fdlog, fdFmt)
+
+	scr := logging.NewLogBackend(os.Stderr, "", 0)
+	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
+
+	logging.SetBackend(fdFmttr, scrFmttr)
+
+	return logging.MustGetLogger(basename(os.Args[0])), err
 }
 
 func (o *opts) initEdgeOS() *e.Config {
@@ -170,7 +175,7 @@ func reloadDNS(c *e.Config) {
 
 func removeStaleFiles(c *e.Config) error {
 	if err := c.GetAll().Files().Remove(); err != nil {
-		return fmt.Errorf("c.GetAll().Files().Remove() error: %v\n", err)
+		return fmt.Errorf("c.GetAll().Files().Remove() error: %v", err)
 	}
 	return nil
 }
