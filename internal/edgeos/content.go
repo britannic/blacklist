@@ -412,9 +412,9 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 						errs = append(errs, err.Error())
 					}
 				}
+				close(getErrors)
 			}
 		}
-		close(getErrors)
 	}
 
 	if errs != nil {

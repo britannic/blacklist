@@ -45,7 +45,7 @@ func (o *opts) getCFG(c *edgeos.Config) (r edgeos.ConfLoader) {
 	case *o.MIPS64:
 		r = &edgeos.CFGcli{Config: c}
 	default:
-		r = &edgeos.CFGstatic{Config: c, Cfg: tdata.Cfg}
+		r = &edgeos.CFGstatic{Config: c, Cfg: tdata.Live}
 	}
 	return r
 }

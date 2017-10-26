@@ -13,29 +13,29 @@ import (
 // Parms is struct of parameters
 type Parms struct {
 	ioWriter io.Writer
-	*logging.Logger
-	API     string        `json:"API,omitempty"`
-	Arch    string        `json:"Arch,omitempty"`
-	Bash    string        `json:"Bash,omitempty"`
-	Cores   int           `json:"Cores,omitempty"`
-	Dbug    bool          `json:"Dbug,omitempty"`
-	Dex     list          `json:"Dex,omitempty"`
-	Dir     string        `json:"Dir,omitempty"`
-	DNSsvc  string        `json:"dnsmasq service,omitempty"`
-	Exc     list          `json:"Exc,omitempty"`
-	Ext     string        `json:"dnsmasq fileExt.,omitempty"`
-	File    string        `json:"File,omitempty"`
-	FnFmt   string        `json:"File name fmt,omitempty"`
-	InCLI   string        `json:"-"`
-	Level   string        `json:"CLI Path,omitempty"`
-	Ltypes  []string      `json:"Leaf nodes,omitempty"`
-	Method  string        `json:"HTTP method,omitempty"`
-	Nodes   []string      `json:"Nodes,omitempty"`
-	Pfx     string        `json:"Prefix,omitempty"`
-	Poll    int           `json:"Poll,omitempty"`
-	Test    bool          `json:"Test,omitempty"`
-	Timeout time.Duration `json:"Timeout,omitempty"`
-	Verb    bool          `json:"Verbosity,omitempty"`
+	Log      *logging.Logger
+	API      string        `json:"API,omitempty"`
+	Arch     string        `json:"Arch,omitempty"`
+	Bash     string        `json:"Bash,omitempty"`
+	Cores    int           `json:"Cores,omitempty"`
+	Dbug     bool          `json:"Dbug,omitempty"`
+	Dex      list          `json:"Dex,omitempty"`
+	Dir      string        `json:"Dir,omitempty"`
+	DNSsvc   string        `json:"dnsmasq service,omitempty"`
+	Exc      list          `json:"Exc,omitempty"`
+	Ext      string        `json:"dnsmasq fileExt.,omitempty"`
+	File     string        `json:"File,omitempty"`
+	FnFmt    string        `json:"File name fmt,omitempty"`
+	InCLI    string        `json:"-"`
+	Level    string        `json:"CLI Path,omitempty"`
+	Ltypes   []string      `json:"Leaf nodes,omitempty"`
+	Method   string        `json:"HTTP method,omitempty"`
+	Nodes    []string      `json:"Nodes,omitempty"`
+	Pfx      string        `json:"Prefix,omitempty"`
+	Poll     int           `json:"Poll,omitempty"`
+	Test     bool          `json:"Test,omitempty"`
+	Timeout  time.Duration `json:"Timeout,omitempty"`
+	Verb     bool          `json:"Verbosity,omitempty"`
 	Wildcard/*.........*/ `json:"Wildcard,omitempty"`
 }
 
@@ -50,14 +50,13 @@ type Option func(c *Config) Option
 
 func (p *Parms) debug(s string) {
 	if p.Dbug {
-		p.Debug(s)
-		// p.Debug(s)
+		p.Log.Debug(s)
 	}
 }
 
 func (p *Parms) log(s string) {
 	if p.Verb {
-		p.Info(s)
+		p.Log.Info(s)
 	}
 }
 
@@ -189,8 +188,8 @@ func Level(s string) Option {
 // Logger sets a pointer to the logger
 func Logger(l *logging.Logger) Option {
 	return func(c *Config) Option {
-		previous := c.Logger
-		c.Logger = l
+		previous := c.Log
+		c.Log = l
 		return Logger(previous)
 	}
 }

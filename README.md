@@ -223,11 +223,12 @@ CLI commands to configure blacklist:
 
 Notes:
 
-In order to make this work properly, you will need to first ensure that your dnsmasq is correctly set up. An example configuration is posted below:
+In order to make this work properly, first ensure that your dnsmasq is correctly set up. An example configuration is posted below:
 
 
 	show service dns forwarding
 	 cache-size 2048
+	 /* Only listen for DNS requests on internal interfaces */
 	 listen-on eth0
 	 listen-on eth2
 	 listen-on lo
