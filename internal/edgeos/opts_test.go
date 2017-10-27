@@ -2,7 +2,7 @@ package edgeos
 
 import (
 	"bytes"
-	"fmt"
+	"os"
 	"runtime"
 	"testing"
 	"time"
@@ -10,6 +10,16 @@ import (
 	logging "github.com/op/go-logging"
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+func newLog() *logging.Logger {
+	scrFmt := logging.MustStringFormatter(`%{level:.4s}[%{id:03x}] ▶ %{message}`)
+	scr := logging.NewLogBackend(os.Stdout, "", 0)
+	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
+
+	logging.SetBackend(scr, scrFmttr)
+
+	return logging.MustGetLogger("blacklist")
+}
 
 func TestParmsLog(t *testing.T) {
 	Convey("Testing log()", t, func() {
@@ -27,8 +37,7 @@ func TestParmsLog(t *testing.T) {
 		}
 
 		var (
-			scrFmt = logging.MustStringFormatter(`%{level:.4s}[%{id:03x}] ▶ %{message}`)
-
+			scrFmt   = logging.MustStringFormatter(`%{message}`)
 			act      = &bytes.Buffer{}
 			p        = &Parms{Log: logging.MustGetLogger("TestParmsLog"), Verb: true}
 			scr      = logging.NewLogBackend(act, "", 0)
@@ -37,7 +46,7 @@ func TestParmsLog(t *testing.T) {
 
 		logging.SetBackend(scrFmttr)
 
-		for i, tt := range tests {
+		for _, tt := range tests {
 			Convey("Testing "+tt.name, func() {
 				p.Dbug = tt.dbug
 				p.Verb = tt.verb
@@ -45,16 +54,19 @@ func TestParmsLog(t *testing.T) {
 				switch {
 				case tt.dbug:
 					p.debug(tt.str)
-					So(act.String(), ShouldEqual, fmt.Sprintf("DEBU[00%d] ▶ %v\n", i+1, tt.str))
+					So(act.String(), ShouldEqual, tt.str+"\n")
+
 				case tt.verb:
 					p.log(tt.str)
-					So(act.String(), ShouldEqual, fmt.Sprintf("INFO[00%d] ▶ %v\n", i+1, tt.str))
+					So(act.String(), ShouldEqual, tt.str+"\n")
+
 				case tt.dbug && tt.verb:
-					exp := fmt.Sprintf("DEBU[00%d] ▶ %v\n", i+1, tt.str)
-					exp += fmt.Sprintf("INFO[00%d] ▶ %v\n", i+1, tt.str)
+					exp := tt.str
+					exp += tt.str
 					p.debug(tt.str)
 					p.log(tt.str)
 					So(act.String(), ShouldEqual, exp)
+
 				default:
 					p.debug(tt.str)
 					p.log(tt.str)
@@ -71,6 +83,7 @@ func TestOption(t *testing.T) {
 		vanilla := Parms{}
 
 		exp := `{
+	"Log": null,
 	"API": "/bin/cli-shell-api",
 	"Arch": "amd64",
 	"Bash": "/bin/bash",

@@ -22,4 +22,5 @@ vendor/
 *.lock
 *.log
 *.VC.db
+*.out
 
