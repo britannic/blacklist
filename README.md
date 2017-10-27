@@ -1,7 +1,7 @@
 
 # blacklist
 
-© 2016 NJ Software. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE.txt file.
+© 2017 Helmrock Consulting. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE.txt file.
 
 [UBNT EdgeMax](<a href="https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX">https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX</a>) dnsmasq Blacklist and Adware Blocking
 
