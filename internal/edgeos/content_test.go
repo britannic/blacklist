@@ -48,10 +48,11 @@ func TestConfigProcessContent(t *testing.T) {
 				FileNameFmt("%v/%v.%v.%v"),
 				InCLI("inSession"),
 				Level("service dns forwarding"),
+				Logger(newLog()),
+				LTypes([]string{files, PreDomns, PreHosts, urls}),
 				Method("GET"),
 				Nodes([]string{domains, hosts}),
 				Prefix("address="),
-				LTypes([]string{files, PreDomns, PreHosts, urls}),
 				Timeout(30*time.Second),
 				WCard(Wildcard{Node: "*s", Name: "*"}),
 			)
@@ -302,10 +303,11 @@ func TestNewContent(t *testing.T) {
 			FileNameFmt("%v/%v.%v.%v"),
 			InCLI("inSession"),
 			Level("service dns forwarding"),
+			Logger(newLog()),
+			LTypes([]string{files, PreDomns, PreHosts, urls}),
 			Method("GET"),
 			Nodes([]string{domains, hosts}),
 			Prefix("address="),
-			LTypes([]string{files, PreDomns, PreHosts, urls}),
 			Timeout(30*time.Second),
 			WCard(Wildcard{Node: "*s", Name: "*"}),
 		)
@@ -377,10 +379,10 @@ func TestGetAllContent(t *testing.T) {
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
 			FileNameFmt("%v/%v.%v.%v"),
+			LTypes([]string{PreDomns, PreHosts, files, urls}),
 			Method("GET"),
 			Nodes([]string{"domains", "hosts"}),
 			Prefix("address="),
-			LTypes([]string{PreDomns, PreHosts, files, urls}),
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: testallCfg}), ShouldBeNil)

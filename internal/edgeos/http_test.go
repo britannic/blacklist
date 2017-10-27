@@ -79,7 +79,7 @@ func TestGetHTTP(t *testing.T) {
 				}
 			}
 
-			o := getHTTP(&object{Parms: &Parms{Method: tt.method}, url: tt.URL})
+			o := getHTTP(&object{Parms: &Parms{Log: newLog(), Method: tt.method}, url: tt.URL})
 
 			switch {
 			case o.err != nil && tt.err != nil:
