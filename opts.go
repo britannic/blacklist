@@ -76,6 +76,7 @@ func getOpts() *opts {
 	}
 }
 
+// cleanArgs removes flags when code is being tested
 func cleanArgs(args []string) (r []string) {
 NEXT:
 	for _, a := range args {
@@ -91,6 +92,7 @@ NEXT:
 	return r
 }
 
+// setArgs retrieves arguments entered on the command line
 func (o *opts) setArgs() {
 	if err := o.Parse(cleanArgs((os.Args[1:]))); err != nil {
 		o.Usage()

@@ -1,9 +1,9 @@
 
 # blacklist
 
-© 2017 Helmrock Consulting. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE.txt file.
+© 2018 Helmrock Consulting. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE.txt file.
 
-[UBNT EdgeMax](<a href="https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX">https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX</a>) dnsmasq Blacklist and Adware Blocking
+[UBNT EdgeMax](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX) dnsmasq Blacklist and Adware Blocking
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
@@ -20,7 +20,7 @@ Integrated with the EdgeMax OS CLI
 
 ### Compatibility
 
-blacklist has been tested on the EdgeRouter Lite family of routers, versions v1.6.0-v1.8.0.
+blacklist has been tested on the EdgeRouter Lite family of routers, versions v1.6.0-v1.9.7+hotfix.4.
 
 ### Usage
 Usage: blacklist [options]
@@ -227,23 +227,18 @@ In order to make this work properly, first ensure that your dnsmasq is correctly
 
 
 	show service dns forwarding
-	 cache-size 2048
-	 /* Only listen for DNS requests on internal interfaces */
-	 listen-on eth0
-	 listen-on eth2
-	 listen-on lo
-	 name-server 208.67.220.220
-	 name-server 208.67.222.222
-	 name-server 2620:0:ccc::2
-	 name-server 2620:0:ccd::2
-	 options expand-hosts
-	 options bogus-priv
-	 options localise-queries
-	 options domain=ubnt.home
-	 options strict-order
-	 options listen-address=127.0.0.1
-	 system
-
+	cache-size 2048
+	except-interface <WAN Interface> # Don't listen on the WAN Interface
+	name-server 208.67.220.220       # OpenDNS - change to suit your needs
+	name-server 208.67.222.222       # OpenDNS - change to suit your needs
+	name-server 2620:0:ccc::2        # OpenDNS - change to suit your needs
+	name-server 2620:0:ccd::2        # OpenDNS - change to suit your needs
+	options bogus-priv
+	options domain=ubnt.home # Set to match your chosen home domain
+	options expand-hosts
+	options localise-queries
+	options strict-order
+	system
 
 
 
