@@ -4,6 +4,8 @@
 # Add back files with extensions and directories
 !*.*
 !*/
+!VERSION
+
 !testcoverage
 !.travis.yml
 

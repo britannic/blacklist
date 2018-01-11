@@ -1,4 +1,4 @@
-Copyright © 2017, Helmrock Consulting 
+Copyright © 2018, Helmrock Consulting 
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
