@@ -1,4 +1,8 @@
 language: go
+os:
+- osx
+go:
+- 1.9.2
 sudo: false
 before_install:
 # Setup dependency management tool
@@ -12,10 +16,6 @@ before_script:
 - go vet ./...
 install:
 - dep ensure
-os:
-- osx
-go:
-- tip
 script:
 - $HOME/gopath/src/github.com/britannic/blacklist/testcoverage
 env:
