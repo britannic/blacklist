@@ -242,6 +242,14 @@ func TestReadCfg(t *testing.T) {
 	})
 }
 
+func TestReadUnconfiguredCfg(t *testing.T) {
+	Convey("Testing ReadCfg()", t, func() {
+		exp := errors.New("Configuration data is empty, cannot continue")
+		act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.NoBlacklist})
+		So(act, ShouldResemble, exp)
+	})
+}
+
 func TestReloadDNS(t *testing.T) {
 	Convey("Testing ReloadDNS()", t, func() {
 		act, err := NewConfig(Bash("/bin/bash"), DNSsvc("true")).ReloadDNS()

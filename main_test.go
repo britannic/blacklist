@@ -47,7 +47,7 @@ func TestMain(t *testing.T) {
 }
 
 func TestProcessObjects(t *testing.T) {
-	c := setUpEnv()
+	c, _ := setUpEnv()
 	Convey("Testing processObjects", t, func() {
 		Convey("Testing that the config is correctly loaded ", func() {
 			So(c.String(), ShouldEqual, mainGetConfig)
@@ -220,7 +220,7 @@ func TestReloadDNS(t *testing.T) {
 			exp = "ReloadDNS(): [dnsmasq: unrecognized service\n]\n"
 		}
 
-		c := setUpEnv()
+		c, _ := setUpEnv()
 		exitCmd = func(int) { return }
 		logPrintf = func(s string, v ...interface{}) {
 			act = fmt.Sprintf(s, v)
@@ -233,7 +233,7 @@ func TestReloadDNS(t *testing.T) {
 
 func TestRemoveStaleFiles(t *testing.T) {
 	Convey("Testing removeStaleFiles()", t, func() {
-		c := setUpEnv()
+		c, _ := setUpEnv()
 		So(removeStaleFiles(c), ShouldBeNil)
 		_ = c.SetOpt(edgeos.Dir("EinenSieAugenBlick"), edgeos.Ext("[]a]"), edgeos.FileNameFmt("[]a]"), edgeos.WCard(edgeos.Wildcard{Node: "[]a]", Name: "]"}))
 		So(removeStaleFiles(c), ShouldNotBeNil)
