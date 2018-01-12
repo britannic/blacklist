@@ -27,7 +27,7 @@ type ConfLoader interface {
 // CFile holds an array of file names
 type CFile struct {
 	*Parms
-	names []string
+	Names []string
 	nType ntype
 }
 
@@ -375,11 +375,11 @@ func (c *Config) ReloadDNS() ([]byte, error) {
 
 // Remove deletes a CFile array of file names
 func (c *CFile) Remove() error {
-	d, err := c.readDir(fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.Node, c.Wildcard.Name, c.Parms.Ext))
+	d, err := c.readDir(fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.Node, c.Wildcard.Name, c.Ext))
 	if err != nil {
 		return err
 	}
-	return purgeFiles(diffArray(c.names, d))
+	return purgeFiles(diffArray(c.Names, d))
 }
 
 // sortKeys returns a slice of keys in lexicographical sorted order.
@@ -431,13 +431,13 @@ func (c *Config) String() (s string) {
 
 // String implements string method
 func (c *CFile) String() string {
-	return strings.Join(c.names, "\n")
+	return strings.Join(c.Names, "\n")
 }
 
 // Strings returns a sorted array of strings.
 func (c *CFile) Strings() []string {
-	sort.Strings(c.names)
-	return c.names
+	sort.Strings(c.Names)
+	return c.Names
 }
 
 // LTypes returns an array of configured nodes

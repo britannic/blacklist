@@ -54,9 +54,9 @@ func (o *Objects) Files() *CFile {
 	for _, obj := range o.x {
 		c.nType = obj.nType
 		format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
-		c.names = append(c.names, fmt.Sprintf(format, getType(obj.nType), obj.name))
+		c.Names = append(c.Names, fmt.Sprintf(format, getType(obj.nType), obj.name))
 	}
-	sort.Strings(c.names)
+	sort.Strings(c.Names)
 	return &c
 }
 

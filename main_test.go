@@ -209,6 +209,15 @@ func TestGetCFG(t *testing.T) {
 	})
 }
 
+func TestKillFiles(t *testing.T) {
+	Convey("Testing killFiles()", t, func() {
+		exp := ""
+		env, _ := setUpEnv()
+		act := killFiles(env)
+		So(fmt.Sprintf("%v", act), ShouldEqual, fmt.Sprintf("%v", exp))
+	})
+}
+
 func TestReloadDNS(t *testing.T) {
 	Convey("Testing ReloadDNS()", t, func() {
 		var (
