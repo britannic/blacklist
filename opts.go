@@ -9,6 +9,7 @@ import (
 
 	"github.com/britannic/blacklist/internal/edgeos"
 	"github.com/britannic/blacklist/internal/tdata"
+	logging "github.com/op/go-logging"
 )
 
 // opts struct for command line options and setting initial variables
@@ -57,6 +58,7 @@ func getOpts() *opts {
 	flags.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %v [options]\n\n", basename(os.Args[0]))
 		flags.PrintDefaults()
+		exitCmd(0)
 	}
 
 	return &opts{
@@ -92,6 +94,16 @@ NEXT:
 	return r
 }
 
+// screenLog adds  stderr logging output to the screen
+func screenLog() {
+	scrFmt := logging.MustStringFormatter(
+		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
+	)
+	scr := logging.NewLogBackend(os.Stderr, "", 0)
+	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
+	logging.SetBackend(fdFmttr, scrFmttr)
+}
+
 // setArgs retrieves arguments entered on the command line
 func (o *opts) setArgs() {
 	if err := o.Parse(cleanArgs((os.Args[1:]))); err != nil {
@@ -105,6 +117,9 @@ func (o *opts) setArgs() {
 	case *o.Test:
 		fmt.Println("Test activated!")
 		exitCmd(0)
+
+	case *o.Verb:
+		screenLog()
 
 	case *o.Version:
 		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n", version, build, githash)

@@ -35,8 +35,8 @@ func TestLoad(t *testing.T) {
 	})
 }
 
-func TestPurgeFiles(t *testing.T) {
-	Convey("Testing PurgeFiles()", t, func() {
+func TestpurgeFiles(t *testing.T) {
+	Convey("Testing purgeFiles()", t, func() {
 		var (
 			dir       = "/tmp"
 			ext       = ".delete"

@@ -25,9 +25,11 @@ var (
 	githash = "UNKNOWN"
 	version = "UNKNOWN"
 	// ---
+	progname = basename(os.Args[0])
 
 	exitCmd = os.Exit
 
+	fdFmttr  logging.Backend
 	log, err = newLog()
 
 	logError = func(args ...interface{}) {
@@ -47,7 +49,7 @@ var (
 		exitCmd(1)
 	}
 
-	logFile    = "blacklist.log"
+	logFile    = "/var/log/" + progname + ".log"
 	logInfo    = log.Info
 	logInfof   = log.Infof
 	logPrintf  = logInfof
@@ -71,12 +73,21 @@ func main() {
 		err error
 	)
 
-	// err, env := setUpEnv()
 	if env, err = setUpEnv(); err != nil {
-		logFatalln(err)
+		d := killFiles(env)
+
+		logInfo("Starting up " + progname + "...")
+		logInfo("Removing stale blacklists...")
+
+		if err := d.Remove(); err != nil {
+			logFatalln(err)
+		}
+		exitCmd(0)
 	}
 
-	logInfo("Starting up" + os.Args[0] + "...")
+	logInfo("Starting up " + progname + "...")
+
+	logInfo("Removing stale blacklists...")
 	if err := removeStaleFiles(env); err != nil {
 		logFatalln(err)
 	}
@@ -115,21 +126,12 @@ func newLog() (*logging.Logger, error) {
 	fdFmt := logging.MustStringFormatter(
 		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000} ▶ %{message}`,
 	)
-
-	scrFmt := logging.MustStringFormatter(
-		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
-	)
-
 	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	fdlog := logging.NewLogBackend(fd, "", 0)
-	fdFmttr := logging.NewBackendFormatter(fdlog, fdFmt)
+	fdFmttr = logging.NewBackendFormatter(fdlog, fdFmt)
+	logging.SetBackend(fdFmttr)
 
-	scr := logging.NewLogBackend(os.Stderr, "", 0)
-	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
-
-	logging.SetBackend(fdFmttr, scrFmttr)
-
-	return logging.MustGetLogger(basename(os.Args[0])), err
+	return logging.MustGetLogger(progname), err
 }
 
 func (o *opts) initEdgeOS() *e.Config {
@@ -197,6 +199,8 @@ func setUpEnv() (*e.Config, error) {
 	c := o.initEdgeOS()
 	err := c.ReadCfg(o.getCFG(c))
 	return c, err
+}
 
-	// return c
+func killFiles(env *e.Config) *e.CFile {
+	return &e.CFile{Names: []string{}, Parms: env.Parms}
 }
