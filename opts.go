@@ -9,7 +9,6 @@ import (
 
 	"github.com/britannic/blacklist/internal/edgeos"
 	"github.com/britannic/blacklist/internal/tdata"
-	logging "github.com/op/go-logging"
 )
 
 // opts struct for command line options and setting initial variables
@@ -92,16 +91,6 @@ NEXT:
 		}
 	}
 	return r
-}
-
-// screenLog adds  stderr logging output to the screen
-func screenLog() {
-	scrFmt := logging.MustStringFormatter(
-		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
-	)
-	scr := logging.NewLogBackend(os.Stderr, "", 0)
-	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
-	logging.SetBackend(fdFmttr, scrFmttr)
 }
 
 // setArgs retrieves arguments entered on the command line

@@ -134,6 +134,16 @@ func newLog() (*logging.Logger, error) {
 	return logging.MustGetLogger(progname), err
 }
 
+// screenLog adds stderr logging output to the screen
+func screenLog() {
+	scrFmt := logging.MustStringFormatter(
+		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
+	)
+	scr := logging.NewLogBackend(os.Stderr, "", 0)
+	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
+	logging.SetBackend(fdFmttr, scrFmttr)
+}
+
 func (o *opts) initEdgeOS() *e.Config {
 	return e.NewConfig(
 		e.API("/bin/cli-shell-api"),
