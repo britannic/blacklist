@@ -113,7 +113,7 @@ func purgeFiles(files []string) error {
 
 // read returns an EdgeOS config file io.Reader
 func (c *CFGcli) read() io.Reader {
-	b, err := c.load("showConfig", c.Level)
+	b, err := c.load("showCfg", c.Level)
 	if err != nil {
 		log.Print(err)
 	}

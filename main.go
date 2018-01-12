@@ -66,7 +66,16 @@ var (
 )
 
 func main() {
-	env := setUpEnv()
+	var (
+		env *e.Config
+		err error
+	)
+
+	// err, env := setUpEnv()
+	if env, err = setUpEnv(); err != nil {
+		logFatalln(err)
+	}
+
 	logInfo("Starting up" + os.Args[0] + "...")
 	if err := removeStaleFiles(env); err != nil {
 		logFatalln(err)
@@ -78,8 +87,8 @@ func main() {
 		logFatalln(err)
 	}
 
-	logInfo("Shutting down" + os.Args[0] + "...")
-	// reloadDNS(c)
+	logInfo("Shutting down " + os.Args[0] + "...")
+	reloadDNS(env)
 }
 
 // basename removes directory components and file extensions.
@@ -180,13 +189,14 @@ func removeStaleFiles(c *e.Config) error {
 	return nil
 }
 
-func setUpEnv() *e.Config {
+func setUpEnv() (*e.Config, error) {
 	o := getOpts()
 	o.Init("blacklist", flag.ExitOnError)
 	o.setArgs()
 
 	c := o.initEdgeOS()
-	c.ReadCfg(o.getCFG(c))
+	err := c.ReadCfg(o.getCFG(c))
+	return c, err
 
-	return c
+	// return c
 }

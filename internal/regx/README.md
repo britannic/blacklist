@@ -14,10 +14,10 @@ Package regx provides regex objects for processing data in files and web content
 
 ## <a name="pkg-index">Index</a>
 * [Variables](#pkg-variables)
-* [func Get(t, s string) (r []string)](#Get)
+* [func Get(t, b []byte) (r [][]byte)](#Get)
 * [type OBJ](#OBJ)
   * [func (rx *OBJ) String() (s string)](#OBJ.String)
-  * [func (rx *OBJ) StripPrefixAndSuffix(line, prefix string) (string, bool)](#OBJ.StripPrefixAndSuffix)
+  * [func (rx *OBJ) StripPrefixAndSuffix(line []byte, prefix string) ([]byte, bool)](#OBJ.StripPrefixAndSuffix)
 
 
 #### <a name="pkg-files">Package files</a>
@@ -51,16 +51,16 @@ Obj is a struct of *OBJ populated with precompiled regex objects
 
 
 
-## <a name="Get">func</a> [Get](/src/target/regx.go?s=1610:1644#L32)
+## <a name="Get">func</a> [Get](/src/target/regx.go?s=1608:1642#L32)
 ``` go
-func Get(t, s string) (r []string)
+func Get(t, b []byte) (r [][]byte)
 ```
 Get returns an array compiled regx OBJs
 
 
 
 
-## <a name="OBJ">type</a> [OBJ](/src/target/regx.go?s=358:494#L6)
+## <a name="OBJ">type</a> [OBJ](/src/target/regx.go?s=356:492#L6)
 ``` go
 type OBJ struct {
     CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, IPBH, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
@@ -77,16 +77,16 @@ OBJ is a struct of regex precompiled objects
 
 
 
-### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=2646:2680#L78)
+### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=2550:2584#L78)
 ``` go
 func (rx *OBJ) String() (s string)
 ```
 
 
 
-### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2901:2972#L87)
+### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2805:2883#L87)
 ``` go
-func (rx *OBJ) StripPrefixAndSuffix(line, prefix string) (string, bool)
+func (rx *OBJ) StripPrefixAndSuffix(line []byte, prefix string) ([]byte, bool)
 ```
 StripPrefixAndSuffix strips the prefix and suffix
 

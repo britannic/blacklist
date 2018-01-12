@@ -254,7 +254,7 @@ func (c *Config) InSession() bool {
 // load reads the config using the EdgeOS/VyOS cli-shell-api
 func (c *Config) load(act, lvl string) ([]byte, error) {
 	cmd := exec.Command(c.Bash)
-	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v %v", c.API, apiCMD(act, c.InSession()), lvl))
+	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v %v --show-working-only", c.API, apiCMD(act, c.InSession()), lvl))
 
 	return cmd.Output()
 }
@@ -322,9 +322,9 @@ LINE:
 			name := regx.Get([]byte("name"), line)
 			switch string(name[1]) {
 			case "description":
-				// println(string(line))
-				// println(name[1])
-				o.desc = string(name[2])
+				if name[2] != nil {
+					o.desc = string(name[2])
+				}
 
 			case blackhole:
 				o.ip = string(name[2])
