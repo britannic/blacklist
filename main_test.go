@@ -39,7 +39,7 @@ func TestMain(t *testing.T) {
 		}
 
 		objex = []edgeos.IFace{edgeos.ExRtObj}
-
+		screenLog()
 		main()
 		So(act, ShouldBeNil)
 		So(actReloadDNS, ShouldNotBeNil)
@@ -117,6 +117,17 @@ func TestGetOpts(t *testing.T) {
 
 		Convey("Testing getOpts() with -version", func() {
 			os.Args = []string{prog, "-version"}
+
+			o := getOpts()
+			o.Init("blacklist", flag.ContinueOnError)
+			o.SetOutput(act)
+			o.setArgs()
+
+			So(act.String(), ShouldEqual, "")
+		})
+
+		Convey("Testing getOpts() with -v", func() {
+			os.Args = []string{prog, "-v"}
 
 			o := getOpts()
 			o.Init("blacklist", flag.ContinueOnError)
