@@ -76,7 +76,7 @@ func main() {
 	if env, err = setUpEnv(); err != nil {
 		d := killFiles(env)
 
-		logInfo("Starting up " + progname + "...")
+		logInfo(progname + ": commencing dnsmasq blacklist update...")
 		logInfo("Removing stale blacklists...")
 
 		if err := d.Remove(); err != nil {
@@ -98,8 +98,8 @@ func main() {
 		logFatalln(err)
 	}
 
-	logInfo("Shutting down " + os.Args[0] + "...")
 	reloadDNS(env)
+	logInfo(progname + ": dnsmasq blacklist update completed...")
 }
 
 // basename removes directory components and file extensions.
