@@ -492,30 +492,30 @@ var (
 	vanillaArgs = `  -debug
     	Enable debug mode
   -dir string
-    	Override dnsmasq directory (default /etc/dnsmasq.d)
+    	Override dnsmasq directory (default "/etc/dnsmasq.d")
   -h	Display help
   -v	Verbose display
   -version
     	Show version
 `
 	allArgs = `  -arch string
-    	Set EdgeOS CPU architecture (default amd64)
+    	Set EdgeOS CPU architecture (default "amd64")
   -debug
     	Enable debug mode
   -dir string
-    	Override dnsmasq directory (default /etc/dnsmasq.d)
+    	Override dnsmasq directory (default "/etc/dnsmasq.d")
   -f <file>
     	<file> # Load a configuration file
   -h
     	Display help
   -mips64 string
-    	Override target EdgeOS CPU architecture (default mips64)
+    	Override target EdgeOS CPU architecture (default "mips64")
   -os string
-    	Override native EdgeOS OS (default darwin)
+    	Override native EdgeOS OS (default "darwin")
   -t
     	Run config and data validation tests
   -tmp string
-    	Override dnsmasq temporary directory (default /tmp)
+    	Override dnsmasq temporary directory (default "/tmp")
   -v
     	Verbose display
   -version
