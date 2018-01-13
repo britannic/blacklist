@@ -36,8 +36,6 @@ Usage
       -f <file>
         	<file> # Load a configuration file
       -h	Display help
-      -i int
-        	Polling interval (default 5)
       -mips64 string
         	Override target EdgeOS CPU architecture (default "mips64")
       -os string

@@ -2,9 +2,9 @@ package main
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"io"
+	"mflag"
 	"os"
 	"path"
 	"runtime"
@@ -94,13 +94,13 @@ func TestGetOpts(t *testing.T) {
 
 		Convey("Testing getOpts() with vanilla arguments", func() {
 			o := getOpts()
-			o.Init("blacklist", flag.ContinueOnError)
+			o.Init("blacklist", mflag.ContinueOnError)
 			o.SetOutput(act)
 			o.setArgs()
 
 			So(act.String(), ShouldEqual, exp)
 
-			exp = optsString
+			exp = allArgs
 			So(o.String(), ShouldEqual, exp)
 		})
 
@@ -108,7 +108,7 @@ func TestGetOpts(t *testing.T) {
 			os.Args = []string{prog, "-t"}
 
 			o := getOpts()
-			o.Init("blacklist", flag.ContinueOnError)
+			o.Init("blacklist", mflag.ContinueOnError)
 			o.SetOutput(act)
 			o.setArgs()
 
@@ -119,7 +119,7 @@ func TestGetOpts(t *testing.T) {
 			os.Args = []string{prog, "-version"}
 
 			o := getOpts()
-			o.Init("blacklist", flag.ContinueOnError)
+			o.Init("blacklist", mflag.ContinueOnError)
 			o.SetOutput(act)
 			o.setArgs()
 
@@ -130,7 +130,7 @@ func TestGetOpts(t *testing.T) {
 			os.Args = []string{prog, "-v"}
 
 			o := getOpts()
-			o.Init("blacklist", flag.ContinueOnError)
+			o.Init("blacklist", mflag.ContinueOnError)
 			o.SetOutput(act)
 			o.setArgs()
 
@@ -140,7 +140,7 @@ func TestGetOpts(t *testing.T) {
 		Convey("Now lets test with an invalid flag", func() {
 			os.Args = []string{prog, "-z"}
 			o := getOpts()
-			o.Init("pixelserv", flag.ContinueOnError)
+			o.Init("pixelserv", mflag.ContinueOnError)
 			o.SetOutput(act)
 			o.setArgs()
 
@@ -195,7 +195,7 @@ func TestCommandLineArgs(t *testing.T) {
 		os.Args = []string{prog, "-convey-json", "-h"}
 
 		o := getOpts()
-		o.Init("blacklist", flag.ContinueOnError)
+		o.Init("blacklist", mflag.ContinueOnError)
 		o.SetOutput(act)
 		o.Parse(cleanArgs(os.Args[1:]))
 		o.setArgs()
@@ -321,7 +321,6 @@ func TestInitEdgeOS(t *testing.T) {
 		"hosts"
 	],
 	"Prefix": "address=",
-	"Poll": 5,
 	"Timeout": 30000000000,
 	"Wildcard": {
 		"Node": "*s",
@@ -490,31 +489,40 @@ var (
     }
   }]
 }`
-
-	vanillaArgs = `  -arch string
-    	Set EdgeOS CPU architecture (default "amd64")
-  -debug
+	vanillaArgs = `  -debug
     	Enable debug mode
   -dir string
-    	Override dnsmasq directory (default "/etc/dnsmasq.d")
-  -f <file>
-    	<file> # Load a configuration file
+    	Override dnsmasq directory (default /etc/dnsmasq.d)
   -h	Display help
-  -i int
-    	Polling interval (default 5)
-  -mips64 string
-    	Override target EdgeOS CPU architecture (default "mips64")
-  -os string
-    	Override native EdgeOS OS (default "` + runtime.GOOS + `")
-  -t	Run config and data validation tests
-  -tmp string
-    	Override dnsmasq temporary directory (default "/tmp")
   -v	Verbose display
   -version
     	Show version
 `
+	allArgs = `  -arch string
+    	Set EdgeOS CPU architecture (default amd64)
+  -debug
+    	Enable debug mode
+  -dir string
+    	Override dnsmasq directory (default /etc/dnsmasq.d)
+  -f <file>
+    	<file> # Load a configuration file
+  -h
+    	Display help
+  -mips64 string
+    	Override target EdgeOS CPU architecture (default mips64)
+  -os string
+    	Override native EdgeOS OS (default darwin)
+  -t
+    	Run config and data validation tests
+  -tmp string
+    	Override dnsmasq temporary directory (default /tmp)
+  -v
+    	Verbose display
+  -version
+    	Show version
+`
 
-	vanillaArgsOnDrone = "  -arch=\"amd64\": Set EdgeOS CPU architecture\n  -debug=false: Enable debug mode\n  -dir=\"/etc/dnsmasq.d\": Override dnsmasq directory\n  -f=\"\": `<file>` # Load a configuration file\n  -h=false: Display help\n  -i=5: Polling interval\n  -mips64=\"mips64\": Override target EdgeOS CPU architecture\n  -os=\"linux\": Override native EdgeOS OS\n  -t=false: Run config and data validation tests\n  -tmp=\"/tmp\": Override dnsmasq temporary directory\n  -v=false: Verbose display\n  -version=false: Show version\n"
+	vanillaArgsOnDrone = "  -dir=\"/etc/dnsmasq.d\": Override dnsmasq directory\n  -h=false: Display help\n  -v=false: Verbose display\n  -version=false: Show version\n"
 
 	expMap = `"1e100.net":0,
 "2o7.net":0,
@@ -586,9 +594,8 @@ var (
 ARCH:    "amd64"
 DEBUG:   "false"
 DIR:     "/etc/dnsmasq.d"
-F:       "**not initialized**"
+F:       "**unitialized**"
 H:       "true"
-I:       "5"
 MIPS64:  "mips64"
 OS:      "` + runtime.GOOS + `"
 T:       "false"

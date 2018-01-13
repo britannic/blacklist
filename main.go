@@ -1,12 +1,13 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"runtime"
 	"time"
+
+	flag "mflag"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
 	logging "github.com/op/go-logging"
@@ -160,7 +161,6 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.Level("service dns forwarding"),
 		e.Method("GET"),
 		e.Nodes([]string{"domains", "hosts"}),
-		e.Poll(*o.Poll),
 		e.Prefix("address="),
 		e.Logger(log),
 		e.LTypes([]string{files, e.PreDomns, e.PreHosts, urls}),
