@@ -7,27 +7,22 @@
 
 COVERALLS="-service drone.io -repotoken $COVERALLS_TOKEN_BLIST"
 
-echo "mode: set" > acc.out
+echo "mode: set" >acc.out
 fail=0
 
 # Standard go tooling behavior is to ignore dirs with leading underscores
-for dir in $(find . -maxdepth 10 -not -path './.?*' -not -path './vendor/*' -not -path './payload*' -not -path '*/_*' -type d);
-do
-  if ls ${dir}/*.go &> /dev/null; then
-    # go test -v $dir || fail=1
-    #
+for dir in $(find . -maxdepth 10 -not -path './.?*' -not -path './vendor/*' -not -path './payload*' -not -path '*/_*' -type d); do
+  if ls ${dir}/*.go &>/dev/null; then
     go test -coverprofile=profile.out ${dir} || fail=1
-    if [ -f profile.out ]
-    then
-      cat profile.out | grep -v "mode: set" >> acc.out
+    if [ -f profile.out ]; then
+      cat profile.out | grep -v "mode: set" >>acc.out
       rm profile.out
     fi
   fi
 done
 
 # Failures have incomplete results, so don't send
-if [ -n "$COVERALLS" ] && [ "$fail" -eq 0 ]
-then
+if [ -n "$COVERALLS" ] && [ "$fail" -eq 0 ]; then
   # goveralls -coverprofile=overalls.coverprofile -service=travis-ci
   goveralls -v -coverprofile=acc.out $COVERALLS
 fi
