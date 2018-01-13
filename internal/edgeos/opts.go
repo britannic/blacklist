@@ -32,7 +32,6 @@ type Parms struct {
 	Method   string        `json:"HTTP method,omitempty"`
 	Nodes    []string      `json:"Nodes,omitempty"`
 	Pfx      string        `json:"Prefix,omitempty"`
-	Poll     int           `json:"Poll,omitempty"`
 	Test     bool          `json:"Test,omitempty"`
 	Timeout  time.Duration `json:"Timeout,omitempty"`
 	Verb     bool          `json:"Verbosity,omitempty"`
@@ -233,15 +232,6 @@ func Nodes(nodes []string) Option {
 		previous := c.Parms.Nodes
 		c.Parms.Nodes = nodes
 		return Nodes(previous)
-	}
-}
-
-// Poll sets the polling interval in seconds
-func Poll(t int) Option {
-	return func(c *Config) Option {
-		previous := c.Poll
-		c.Poll = t
-		return Poll(previous)
 	}
 }
 

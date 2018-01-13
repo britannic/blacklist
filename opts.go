@@ -1,9 +1,10 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"mflag"
 	"os"
+	"reflect"
 	"runtime"
 	"strings"
 
@@ -13,7 +14,7 @@ import (
 
 // opts struct for command line options and setting initial variables
 type opts struct {
-	*flag.FlagSet
+	*mflag.FlagSet
 	ARCH    *string
 	Dbug    *bool
 	DNSdir  *string
@@ -22,11 +23,44 @@ type opts struct {
 	Help    *bool
 	MIPS64  *string
 	OS      *string
-	Poll    *int
 	Test    *bool
 	Verb    *bool
 	Version *bool
 }
+
+// Value is the interface to the dynamic value stored in a flag.
+// (The default value is represented as a string.)
+//
+// If a Value has an IsBoolFlag() bool method returning true,
+// the command-line parser makes -name equivalent to -name=true
+// rather than using the next command-line argument.
+//
+// Set is called once, in command line order, for each flag present.
+// The flag package may call the String method with a zero-valued receiver,
+// such as a nil pointer.
+type Value interface {
+	String() string
+	Set(string) error
+}
+
+func newStringValue(val string, p *string) *stringValue {
+	*p = val
+	return (*stringValue)(p)
+}
+
+func (s *stringValue) Set(val string) error {
+	*s = stringValue(val)
+	return nil
+}
+
+func (s *stringValue) Get() interface{} { return string(*s) }
+
+func (s *stringValue) String() string { return string(*s) }
+
+type omitFlags map[string]bool
+
+// -- string Value
+type stringValue string
 
 // setDir sets the directory according to the host CPU arch
 func (o *opts) setDir(arch string) (dir string) {
@@ -39,7 +73,7 @@ func (o *opts) setDir(arch string) (dir string) {
 	return dir
 }
 
-// getCFG returns a e.ConfLoader
+// getCFG returns a edgeos.ConfLoader
 func (o *opts) getCFG(c *edgeos.Config) (r edgeos.ConfLoader) {
 	switch *o.ARCH {
 	case *o.MIPS64:
@@ -52,29 +86,29 @@ func (o *opts) getCFG(c *edgeos.Config) (r edgeos.ConfLoader) {
 
 // getOpts returns command line flags and values or displays help
 func getOpts() *opts {
-	var flags flag.FlagSet
-	flags.Init("blacklist", flag.ExitOnError)
+	var (
+		flags mflag.FlagSet
+		o     = &opts{
+			ARCH:    flags.String("arch", runtime.GOARCH, "Set EdgeOS CPU architecture"),
+			Dbug:    flags.Bool("debug", false, "Enable debug mode"),
+			DNSdir:  flags.String("dir", "/etc/dnsmasq.d", "Override dnsmasq directory"),
+			DNStmp:  flags.String("tmp", "/tmp", "Override dnsmasq temporary directory"),
+			Help:    flags.Bool("h", false, "Display help"),
+			File:    flags.String("f", "", "`<file>` # Load a configuration file"),
+			FlagSet: &flags,
+			MIPS64:  flags.String("mips64", "mips64", "Override target EdgeOS CPU architecture"),
+			OS:      flags.String("os", runtime.GOOS, "Override native EdgeOS OS"),
+			Test:    flags.Bool("t", false, "Run config and data validation tests"),
+			Verb:    flags.Bool("v", false, "Verbose display"),
+			Version: flags.Bool("version", false, "Show version"),
+		}
+	)
+	flags.Init("blacklist", mflag.ExitOnError)
 	flags.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %v [options]\n\n", basename(os.Args[0]))
-		flags.PrintDefaults()
-		exitCmd(0)
+		o.printDefaults(omitFlags{"arch": true, "f": true, "mips64": true, "os": true, "t": true, "tmp": true})
 	}
 
-	return &opts{
-		ARCH:    flags.String("arch", runtime.GOARCH, "Set EdgeOS CPU architecture"),
-		Dbug:    flags.Bool("debug", false, "Enable debug mode"),
-		DNSdir:  flags.String("dir", "/etc/dnsmasq.d", "Override dnsmasq directory"),
-		DNStmp:  flags.String("tmp", "/tmp", "Override dnsmasq temporary directory"),
-		Help:    flags.Bool("h", false, "Display help"),
-		File:    flags.String("f", "", "`<file>` # Load a configuration file"),
-		FlagSet: &flags,
-		MIPS64:  flags.String("mips64", "mips64", "Override target EdgeOS CPU architecture"),
-		OS:      flags.String("os", runtime.GOOS, "Override native EdgeOS OS"),
-		Poll:    flags.Int("i", 5, "Polling interval"),
-		Test:    flags.Bool("t", false, "Run config and data validation tests"),
-		Verb:    flags.Bool("v", false, "Verbose display"),
-		Version: flags.Bool("version", false, "Show version"),
-	}
+	return o
 }
 
 // cleanArgs removes flags when code is being tested
@@ -97,11 +131,13 @@ NEXT:
 func (o *opts) setArgs() {
 	if err := o.Parse(cleanArgs((os.Args[1:]))); err != nil {
 		o.Usage()
+		exitCmd(0)
 	}
 
 	switch {
 	case *o.Help:
 		o.Usage()
+		exitCmd(0)
 
 	case *o.Test:
 		fmt.Println("Test activated!")
@@ -116,49 +152,99 @@ func (o *opts) setArgs() {
 	}
 }
 
-func (o *opts) String() string {
-	type pArray struct {
-		n string
-		i int
-		v string
+// isZeroValue guesses whether the string represents the zero
+// value for a flag. It is not accurate but in practice works OK.
+func isZeroValue(f *mflag.Flag, value string) bool {
+	// Build a zero value of the flag's value type, and see if the
+	// result of calling its String method equals the value passed in.
+	// This works unless the value type is itself an interface type.
+	typ := reflect.TypeOf(f.Value)
+	var z reflect.Value
+	if typ.Kind() == reflect.Ptr {
+		z = reflect.New(typ.Elem())
+	} else {
+		z = reflect.Zero(typ)
+	}
+	if value == z.Interface().(Value).String() {
+		return true
 	}
 
-	var fields []pArray
+	switch value {
+	case "false":
+		return true
+	case "":
+		return true
+	case "0":
+		return true
+	}
+	return false
+}
 
-	maxLen := func(pA []pArray) int {
-		smallest := len(pA[0].n)
-		largest := len(pA[0].n)
-		for i := range pA {
-			if len(pA[i].n) > largest {
-				largest = len(pA[i].n)
-			} else if len(pA[i].n) < smallest {
-				smallest = len(pA[i].n)
+// printDefaults prints to standard error the default values of all
+// defined command-line flags in the set. See the documentation for
+// the global function PrintDefaults for more information.
+func (o *opts) printDefaults(omit omitFlags) {
+	o.VisitAll(func(f *mflag.Flag) {
+		if !omit[f.Name] {
+			s := fmt.Sprintf("  -%s", f.Name) // Two spaces before -; see next two comments.
+
+			name, usage := mflag.UnquoteUsage(f)
+			if len(name) > 0 {
+				s += " " + name
+			}
+			// Boolean flags of one ASCII letter are so common we
+			// treat them specially, putting their usage on the same line.
+			if len(s) <= 4 { // space, space, '-', 'x'.
+				s += "\t"
+			} else {
+				// Four spaces before the tab triggers good alignment
+				// for both 4- and 8-space tab stops.
+				s += "\n    \t"
+			}
+			s += usage
+			if !isZeroValue(f, f.DefValue) {
+				if _, ok := f.Value.(*stringValue); ok {
+					// put quotes on the value
+					s += fmt.Sprintf(" (default %q)", f.DefValue)
+				} else {
+					s += fmt.Sprintf(" (default %v)", f.DefValue)
+				}
+			}
+			fmt.Fprint(o.Output, s, "\n")
+		}
+	})
+}
+
+func (o *opts) String() string {
+	var s string
+	o.VisitAll(func(f *mflag.Flag) {
+		s += fmt.Sprintf("  -%s", f.Name) // Two spaces before -; see next two comments.
+
+		name, usage := mflag.UnquoteUsage(f)
+		if len(name) > 0 {
+			s += " " + name
+		}
+		// Boolean flags of one ASCII letter are so common we
+		// treat them specially, putting their usage on the same line.
+		if len(s) <= 4 { // space, space, '-', 'x'.
+			s += "\t"
+		} else {
+			// Four spaces before the tab triggers good alignment
+			// for both 4- and 8-space tab stops.
+			s += "\n    \t"
+		}
+		s += usage
+		if !isZeroValue(f, f.DefValue) {
+			if _, ok := f.Value.(*stringValue); ok {
+				// put quotes on the value
+				s += fmt.Sprintf(" (default %q)", f.DefValue)
+			} else {
+				s += fmt.Sprintf(" (default %v)", f.DefValue)
 			}
 		}
-		return largest
-	}
+		s = fmt.Sprint(s, "\n")
 
-	visitor := func(a *flag.Flag) {
-		field := pArray{n: fmt.Sprint(a.Name), v: fmt.Sprint(a.Value)}
-		fields = append(fields, field)
-	}
-
-	o.VisitAll(visitor)
-
-	max := maxLen(fields)
-	pad := func(s string) string {
-		i := len(s)
-		repeat := max - i + 1
-		return strings.Repeat(" ", repeat)
-	}
-
-	s := "FlagSet\n"
-	for _, field := range fields {
-		if field.v == "" {
-			field.v = "**not initialized**"
-		}
-		s += fmt.Sprintf("%v:%v%q\n", strings.ToUpper(field.n), pad(field.n), field.v)
-	}
+	})
 
 	return s
 }

@@ -109,7 +109,6 @@ func TestOption(t *testing.T) {
 		"hosts"
 	],
 	"Prefix": "address=",
-	"Poll": 10,
 	"Test": true,
 	"Timeout": 30000000000,
 	"Wildcard": {
@@ -137,7 +136,6 @@ func TestOption(t *testing.T) {
 			Method:   "GET",
 			Nodes:    []string{domains, hosts},
 			Pfx:      "address=",
-			Poll:     10,
 			Test:     true,
 			Timeout:  30000000000,
 			Wildcard: Wildcard{Node: "*s", Name: "*"},
@@ -163,7 +161,6 @@ func TestOption(t *testing.T) {
 			Logger(nil),
 			Method("GET"),
 			Nodes([]string{domains, hosts}),
-			Poll(10),
 			Prefix("address="),
 			Level("service dns forwarding"),
 			LTypes([]string{"file", PreDomns, PreHosts, urls}),
