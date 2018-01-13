@@ -7,13 +7,14 @@ package mflag_test
 import (
 	"bytes"
 	"fmt"
-	. "mflag"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
+
+	. "github.com/britannic/blacklist/internal/mflag"
 )
 
 func boolString(s string) string {

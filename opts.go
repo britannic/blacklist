@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"reflect"
 	"runtime"
 	"strings"
 
@@ -28,39 +27,7 @@ type opts struct {
 	Version *bool
 }
 
-// Value is the interface to the dynamic value stored in a flag.
-// (The default value is represented as a string.)
-//
-// If a Value has an IsBoolFlag() bool method returning true,
-// the command-line parser makes -name equivalent to -name=true
-// rather than using the next command-line argument.
-//
-// Set is called once, in command line order, for each flag present.
-// The flag package may call the String method with a zero-valued receiver,
-// such as a nil pointer.
-type Value interface {
-	String() string
-	Set(string) error
-}
-
-func newStringValue(val string, p *string) *stringValue {
-	*p = val
-	return (*stringValue)(p)
-}
-
-func (s *stringValue) Set(val string) error {
-	*s = stringValue(val)
-	return nil
-}
-
-func (s *stringValue) Get() interface{} { return string(*s) }
-
-func (s *stringValue) String() string { return string(*s) }
-
 type omitFlags map[string]bool
-
-// -- string Value
-type stringValue string
 
 // setDir sets the directory according to the host CPU arch
 func (o *opts) setDir(arch string) (dir string) {
@@ -152,34 +119,6 @@ func (o *opts) setArgs() {
 	}
 }
 
-// isZeroValue guesses whether the string represents the zero
-// value for a flag. It is not accurate but in practice works OK.
-func isZeroValue(f *mflag.Flag, value string) bool {
-	// Build a zero value of the flag's value type, and see if the
-	// result of calling its String method equals the value passed in.
-	// This works unless the value type is itself an interface type.
-	typ := reflect.TypeOf(f.Value)
-	var z reflect.Value
-	if typ.Kind() == reflect.Ptr {
-		z = reflect.New(typ.Elem())
-	} else {
-		z = reflect.Zero(typ)
-	}
-	if value == z.Interface().(Value).String() {
-		return true
-	}
-
-	switch value {
-	case "false":
-		return true
-	case "":
-		return true
-	case "0":
-		return true
-	}
-	return false
-}
-
 // printDefaults prints to standard error the default values of all
 // defined command-line flags in the set. See the documentation for
 // the global function PrintDefaults for more information.
@@ -202,8 +141,8 @@ func (o *opts) printDefaults(omit omitFlags) {
 				s += "\n    \t"
 			}
 			s += usage
-			if !isZeroValue(f, f.DefValue) {
-				if _, ok := f.Value.(*stringValue); ok {
+			if !mflag.IsZeroValue(f, f.DefValue) {
+				if _, ok := f.Value.(*mflag.StringValue); ok {
 					// put quotes on the value
 					s += fmt.Sprintf(" (default %q)", f.DefValue)
 				} else {
@@ -234,8 +173,8 @@ func (o *opts) String() string {
 			s += "\n    \t"
 		}
 		s += usage
-		if !isZeroValue(f, f.DefValue) {
-			if _, ok := f.Value.(*stringValue); ok {
+		if !mflag.IsZeroValue(f, f.DefValue) {
+			if _, ok := f.Value.(*mflag.StringValue); ok {
 				// put quotes on the value
 				s += fmt.Sprintf(" (default %q)", f.DefValue)
 			} else {

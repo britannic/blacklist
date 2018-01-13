@@ -180,21 +180,21 @@ func (i *uint64Value) Get() interface{} { return uint64(*i) }
 func (i *uint64Value) String() string { return strconv.FormatUint(uint64(*i), 10) }
 
 // -- string Value
-type stringValue string
+type StringValue string
 
-func newStringValue(val string, p *string) *stringValue {
+func NewStringValue(val string, p *string) *StringValue {
 	*p = val
-	return (*stringValue)(p)
+	return (*StringValue)(p)
 }
 
-func (s *stringValue) Set(val string) error {
-	*s = stringValue(val)
+func (s *StringValue) Set(val string) error {
+	*s = StringValue(val)
 	return nil
 }
 
-func (s *stringValue) Get() interface{} { return string(*s) }
+func (s *StringValue) Get() interface{} { return string(*s) }
 
-func (s *stringValue) String() string { return string(*s) }
+func (s *StringValue) String() string { return string(*s) }
 
 // -- float64 Value
 type float64Value float64
@@ -381,9 +381,9 @@ func Set(name, value string) error {
 	return CommandLine.Set(name, value)
 }
 
-// isZeroValue guesses whether the string represents the zero
+// IsZeroValue guesses whether the string represents the zero
 // value for a flag. It is not accurate but in practice works OK.
-func isZeroValue(flag *Flag, value string) bool {
+func IsZeroValue(flag *Flag, value string) bool {
 	// Build a zero value of the flag's Value type, and see if the
 	// result of calling its String method equals the value passed in.
 	// This works unless the Value type is itself an interface type.
@@ -440,7 +440,7 @@ func UnquoteUsage(flag *Flag) (name string, usage string) {
 		name = "float"
 	case *intValue, *int64Value:
 		name = "int"
-	case *stringValue:
+	case *StringValue:
 		name = "string"
 	case *uintValue, *uint64Value:
 		name = "uint"
@@ -468,8 +468,8 @@ func (f *FlagSet) PrintDefaults() {
 			s += "\n    \t"
 		}
 		s += usage
-		if !isZeroValue(flag, flag.DefValue) {
-			if _, ok := flag.Value.(*stringValue); ok {
+		if !IsZeroValue(flag, flag.DefValue) {
+			if _, ok := flag.Value.(*StringValue); ok {
 				// put quotes on the value
 				s += fmt.Sprintf(" (default %q)", flag.DefValue)
 			} else {
@@ -695,13 +695,13 @@ func Uint64(name string, value uint64, usage string) *uint64 {
 // StringVar defines a string flag with specified name, default value, and usage string.
 // The argument p points to a string variable in which to store the value of the flag.
 func (f *FlagSet) StringVar(p *string, name string, value string, usage string) {
-	f.Var(newStringValue(value, p), name, usage)
+	f.Var(NewStringValue(value, p), name, usage)
 }
 
 // StringVar defines a string flag with specified name, default value, and usage string.
 // The argument p points to a string variable in which to store the value of the flag.
 func StringVar(p *string, name string, value string, usage string) {
-	CommandLine.Var(newStringValue(value, p), name, usage)
+	CommandLine.Var(NewStringValue(value, p), name, usage)
 }
 
 // String defines a string flag with specified name, default value, and usage string.

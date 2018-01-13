@@ -8,9 +8,10 @@ package mflag_test
 import (
 	"errors"
 	"fmt"
-	"mflag"
 	"strings"
 	"time"
+
+	"github.com/britannic/blacklist/internal/mflag"
 )
 
 // Example 1: A single string flag called "species" with default value "gopher".
