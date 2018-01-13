@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	"mflag"
 	"os"
 	"reflect"
 	"runtime"
 	"strings"
 
 	"github.com/britannic/blacklist/internal/edgeos"
+	"github.com/britannic/blacklist/internal/mflag"
 	"github.com/britannic/blacklist/internal/tdata"
 )
 

@@ -7,9 +7,8 @@ import (
 	"runtime"
 	"time"
 
-	flag "mflag"
-
 	e "github.com/britannic/blacklist/internal/edgeos"
+	flag "github.com/britannic/blacklist/internal/mflag"
 	logging "github.com/op/go-logging"
 )
 
