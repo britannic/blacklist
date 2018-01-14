@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	"github.com/britannic/blacklist/internal/edgeos"
-	"github.com/britannic/blacklist/internal/mflag"
 	"github.com/britannic/blacklist/internal/tdata"
+	"github.com/britannic/mflag"
 	. "github.com/britannic/testutils"
 	. "github.com/smartystreets/goconvey/convey"
 )

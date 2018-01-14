@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/britannic/blacklist/internal/edgeos"
-	"github.com/britannic/blacklist/internal/mflag"
 	"github.com/britannic/blacklist/internal/tdata"
+	"github.com/britannic/mflag"
 )
 
 // opts struct for command line options and setting initial variables

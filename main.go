@@ -8,7 +8,7 @@ import (
 	"time"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
-	flag "github.com/britannic/blacklist/internal/mflag"
+	"github.com/britannic/mflag"
 	logging "github.com/op/go-logging"
 )
 
@@ -202,7 +202,7 @@ func removeStaleFiles(c *e.Config) error {
 
 func setUpEnv() (*e.Config, error) {
 	o := getOpts()
-	o.Init("blacklist", flag.ExitOnError)
+	o.Init("blacklist", mflag.ExitOnError)
 	o.setArgs()
 
 	c := o.initEdgeOS()
