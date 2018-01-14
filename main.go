@@ -30,6 +30,8 @@ var (
 	exitCmd = os.Exit
 
 	fdFmttr  logging.Backend
+	sysFmttr logging.SyslogBackend
+
 	log, err = newLog()
 
 	logError = func(args ...interface{}) {
@@ -124,12 +126,16 @@ func basename(s string) string {
 
 func newLog() (*logging.Logger, error) {
 	fdFmt := logging.MustStringFormatter(
-		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000} ▶ %{message}`,
+		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000}{` + progname + `} ▶ %{message}`,
 	)
 	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-	fdlog := logging.NewLogBackend(fd, "", 0)
+	fdlog := logging.NewLogBackend(fd, progname+": ", 0)
 	fdFmttr = logging.NewBackendFormatter(fdlog, fdFmt)
-	logging.SetBackend(fdFmttr)
+	sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
+	if err != nil {
+		fmt.Println(err)
+	}
+	logging.SetBackend(fdFmttr, sysFmttr)
 
 	return logging.MustGetLogger(progname), err
 }
@@ -139,9 +145,13 @@ func screenLog() {
 	scrFmt := logging.MustStringFormatter(
 		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
 	)
-	scr := logging.NewLogBackend(os.Stderr, "", 0)
+	scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)
 	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
-	logging.SetBackend(fdFmttr, scrFmttr)
+	sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
+	if err != nil {
+		fmt.Println(err)
+	}
+	logging.SetBackend(fdFmttr, scrFmttr, sysFmttr)
 }
 
 func (o *opts) initEdgeOS() *e.Config {

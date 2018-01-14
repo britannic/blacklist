@@ -22,7 +22,7 @@ func getHTTP(o *object) *object {
 		return o
 	}
 
-	o.Log.Info(fmt.Sprintf("Downloading %s", o.url))
+	o.Log.Info(fmt.Sprintf("Downloading %s", o.name))
 
 	req.Header.Set("User-Agent", agent)
 	if resp, err = (&http.Client{}).Do(req); err != nil {
