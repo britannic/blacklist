@@ -371,6 +371,9 @@ NEXT:
 	}
 
 	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
+	if i := len(add.entry); i > 0 {
+		o.log(fmt.Sprintf("%s: entries processed: %d", o.name, i))
+	}
 	return &bList{
 		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),
 		r:    formatData(fmttr, add),
