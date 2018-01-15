@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	all   = "all"
+	// all   = "all"
 	files = "file"
-	pre   = "pre-configured"
-	urls  = "url"
+	// pre   = "pre-configured"
+	urls = "url"
 )
 
 var (
@@ -29,15 +29,15 @@ var (
 
 	exitCmd = os.Exit
 
-	fdFmttr  logging.Backend
-	sysFmttr logging.SyslogBackend
+	fdFmttr logging.Backend
+	// sysFmttr logging.SyslogBackend
 
-	log, err = newLog()
+	log = newLog()
 
-	logError = func(args ...interface{}) {
-		errType := fmt.Sprintf("%v", args[0])
-		log.Error(errType, args[1:len(args)])
-	}
+	// logError = func(args ...interface{}) {
+	// 	errType := fmt.Sprintf("%v", args[0])
+	// 	log.Error(errType, args[1:len(args)])
+	// }
 
 	logErrorf = func(s string, args ...interface{}) {
 		log.Errorf(s, args)
@@ -51,11 +51,12 @@ var (
 		exitCmd(1)
 	}
 
-	logFile    = "/var/log/" + progname + ".log"
-	logInfo    = log.Info
-	logInfof   = log.Infof
-	logPrintf  = logInfof
-	logPrintln = logInfo
+	logFile   = "/var/log/" + progname + ".log"
+	logInfo   = log.Info
+	logInfof  = log.Infof
+	logNotice = log.Notice
+	logPrintf = logInfof
+	// logPrintln = logInfo
 
 	objex = []e.IFace{
 		e.ExRtObj,
@@ -75,22 +76,14 @@ func main() {
 		err error
 	)
 
-	if env, err = setUpEnv(); err != nil {
-		d := killFiles(env)
+	logNotice("Starting up " + progname + "...")
 
-		logInfo(progname + ": commencing dnsmasq blacklist update...")
-		logInfo("Removing stale blacklists...")
-
-		if err := d.Remove(); err != nil {
-			logFatalln(err)
-		}
+	if env, err = initEnv(); err != nil {
 		exitCmd(0)
 	}
 
-	logInfo("Starting up " + progname + "...")
-
 	logInfo("Removing stale blacklists...")
-	if err := removeStaleFiles(env); err != nil {
+	if err = removeStaleFiles(env); err != nil {
 		logFatalln(err)
 	}
 
@@ -101,7 +94,7 @@ func main() {
 	}
 
 	reloadDNS(env)
-	logInfo(progname + ": dnsmasq blacklist update completed...")
+	logNotice(progname + ": dnsmasq blacklist update completed...")
 }
 
 // basename removes directory components and file extensions.
@@ -122,36 +115,6 @@ func basename(s string) string {
 		}
 	}
 	return s
-}
-
-func newLog() (*logging.Logger, error) {
-	fdFmt := logging.MustStringFormatter(
-		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000}{` + progname + `} ▶ %{message}`,
-	)
-	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-	fdlog := logging.NewLogBackend(fd, progname+": ", 0)
-	fdFmttr = logging.NewBackendFormatter(fdlog, fdFmt)
-	sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
-	if err != nil {
-		fmt.Println(err)
-	}
-	logging.SetBackend(fdFmttr, sysFmttr)
-
-	return logging.MustGetLogger(progname), err
-}
-
-// screenLog adds stderr logging output to the screen
-func screenLog() {
-	scrFmt := logging.MustStringFormatter(
-		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
-	)
-	scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)
-	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
-	sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
-	if err != nil {
-		fmt.Println(err)
-	}
-	logging.SetBackend(fdFmttr, scrFmttr, sysFmttr)
 }
 
 func (o *opts) initEdgeOS() *e.Config {
@@ -180,6 +143,52 @@ func (o *opts) initEdgeOS() *e.Config {
 	)
 }
 
+func initEnv() (env *e.Config, err error) {
+	if env, err = setUpEnv(); err != nil {
+		d := killFiles(env)
+
+		logNotice(progname + ": commencing dnsmasq blacklist update...")
+		logInfo("Removing stale blacklists...")
+
+		if err = d.Remove(); err != nil {
+			logFatalln(err)
+		}
+		exitCmd(0)
+	}
+	return env, err
+}
+
+// killFiles returns an empty *e.CFile string array
+func killFiles(env *e.Config) *e.CFile {
+	return &e.CFile{Names: []string{}, Parms: env.Parms}
+}
+
+// newLog returns a logging.Logger pointer
+func newLog() *logging.Logger {
+	fdFmt := logging.MustStringFormatter(
+		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000}{` + progname + `} ▶ %{message}`,
+	)
+
+	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fdlog := logging.NewLogBackend(fd, progname+": ", 0)
+	fdFmttr = logging.NewBackendFormatter(fdlog, fdFmt)
+
+	sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	logging.SetBackend(fdFmttr, sysFmttr)
+
+	return logging.MustGetLogger(progname)
+}
+
+// processObjects processes local sources, downloads Internet sources and creates
+// dnsmasq configuration files
 func processObjects(c *e.Config, objects []e.IFace) error {
 	for _, o := range objects {
 		ct, err := c.NewContent(o)
@@ -194,6 +203,7 @@ func processObjects(c *e.Config, objects []e.IFace) error {
 	return nil
 }
 
+// reloadDNS reloads the latest processed dnsmasq configuration files
 func reloadDNS(c *e.Config) {
 	b, err := c.ReloadDNS()
 	if err != nil {
@@ -203,6 +213,7 @@ func reloadDNS(c *e.Config) {
 	logPrintf("ReloadDNS(): %v\n", string(b))
 }
 
+// removeStaleFiles deletes redundant files
 func removeStaleFiles(c *e.Config) error {
 	if err := c.GetAll().Files().Remove(); err != nil {
 		return fmt.Errorf("c.GetAll().Files().Remove() error: %v", err)
@@ -210,16 +221,26 @@ func removeStaleFiles(c *e.Config) error {
 	return nil
 }
 
+// screenLog adds stderr logging output to the screen
+func screenLog() {
+	scrFmt := logging.MustStringFormatter(
+		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
+	)
+	scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)
+	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
+	sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
+	if err != nil {
+		fmt.Println(err)
+	}
+	logging.SetBackend(fdFmttr, scrFmttr, sysFmttr)
+}
+
 func setUpEnv() (*e.Config, error) {
 	o := getOpts()
 	o.Init("blacklist", mflag.ExitOnError)
 	o.setArgs()
-
 	c := o.initEdgeOS()
 	err := c.ReadCfg(o.getCFG(c))
-	return c, err
-}
 
-func killFiles(env *e.Config) *e.CFile {
-	return &e.CFile{Names: []string{}, Parms: env.Parms}
+	return c, err
 }
