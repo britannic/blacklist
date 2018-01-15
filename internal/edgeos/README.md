@@ -353,7 +353,7 @@ Nodes returns an array of configured nodes
 
 
 
-### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/content.go?s=7681:7736#L371)
+### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/content.go?s=7778:7833#L374)
 ``` go
 func (c *Config) ProcessContent(cts ...Contenter) error
 ```
@@ -463,7 +463,7 @@ Len returns how many objects there are
 
 
 
-### <a name="ExcDomnObjects.SetURL">func</a> (\*ExcDomnObjects) [SetURL](/src/target/content.go?s=8557:8606#L418)
+### <a name="ExcDomnObjects.SetURL">func</a> (\*ExcDomnObjects) [SetURL](/src/target/content.go?s=8654:8703#L421)
 ``` go
 func (e *ExcDomnObjects) SetURL(name, url string)
 ```
@@ -472,7 +472,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="ExcDomnObjects.String">func</a> (\*ExcDomnObjects) [String](/src/target/content.go?s=9857:9897#L489)
+### <a name="ExcDomnObjects.String">func</a> (\*ExcDomnObjects) [String](/src/target/content.go?s=9954:9994#L492)
 ``` go
 func (e *ExcDomnObjects) String() string
 ```
@@ -523,7 +523,7 @@ Len returns how many objects there are
 
 
 
-### <a name="ExcHostObjects.SetURL">func</a> (\*ExcHostObjects) [SetURL](/src/target/content.go?s=8725:8774#L427)
+### <a name="ExcHostObjects.SetURL">func</a> (\*ExcHostObjects) [SetURL](/src/target/content.go?s=8822:8871#L430)
 ``` go
 func (e *ExcHostObjects) SetURL(name, url string)
 ```
@@ -532,7 +532,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="ExcHostObjects.String">func</a> (\*ExcHostObjects) [String](/src/target/content.go?s=9928:9968#L490)
+### <a name="ExcHostObjects.String">func</a> (\*ExcHostObjects) [String](/src/target/content.go?s=10025:10065#L493)
 ``` go
 func (e *ExcHostObjects) String() string
 ```
@@ -583,7 +583,7 @@ Len returns how many objects there are
 
 
 
-### <a name="ExcRootObjects.SetURL">func</a> (\*ExcRootObjects) [SetURL](/src/target/content.go?s=8893:8942#L436)
+### <a name="ExcRootObjects.SetURL">func</a> (\*ExcRootObjects) [SetURL](/src/target/content.go?s=8990:9039#L439)
 ``` go
 func (e *ExcRootObjects) SetURL(name, url string)
 ```
@@ -592,7 +592,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="ExcRootObjects.String">func</a> (\*ExcRootObjects) [String](/src/target/content.go?s=9999:10039#L491)
+### <a name="ExcRootObjects.String">func</a> (\*ExcRootObjects) [String](/src/target/content.go?s=10096:10136#L494)
 ``` go
 func (e *ExcRootObjects) String() string
 ```
@@ -643,7 +643,7 @@ Len returns how many objects there are
 
 
 
-### <a name="FIODataObjects.SetURL">func</a> (\*FIODataObjects) [SetURL](/src/target/content.go?s=9061:9110#L445)
+### <a name="FIODataObjects.SetURL">func</a> (\*FIODataObjects) [SetURL](/src/target/content.go?s=9158:9207#L448)
 ``` go
 func (f *FIODataObjects) SetURL(name, url string)
 ```
@@ -652,7 +652,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="FIODataObjects.String">func</a> (\*FIODataObjects) [String](/src/target/content.go?s=10070:10110#L492)
+### <a name="FIODataObjects.String">func</a> (\*FIODataObjects) [String](/src/target/content.go?s=10167:10207#L495)
 ``` go
 func (f *FIODataObjects) String() string
 ```
@@ -690,7 +690,7 @@ IFace types for labeling interface types
 
 
 
-### <a name="IFace.String">func</a> (IFace) [String](/src/target/content.go?s=10426:10460#L498)
+### <a name="IFace.String">func</a> (IFace) [String](/src/target/content.go?s=10523:10557#L501)
 ``` go
 func (i IFace) String() (s string)
 ```
@@ -1118,7 +1118,7 @@ Len returns how many objects there are
 
 
 
-### <a name="PreDomnObjects.SetURL">func</a> (\*PreDomnObjects) [SetURL](/src/target/content.go?s=9229:9278#L454)
+### <a name="PreDomnObjects.SetURL">func</a> (\*PreDomnObjects) [SetURL](/src/target/content.go?s=9326:9375#L457)
 ``` go
 func (p *PreDomnObjects) SetURL(name, url string)
 ```
@@ -1127,7 +1127,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="PreDomnObjects.String">func</a> (\*PreDomnObjects) [String](/src/target/content.go?s=10141:10181#L493)
+### <a name="PreDomnObjects.String">func</a> (\*PreDomnObjects) [String](/src/target/content.go?s=10238:10278#L496)
 ``` go
 func (p *PreDomnObjects) String() string
 ```
@@ -1178,7 +1178,7 @@ Len returns how many objects there are
 
 
 
-### <a name="PreHostObjects.SetURL">func</a> (\*PreHostObjects) [SetURL](/src/target/content.go?s=9397:9446#L463)
+### <a name="PreHostObjects.SetURL">func</a> (\*PreHostObjects) [SetURL](/src/target/content.go?s=9494:9543#L466)
 ``` go
 func (p *PreHostObjects) SetURL(name, url string)
 ```
@@ -1187,7 +1187,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="PreHostObjects.String">func</a> (\*PreHostObjects) [String](/src/target/content.go?s=10212:10252#L494)
+### <a name="PreHostObjects.String">func</a> (\*PreHostObjects) [String](/src/target/content.go?s=10309:10349#L497)
 ``` go
 func (p *PreHostObjects) String() string
 ```
@@ -1238,7 +1238,7 @@ Len returns how many objects there are
 
 
 
-### <a name="URLDomnObjects.SetURL">func</a> (\*URLDomnObjects) [SetURL](/src/target/content.go?s=9565:9614#L472)
+### <a name="URLDomnObjects.SetURL">func</a> (\*URLDomnObjects) [SetURL](/src/target/content.go?s=9662:9711#L475)
 ``` go
 func (u *URLDomnObjects) SetURL(name, url string)
 ```
@@ -1247,7 +1247,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="URLDomnObjects.String">func</a> (\*URLDomnObjects) [String](/src/target/content.go?s=10283:10323#L495)
+### <a name="URLDomnObjects.String">func</a> (\*URLDomnObjects) [String](/src/target/content.go?s=10380:10420#L498)
 ``` go
 func (u *URLDomnObjects) String() string
 ```
@@ -1298,7 +1298,7 @@ Len returns how many objects there are
 
 
 
-### <a name="URLHostObjects.SetURL">func</a> (\*URLHostObjects) [SetURL](/src/target/content.go?s=9733:9782#L481)
+### <a name="URLHostObjects.SetURL">func</a> (\*URLHostObjects) [SetURL](/src/target/content.go?s=9830:9879#L484)
 ``` go
 func (u *URLHostObjects) SetURL(name, url string)
 ```
@@ -1307,7 +1307,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="URLHostObjects.String">func</a> (\*URLHostObjects) [String](/src/target/content.go?s=10354:10394#L496)
+### <a name="URLHostObjects.String">func</a> (\*URLHostObjects) [String](/src/target/content.go?s=10451:10491#L499)
 ``` go
 func (u *URLHostObjects) String() string
 ```

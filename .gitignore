@@ -11,6 +11,7 @@
 
 # Ignore debug
 *.debug
+blacklist.*
 
 # Ignore test
 *.test

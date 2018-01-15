@@ -24,7 +24,7 @@ func TestMain(t *testing.T) {
 			actReloadDNS string
 		)
 
-		exitCmd = func(int) { return }
+		exitCmd = func(int) {}
 
 		logFatalln = func(vals ...interface{}) {
 			for _, v := range vals {
@@ -43,6 +43,19 @@ func TestMain(t *testing.T) {
 		main()
 		So(act, ShouldBeNil)
 		So(actReloadDNS, ShouldNotBeNil)
+	})
+}
+
+func TestInitEnv(t *testing.T) {
+	Convey("Testing initEnv", t, func() {
+		initEnv := func() (*edgeos.Config, error) {
+			return &edgeos.Config{
+				Parms: &edgeos.Parms{Arch: "MegaOS"},
+			}, nil
+		}
+		act, _ := initEnv()
+		exp := "MegaOS"
+		So(act.Arch, ShouldEqual, exp)
 	})
 }
 
@@ -78,35 +91,38 @@ func TestProcessObjects(t *testing.T) {
 }
 
 func TestGetOpts(t *testing.T) {
-	exitCmd = func(int) { return }
+	exitCmd = func(int) {}
 	origArgs := os.Args
-	defer func() { os.Args = origArgs; return }()
+	defer func() { os.Args = origArgs }()
 
 	Convey("Testing commandline output", t, func() {
 		act := new(bytes.Buffer)
 		exp := vanillaArgs
-		if IsDrone() {
-			exp = vanillaArgsOnDrone
-		}
-
 		prog := path.Base(os.Args[0])
 		os.Args = []string{prog, "-convey-json", "-h"}
 
-		Convey("Testing getOpts() with vanilla arguments", func() {
+		Convey("Testing getOpts() with public arguments", func() {
 			o := getOpts()
 			o.Init("blacklist", mflag.ContinueOnError)
 			o.SetOutput(act)
 			o.setArgs()
-
+			if IsDrone() {
+				exp = vanillaArgsOnDrone
+			}
 			So(act.String(), ShouldEqual, exp)
+		})
 
+		Convey("Testing getOpts() with all arguments", func() {
+			o := getOpts()
+			o.Init("blacklist", mflag.ContinueOnError)
+			o.SetOutput(act)
+			o.setArgs()
 			exp = allArgs
 			So(o.String(), ShouldEqual, exp)
 		})
 
-		Convey("Testing getOpts() with -test", func() {
+		Convey("Testing getOpts() with -t", func() {
 			os.Args = []string{prog, "-t"}
-
 			o := getOpts()
 			o.Init("blacklist", mflag.ContinueOnError)
 			o.SetOutput(act)
@@ -183,9 +199,9 @@ func TestBuild(t *testing.T) {
 func TestCommandLineArgs(t *testing.T) {
 	Convey("Testing command line arguments", t, func() {
 		origArgs := os.Args
-		defer func() { os.Args = origArgs; return }()
+		defer func() { os.Args = origArgs }()
 		act := new(bytes.Buffer)
-		exitCmd = func(int) { return }
+		exitCmd = func(int) {}
 		exp := vanillaArgs
 		if IsDrone() {
 			exp = vanillaArgsOnDrone
@@ -206,7 +222,7 @@ func TestCommandLineArgs(t *testing.T) {
 
 func TestGetCFG(t *testing.T) {
 	Convey("Testing getCFG()", t, func() {
-		exitCmd = func(int) { return }
+		exitCmd = func(int) {}
 		o := getOpts()
 		c := o.initEdgeOS()
 
@@ -241,7 +257,7 @@ func TestReloadDNS(t *testing.T) {
 		}
 
 		c, _ := setUpEnv()
-		exitCmd = func(int) { return }
+		exitCmd = func(int) {}
 		logPrintf = func(s string, v ...interface{}) {
 			act = fmt.Sprintf(s, v)
 		}
@@ -262,7 +278,7 @@ func TestRemoveStaleFiles(t *testing.T) {
 
 func TestSetArch(t *testing.T) {
 	Convey("Testing getCFG()", t, func() {
-		exitCmd = func(int) { return }
+		exitCmd = func(int) {}
 		o := getOpts()
 
 		tests := []struct {
@@ -280,17 +296,17 @@ func TestSetArch(t *testing.T) {
 	})
 }
 
-type cfgCLI struct {
-	edgeos.CFGcli
-}
+// type cfgCLI struct {
+// 	edgeos.CFGcli
+// }
 
-func (c cfgCLI) Load() io.Reader {
-	return strings.NewReader(tdata.Cfg)
-}
+// func (c cfgCLI) Load() io.Reader {
+// 	return strings.NewReader(tdata.Cfg)
+// }
 
 func TestInitEdgeOS(t *testing.T) {
 	Convey("Testing initEdgeOS", t, func() {
-		exitCmd = func(int) { return }
+		exitCmd = func(int) {}
 		o := getOpts()
 		p := o.initEdgeOS()
 		exp := `{
@@ -510,6 +526,8 @@ var (
     	Display help
   -mips64 string
     	Override target EdgeOS CPU architecture (default "mips64")
+  -mipsle string
+    	Override target EdgeOS CPU architecture (default "mipsle")
   -os string
     	Override native EdgeOS OS (default "darwin")
   -t
@@ -590,17 +608,3 @@ var (
 "yimg.com":0,
 "ytimg.com":0,
 `
-	optsString = `FlagSet
-ARCH:    "amd64"
-DEBUG:   "false"
-DIR:     "/etc/dnsmasq.d"
-F:       "**unitialized**"
-H:       "true"
-MIPS64:  "mips64"
-OS:      "` + runtime.GOOS + `"
-T:       "false"
-TMP:     "/tmp"
-V:       "false"
-VERSION: "false"
-`
-)
