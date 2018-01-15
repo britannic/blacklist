@@ -218,7 +218,7 @@ func (f *FIODataObjects) GetList() *Objects {
 		}(o)
 	}
 
-	for _ = range Iter(len(f.x)) {
+	for range Iter(len(f.x)) {
 		select {
 		case response := <-responses:
 			f.x[f.Find(response.name)] = response
@@ -263,7 +263,7 @@ func (u *URLDomnObjects) GetList() *Objects {
 		}(o)
 	}
 
-	for i := 0; i < len(u.x); i++ {
+	for range u.x {
 		select {
 		case response := <-responses:
 			u.x[u.Find(response.name)] = response
@@ -286,7 +286,7 @@ func (u *URLHostObjects) GetList() *Objects {
 		}(o)
 	}
 
-	for i := 0; i < len(u.x); i++ {
+	for range u.x {
 		select {
 		case response := <-responses:
 			u.x[u.Find(response.name)] = response
@@ -350,9 +350,9 @@ NEXT:
 					case isDEX:
 						continue FQDN
 
-					case isEXC:
-						if add.keyExists(string(fqdn)) {
-						}
+					// case isEXC:
+					// 	if add.keyExists(string(fqdn)) {
+					// 	}
 
 					case !isEXC:
 						o.Exc.set(string(fqdn), 0)
@@ -533,12 +533,11 @@ func (i IFace) String() (s string) {
 // writeFile saves hosts/domains data to disk
 func (b *bList) writeFile() error {
 	w, err := os.Create(b.file)
-	defer w.Close()
-
 	if err != nil {
 		return err
 	}
 
+	defer w.Close()
 	_, err = io.Copy(w, b.r)
 	return err
 }

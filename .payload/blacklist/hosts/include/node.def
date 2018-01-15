@@ -1,0 +1,8 @@
+multi:
+type: txt
+help: Hosts to INCLUDE in the DNS forwarding blacklist
+comp_help: Wildcard all hosts for a domain by using a "." in place of the host name, i.e.: .domain.tld
+
+syntax:expression: pattern $VAR(@) "^[.[:alnum:]][-.[:alnum:]]*[[:alnum:]]$"
+                   ; "invalid host name $VAR(@)"
+

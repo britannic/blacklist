@@ -20,7 +20,7 @@ type opts struct {
 	DNStmp  *string
 	File    *string
 	Help    *bool
-	mipsle  *string
+	MIPSLE  *string
 	MIPS64  *string
 	OS      *string
 	Test    *bool
@@ -33,7 +33,7 @@ type omitFlags map[string]bool
 // setDir sets the directory according to the host CPU arch
 func (o *opts) setDir(arch string) (dir string) {
 	switch arch {
-	case *o.mipsle, *o.MIPS64:
+	case *o.MIPSLE, *o.MIPS64:
 		dir = *o.DNSdir
 	default:
 		dir = *o.DNStmp
@@ -44,7 +44,7 @@ func (o *opts) setDir(arch string) (dir string) {
 // getCFG returns a edgeos.ConfLoader
 func (o *opts) getCFG(c *edgeos.Config) (r edgeos.ConfLoader) {
 	switch *o.ARCH {
-	case *o.mipsle, *o.MIPS64:
+	case *o.MIPSLE, *o.MIPS64:
 		r = &edgeos.CFGcli{Config: c}
 	default:
 		r = &edgeos.CFGstatic{Config: c, Cfg: tdata.Live}
@@ -64,7 +64,7 @@ func getOpts() *opts {
 			Help:    flags.Bool("h", false, "Display help"),
 			File:    flags.String("f", "", "`<file>` # Load a configuration file"),
 			FlagSet: &flags,
-			mipsle:  flags.String("mipsle", "mipsle", "Override target EdgeOS CPU architecture"),
+			MIPSLE:  flags.String("mipsle", "mipsle", "Override target EdgeOS CPU architecture"),
 			MIPS64:  flags.String("mips64", "mips64", "Override target EdgeOS CPU architecture"),
 			OS:      flags.String("os", runtime.GOOS, "Override native EdgeOS OS"),
 			Test:    flags.Bool("t", false, "Run config and data validation tests"),

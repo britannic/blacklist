@@ -164,7 +164,7 @@ func TestExcludes(t *testing.T) {
 		tests := []struct {
 			get  list
 			list list
-			raw  []string
+			// raw  []string
 			name string
 			node string
 		}{

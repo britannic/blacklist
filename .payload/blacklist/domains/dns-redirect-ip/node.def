@@ -1,0 +1,6 @@
+type: ipv4, ipv6
+help: Blackhole IP address for domains
+
+val_help: ipv4net; IP address
+val_help: ipv6net; IPv6 address
+
