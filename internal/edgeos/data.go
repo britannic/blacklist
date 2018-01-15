@@ -123,10 +123,7 @@ func logIt(w io.Writer, s string) {
 
 // strToBool converts a string ("true" or "false") to boolean
 func strToBool(s string) bool {
-	if strings.ToLower(s) == True {
-		return true
-	}
-	return false
+	return strings.ToLower(s) == True
 }
 
 func typeInt(n ntype) (s string) {

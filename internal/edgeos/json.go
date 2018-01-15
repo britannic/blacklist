@@ -11,16 +11,16 @@ const (
 
 type cfgJSON struct {
 	*Config
-	array        []string
-	indent       int
-	leaf, pk, sk string
+	array    []string
+	indent   int
+	leaf, pk string
 }
 
 func tabs(t int) (s string) {
 	if t <= 0 {
 		return s
 	}
-	for _ = range Iter(t) {
+	for range Iter(t) {
 		s += tab
 	}
 	return s

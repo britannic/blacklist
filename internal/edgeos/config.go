@@ -41,17 +41,17 @@ const (
 	agent     = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/601.7.7 (KHTML, like Gecko) Version/9.1.2 Safari/601.7.7`
 	all       = "all"
 	blackhole = "dns-redirect-ip"
-	dbg       = false
-	disabled  = "disabled"
-	domains   = "domains"
-	files     = "file"
-	hosts     = "hosts"
-	notknown  = "unknown"
-	preNoun   = "pre-configured"
-	rootNode  = "blacklist"
-	src       = "source"
-	urls      = "url"
-	zones     = "zones"
+	// dbg       = false
+	disabled = "disabled"
+	domains  = "domains"
+	files    = "file"
+	hosts    = "hosts"
+	notknown = "unknown"
+	preNoun  = "pre-configured"
+	rootNode = "blacklist"
+	src      = "source"
+	urls     = "url"
+	zones    = "zones"
 
 	// ExcDomns labels domain exclusions
 	ExcDomns = "domn-excludes"

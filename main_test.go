@@ -245,7 +245,7 @@ func TestReloadDNS(t *testing.T) {
 	Convey("Testing ReloadDNS()", t, func() {
 		var (
 			act string
-			exp = "ReloadDNS(): [/bin/bash: line 1: service: command not found\n]\n"
+			exp = "ReloadDNS(): [/bin/bash: line 1: /etc/init.d/dnsmasq: No such file or directory\n]\n"
 		)
 
 		if IsDrone() {
@@ -316,7 +316,7 @@ func TestInitEdgeOS(t *testing.T) {
 	"Cores": 2,
 	"Dex": {},
 	"Dir": "/tmp",
-	"dnsmasq service": "service dnsmasq restart",
+	"dnsmasq service": "/etc/init.d/dnsmasq restart",
 	"Exc": {},
 	"dnsmasq fileExt.": "blacklist.conf",
 	"File name fmt": "%v/%v.%v.%v",

@@ -1,0 +1,9 @@
+type: txt
+syntax:expression: exec
+    "if [ ! -f $VAR(@) ]; then \
+        echo \"File $VAR(@) does not exist or is not readable\"; \
+        exit 1; \
+    fi; "
+syntax:expression: exec "/opt/vyatta/sbin/check_file_in_config_dir $VAR(@) '/config/scripts'"
+commit:expression: $VAR(../url) == ""; "file and url are mutually exclusive, only set one or the other as a source."
+help: A path and filename that provides a list of fully qualified hostnames to blacklist, e.g. /config/user-data/internal_servers_hosts.txt

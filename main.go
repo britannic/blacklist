@@ -125,7 +125,7 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.Cores(2),
 		e.Dbug(*o.Dbug),
 		e.Dir(o.setDir(*o.ARCH)),
-		e.DNSsvc("service dnsmasq restart"),
+		e.DNSsvc("/etc/init.d/dnsmasq restart"),
 		e.Ext("blacklist.conf"),
 		e.File(*o.File),
 		e.FileNameFmt("%v/%v.%v.%v"),
@@ -232,7 +232,9 @@ func screenLog() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	logging.SetBackend(fdFmttr, scrFmttr, sysFmttr)
+	if runtime.GOOS != "amd64" {
+		logging.SetBackend(fdFmttr, scrFmttr, sysFmttr)
+	}
 }
 
 func setUpEnv() (*e.Config, error) {
