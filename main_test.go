@@ -3,15 +3,11 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"os"
 	"path"
-	"runtime"
-	"strings"
 	"testing"
 
 	"github.com/britannic/blacklist/internal/edgeos"
-	"github.com/britannic/blacklist/internal/tdata"
 	"github.com/britannic/mflag"
 	. "github.com/britannic/testutils"
 	. "github.com/smartystreets/goconvey/convey"
@@ -608,3 +604,4 @@ var (
 "yimg.com":0,
 "ytimg.com":0,
 `
+)
