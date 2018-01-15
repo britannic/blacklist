@@ -218,11 +218,9 @@ func (f *FIODataObjects) GetList() *Objects {
 		}(o)
 	}
 
-	for range Iter(len(f.x)) {
-		select {
-		case response := <-responses:
-			f.x[f.Find(response.name)] = response
-		}
+	for range f.x {
+		response := <-responses
+		f.x[f.Find(response.name)] = response
 	}
 
 	return f.Objects
@@ -264,10 +262,8 @@ func (u *URLDomnObjects) GetList() *Objects {
 	}
 
 	for range u.x {
-		select {
-		case response := <-responses:
-			u.x[u.Find(response.name)] = response
-		}
+		response := <-responses
+		u.x[u.Find(response.name)] = response
 	}
 
 	return u.Objects
@@ -287,10 +283,9 @@ func (u *URLHostObjects) GetList() *Objects {
 	}
 
 	for range u.x {
-		select {
-		case response := <-responses:
-			u.x[u.Find(response.name)] = response
-		}
+		response := <-responses
+		u.x[u.Find(response.name)] = response
+
 	}
 
 	return u.Objects
@@ -350,10 +345,6 @@ NEXT:
 					case isDEX:
 						continue FQDN
 
-					// case isEXC:
-					// 	if add.keyExists(string(fqdn)) {
-					// 	}
-
 					case !isEXC:
 						o.Exc.set(string(fqdn), 0)
 						add.set(string(fqdn), 0)
@@ -408,12 +399,9 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 				}
 			}(o)
 
-			for i := 0; i < len(cts); i++ {
-				select {
-				case err := <-getErrors:
-					if err != nil {
-						errs = append(errs, err.Error())
-					}
+			for range cts {
+				if err := <-getErrors; err != nil {
+					errs = append(errs, err.Error())
 				}
 				close(getErrors)
 			}
