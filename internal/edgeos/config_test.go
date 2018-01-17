@@ -234,9 +234,15 @@ func TestNodes(t *testing.T) {
 
 func TestReadCfg(t *testing.T) {
 	Convey("Testing ReadCfg()", t, func() {
-		exp := errors.New("Configuration data is empty, cannot continue")
-		act := NewConfig().ReadCfg(&CFGstatic{Cfg: ""})
-		So(act, ShouldResemble, exp)
+		Convey("Testing with an empty configuration", func() {
+			exp := errors.New("Configuration data is empty, cannot continue")
+			act := NewConfig().ReadCfg(&CFGstatic{Cfg: ""})
+			So(act, ShouldResemble, exp)
+		})
+		Convey("Testing testing with a disabled configuration", func() {
+			act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.DisabledCfg})
+			So(act, ShouldBeEmpty)
+		})
 	})
 }
 

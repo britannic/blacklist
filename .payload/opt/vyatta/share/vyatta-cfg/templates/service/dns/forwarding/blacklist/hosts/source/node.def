@@ -1,0 +1,5 @@
+tag:
+type: txt
+help: Blacklisted hosts source name
+
+comp_help: Type any unique name, use quotes if spaces or special characters are used

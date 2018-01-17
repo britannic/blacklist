@@ -99,11 +99,10 @@ func TestConfigProcessContent(t *testing.T) {
 func TestNewContent(t *testing.T) {
 	Convey("Testing NewContent()", t, func() {
 		tests := []struct {
-			err  error
-			exp  string
-			fail bool
-			i    int
-			// leaf      string
+			err       error
+			exp       string
+			fail      bool
+			i         int
 			ltype     string
 			name      string
 			obj       IFace
@@ -298,6 +297,7 @@ func TestNewContent(t *testing.T) {
 			Bash("/bin/bash"),
 			Cores(runtime.NumCPU()),
 			Dir("/tmp"),
+			Disabled(false),
 			DNSsvc("service dnsmasq restart"),
 			Ext("blacklist.conf"),
 			FileNameFmt("%v/%v.%v.%v"),
@@ -348,7 +348,7 @@ func TestNewContent(t *testing.T) {
 				for !v.Done {
 					select {
 					case v = <-m:
-						fmt.Println(v.Total)
+						Println(v.Total)
 					default:
 						break drainLoop
 					}
@@ -356,7 +356,7 @@ func TestNewContent(t *testing.T) {
 
 				select {
 				case v = <-m:
-					fmt.Println(v.Total)
+					Println(v.Total)
 				default:
 				}
 
@@ -567,7 +567,7 @@ func TestProcessContent(t *testing.T) {
 
 					switch tt.f {
 					default:
-						reader, err := getFile(tt.f)
+						reader, err := GetFile(tt.f)
 						So(err, ShouldBeNil)
 
 						act, err := ioutil.ReadAll(reader)

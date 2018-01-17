@@ -25,19 +25,11 @@ var (
 	githash = "UNKNOWN"
 	version = "UNKNOWN"
 	// ---
+
 	progname = basename(os.Args[0])
-
-	exitCmd = os.Exit
-
-	fdFmttr logging.Backend
-	// sysFmttr logging.SyslogBackend
-
-	log = newLog()
-
-	// logError = func(args ...interface{}) {
-	// 	errType := fmt.Sprintf("%v", args[0])
-	// 	log.Error(errType, args[1:len(args)])
-	// }
+	exitCmd  = os.Exit
+	fdFmttr  logging.Backend
+	log      = newLog()
 
 	logErrorf = func(s string, args ...interface{}) {
 		log.Errorf(s, args)
@@ -51,7 +43,7 @@ var (
 		exitCmd(1)
 	}
 
-	logFile   = "/var/log/" + progname + ".log"
+	logFile   = fmt.Sprintf("/var/log/%s.log", progname)
 	logInfo   = log.Info
 	logInfof  = log.Infof
 	logNotice = log.Notice
@@ -76,11 +68,12 @@ func main() {
 		err error
 	)
 
-	logNotice("Starting up " + progname + "...")
-
 	if env, err = initEnv(); err != nil {
+		logErrorf("%v, %s shutting down.", err, progname)
 		exitCmd(0)
 	}
+
+	logNotice(fmt.Sprintf("%s starting up...", progname))
 
 	logInfo("Removing stale blacklists...")
 	if err = removeStaleFiles(env); err != nil {
@@ -89,12 +82,15 @@ func main() {
 
 	// _, _ = context.WithTimeout(context.Background(), c.Timeout)
 
-	if err := processObjects(env, objex); err != nil {
-		logFatalln(err)
+	if !env.Disabled {
+		if err := processObjects(env, objex); err != nil {
+			logFatalln(err)
+		}
 	}
 
 	reloadDNS(env)
-	logNotice(progname + ": dnsmasq blacklist update completed...")
+
+	logNotice(fmt.Sprintf("%s : blacklist update completed......", progname))
 }
 
 // basename removes directory components and file extensions.
@@ -123,6 +119,7 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.Arch(runtime.GOARCH),
 		e.Bash("/bin/bash"),
 		e.Cores(2),
+		e.Disabled(false),
 		e.Dbug(*o.Dbug),
 		e.Dir(o.setDir(*o.ARCH)),
 		e.DNSsvc("/etc/init.d/dnsmasq restart"),
@@ -165,6 +162,9 @@ func killFiles(env *e.Config) *e.CFile {
 
 // newLog returns a logging.Logger pointer
 func newLog() *logging.Logger {
+	if runtime.GOOS == "darwin" {
+		logFile = fmt.Sprintf("/tmp/%s.log", progname)
+	}
 	fdFmt := logging.MustStringFormatter(
 		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000}{` + progname + `} ▶ %{message}`,
 	)
@@ -223,6 +223,9 @@ func removeStaleFiles(c *e.Config) error {
 
 // screenLog adds stderr logging output to the screen
 func screenLog() {
+	if runtime.GOOS == "darwin" {
+		logFile = fmt.Sprintf("/tmp/%s.log", progname)
+	}
 	scrFmt := logging.MustStringFormatter(
 		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
 	)

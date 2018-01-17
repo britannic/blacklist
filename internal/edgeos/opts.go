@@ -18,6 +18,7 @@ type Parms struct {
 	Arch     string        `json:"Arch,omitempty"`
 	Bash     string        `json:"Bash,omitempty"`
 	Cores    int           `json:"Cores,omitempty"`
+	Disabled bool          `json:"Disabled"`
 	Dbug     bool          `json:"Dbug,omitempty"`
 	Dex      list          `json:"Dex,omitempty"`
 	Dir      string        `json:"Dir,omitempty"`
@@ -109,6 +110,15 @@ func Cores(i int) Option {
 		runtime.GOMAXPROCS(i)
 		c.Cores = i
 		return Cores(previous)
+	}
+}
+
+// Disabled toggles Disabled
+func Disabled(b bool) Option {
+	return func(c *Config) Option {
+		previous := c.Disabled
+		c.Disabled = b
+		return Disabled(previous)
 	}
 }
 
