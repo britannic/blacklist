@@ -5059,7 +5059,7 @@ system {
     task-scheduler {
         task update_blacklists {
             executable {
-                path /config/scripts/update-dnsmasq.pl
+                path /config/scripts/update-dnsmasq
             }
             interval 1d
         }

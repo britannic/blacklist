@@ -12,6 +12,9 @@
 # Ignore debug
 *.debug
 blacklist.*
+*.amd64
+*.mips
+*.mipsel
 
 # Ignore test
 *.test
@@ -21,7 +24,9 @@ blacklist.*
 vendor/
 .coveralls.yml
 .DS_Store
+*.bak
 *.bkp
+*.deb
 *.lock
 *.log
 *.VC.db

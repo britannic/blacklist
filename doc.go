@@ -27,19 +27,11 @@ blacklist has been tested on the EdgeRouter Lite family of routers, versions v1.
 Usage
     Usage: blacklist [options]
 
-      -arch string
-        	Set EdgeOS CPU architecture (default "amd64")
-      -debug
-        	Enable debug mode
       -dir string
         	Override dnsmasq directory (default "/etc/dnsmasq.d")
       -f <file>
         	<file> # Load a configuration file
       -h	Display help
-      -mips64 string
-        	Override target EdgeOS CPU architecture (default "mips64")
-      -os string
-        	Override native EdgeOS OS (default "darwin")
       -t	Run config and data validation tests
       -tmp string
         	Override dnsmasq temporary directory (default "/tmp")
@@ -47,7 +39,7 @@ Usage
       -version
         	Show version
 
-The script will also install a default blacklist setup, here is the stanza (show service dns forwarding):
+The debian package will also install a default dnsmasq blacklist configuration, here is a sample stanza [show service dns forwarding]:
 
       blacklist {
           disabled false
@@ -129,7 +121,6 @@ CLI commands to configure blacklist:
           delete system task-scheduler task update_blacklists
           set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
           set service dns forwarding blacklist disabled false
-          # set service dns forwarding blacklist dns-redirect-ip 192.168.168.1
           set service dns forwarding blacklist domains include adsrvr.org
           set service dns forwarding blacklist domains include adtechus.net
           set service dns forwarding blacklist domains include advertising.com
@@ -214,18 +205,16 @@ CLI commands to configure blacklist:
           set service dns forwarding blacklist hosts source yoyo description 'Fully Qualified Domain Names only - no prefix to strip'
           set service dns forwarding blacklist hosts source yoyo prefix ''
           set service dns forwarding blacklist hosts source yoyo url 'http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext'
-          set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq.pl
+          set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq
           set system task-scheduler task update_blacklists interval 1d
 
 Notes:
 
-In order to make this work properly, you will need to first ensure that your dnsmasq is correctly set up. An example configuration is posted below:
+In order to make this work properly, first ensure that your dnsmasq is correctly set up. An example configuration is posted below:
 
-          show service dns forwarding
+    show service dns forwarding
            cache-size 2048
-           listen-on eth0
-           listen-on eth2
-           listen-on lo
+           except-interface <wan i/f>
            name-server 208.67.220.220
            name-server 208.67.222.222
            name-server 2620:0:ccc::2
@@ -235,7 +224,6 @@ In order to make this work properly, you will need to first ensure that your dns
            options localise-queries
            options domain=ubnt.home
            options strict-order
-           options listen-address=127.0.0.1
            system
 
 

@@ -1,9 +1,0 @@
-type: txt
-help: A blacklist source url that provides a list of hostnames
-
-# need to prohibit '!' in url (sed delimiter)
-syntax:expression: pattern $VAR(@) "^[^!]+$" ; "URL must not be null and must not contain '!'"
-
-val_help: http; Example: http://someonewhocares.org/hosts/zero/
-comp_help: Check that the url works in a browser and is plain text only, use CTRL-V before typing a question mark
-commit:expression: $VAR(../file) == ""; "file and url are mutually exclusive, only set one or the other as a source."

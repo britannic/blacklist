@@ -89,8 +89,8 @@ func deleteFile(f string) bool {
 	return true
 }
 
-// getFile reads a file and returns an io.Reader
-func getFile(f string) (io.Reader, error) {
+// GetFile reads a file and returns an io.Reader
+func GetFile(f string) (io.Reader, error) {
 	return os.Open(f)
 }
 

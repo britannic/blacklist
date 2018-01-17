@@ -1,7 +1,0 @@
-multi:
-type: txt
-help: domains to GLOBALLY EXCLUDE from DNS forwarding domains and hosts blacklist
-
-syntax:expression: pattern $VAR(@) "^[[:alnum:]][-.[:alnum:]]*[[:alnum:]]$"
-                   ; "invalid domain name $VAR(@)"
-

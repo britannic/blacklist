@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
@@ -43,6 +45,21 @@ func (o *opts) setDir(arch string) (dir string) {
 
 // getCFG returns a edgeos.ConfLoader
 func (o *opts) getCFG(c *edgeos.Config) (r edgeos.ConfLoader) {
+	if *o.File != "" {
+		var (
+			f      []byte
+			err    error
+			reader io.Reader
+		)
+
+		if reader, err = edgeos.GetFile(*o.File); err != nil {
+			logFatalln(fmt.Sprintf("Cannot open configuration file %s!", *o.File))
+		}
+
+		f, _ = ioutil.ReadAll(reader)
+		r = &edgeos.CFGstatic{Config: c, Cfg: string(f)}
+		return r
+	}
 	switch *o.ARCH {
 	case *o.MIPSLE, *o.MIPS64:
 		r = &edgeos.CFGcli{Config: c}
@@ -73,8 +90,19 @@ func getOpts() *opts {
 		}
 	)
 	flags.Init("blacklist", mflag.ExitOnError)
+	// flags.Usage = o.PrintDefaults
 	flags.Usage = func() {
-		o.printDefaults(omitFlags{"arch": true, "f": true, "mipsle": true, "mips64": true, "os": true, "t": true, "tmp": true})
+		o.printDefaults(
+			omitFlags{
+				"arch":   true,
+				"debug":  true,
+				"f":      true,
+				"mipsle": true,
+				"mips64": true,
+				"os":     true,
+				"t":      true,
+				"tmp":    true,
+			})
 	}
 
 	return o
@@ -151,7 +179,7 @@ func (o *opts) printDefaults(omit omitFlags) {
 					s += fmt.Sprintf(" (default %v)", f.DefValue)
 				}
 			}
-			fmt.Fprint(o.Output, s, "\n")
+			fmt.Fprint(o.FlagSet.Out(), s, "\n")
 		}
 	})
 }

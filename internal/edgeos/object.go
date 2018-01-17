@@ -51,12 +51,14 @@ func (o *object) excludes() io.Reader {
 // Files returns a list of dnsmasq conf files from all srcs
 func (o *Objects) Files() *CFile {
 	c := CFile{Parms: o.Parms}
-	for _, obj := range o.x {
-		c.nType = obj.nType
-		format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
-		c.Names = append(c.Names, fmt.Sprintf(format, getType(obj.nType), obj.name))
+	if !o.Disabled {
+		for _, obj := range o.x {
+			c.nType = obj.nType
+			format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
+			c.Names = append(c.Names, fmt.Sprintf(format, getType(obj.nType), obj.name))
+		}
+		sort.Strings(c.Names)
 	}
-	sort.Strings(c.Names)
 	return &c
 }
 

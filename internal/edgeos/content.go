@@ -213,7 +213,7 @@ func (f *FIODataObjects) GetList() *Objects {
 	for _, o := range f.x {
 		o.Parms = f.Objects.Parms
 		go func(o *object) {
-			o.r, o.err = getFile(o.file)
+			o.r, o.err = GetFile(o.file)
 			responses <- o
 		}(o)
 	}
@@ -319,6 +319,7 @@ func (u *URLHostObjects) Len() int { return len(u.Objects.x) }
 func (o *object) process() *bList {
 	var (
 		add = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+		ctr int64
 		b   = bufio.NewScanner(o.r)
 		rx  = regx.Obj
 	)
@@ -333,6 +334,7 @@ NEXT:
 
 		case bytes.HasPrefix(line, []byte(o.prefix)):
 			var ok bool
+			ctr++
 			if line, ok = rx.StripPrefixAndSuffix(line, o.prefix); ok {
 				fqdns := rx.FQDN.FindAll(line, -1)
 
@@ -363,7 +365,8 @@ NEXT:
 
 	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
 	if i := len(add.entry); i > 0 {
-		o.log(fmt.Sprintf("%s: entries processed: %d", o.name, i))
+		o.log(fmt.Sprintf("%s: entries downloaded: %d", o.name, ctr))
+		o.log(fmt.Sprintf("%s: entries extracted: %d", o.name, i))
 	}
 	return &bList{
 		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),

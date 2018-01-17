@@ -1,0 +1,11 @@
+type: bool
+default: false
+
+syntax:expression: $VAR(@) in true, false; "Must be true or false!"
+
+help: Option to disable blacklisting
+
+val_help: true; Schedules blacklist with system task scheduler
+val_help: false; Removes blacklist from system task scheduler
+
+commit:expression: $VAR(@) in true, false; "Must be true or false!"
