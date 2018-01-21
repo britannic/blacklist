@@ -48,12 +48,11 @@ func TestFormatData(t *testing.T) {
 		c := NewConfig(
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
-			Nodes([]string{domains, hosts}),
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
-		for _, node := range c.Parms.Nodes {
+		for node, _ := range c.tree {
 			var (
 				actList  = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 				eq       = getSeparator(node)

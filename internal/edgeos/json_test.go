@@ -13,7 +13,6 @@ func TestConfigString(t *testing.T) {
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
 			Method("GET"),
-			Nodes([]string{rootNode, domains, hosts}),
 			LTypes([]string{files, PreDomns, PreHosts, urls}),
 		)
 
@@ -24,7 +23,6 @@ func TestConfigString(t *testing.T) {
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
 			Method("GET"),
-			Nodes([]string{domains, hosts}),
 			LTypes([]string{files, PreDomns, PreHosts, urls}),
 		)
 

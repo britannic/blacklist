@@ -53,15 +53,15 @@ const (
 	zones     = "zones"
 
 	// ExcDomns labels domain exclusions
-	ExcDomns = "domn-excludes"
+	ExcDomns = "exc-domains"
 	// ExcHosts labels host exclusions
-	ExcHosts = "host-excludes"
+	ExcHosts = "exc-hosts"
 	// ExcRoots labels global domain exclusions
-	ExcRoots = "root-excludes"
+	ExcRoots = "exc-root"
 	// PreDomns designates string label for preconfigured blacklisted domains
-	PreDomns = preNoun + "-domain"
+	PreDomns = "domains." + preNoun
 	// PreHosts designates string label for preconfigured blacklisted hosts
-	PreHosts = preNoun + "-host"
+	PreHosts = "hosts." + preNoun
 	// False is a string constant
 	False = "false"
 	// True is a string constant
@@ -101,28 +101,24 @@ func (c *Config) addInc(node string) *object {
 		ltype string
 		n     ntype
 	)
-
-	if len(inc) > 0 {
-		switch node {
-		case domains:
-			ltype = getType(preDomn).(string)
-			n = getType(ltype).(ntype)
-		case hosts:
-			ltype = getType(preHost).(string)
-			n = getType(ltype).(ntype)
-		}
-
-		return &object{
-			desc:  ltype + " blacklist content",
-			inc:   inc,
-			ip:    c.tree.getIP(node),
-			ltype: ltype,
-			name:  fmt.Sprintf("includes.[%v]", len(inc)),
-			nType: n,
-			Parms: c.Parms,
-		}
+	switch node {
+	case domains:
+		ltype = getType(preDomn).(string)
+		n = getType(ltype).(ntype)
+	case hosts:
+		ltype = getType(preHost).(string)
+		n = getType(ltype).(ntype)
 	}
-	return nil
+
+	return &object{
+		desc:  ltype + " blacklist content",
+		inc:   inc,
+		ip:    c.tree.getIP(node),
+		ltype: ltype,
+		name:  fmt.Sprintf("includes.[%v]", len(inc)),
+		nType: n,
+		Parms: c.Parms,
+	}
 }
 
 // NewContent returns an interface of the requested IFace type
@@ -178,7 +174,7 @@ func (c *Config) excludes(nodes ...string) list {
 	var exc []string
 	switch nodes {
 	case nil:
-		for _, k := range c.Nodes() {
+		for k, _ := range c.tree {
 			if len(c.tree[k].exc) != 0 {
 				exc = append(exc, c.tree[k].exc...)
 			}
@@ -197,7 +193,15 @@ func (c *Config) Get(node string) *Objects {
 
 	switch node {
 	case all:
-		for _, node := range c.Parms.Nodes {
+		var nodes []string
+		for node, _ := range c.tree {
+			if node != rootNode {
+				nodes = append(nodes, node)
+			}
+		}
+
+		sort.Strings(nodes)
+		for _, node := range nodes {
 			o.addObj(c, node)
 		}
 	default:
@@ -214,7 +218,11 @@ func (c *Config) GetAll(ltypes ...string) *Objects {
 		o        = &Objects{Parms: c.Parms}
 	)
 
-	for _, node := range o.Nodes {
+NEXT:
+	for node, _ := range c.tree {
+		if node == rootNode {
+			continue NEXT
+		}
 		switch ltypes {
 		case nil:
 			o.addObj(c, node)

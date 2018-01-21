@@ -13,7 +13,7 @@ import (
 func TestKeys(t *testing.T) {
 	Convey("Testing Keys()", t, func() {
 		var keys sort.StringSlice
-		c := NewConfig(Nodes([]string{"domains", "hosts"}))
+		c := NewConfig()
 		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
 		So(c.sortKeys(), ShouldResemble, sort.StringSlice{"blacklist", "domains", "hosts"})
