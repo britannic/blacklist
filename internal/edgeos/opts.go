@@ -235,15 +235,6 @@ func NewConfig(opts ...Option) *Config {
 	return &c
 }
 
-// Nodes sets the node ns array
-// func Nodes(nodes []string) Option {
-// 	return func(c *Config) Option {
-// 		previous := c.Parms.Nodes
-// 		c.Parms.Nodes = nodes
-// 		return Nodes(previous)
-// 	}
-// }
-
 // Prefix sets the dnsmasq configuration address line prefix
 func Prefix(l string) Option {
 	return func(c *Config) Option {

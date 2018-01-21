@@ -141,11 +141,11 @@ Package edgeos provides methods and structures to retrieve, parse and render Edg
 const (
 
     // ExcDomns labels domain exclusions
-    ExcDomns = "exc-domains"
+    ExcDomns = "excluded-domains"
     // ExcHosts labels host exclusions
-    ExcHosts = "exc-hosts"
+    ExcHosts = "excluded-hosts"
     // ExcRoots labels global domain exclusions
-    ExcRoots = "exc-root"
+    ExcRoots = "excluded-global"
     // PreDomns designates string label for preconfigured blacklisted domains
     PreDomns = "domains." + preNoun
     // PreHosts designates string label for preconfigured blacklisted hosts
@@ -239,7 +239,7 @@ CFile holds an array of file names
 
 
 
-### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=8365:8395#L374)
+### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=8286:8316#L370)
 ``` go
 func (c *CFile) Remove() error
 ```
@@ -248,7 +248,7 @@ Remove deletes a CFile array of file names
 
 
 
-### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=9773:9804#L430)
+### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=9694:9725#L426)
 ``` go
 func (c *CFile) String() string
 ```
@@ -257,7 +257,7 @@ String implements string method
 
 
 
-### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=9892:9926#L435)
+### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=9813:9847#L431)
 ``` go
 func (c *CFile) Strings() []string
 ```
@@ -308,7 +308,7 @@ NewConfig returns a new *Config initialized with the parameter options passed to
 
 
 
-### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=3938:3980#L181)
+### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=3933:3975#L181)
 ``` go
 func (c *Config) Get(node string) *Objects
 ```
@@ -317,7 +317,7 @@ Get returns an *Object for a given node
 
 
 
-### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4339:4389#L204)
+### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4254:4304#L200)
 ``` go
 func (c *Config) GetAll(ltypes ...string) *Objects
 ```
@@ -326,7 +326,7 @@ GetAll returns an array of Objects
 
 
 
-### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=5177:5210#L247)
+### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=5098:5131#L243)
 ``` go
 func (c *Config) InSession() bool
 ```
@@ -335,7 +335,7 @@ InSession returns true if VyOS/EdgeOS configuration is in session
 
 
 
-### <a name="Config.LTypes">func</a> (\*Config) [LTypes](/src/target/config.go?s=10018:10052#L441)
+### <a name="Config.LTypes">func</a> (\*Config) [LTypes](/src/target/config.go?s=9939:9973#L437)
 ``` go
 func (c *Config) LTypes() []string
 ```
@@ -344,7 +344,7 @@ LTypes returns an array of configured nodes
 
 
 
-### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=2557:2616#L115)
+### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=2546:2605#L115)
 ``` go
 func (c *Config) NewContent(iface IFace) (Contenter, error)
 ```
@@ -353,7 +353,7 @@ NewContent returns an interface of the requested IFace type
 
 
 
-### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5598:5639#L260)
+### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5519:5560#L256)
 ``` go
 func (c *Config) Nodes() (nodes []string)
 ```
@@ -371,7 +371,7 @@ ProcessContent processes the Contents array
 
 
 
-### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=5805:5849#L270)
+### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=5726:5770#L266)
 ``` go
 func (c *Config) ReadCfg(r ConfLoader) error
 ```
@@ -380,7 +380,7 @@ ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 
 
 
-### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=8170:8214#L367)
+### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=8091:8135#L363)
 ``` go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
@@ -398,7 +398,7 @@ SetOpt sets the specified options passed as Parms and returns an option to resto
 
 
 
-### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=8880:8916#L395)
+### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=8801:8837#L391)
 ``` go
 func (c *Config) String() (s string)
 ```
@@ -989,42 +989,42 @@ func Method(method string) Option
 Method sets the HTTP method
 
 
-### <a name="Prefix">func</a> [Prefix](/src/target/opts.go?s=5510:5538#L238)
+### <a name="Prefix">func</a> [Prefix](/src/target/opts.go?s=5305:5333#L229)
 ``` go
 func Prefix(l string) Option
 ```
 Prefix sets the dnsmasq configuration address line prefix
 
 
-### <a name="Test">func</a> [Test](/src/target/opts.go?s=5827:5851#L253)
+### <a name="Test">func</a> [Test](/src/target/opts.go?s=5622:5646#L244)
 ``` go
 func Test(b bool) Option
 ```
 Test toggles testing mode on or off
 
 
-### <a name="Timeout">func</a> [Timeout](/src/target/opts.go?s=6020:6056#L262)
+### <a name="Timeout">func</a> [Timeout](/src/target/opts.go?s=5815:5851#L253)
 ``` go
 func Timeout(t time.Duration) Option
 ```
 Timeout sets how long before an unresponsive goroutine is aborted
 
 
-### <a name="Verb">func</a> [Verb](/src/target/opts.go?s=6203:6227#L271)
+### <a name="Verb">func</a> [Verb](/src/target/opts.go?s=5998:6022#L262)
 ``` go
 func Verb(b bool) Option
 ```
 Verb sets the verbosity level to v
 
 
-### <a name="WCard">func</a> [WCard](/src/target/opts.go?s=6371:6400#L280)
+### <a name="WCard">func</a> [WCard](/src/target/opts.go?s=6166:6195#L271)
 ``` go
 func WCard(w Wildcard) Option
 ```
 WCard sets file globbing wildcard values
 
 
-### <a name="Writer">func</a> [Writer](/src/target/opts.go?s=6575:6606#L289)
+### <a name="Writer">func</a> [Writer](/src/target/opts.go?s=6370:6401#L280)
 ``` go
 func Writer(w io.Writer) Option
 ```
@@ -1074,7 +1074,7 @@ Parms is struct of parameters
 
 
 
-### <a name="Parms.String">func</a> (\*Parms) [String](/src/target/opts.go?s=5688:5719#L247)
+### <a name="Parms.String">func</a> (\*Parms) [String](/src/target/opts.go?s=5483:5514#L238)
 ``` go
 func (p *Parms) String() string
 ```
