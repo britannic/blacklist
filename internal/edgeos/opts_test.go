@@ -100,15 +100,11 @@ func TestOption(t *testing.T) {
 	"CLI Path": "service dns forwarding",
 	"Leaf nodes": [
 		"file",
-		"pre-configured-domain",
-		"pre-configured-host",
+		"domains.pre-configured",
+		"hosts.pre-configured",
 		"url"
 	],
 	"HTTP method": "GET",
-	"Nodes": [
-		"domains",
-		"hosts"
-	],
 	"Prefix": "address=",
 	"Test": true,
 	"Timeout": 30000000000,
@@ -136,7 +132,6 @@ func TestOption(t *testing.T) {
 			Level:    "service dns forwarding",
 			Ltypes:   []string{files, PreDomns, PreHosts, urls},
 			Method:   "GET",
-			Nodes:    []string{domains, hosts},
 			Pfx:      "address=",
 			Test:     true,
 			Timeout:  30000000000,
@@ -162,7 +157,6 @@ func TestOption(t *testing.T) {
 			InCLI("inSession"),
 			Logger(nil),
 			Method("GET"),
-			Nodes([]string{domains, hosts}),
 			Prefix("address="),
 			Level("service dns forwarding"),
 			LTypes([]string{"file", PreDomns, PreHosts, urls}),

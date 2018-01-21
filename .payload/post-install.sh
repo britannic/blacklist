@@ -109,7 +109,7 @@ try() {
 update_dns_configuration() {
 	try begin
 	try delete system task-scheduler task update_blacklists
-	try delete service dns forwarding blacklist
+	# try delete service dns forwarding blacklist
 	try set service dns forwarding blacklist disabled false
 	try set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
 	try set service dns forwarding blacklist domains include adk2x.com

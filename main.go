@@ -10,13 +10,12 @@ import (
 	e "github.com/britannic/blacklist/internal/edgeos"
 	"github.com/britannic/mflag"
 	logging "github.com/op/go-logging"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 const (
-	// all   = "all"
 	files = "file"
-	// pre   = "pre-configured"
-	urls = "url"
+	urls  = "url"
 )
 
 var (
@@ -129,7 +128,7 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.InCLI("inSession"),
 		e.Level("service dns forwarding"),
 		e.Method("GET"),
-		e.Nodes([]string{"domains", "hosts"}),
+		// e.Nodes([]string{"domains", "hosts"}),
 		e.Prefix("address="),
 		e.Logger(log),
 		e.LTypes([]string{files, e.PreDomns, e.PreHosts, urls}),
@@ -223,20 +222,22 @@ func removeStaleFiles(c *e.Config) error {
 
 // screenLog adds stderr logging output to the screen
 func screenLog() {
-	if runtime.GOOS == "darwin" {
-		logFile = fmt.Sprintf("/tmp/%s.log", progname)
-	}
-	scrFmt := logging.MustStringFormatter(
-		`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
-	)
-	scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)
-	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
-	sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
-	if err != nil {
-		fmt.Println(err)
-	}
-	if runtime.GOOS != "amd64" {
-		logging.SetBackend(fdFmttr, scrFmttr, sysFmttr)
+	if terminal.IsTerminal(int(os.Stdin.Fd())) {
+		if runtime.GOOS == "darwin" {
+			logFile = fmt.Sprintf("/tmp/%s.log", progname)
+		}
+		scrFmt := logging.MustStringFormatter(
+			`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
+		)
+		scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)
+		scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
+		sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
+		if err != nil {
+			fmt.Println(err)
+		}
+		if runtime.GOOS != "amd64" {
+			logging.SetBackend(fdFmttr, scrFmttr, sysFmttr)
+		}
 	}
 }
 

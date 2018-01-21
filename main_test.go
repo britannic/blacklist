@@ -57,6 +57,7 @@ func TestInitEnv(t *testing.T) {
 
 func TestProcessObjects(t *testing.T) {
 	c, _ := setUpEnv()
+	badFileError := `open EinenSieAugenBlick/hosts.tasty.blacklist.conf: no such file or directory`
 	Convey("Testing processObjects", t, func() {
 		Convey("Testing that the config is correctly loaded ", func() {
 			So(c.String(), ShouldEqual, mainGetConfig)
@@ -81,7 +82,11 @@ func TestProcessObjects(t *testing.T) {
 
 		Convey("Testing processObjects() with a non-existent directory ", func() {
 			c.Dir = "EinenSieAugenBlick"
-			So(processObjects(c, []edgeos.IFace{edgeos.FileObj}), ShouldNotBeNil)
+			So(
+				processObjects(c, []edgeos.IFace{edgeos.FileObj}),
+				ShouldResemble,
+				fmt.Errorf("%v", badFileError),
+			)
 		})
 	})
 }
@@ -324,15 +329,11 @@ func TestInitEdgeOS(t *testing.T) {
 	"CLI Path": "service dns forwarding",
 	"Leaf nodes": [
 		"file",
-		"pre-configured-domain",
-		"pre-configured-host",
+		"domains.pre-configured",
+		"hosts.pre-configured",
 		"url"
 	],
 	"HTTP method": "GET",
-	"Nodes": [
-		"domains",
-		"hosts"
-	],
 	"Prefix": "address=",
 	"Timeout": 30000000000,
 	"Wildcard": {

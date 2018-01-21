@@ -141,9 +141,9 @@ Package edgeos provides methods and structures to retrieve, parse and render Edg
 const (
 
     // ExcDomns labels domain exclusions
-    ExcDomns = "domn-excludes"
+    ExcDomns = "exc-domains"
     // ExcHosts labels host exclusions
-    ExcHosts = "host-excludes"
+    ExcHosts = "exc-hosts"
     // ExcRoots labels global domain exclusions
     ExcRoots = "root-excludes"
     // PreDomns designates string label for preconfigured blacklisted domains

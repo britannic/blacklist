@@ -1,10 +1,11 @@
-priority: 1999 # Run after DNS forwarding is configured
-help: Add and delete blacklist blackhole IP, exclusions and URL sources
+priority: 999 # Run after DNS forwarding is configured
+help: Add and delete dnsmasq blacklisting, redirect IP, exclusions and URL sources
 
 end: if [[ "$COMMIT_ACTION" != "DELETE" ]]; then
-        arg='-v'
-        [[ -f /etc/nologin ]] && arg=''
-        sudo /config/scripts/update-dnsmasq ${arg};
-     else
-        sudo /config/scripts/update-dnsmasq -v
-     fi
+        if [[ "$VAR(./disabled/@@)" == false ]]; then
+            sudo /config/scripts/update-dnsmasq -v;
+        elif [[ "$VAR(./disabled/@@)" == true ]]; then
+            sudo /config/scripts/update-dnsmasq -v;
+        fi;
+    fi
+
