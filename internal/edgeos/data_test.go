@@ -52,7 +52,7 @@ func TestFormatData(t *testing.T) {
 
 		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
-		for node, _ := range c.tree {
+		for _, node := range c.sortKeys() {
 			var (
 				actList  = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 				eq       = getSeparator(node)

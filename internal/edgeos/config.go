@@ -53,11 +53,11 @@ const (
 	zones     = "zones"
 
 	// ExcDomns labels domain exclusions
-	ExcDomns = "exc-domains"
+	ExcDomns = "excluded-domains"
 	// ExcHosts labels host exclusions
-	ExcHosts = "exc-hosts"
+	ExcHosts = "excluded-hosts"
 	// ExcRoots labels global domain exclusions
-	ExcRoots = "exc-root"
+	ExcRoots = "excluded-global"
 	// PreDomns designates string label for preconfigured blacklisted domains
 	PreDomns = "domains." + preNoun
 	// PreHosts designates string label for preconfigured blacklisted hosts
@@ -115,7 +115,7 @@ func (c *Config) addInc(node string) *object {
 		inc:   inc,
 		ip:    c.tree.getIP(node),
 		ltype: ltype,
-		name:  fmt.Sprintf("includes.[%v]", len(inc)),
+		name:  "includes",
 		nType: n,
 		Parms: c.Parms,
 	}
@@ -174,7 +174,7 @@ func (c *Config) excludes(nodes ...string) list {
 	var exc []string
 	switch nodes {
 	case nil:
-		for k, _ := range c.tree {
+		for _, k := range c.sortKeys() {
 			if len(c.tree[k].exc) != 0 {
 				exc = append(exc, c.tree[k].exc...)
 			}
@@ -193,15 +193,11 @@ func (c *Config) Get(node string) *Objects {
 
 	switch node {
 	case all:
-		var nodes []string
-		for node, _ := range c.tree {
-			if node != rootNode {
-				nodes = append(nodes, node)
+	NEXT:
+		for _, node := range c.sortKeys() {
+			if node == rootNode {
+				continue NEXT
 			}
-		}
-
-		sort.Strings(nodes)
-		for _, node := range nodes {
 			o.addObj(c, node)
 		}
 	default:
@@ -219,7 +215,7 @@ func (c *Config) GetAll(ltypes ...string) *Objects {
 	)
 
 NEXT:
-	for node, _ := range c.tree {
+	for _, node := range c.sortKeys() {
 		if node == rootNode {
 			continue NEXT
 		}
