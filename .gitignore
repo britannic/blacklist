@@ -26,11 +26,9 @@ vendor/
 .DS_Store
 *.bak
 *.bkp
-*.deb
 *.lock
 *.log
 *.VC.db
 *.out
-
 
 .payload/config/scripts/update-dnsmasq

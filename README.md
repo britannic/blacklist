@@ -48,16 +48,16 @@ either expressed or implied, of the FreeBSD Project.
 
 ## Compatibility
 
-* update-dnsmasq has been tested on the EdgeRouter Lite and ER-X family of routers, versions v1.7.0-v1.9.7+hotfix.4
+* update-dnsmasq has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X, UniFi Security Gateway USG3 routers, EdgeOS versions v1.7.0-v1.9.7+hotfix.4
 * integration could be adapted to work on VyOS and Vyatta derived ports, since  EdgeOS is a fork and port of Vyatta 6.3
 
 ## Installation
 
-### EdgeMAX ERLite-x series
+### EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3
 
 * sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.7_mips.deb
 
-### EdgeMax ER-X
+### EdgeRouter ER-X & ER-X-SFP
 
 * sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.7_mipsel.deb
 
