@@ -77,7 +77,8 @@ func formatData(fmttr string, l list) io.Reader {
 
 // getSeparator returns the dnsmasq conf file delimiter
 func getSeparator(node string) string {
-	if node == domains {
+	switch node {
+	case domains, PreDomns:
 		return "/."
 	}
 	return "/"

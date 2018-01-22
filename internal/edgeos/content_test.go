@@ -169,7 +169,7 @@ func TestNewContent(t *testing.T) {
 			},
 			{
 				i:     1,
-				exp:   "address=/adsrvr.org/192.1.1.1\naddress=/adtechus.net/192.1.1.1\naddress=/advertising.com/192.1.1.1\naddress=/centade.com/192.1.1.1\naddress=/doubleclick.net/192.1.1.1\naddress=/free-counter.co.uk/192.1.1.1\naddress=/intellitxt.com/192.1.1.1\naddress=/kiosked.com/192.1.1.1",
+				exp:   "address=/.adsrvr.org/192.1.1.1\naddress=/.adtechus.net/192.1.1.1\naddress=/.advertising.com/192.1.1.1\naddress=/.centade.com/192.1.1.1\naddress=/.doubleclick.net/192.1.1.1\naddress=/.free-counter.co.uk/192.1.1.1\naddress=/.intellitxt.com/192.1.1.1\naddress=/.kiosked.com/192.1.1.1",
 				fail:  false,
 				ltype: PreDomns,
 				name:  fmt.Sprintf("includes"),
@@ -413,7 +413,7 @@ func TestMultiObjNewContent(t *testing.T) {
 			{name: "ExRtObj", iFace: ExRtObj, exp: "address=/ytimg.com/0.0.0.0"},
 			{name: "ExDmObj", iFace: ExDmObj, exp: ""},
 			{name: "ExHtObj", iFace: ExHtObj, exp: ""},
-			{name: "PreDObj", iFace: PreDObj, exp: "address=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0"},
+			{name: "PreDObj", iFace: PreDObj, exp: "address=/.adsrvr.org/0.0.0.0\naddress=/.adtechus.net/0.0.0.0\naddress=/.advertising.com/0.0.0.0\naddress=/.centade.com/0.0.0.0\naddress=/.doubleclick.net/0.0.0.0\naddress=/.free-counter.co.uk/0.0.0.0\naddress=/.intellitxt.com/0.0.0.0\naddress=/.kiosked.com/0.0.0.0"},
 			{name: "PreHObj", iFace: PreHObj, exp: "address=/beap.gemini.yahoo.com/192.168.168.1"},
 			{name: "FileObj", iFace: FileObj, exp: "[\nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n \nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"/tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n]"},
 			{name: "URLdObj", iFace: URLdObj, exp: "[\nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domn\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://malc0de.com/bl/ZONES\"\n]"},
@@ -507,7 +507,7 @@ func TestProcessContent(t *testing.T) {
 					},
 					expExcMap: list{entry: entry{"ytimg.com": 0}},
 					f:         dir + "/domains.pre-configured.includes.blacklist.conf",
-					fdata:     "address=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0\n",
+					fdata:     "address=/.adsrvr.org/0.0.0.0\naddress=/.adtechus.net/0.0.0.0\naddress=/.advertising.com/0.0.0.0\naddress=/.centade.com/0.0.0.0\naddress=/.doubleclick.net/0.0.0.0\naddress=/.free-counter.co.uk/0.0.0.0\naddress=/.intellitxt.com/0.0.0.0\naddress=/.kiosked.com/0.0.0.0\n",
 					obj:       PreDObj,
 				},
 				{

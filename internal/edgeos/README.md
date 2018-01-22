@@ -167,7 +167,7 @@ GetFile reads a file and returns an io.Reader
 
 
 
-## <a name="Iter">func</a> [Iter](/src/target/data.go?s=2411:2438#L99)
+## <a name="Iter">func</a> [Iter](/src/target/data.go?s=2429:2456#L100)
 ``` go
 func Iter(i int) []struct{}
 ```
@@ -175,7 +175,7 @@ Iter iterates over ints - use it in for loops
 
 
 
-## <a name="NewWriter">func</a> [NewWriter](/src/target/data.go?s=2506:2532#L104)
+## <a name="NewWriter">func</a> [NewWriter](/src/target/data.go?s=2524:2550#L105)
 ``` go
 func NewWriter() io.Writer
 ```

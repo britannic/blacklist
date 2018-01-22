@@ -32,3 +32,5 @@ vendor/
 *.VC.db
 *.out
 
+
+.payload/config/scripts/update-dnsmasq
