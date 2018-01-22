@@ -21,7 +21,7 @@ modification, are permitted provided that the following conditions are met:
 
 1; Redistributions of source code must retain the above copyright notice, this
    list of conditions and the following disclaimer.
-2; Redistributions in binary form must reproduce the above copyright notice,
+1; Redistributions in binary form must reproduce the above copyright notice,
    this list of conditions and the following disclaimer in the documentation
    and/or other materials provided with the distribution.
 
@@ -49,4 +49,20 @@ either expressed or implied, of the FreeBSD Project.
 ## Compatibility
 
 * update-dnsmasq has been tested on the EdgeRouter Lite and ER-X family of routers, versions v1.7.0-v1.9.7+hotfix.4
-* Since the EdgeOS is a fork and port of Vyatta 6.3, this script could be adapted to work on VyOS and Vyatta derived ports
+* integration could be adapted to work on VyOS and Vyatta derived ports, since  EdgeOS is a fork and port of Vyatta 6.3
+
+## Installation
+
+### EdgeMAX ERLite-x series
+
+* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.6_mips.deb
+
+### EdgeMax ER-X
+
+* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.6_mipsel.deb
+
+## Removal
+
+### EdgeMAX ERLite-x & EdgeMax ER-X
+
+* sudo apt-get remove edgeos-dnsmasq-blacklist

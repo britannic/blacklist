@@ -1,11 +1,4 @@
 priority: 999 # Run after DNS forwarding is configured
 help: Add and delete dnsmasq blacklisting, redirect IP, exclusions and URL sources
 
-end: if [[ "$COMMIT_ACTION" != "DELETE" ]]; then
-        if [[ "$VAR(./disabled/@@)" == false ]]; then
-            sudo /config/scripts/update-dnsmasq -v;
-        elif [[ "$VAR(./disabled/@@)" == true ]]; then
-            sudo /config/scripts/update-dnsmasq -v;
-        fi;
-    fi
-
+end:expression: "sudo /config/scripts/update-dnsmasq -v"

@@ -72,7 +72,7 @@ func main() {
 		exitCmd(0)
 	}
 
-	logNotice(fmt.Sprintf("%s starting up...", progname))
+	logInfo(fmt.Sprintf("%s starting up...", progname))
 
 	logInfo("Removing stale blacklists...")
 	if err = removeStaleFiles(env); err != nil {
@@ -89,7 +89,7 @@ func main() {
 
 	reloadDNS(env)
 
-	logNotice(fmt.Sprintf("%s : blacklist update completed......", progname))
+	logInfo(fmt.Sprintf("%s : blacklist update completed......", progname))
 }
 
 // basename removes directory components and file extensions.
@@ -143,7 +143,7 @@ func initEnv() (env *e.Config, err error) {
 	if env, err = setUpEnv(); err != nil {
 		d := killFiles(env)
 
-		logNotice(progname + ": commencing dnsmasq blacklist update...")
+		logInfo(progname + ": commencing dnsmasq blacklist update...")
 		logInfo("Removing stale blacklists...")
 
 		if err = d.Remove(); err != nil {
@@ -229,7 +229,19 @@ func screenLog() {
 		scrFmt := logging.MustStringFormatter(
 			`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
 		)
+
 		scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)
+		colors := []string{
+			logging.CRITICAL: logging.ColorSeq(logging.ColorMagenta),
+			logging.DEBUG:    logging.ColorSeq(logging.ColorCyan),
+			logging.ERROR:    logging.ColorSeq(logging.ColorRed),
+			logging.INFO:     logging.ColorSeq(logging.ColorGreen),
+			logging.NOTICE:   logging.ColorSeq(logging.ColorBlue),
+			logging.WARNING:  logging.ColorSeq(logging.ColorYellow),
+		}
+		scr.Color = true
+		scr.ColorConfig = colors
+
 		scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
 		sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
 		if err != nil {

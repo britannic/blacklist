@@ -30,8 +30,6 @@ type opts struct {
 	Version *bool
 }
 
-type omitFlags map[string]bool
-
 // setDir sets the directory according to the host CPU arch
 func (o *opts) setDir(arch string) (dir string) {
 	switch arch {
@@ -74,36 +72,23 @@ func getOpts() *opts {
 	var (
 		flags mflag.FlagSet
 		o     = &opts{
-			ARCH:    flags.String("arch", runtime.GOARCH, "Set EdgeOS CPU architecture"),
-			Dbug:    flags.Bool("debug", false, "Enable debug mode"),
-			DNSdir:  flags.String("dir", "/etc/dnsmasq.d", "Override dnsmasq directory"),
-			DNStmp:  flags.String("tmp", "/tmp", "Override dnsmasq temporary directory"),
-			Help:    flags.Bool("h", false, "Display help"),
-			File:    flags.String("f", "", "`<file>` # Load a configuration file"),
+			ARCH:    flags.String("arch", runtime.GOARCH, "Set EdgeOS CPU architecture", false),
+			Dbug:    flags.Bool("debug", false, "Enable debug mode", false),
+			DNSdir:  flags.String("dir", "/etc/dnsmasq.d", "Override dnsmasq directory", true),
+			DNStmp:  flags.String("tmp", "/tmp", "Override dnsmasq temporary directory", false),
+			Help:    flags.Bool("h", false, "Display help", true),
+			File:    flags.String("f", "", "`<file>` # Load a configuration file", false),
 			FlagSet: &flags,
-			MIPSLE:  flags.String("mipsle", "mipsle", "Override target EdgeOS CPU architecture"),
-			MIPS64:  flags.String("mips64", "mips64", "Override target EdgeOS CPU architecture"),
-			OS:      flags.String("os", runtime.GOOS, "Override native EdgeOS OS"),
-			Test:    flags.Bool("t", false, "Run config and data validation tests"),
-			Verb:    flags.Bool("v", false, "Verbose display"),
-			Version: flags.Bool("version", false, "Show version"),
+			MIPSLE:  flags.String("mipsle", "mipsle", "Override target EdgeOS CPU architecture", false),
+			MIPS64:  flags.String("mips64", "mips64", "Override target EdgeOS CPU architecture", false),
+			OS:      flags.String("os", runtime.GOOS, "Override native EdgeOS OS", false),
+			Test:    flags.Bool("t", false, "Run config and data validation tests", false),
+			Verb:    flags.Bool("v", false, "Verbose display", true),
+			Version: flags.Bool("version", false, "Show version", true),
 		}
 	)
 	flags.Init("blacklist", mflag.ExitOnError)
-	// flags.Usage = o.PrintDefaults
-	flags.Usage = func() {
-		o.printDefaults(
-			omitFlags{
-				"arch":   true,
-				"debug":  true,
-				"f":      true,
-				"mipsle": true,
-				"mips64": true,
-				"os":     true,
-				"t":      true,
-				"tmp":    true,
-			})
-	}
+	flags.Usage = o.PrintDefaults
 
 	return o
 }
@@ -147,41 +132,6 @@ func (o *opts) setArgs() {
 		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n", version, build, githash)
 		exitCmd(0)
 	}
-}
-
-// printDefaults prints to standard error the default values of all
-// defined command-line flags in the set. See the documentation for
-// the global function PrintDefaults for more information.
-func (o *opts) printDefaults(omit omitFlags) {
-	o.VisitAll(func(f *mflag.Flag) {
-		if !omit[f.Name] {
-			s := fmt.Sprintf("  -%s", f.Name) // Two spaces before -; see next two comments.
-
-			name, usage := mflag.UnquoteUsage(f)
-			if len(name) > 0 {
-				s += " " + name
-			}
-			// Boolean flags of one ASCII letter are so common we
-			// treat them specially, putting their usage on the same line.
-			if len(s) <= 4 { // space, space, '-', 'x'.
-				s += "\t"
-			} else {
-				// Four spaces before the tab triggers good alignment
-				// for both 4- and 8-space tab stops.
-				s += "\n    \t"
-			}
-			s += usage
-			if !mflag.IsZeroValue(f, f.DefValue) {
-				if _, ok := f.Value.(*mflag.StringValue); ok {
-					// put quotes on the value
-					s += fmt.Sprintf(" (default %q)", f.DefValue)
-				} else {
-					s += fmt.Sprintf(" (default %v)", f.DefValue)
-				}
-			}
-			fmt.Fprint(o.FlagSet.Out(), s, "\n")
-		}
-	})
 }
 
 func (o *opts) String() string {
