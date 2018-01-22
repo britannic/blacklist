@@ -42,6 +42,7 @@ either expressed or implied, of the FreeBSD Project.
 
 ## Features
 
+* Adds DNS blacklisting integration to the EdgeRouter configuration
 * Generates configuration files used directly by dnsmasq to redirect dns lookups
 * Integrated with the EdgeMax OS CLI
 * Any FQDN in the blacklist will force dnsmasq to return the configured dns redirect IP address
