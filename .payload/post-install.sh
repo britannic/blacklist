@@ -221,7 +221,7 @@ update_dns_configuration() {
 	try set service dns forwarding blacklist hosts source yoyo description "'Fully Qualified Domain Names only - no prefix to strip'"
 	try set service dns forwarding blacklist hosts source yoyo prefix "''"
 	try set service dns forwarding blacklist hosts source yoyo url "'http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext'"
-	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq.pl
+	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq
 	try set system task-scheduler task update_blacklists interval 1d
 	try commit
 	try save
@@ -230,3 +230,6 @@ update_dns_configuration() {
 
 update_dns_configuration
 try chgrp -R vyattacfg /opt/vyatta/config/active
+
+echo -e "\n\tYou can test your dnsmasq blacklisting configuration by running:\n"
+echo -e "\t\tsudo /config/scripts/blacklist.t\n"
