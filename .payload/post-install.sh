@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+msg="\n\n
+  If you want to test your dnsmasq blacklisting configuration, run\n
+\tsudo /config/scripts/blacklist.t\n\n
+  You may need to install the libnet-nslookup-perl module, using:\n
+\tsudo apt-get -qq update\n
+\tsudo apt-get -f -qq -y install libnet-nslookup-perl\n
+"
 # Set up the Vyatta environment
 declare -i DEC
 source /opt/vyatta/etc/functions/script-template
@@ -44,7 +51,6 @@ alias red='tput setaf 1'
 alias tan='tput setaf 3'
 alias white='tput setaf 7'
 alias yellow='tput setaf 3'
-# alias ansi='sed -r "s/\[(.[^]]*)\]/\[$(cyan)\1$(normal)\]/g"'
 
 # Setup the echo_logger function
 echo_logger() {
@@ -66,11 +72,11 @@ echo_logger() {
 		;;
 	FE)
 		shift
-		MSG="$(red)$(bold)CRIT(normal)[${CTR}]${TIME} ▶ ${@}"
+		MSG="$(red)$(bold)CRIT$(normal)[${CTR}]${TIME} ▶ ${@}"
 		;;
 	I)
 		shift
-		MSG="INFO[${CTR}]${TIME} ▶ ${@}"
+		MSG="$(green)INFO$(normal)[${CTR}]${TIME} ▶ ${@}"
 		;;
 	S)
 		shift
@@ -110,6 +116,10 @@ update_dns_configuration() {
 	try begin
 	try delete system task-scheduler task update_blacklists
 	# try delete service dns forwarding blacklist
+	try delete system package repository
+	try set system package repository wheezy components "'main contrib non-free'"
+	try set system package repository wheezy distribution wheezy
+	try set system package repository wheezy url "'http://http.us.debian.org/debian/'"
 	try set service dns forwarding blacklist disabled false
 	try set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
 	try set service dns forwarding blacklist domains include adk2x.com
@@ -231,5 +241,4 @@ update_dns_configuration() {
 update_dns_configuration
 try chgrp -R vyattacfg /opt/vyatta/config/active
 
-echo -e "\n\tYou can test your dnsmasq blacklisting configuration by running:\n"
-echo -e "\t\tsudo /config/scripts/blacklist.t\n"
+echo -e ${msg}

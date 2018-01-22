@@ -51,6 +51,17 @@ either expressed or implied, of the FreeBSD Project.
 * update-dnsmasq has been tested on the EdgeRouter Lite and ER-X family of routers, versions v1.7.0-v1.9.7+hotfix.4
 * Since the EdgeOS is a fork and port of Vyatta 6.3, this script could be adapted to work on VyOS and Vyatta derived ports
 
+## Installation
+
+### EdgeMAX ERLite-x series
+
+* download edgeos-dnsmasq-blacklist_0.0.6_mips.deb
+* dpkg -i edgeos-dnsmasq-blacklist_0.0.6_mips.deb
+
+### EdgeMax ER-X
+
+* download edgeos-dnsmasq-blacklist_0.0.6_mipsel.deb
+* dpkg -i edgeos-dnsmasq-blacklist_0.0.6_mipsel.deb
 
 > blacklist
 
