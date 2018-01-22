@@ -55,11 +55,11 @@ either expressed or implied, of the FreeBSD Project.
 
 ### EdgeMAX ERLite-x series
 
-* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.6_mips.deb
+* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.7_mips.deb
 
 ### EdgeMax ER-X
 
-* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.6_mipsel.deb
+* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.7_mipsel.deb
 
 ## Removal
 
