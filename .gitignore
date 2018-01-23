@@ -30,5 +30,7 @@ vendor/
 *.log
 *.VC.db
 *.out
+*.deb
+.git.bfg-report/
 
 .payload/config/scripts/update-dnsmasq
