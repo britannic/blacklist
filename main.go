@@ -42,10 +42,10 @@ var (
 		exitCmd(1)
 	}
 
-	logFile   = fmt.Sprintf("/var/log/%s.log", progname)
-	logInfo   = log.Info
-	logInfof  = log.Infof
-	logNotice = log.Notice
+	logFile  = fmt.Sprintf("/var/log/%s.log", progname)
+	logInfo  = log.Info
+	logInfof = log.Infof
+	// logNotice = log.Notice
 	logPrintf = logInfof
 	// logPrintln = logInfo
 
@@ -165,7 +165,7 @@ func newLog() *logging.Logger {
 		logFile = fmt.Sprintf("/tmp/%s.log", progname)
 	}
 	fdFmt := logging.MustStringFormatter(
-		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000}{` + progname + `} ▶ %{message}`,
+		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000}{` + progname + `}: %{message}`,
 	)
 
 	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
@@ -227,7 +227,7 @@ func screenLog() {
 			logFile = fmt.Sprintf("/tmp/%s.log", progname)
 		}
 		scrFmt := logging.MustStringFormatter(
-			`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000} ▶ %{message}`,
+			`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000}: %{message}`,
 		)
 
 		scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)

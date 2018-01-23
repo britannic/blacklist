@@ -64,31 +64,31 @@ echo_logger() {
 	case "${1}" in
 	E)
 		shift
-		MSG="$(red)$(bold)ERRO$(normal)[${CTR}]${TIME} ▶ ${@} failed!"
+		MSG="$(red)$(bold)ERRO$(normal)[${CTR}]${TIME}: ${@} failed!"
 		;;
 	F)
 		shift
-		MSG="$(red)$(bold)FAIL$(normal)[${CTR}]${TIME} ▶ ${@}"
+		MSG="$(red)$(bold)FAIL$(normal)[${CTR}]${TIME}: ${@}"
 		;;
 	FE)
 		shift
-		MSG="$(red)$(bold)CRIT$(normal)[${CTR}]${TIME} ▶ ${@}"
+		MSG="$(red)$(bold)CRIT$(normal)[${CTR}]${TIME}: ${@}"
 		;;
 	I)
 		shift
-		MSG="$(green)INFO$(normal)[${CTR}]${TIME} ▶ ${@}"
+		MSG="$(green)INFO$(normal)[${CTR}]${TIME}: ${@}"
 		;;
 	S)
 		shift
-		MSG="$(green)$(bold)NOTI$(normal)[${CTR}]${TIME} ▶ ${@}"
+		MSG="$(green)$(bold)NOTI$(normal)[${CTR}]${TIME}: ${@}"
 		;;
 	T)
 		shift
-		MSG="$(tan)$(bold)TRYI$(normal)[${CTR}]${TIME} ▶ ${@}"
+		MSG="$(tan)$(bold)TRYI$(normal)[${CTR}]${TIME}: ${@}"
 		;;
 	W)
 		shift
-		MSG="$(yellow)$(bold)WARN$(normal)[${CTR}]${TIME} ▶ ${@}"
+		MSG="$(yellow)$(bold)WARN$(normal)[${CTR}]${TIME}: ${@}"
 		;;
 	*)
 		echo "ERROR: usage: echo_logger MSG TYPE(E, F, FE, I, S, T, W) MSG."
@@ -240,5 +240,3 @@ update_dns_configuration() {
 
 update_dns_configuration
 try chgrp -R vyattacfg /opt/vyatta/config/active
-
-echo -e ${msg}

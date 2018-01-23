@@ -4,33 +4,28 @@
 # Add back files with extensions and directories
 !*.*
 !*/
+!.travis.yml
+!testcoverage
 !VERSION
 
-!testcoverage
-!.travis.yml
-
-# Ignore debug
-*.debug
-blacklist.*
-*.amd64
-*.mips
-*.mipsel
-
-# Ignore test
-*.test
-
-.idea/
-.vscode/
-vendor/
+# Ignore
 .coveralls.yml
 .DS_Store
+.git.bfg-report/
+.idea/
+.payload/config/scripts/update-dnsmasq
+.vscode/
+*.amd64
 *.bak
 *.bkp
+*.deb
+*.debug
 *.lock
 *.log
-*.VC.db
+*.mips
+*.mipsel
 *.out
-*.deb
-.git.bfg-report/
-
-.payload/config/scripts/update-dnsmasq
+*.test
+*.VC.db
+blacklist.*
+vendor/
