@@ -12,7 +12,7 @@ import (
 )
 
 func newLog() *logging.Logger {
-	scrFmt := logging.MustStringFormatter(`%{level:.4s}[%{id:03x}] ▶ %{message}`)
+	scrFmt := logging.MustStringFormatter(`%{level:.4s}[%{id:03x}]: %{message}`)
 	scr := logging.NewLogBackend(os.Stdout, "", 0)
 	scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
 

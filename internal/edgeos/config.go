@@ -16,7 +16,7 @@ import (
 	"github.com/britannic/blacklist/internal/regx"
 )
 
-// bNodes is a map of leaf nodes
+// tree is a map of top nodes
 type tree map[string]*object
 
 // ConfLoader interface defines configuration load method
