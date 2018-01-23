@@ -319,7 +319,7 @@ func (u *URLHostObjects) Len() int { return len(u.Objects.x) }
 func (o *object) process() *bList {
 	var (
 		add = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
-		ctr int64
+		ctr int
 		b   = bufio.NewScanner(o.r)
 		rx  = regx.Obj
 	)
@@ -365,6 +365,7 @@ NEXT:
 
 	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
 	if i := len(add.entry); i > 0 {
+		o.stats[o.name] = stats{RWMutex: &sync.RWMutex{}, retained: i, rejected: ctr - i}
 		o.log(fmt.Sprintf("%s: entries downloaded: %d", o.name, ctr))
 		o.log(fmt.Sprintf("%s: entries extracted: %d", o.name, i))
 	}

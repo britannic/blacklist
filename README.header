@@ -1,6 +1,6 @@
 # UBNT edgeos-dnsmasq-blacklist dnsmasq DNS blacklisting and redirection
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt) [![Alpha  Version](https://img.shields.io/badge/version-v0.06--alpha-red.svg)](https://github.com/britannic/blacklist) [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist) [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist) [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master) [![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt) [![Alpha  Version](https://img.shields.io/badge/version-v0.08-green.svg)](https://github.com/britannic/blacklist) [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist) [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist) [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master) [![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
 
 [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/Self-Installer-to-configure-Ad-Server-and-Blacklist-Blocking/td-p/1337892)
 
@@ -67,3 +67,10 @@ either expressed or implied, of the FreeBSD Project.
 ### EdgeMAX ERLite-x & EdgeMax ER-X
 
 * sudo apt-get remove edgeos-dnsmasq-blacklist
+
+## Releases
+
+### Patch v.0.0.8
+
+* Removes redundant references to blacklist.t and perl modules
+* Replace "▶" with ":" in log messages

@@ -33,6 +33,7 @@ func TestAddInc(t *testing.T) {
 							Node: "",
 							Name: "",
 						},
+						stats: make(counter),
 						API:   "",
 						Arch:  "",
 						Bash:  "",
@@ -84,6 +85,7 @@ func TestAddInc(t *testing.T) {
 				node: domains,
 				exp: &object{
 					Parms: &Parms{
+						stats: make(counter),
 						Wildcard: Wildcard{
 							Node: "",
 							Name: "",
@@ -138,6 +140,7 @@ func TestAddInc(t *testing.T) {
 				node: hosts,
 				exp: &object{
 					Parms: &Parms{
+						stats: make(counter),
 						Wildcard: Wildcard{
 							Node: "",
 							Name: "",

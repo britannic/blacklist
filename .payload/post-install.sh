@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-msg="\n\n
-  If you want to test your dnsmasq blacklisting configuration, run\n
-\tsudo /config/scripts/blacklist.t\n\n
-  You may need to install the libnet-nslookup-perl module, using:\n
-\tsudo apt-get -qq update\n
-\tsudo apt-get -f -qq -y install libnet-nslookup-perl\n
-"
 # Set up the Vyatta environment
 declare -i DEC
 source /opt/vyatta/etc/functions/script-template
@@ -115,11 +108,6 @@ try() {
 update_dns_configuration() {
 	try begin
 	try delete system task-scheduler task update_blacklists
-	# try delete service dns forwarding blacklist
-	try delete system package repository
-	try set system package repository wheezy components "'main contrib non-free'"
-	try set system package repository wheezy distribution wheezy
-	try set system package repository wheezy url "'http://http.us.debian.org/debian/'"
 	try set service dns forwarding blacklist disabled false
 	try set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
 	try set service dns forwarding blacklist domains include adk2x.com
