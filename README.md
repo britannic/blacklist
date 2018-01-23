@@ -1,6 +1,6 @@
 # UBNT edgeos-dnsmasq-blacklist dnsmasq DNS blacklisting and redirection
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt) [![Alpha  Version](https://img.shields.io/badge/version-v0.06--alpha-red.svg)](https://github.com/britannic/blacklist) [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist) [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist) [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master) [![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt) [![Alpha  Version](https://img.shields.io/badge/version-v0.0.8-green.svg)](https://github.com/britannic/blacklist) [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist) [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist) [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master) [![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
 
 [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/Self-Installer-to-configure-Ad-Server-and-Blacklist-Blocking/td-p/1337892)
 
@@ -56,17 +56,32 @@ either expressed or implied, of the FreeBSD Project.
 
 ### EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3
 
-* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.8_mips.deb
+    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/3/edgeos-dnsmasq-blacklist_0.0.8_mips.deb.tgz | tar -xz
+    sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.8_mips.deb
 
 ### EdgeRouter ER-X & ER-X-SFP
 
-* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.8_mipsel.deb
+    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/4/edgeos-dnsmasq-blacklist_0.0.8_mipsel.deb.tgz
+    sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.8_mipsel.deb
 
 ## Removal
 
 ### EdgeMAX ERLite-x & EdgeMax ER-X
 
-* sudo apt-get remove edgeos-dnsmasq-blacklist
+    sudo apt-get remove edgeos-dnsmasq-blacklist
+
+## Releases
+
+### Patch v0.0.9
+
+* Added logging for download errors and warnings for empty content
+* Change HTTP user agent to emulate curl, to stop web servers from offering complex content
+
+### Patch v0.0.8
+
+* Removes redundant references to blacklist.t and perl modules
+* Replace "▶" with ":" in log messages
+
 
 > blacklist
 

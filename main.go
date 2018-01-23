@@ -42,10 +42,10 @@ var (
 		exitCmd(1)
 	}
 
-	logFile  = fmt.Sprintf("/var/log/%s.log", progname)
-	logInfo  = log.Info
-	logInfof = log.Infof
-	// logNotice = log.Notice
+	logFile   = fmt.Sprintf("/var/log/%s.log", progname)
+	logInfo   = log.Info
+	logInfof  = log.Infof
+	logNotice = log.Notice
 	logPrintf = logInfof
 	// logPrintln = logInfo
 
@@ -72,7 +72,7 @@ func main() {
 		exitCmd(0)
 	}
 
-	logInfo(fmt.Sprintf("%s starting up...", progname))
+	logNotice(fmt.Sprintf("%s starting up...", progname))
 
 	logInfo("Removing stale blacklists...")
 	if err = removeStaleFiles(env); err != nil {
@@ -89,7 +89,7 @@ func main() {
 
 	reloadDNS(env)
 
-	logInfo(fmt.Sprintf("%s : blacklist update completed......", progname))
+	logNotice(fmt.Sprintf("%s : blacklist update completed......", progname))
 }
 
 // basename removes directory components and file extensions.

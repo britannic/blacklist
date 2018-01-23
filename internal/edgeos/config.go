@@ -38,7 +38,7 @@ type Config struct {
 }
 
 const (
-	agent     = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/601.7.7 (KHTML, like Gecko) Version/9.1.2 Safari/601.7.7`
+	agent     = `curl/7.26.0`
 	all       = "all"
 	blackhole = "dns-redirect-ip"
 	disabled  = "disabled"
