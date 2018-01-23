@@ -56,11 +56,11 @@ either expressed or implied, of the FreeBSD Project.
 
 ### EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3
 
-* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.7_mips.deb
+* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.8_mips.deb
 
 ### EdgeRouter ER-X & ER-X-SFP
 
-* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.7_mipsel.deb
+* sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.8_mipsel.deb
 
 ## Removal
 
