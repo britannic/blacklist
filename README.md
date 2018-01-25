@@ -1,6 +1,6 @@
 # UBNT edgeos-dnsmasq-blacklist dnsmasq DNS blacklisting and redirection
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt) [![Alpha  Version](https://img.shields.io/badge/version-v0.0.8-green.svg)](https://github.com/britannic/blacklist) [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist) [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist) [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master) [![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt) [![Alpha  Version](https://img.shields.io/badge/version-v0.0.9-green.svg)](https://github.com/britannic/blacklist) [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist) [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist) [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master) [![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
 
 [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/Self-Installer-to-configure-Ad-Server-and-Blacklist-Blocking/td-p/1337892)
 
@@ -56,13 +56,13 @@ either expressed or implied, of the FreeBSD Project.
 
 ### EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3
 
-    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.8_mips.deb.tgz | tar -xz
-    sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.8_mips.deb
+    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.9_mips.deb.tgz | tar -xz
+    sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.9_mips.deb
 
 ### EdgeRouter ER-X & ER-X-SFP
 
-    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.8_mipsel.deb.tgz
-    sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.8_mipsel.deb
+    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.9_mipsel.deb.tgz
+    sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.9_mipsel.deb
 
 ## Removal
 
@@ -75,24 +75,24 @@ either expressed or implied, of the FreeBSD Project.
 * dnsmasq will need to be configured to ensure blacklisting works correctly
   * Here is an example using the EdgeOS configuration shell
 
-    configure
-    set service dns forwarding cache-size 2048
-    set service dns forwarding except-interface [Your WAN i/f]
-    set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
-    set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
-    set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
-    set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
-    set service dns forwarding options bogus-priv
-    set service dns forwarding options domain-needed
-    set service dns forwarding options domain=mydomain.local
-    set service dns forwarding options enable-ra
-    set service dns forwarding options expand-hosts
-    set service dns forwarding options localise-queries
-    set service dns forwarding options strict-order
-    set service dns forwarding system
-    set system name-server 127.0.0.1
-    set system name-server '::1'
-    commit; save;exit
+        configure
+        set service dns forwarding cache-size 2048
+        set service dns forwarding except-interface [Your WAN i/f]
+        set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
+        set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
+        set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
+        set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
+        set service dns forwarding options bogus-priv
+        set service dns forwarding options domain-needed
+        set service dns forwarding options domain=mydomain.local
+        set service dns forwarding options enable-ra
+        set service dns forwarding options expand-hosts
+        set service dns forwarding options localise-queries
+        set service dns forwarding options strict-order
+        set service dns forwarding system
+        set system name-server 127.0.0.1
+        set system name-server '::1'
+        commit; save;exit
 
 ## Releases
 
