@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/britannic/blacklist/internal/regx"
 )
@@ -364,13 +365,22 @@ NEXT:
 	}
 
 	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
+
+	// Let's do some accounting
 	i := len(add.entry)
 
+	if ctr != i {
+		ctr -= i
+		atomic.AddInt32(&o.rejected, int32(ctr))
+	}
+
+	atomic.AddInt32(&o.retained, int32(i))
+
+	fmt.Printf("%d:%d\n", o.retained, o.rejected)
 	switch {
 	case o.isExclude():
 
 	case o.name == "includes":
-		// o.log(fmt.Sprintf("No blacklisted %s are configured...", o.area()))
 
 	case i == 0:
 		o.warning(fmt.Sprintf("0 entries were extracted from %s!", o.name))
@@ -426,6 +436,8 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 	if errs != nil {
 		return fmt.Errorf(strings.Join(errs, "\n"))
 	}
+
+	c.log(fmt.Sprintf("Blacklisted entries extracted: %d, rejected: %d", c.retained, c.rejected))
 
 	return nil
 }

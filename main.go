@@ -68,11 +68,11 @@ func main() {
 	)
 
 	if env, err = initEnv(); err != nil {
-		logErrorf("%v, %s shutting down.", err, progname)
+		logErrorf("%s shutting down.", err)
 		exitCmd(0)
 	}
 
-	logNotice(fmt.Sprintf("%s starting up...", progname))
+	logNotice(fmt.Sprintf("Starting blacklist update..."))
 
 	logInfo("Removing stale blacklists...")
 	if err = removeStaleFiles(env); err != nil {
@@ -89,7 +89,7 @@ func main() {
 
 	reloadDNS(env)
 
-	logNotice(fmt.Sprintf("%s : blacklist update completed......", progname))
+	logNotice(fmt.Sprintf("Blacklist update completed......"))
 }
 
 // basename removes directory components and file extensions.
@@ -165,7 +165,7 @@ func newLog() *logging.Logger {
 		logFile = fmt.Sprintf("/tmp/%s.log", progname)
 	}
 	fdFmt := logging.MustStringFormatter(
-		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000}{` + progname + `}: %{message}`,
+		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000}: %{message}`,
 	)
 
 	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
@@ -232,12 +232,12 @@ func screenLog() {
 
 		scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)
 		colors := []string{
-			logging.CRITICAL: logging.ColorSeq(logging.ColorMagenta),
-			logging.DEBUG:    logging.ColorSeq(logging.ColorCyan),
-			logging.ERROR:    logging.ColorSeq(logging.ColorRed),
-			logging.INFO:     logging.ColorSeq(logging.ColorGreen),
-			logging.NOTICE:   logging.ColorSeq(logging.ColorBlue),
-			logging.WARNING:  logging.ColorSeq(logging.ColorYellow),
+			logging.CRITICAL: logging.ColorSeqBold(logging.ColorMagenta),
+			logging.DEBUG:    logging.ColorSeqBold(logging.ColorCyan),
+			logging.ERROR:    logging.ColorSeqBold(logging.ColorRed),
+			logging.INFO:     logging.ColorSeqBold(logging.ColorGreen),
+			logging.NOTICE:   logging.ColorSeqBold(logging.ColorBlue),
+			logging.WARNING:  logging.ColorSeqBold(logging.ColorYellow),
 		}
 		scr.Color = true
 		scr.ColorConfig = colors

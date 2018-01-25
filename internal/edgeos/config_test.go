@@ -15,8 +15,13 @@ import (
 
 func TestAddInc(t *testing.T) {
 	Convey("Testing addInc()", t, func() {
-		c := NewConfig()
-		err := c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg})
+		var (
+			a   int32
+			b   int32
+			c   = NewConfig()
+			err = c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg})
+		)
+
 		So(err, ShouldBeNil)
 
 		tests := []struct {
@@ -33,7 +38,10 @@ func TestAddInc(t *testing.T) {
 							Node: "",
 							Name: "",
 						},
-						stats: make(counter),
+						stats: &stats{
+							rejected: a,
+							retained: b,
+						},
 						API:   "",
 						Arch:  "",
 						Bash:  "",
@@ -85,10 +93,13 @@ func TestAddInc(t *testing.T) {
 				node: domains,
 				exp: &object{
 					Parms: &Parms{
-						stats: make(counter),
 						Wildcard: Wildcard{
 							Node: "",
 							Name: "",
+						},
+						stats: &stats{
+							rejected: a,
+							retained: b,
 						},
 						API:   "",
 						Arch:  "",
@@ -140,10 +151,13 @@ func TestAddInc(t *testing.T) {
 				node: hosts,
 				exp: &object{
 					Parms: &Parms{
-						stats: make(counter),
 						Wildcard: Wildcard{
 							Node: "",
 							Name: "",
+						},
+						stats: &stats{
+							rejected: a,
+							retained: b,
 						},
 						API:   "",
 						Arch:  "",

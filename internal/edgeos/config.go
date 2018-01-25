@@ -37,6 +37,11 @@ type Config struct {
 	tree
 }
 
+type stats struct {
+	rejected int32
+	retained int32
+}
+
 const (
 	agent     = `curl/7.26.0`
 	all       = "all"

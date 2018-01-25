@@ -797,7 +797,7 @@ Objects is a struct of []*Object
 
 
 
-### <a name="Objects.Files">func</a> (\*Objects) [Files](/src/target/object.go?s=1115:1147#L52)
+### <a name="Objects.Files">func</a> (\*Objects) [Files](/src/target/object.go?s=1088:1120#L52)
 ``` go
 func (o *Objects) Files() *CFile
 ```
@@ -806,7 +806,7 @@ Files returns a list of dnsmasq conf files from all srcs
 
 
 
-### <a name="Objects.Filter">func</a> (\*Objects) [Filter](/src/target/object.go?s=1501:1548#L66)
+### <a name="Objects.Filter">func</a> (\*Objects) [Filter](/src/target/object.go?s=1474:1521#L66)
 ``` go
 func (o *Objects) Filter(ltype string) *Objects
 ```
@@ -815,7 +815,7 @@ Filter returns a subset of Objects; ltypes with "-" prepended remove ltype
 
 
 
-### <a name="Objects.Find">func</a> (\*Objects) [Find](/src/target/object.go?s=2283:2322#L105)
+### <a name="Objects.Find">func</a> (\*Objects) [Find](/src/target/object.go?s=2256:2295#L105)
 ``` go
 func (o *Objects) Find(elem string) int
 ```
@@ -824,7 +824,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="Objects.Len">func</a> (\*Objects) [Len](/src/target/object.go?s=3659:3686#L166)
+### <a name="Objects.Len">func</a> (\*Objects) [Len](/src/target/object.go?s=3632:3659#L166)
 ``` go
 func (o *Objects) Len() int
 ```
@@ -833,14 +833,14 @@ Implement Sort Interface for Objects
 
 
 
-### <a name="Objects.Less">func</a> (\*Objects) [Less](/src/target/object.go?s=3717:3754#L167)
+### <a name="Objects.Less">func</a> (\*Objects) [Less](/src/target/object.go?s=3690:3727#L167)
 ``` go
 func (o *Objects) Less(i, j int) bool
 ```
 
 
 
-### <a name="Objects.Names">func</a> (\*Objects) [Names](/src/target/object.go?s=2753:2799#L129)
+### <a name="Objects.Names">func</a> (\*Objects) [Names](/src/target/object.go?s=2726:2772#L129)
 ``` go
 func (o *Objects) Names() (s sort.StringSlice)
 ```
@@ -849,7 +849,7 @@ Names returns a sorted slice of Objects names
 
 
 
-### <a name="Objects.String">func</a> (\*Objects) [String](/src/target/object.go?s=3556:3589#L161)
+### <a name="Objects.String">func</a> (\*Objects) [String](/src/target/object.go?s=3529:3562#L161)
 ``` go
 func (o *Objects) String() string
 ```
@@ -858,7 +858,7 @@ Stringer for Objects
 
 
 
-### <a name="Objects.Swap">func</a> (\*Objects) [Swap](/src/target/object.go?s=3792:3824#L168)
+### <a name="Objects.Swap">func</a> (\*Objects) [Swap](/src/target/object.go?s=3765:3797#L168)
 ``` go
 func (o *Objects) Swap(i, j int)
 ```

@@ -56,12 +56,13 @@ either expressed or implied, of the FreeBSD Project.
 
 ### EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3
 
-    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.9_mips.deb.tgz | tar -xz
+    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.9_mips.deb.tgz | tar -xvz
     sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.9_mips.deb
 
 ### EdgeRouter ER-X & ER-X-SFP
 
-    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.9_mipsel.deb.tgz
+    curl
+    https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.9_mipsel.deb.tgz | tar -xvz
     sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.9_mipsel.deb
 
 ## Removal

@@ -12,7 +12,7 @@ import (
 
 // Parms is struct of parameters
 type Parms struct {
-	stats    counter
+	*stats
 	ioWriter io.Writer
 	Log      *logging.Logger
 	API      string        `json:"API,omitempty"`
@@ -37,14 +37,6 @@ type Parms struct {
 	Timeout  time.Duration `json:"Timeout,omitempty"`
 	Verb     bool          `json:"Verbosity,omitempty"`
 	Wildcard/*..........*/ `json:"Wildcard,omitempty"`
-}
-
-type counter map[string]stats
-
-type stats struct {
-	*sync.RWMutex
-	rejected int
-	retained int
 }
 
 // Wildcard struct sets globbing wildcards for filename searches
@@ -237,12 +229,19 @@ func Method(method string) Option {
 
 // NewConfig returns a new *Config initialized with the parameter options passed to it
 func NewConfig(opts ...Option) *Config {
+	var (
+		a int32
+		b int32
+	)
 	c := Config{
 		tree: make(tree),
 		Parms: &Parms{
-			stats: make(counter),
-			Dex:   list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
-			Exc:   list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+			stats: &stats{
+				rejected: a,
+				retained: b,
+			},
+			Dex: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+			Exc: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 		},
 	}
 	for _, opt := range opts {

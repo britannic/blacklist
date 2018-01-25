@@ -42,15 +42,13 @@ func (o *Objects) addObj(c *Config, node string) {
 	}
 }
 
-// func (o *object) area() string {
-// 	switch getType(o.nType).(string) {
-// 	case PreDomns:
-// 		return domains
-// 	case PreHosts:
-// 		return hosts
-// 	}
-// 	return getType(o.nType).(string)
-// }
+func (o *object) area() string {
+	switch getType(o.nType).(string) {
+	case PreDomns:
+		return domains
+	}
+	return hosts
+}
 
 // excludes returns an io.Reader of blacklist includes
 func (o *object) excludes() io.Reader {
