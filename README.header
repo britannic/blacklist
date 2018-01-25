@@ -56,12 +56,12 @@ either expressed or implied, of the FreeBSD Project.
 
 ### EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3
 
-    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/3/edgeos-dnsmasq-blacklist_0.0.8_mips.deb.tgz | tar -xz
+    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.8_mips.deb.tgz | tar -xz
     sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.8_mips.deb
 
 ### EdgeRouter ER-X & ER-X-SFP
 
-    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/4/edgeos-dnsmasq-blacklist_0.0.8_mipsel.deb.tgz
+    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.8_mipsel.deb.tgz
     sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.8_mipsel.deb
 
 ## Removal
@@ -70,12 +70,37 @@ either expressed or implied, of the FreeBSD Project.
 
     sudo apt-get remove edgeos-dnsmasq-blacklist
 
+### EdgeOS dnsmasq Configuration
+
+* dnsmasq will need to be configured to ensure blacklisting works correctly
+  * Here is an example using the EdgeOS configuration shell
+
+        configure
+        set service dns forwarding cache-size 2048
+        set service dns forwarding except-interface [Your WAN i/f]
+        set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
+        set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
+        set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
+        set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
+        set service dns forwarding options bogus-priv
+        set service dns forwarding options domain-needed
+        set service dns forwarding options domain=mydomain.local
+        set service dns forwarding options enable-ra
+        set service dns forwarding options expand-hosts
+        set service dns forwarding options localise-queries
+        set service dns forwarding options strict-order
+        set service dns forwarding system
+        set system name-server 127.0.0.1
+        set system name-server '::1'
+        commit; save;exit
+
 ## Releases
 
 ### Patch v0.0.9
 
 * Added logging for download errors and warnings for empty content
 * Change HTTP user agent to emulate curl, to stop web servers from offering complex content
+* Removed embedded tabs in source prefixes that were interpreted by the EdgeOS configure shell as a completion request,  preventing correct prefix matches
 
 ### Patch v0.0.8
 

@@ -62,10 +62,16 @@ func (p *Parms) debug(s string) {
 	}
 }
 
+func (p *Parms) error(s string) {
+	p.Log.Error(s)
+}
+
 func (p *Parms) log(s string) {
-	if p.Verb {
-		p.Log.Info(s)
-	}
+	p.Log.Info(s)
+}
+
+func (p *Parms) warning(s string) {
+	p.Log.Warning(s)
 }
 
 // SetOpt sets the specified options passed as Parms and returns an option to restore the last set of arg's previous values

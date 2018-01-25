@@ -291,9 +291,14 @@ func TestReadCfg(t *testing.T) {
 			act := NewConfig().ReadCfg(&CFGstatic{Cfg: ""})
 			So(act, ShouldResemble, exp)
 		})
-		Convey("Testing testing with a disabled configuration", func() {
+		Convey("Testing with a disabled configuration", func() {
 			act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.DisabledCfg})
 			So(act, ShouldBeEmpty)
+		})
+		Convey("Testing with an active configuration", func() {
+			c := NewConfig()
+			So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+			So(c.Nodes(), ShouldResemble, []string{"blacklist", "domains", "hosts"})
 		})
 	})
 }

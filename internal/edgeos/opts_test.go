@@ -27,13 +27,12 @@ func TestParmsLog(t *testing.T) {
 			dbug bool
 			name string
 			str  string
-			verb bool
 		}{
-			{name: "Info", str: "This is a log.Info test", dbug: false, verb: true},
-			{name: "Debug", str: "This is a log.Debug test", dbug: true, verb: false},
-			{name: "Debug & Info", str: "This is both a log.Debug and log.Info test ", dbug: true, verb: true},
-			{name: "Both Debug or Info", str: "This is both a log.Debug and log.Info test and there should be output", dbug: true, verb: true},
-			{name: "Neither Debug or Info", str: "This is both a log.Debug and log.Info test and there shouldn't be any output", dbug: false, verb: false},
+			{name: "Info", str: "This is a log.Info test", dbug: false},
+			{name: "Debug", str: "This is a log.Debug test", dbug: true},
+			{name: "Error", str: "This is a log.Error test", dbug: true},
+			{name: "Warning", str: "This is a log.Warning test", dbug: true},
+			{name: "Not Debug", str: "This is a log.Debug test and there shouldn't be any output", dbug: false},
 		}
 
 		var (
@@ -49,27 +48,30 @@ func TestParmsLog(t *testing.T) {
 		for _, tt := range tests {
 			Convey("Testing "+tt.name, func() {
 				p.Dbug = tt.dbug
-				p.Verb = tt.verb
 
 				switch {
 				case tt.dbug:
 					p.debug(tt.str)
 					So(act.String(), ShouldEqual, tt.str+"\n")
 
-				case tt.verb:
+				case tt.name == "Info":
 					p.log(tt.str)
 					So(act.String(), ShouldEqual, tt.str+"\n")
 
-				case tt.dbug && tt.verb:
+				case tt.name == "Warning":
 					exp := tt.str
 					exp += tt.str
-					p.debug(tt.str)
-					p.log(tt.str)
+					p.warning(tt.str)
+					So(act.String(), ShouldEqual, exp)
+
+				case tt.name == "Error":
+					exp := tt.str
+					exp += tt.str
+					p.error(tt.str)
 					So(act.String(), ShouldEqual, exp)
 
 				default:
 					p.debug(tt.str)
-					p.log(tt.str)
 					So(act.String(), ShouldEqual, "")
 				}
 				act.Reset()

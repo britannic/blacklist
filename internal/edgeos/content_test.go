@@ -19,6 +19,7 @@ import (
 )
 
 type dummyConfig struct {
+	*Parms
 	s []string
 	t *testing.T
 }
@@ -338,7 +339,7 @@ func TestNewContent(t *testing.T) {
 				So(err, ShouldBeNil)
 
 				m := make(chan *Msg)
-				d := &dummyConfig{t: t}
+				d := &dummyConfig{Parms: c.Parms, t: t}
 				d.ProcessContent(objs)
 
 				v := NewMsg(tt.name)
@@ -398,6 +399,7 @@ func TestMultiObjNewContent(t *testing.T) {
 			Dir(dir),
 			Ext("blacklist.conf"),
 			FileNameFmt("%v/%v.%v.%v"),
+			Logger(newLog()),
 			Method("GET"),
 			Prefix("address="),
 			LTypes([]string{PreDomns, PreHosts, files, urls}),
@@ -427,7 +429,7 @@ func TestMultiObjNewContent(t *testing.T) {
 
 				switch tt.iFace {
 				case ExRtObj, ExDmObj, ExHtObj, PreDObj, PreHObj:
-					d := &dummyConfig{t: t}
+					d := &dummyConfig{Parms: c.Parms, t: t}
 					d.ProcessContent(ct)
 
 					So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
@@ -450,6 +452,7 @@ func TestProcessContent(t *testing.T) {
 				Dir(dir),
 				Ext("blacklist.conf"),
 				FileNameFmt("%v/%v.%v.%v"),
+				Logger(newLog()),
 				Method("GET"),
 				Prefix("address="),
 				LTypes([]string{PreDomns, PreHosts, files, urls}),

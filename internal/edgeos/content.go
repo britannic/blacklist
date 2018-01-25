@@ -329,7 +329,7 @@ NEXT:
 		line := bytes.TrimSpace(bytes.ToLower(b.Bytes()))
 
 		switch {
-		case bytes.HasPrefix(line, []byte("#")), bytes.HasPrefix(line, []byte("//")):
+		case bytes.HasPrefix(line, []byte("#")), bytes.HasPrefix(line, []byte("//")), bytes.HasPrefix(line, []byte("<")):
 			continue NEXT
 
 		case bytes.HasPrefix(line, []byte(o.prefix)):
@@ -364,11 +364,22 @@ NEXT:
 	}
 
 	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
-	if i := len(add.entry); i > 0 {
-		o.stats[o.name] = stats{RWMutex: &sync.RWMutex{}, retained: i, rejected: ctr - i}
+	i := len(add.entry)
+
+	switch {
+	case o.isExclude():
+
+	case o.name == "includes":
+		// o.log(fmt.Sprintf("No blacklisted %s are configured...", o.area()))
+
+	case i == 0:
+		o.warning(fmt.Sprintf("0 entries were extracted from %s!", o.name))
+
+	default:
 		o.log(fmt.Sprintf("%s: entries downloaded: %d", o.name, ctr))
 		o.log(fmt.Sprintf("%s: entries extracted: %d", o.name, i))
 	}
+
 	return &bList{
 		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),
 		r:    formatData(fmttr, add),

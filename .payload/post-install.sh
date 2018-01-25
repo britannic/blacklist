@@ -96,7 +96,7 @@ echo_logger() {
 
 # Function to output command status of success or failure to screen and log
 try() {
-	if eval ${@}; then
+	if eval "${@}"; then
 		echo_logger I "${@}"
 		return 0
 	else
@@ -107,7 +107,6 @@ try() {
 
 update_dns_configuration() {
 	try begin
-	try delete system task-scheduler task update_blacklists
 	try set service dns forwarding blacklist disabled false
 	try set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
 	try set service dns forwarding blacklist domains include adk2x.com
@@ -125,18 +124,15 @@ update_dns_configuration() {
 	try set service dns forwarding blacklist domains include themillionaireinpjs.com
 	try set service dns forwarding blacklist domains include traktrafficflow.com
 	try set service dns forwarding blacklist domains include wwwpromoter.com
-	try set service dns forwarding blacklist domains source malc0de description "'List of zones serving malicious executables observed by malc0de.com/database/'"
-	try set service dns forwarding blacklist domains source malc0de prefix "'zone '"
-	try set service dns forwarding blacklist domains source malc0de url "'http://malc0de.com/bl/ZONES'"
-	try set service dns forwarding blacklist domains source malwaredomains.com description "'Just domains'"
-	try set service dns forwarding blacklist domains source malwaredomains.com prefix "''"
-	try set service dns forwarding blacklist domains source malwaredomains.com url "'http://mirror1.malwaredomains.com/files/justdomains'"
-	try set service dns forwarding blacklist domains source simple_tracking description "'Basic tracking list by Disconnect'"
-	try set service dns forwarding blacklist domains source simple_tracking prefix "''"
-	try set service dns forwarding blacklist domains source simple_tracking url "'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt'"
-	try set service dns forwarding blacklist domains source zeus description "'abuse.ch ZeuS domain blocklist'"
-	try set service dns forwarding blacklist domains source zeus prefix "''"
-	try set service dns forwarding blacklist domains source zeus url "'https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist'"
+	try set service dns forwarding blacklist domains source malc0de description '"List of zones serving malicious executables observed by malc0de.com/database/"'
+	try set service dns forwarding blacklist domains source malc0de prefix 'zone '
+	try set service dns forwarding blacklist domains source malc0de url 'http://malc0de.com/bl/ZONES'
+	try set service dns forwarding blacklist domains source malwaredomains.com description '"Just Domains"'
+	try set service dns forwarding blacklist domains source malwaredomains.com url 'http://mirror1.malwaredomains.com/files/justdomains'
+	try set service dns forwarding blacklist domains source simple_tracking description '"Basic tracking list by Disconnect"'
+	try set service dns forwarding blacklist domains source simple_tracking url 'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt'
+	try set service dns forwarding blacklist domains source zeus description '"abuse.ch ZeuS domain blocklist"'
+	try set service dns forwarding blacklist domains source zeus url 'https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist'
 	try set service dns forwarding blacklist exclude 1e100.net
 	try set service dns forwarding blacklist exclude 2o7.net
 	try set service dns forwarding blacklist exclude adobedtm.com
@@ -149,7 +145,6 @@ update_dns_configuration() {
 	try set service dns forwarding blacklist exclude avast.com
 	try set service dns forwarding blacklist exclude avira-update.com
 	try set service dns forwarding blacklist exclude bannerbank.com
-	try set service dns forwarding blacklist exclude bing.com
 	try set service dns forwarding blacklist exclude bing.com
 	try set service dns forwarding blacklist exclude bit.ly
 	try set service dns forwarding blacklist exclude bitdefender.com
@@ -207,18 +202,18 @@ update_dns_configuration() {
 	try set service dns forwarding blacklist exclude yimg.com
 	try set service dns forwarding blacklist exclude ytimg.com
 	try set service dns forwarding blacklist hosts include beap.gemini.yahoo.com
-	try set service dns forwarding blacklist hosts source openphish description "'OpenPhish automatic phishing detection'"
-	try set service dns forwarding blacklist hosts source openphish prefix http
-	try set service dns forwarding blacklist hosts source openphish url "'https://openphish.com/feed.txt'"
-	try set service dns forwarding blacklist hosts source raw.github.com description "'This hosts file is a merged collection of hosts from reputable sources'"
-	try set service dns forwarding blacklist hosts source raw.github.com prefix "'0.0.0.0 '"
-	try set service dns forwarding blacklist hosts source raw.github.com url "'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'"
-	try set service dns forwarding blacklist hosts source sysctl.org description "'This hosts file is a merged collection of hosts from cameleon'"
-	try set service dns forwarding blacklist hosts source sysctl.org prefix "'127.0.0.1	 '"
-	try set service dns forwarding blacklist hosts source sysctl.org url "'http://sysctl.org/cameleon/hosts'"
-	try set service dns forwarding blacklist hosts source yoyo description "'Fully Qualified Domain Names only - no prefix to strip'"
-	try set service dns forwarding blacklist hosts source yoyo prefix "''"
-	try set service dns forwarding blacklist hosts source yoyo url "'http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext'"
+	try set service dns forwarding blacklist hosts source openphish description '"OpenPhish automatic phishing detection"'
+	try set service dns forwarding blacklist hosts source openphish prefix 'http'
+	try set service dns forwarding blacklist hosts source openphish url 'https://openphish.com/feed.txt'
+	try set service dns forwarding blacklist hosts source raw.github.com description '"This hosts file is a merged collection of hosts from reputable sources"'
+	try set service dns forwarding blacklist hosts source raw.github.com prefix '0.0.0.0 '
+	try set service dns forwarding blacklist hosts source raw.github.com url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'
+	try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
+	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
+	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
+	try set service dns forwarding blacklist hosts source yoyo description '"Fully Qualified Domain Names only - no prefix to strip"'
+	try set service dns forwarding blacklist hosts source yoyo url "http://pgl.yoyo.org/as/serverlist.php"
+	try set service dns forwarding blacklist hosts source yoyo prefix '127.0.0.1 '
 	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq
 	try set system task-scheduler task update_blacklists interval 1d
 	try commit

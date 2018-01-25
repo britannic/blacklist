@@ -70,6 +70,7 @@ const (
 
 func (c *Config) addExc(node string) *Objects {
 	var (
+		exc   = []string{}
 		ltype string
 		o     = &Objects{Parms: c.Parms}
 	)
@@ -83,9 +84,13 @@ func (c *Config) addExc(node string) *Objects {
 		ltype = ExcRoots
 	}
 
+	if _, ok := c.tree[node]; ok {
+		exc = c.tree[node].exc
+	}
+
 	o.x = append(o.x, &object{
 		desc:  ltype + " exclusions",
-		exc:   c.tree[node].exc,
+		exc:   exc,
 		ip:    c.tree.getIP(node),
 		ltype: ltype,
 		name:  ltype,
@@ -97,10 +102,15 @@ func (c *Config) addExc(node string) *Objects {
 
 func (c *Config) addInc(node string) *object {
 	var (
-		inc   = c.tree[node].inc
+		inc   = []string{}
 		ltype string
 		n     ntype
 	)
+
+	if _, ok := c.tree[node]; ok {
+		inc = c.tree[node].inc
+	}
+
 	switch node {
 	case domains:
 		ltype = getType(preDomn).(string)
@@ -272,6 +282,15 @@ func (c *Config) Nodes() (nodes []string) {
 	return nodes
 }
 
+// isTnode returns true if tnode is part of the blacklist configuration
+func isTnode(tnode string) bool {
+	switch tnode {
+	case rootNode, domains, hosts:
+		return true
+	}
+	return false
+}
+
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 func (c *Config) ReadCfg(r ConfLoader) error {
 	var (
@@ -292,17 +311,22 @@ LINE:
 			incExc := regx.Get([]byte("mlti"), line)
 			switch string(incExc[1]) {
 			case "exclude":
-				c.tree[tnode].exc = append(c.tree[tnode].exc, string(incExc[2]))
-
+				if isTnode(tnode) {
+					c.tree[tnode].exc = append(c.tree[tnode].exc, string(incExc[2]))
+				}
 			case "include":
-				c.tree[tnode].inc = append(c.tree[tnode].inc, string(incExc[2]))
+				if isTnode(tnode) {
+					c.tree[tnode].inc = append(c.tree[tnode].inc, string(incExc[2]))
+				}
 			}
 
 		case rx.NODE.Match(line):
 			node := regx.Get([]byte("node"), line)
 			tnode = string(node[1])
 			nodes = append(nodes, tnode)
-			c.tree[tnode] = newObject()
+			if isTnode(tnode) {
+				c.tree[tnode] = newObject()
+			}
 
 		case rx.LEAF.Match(line):
 			srcName := regx.Get([]byte("leaf"), line)
@@ -316,34 +340,41 @@ LINE:
 			}
 
 		case rx.DSBL.Match(line):
-			c.tree[tnode].disabled = strToBool(string(regx.Get([]byte("dsbl"), line)[1]))
-			c.Parms.Disabled = c.tree[tnode].disabled
+			if isTnode(tnode) {
+				c.tree[tnode].disabled = strToBool(string(regx.Get([]byte("dsbl"), line)[1]))
+				c.Parms.Disabled = c.tree[tnode].disabled
+			}
+
 		case rx.IPBH.Match(line) && nodes[len(nodes)-1] != src:
-			c.tree[tnode].ip = string(regx.Get([]byte("ipbh"), line)[1])
+			if isTnode(tnode) {
+				c.tree[tnode].ip = string(regx.Get([]byte("ipbh"), line)[1])
+			}
 
 		case rx.NAME.Match(line):
-			name := regx.Get([]byte("name"), line)
-			switch string(name[1]) {
-			case "description":
-				if name[2] != nil {
-					o.desc = string(name[2])
+			if isTnode(tnode) {
+				name := regx.Get([]byte("name"), line)
+				if o != nil {
+					switch string(name[1]) {
+					case "description":
+						o.desc = string(name[2])
+
+					case blackhole:
+						o.ip = string(name[2])
+
+					case files:
+						o.file = string(name[2])
+						o.ltype = string(name[1])
+						c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
+
+					case "prefix":
+						o.prefix = string(name[2])
+
+					case urls:
+						o.ltype = string(name[1])
+						o.url = string(name[2])
+						c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
+					}
 				}
-
-			case blackhole:
-				o.ip = string(name[2])
-
-			case files:
-				o.file = string(name[2])
-				o.ltype = string(name[1])
-				c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
-
-			case "prefix":
-				o.prefix = string(name[2])
-
-			case urls:
-				o.ltype = string(name[1])
-				o.url = string(name[2])
-				c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
 			}
 
 		case rx.DESC.Match(line) || rx.CMNT.Match(line) || rx.MISC.Match(line):
@@ -449,20 +480,22 @@ func (c *Config) LTypes() []string {
 }
 
 func (b tree) getIP(node string) (ip string) {
-	switch b[node].ip {
-	case "":
-		ip = b[rootNode].ip
-	default:
-		ip = b[node].ip
+	if _, ok := b[node]; ok {
+		if ip = b[node].ip; ip == "" {
+			ip = b[rootNode].ip
+		}
 	}
 	return ip
 }
 
 func (b tree) validate(node string) *Objects {
-	for _, obj := range b[node].Objects.x {
-		if obj.ip == "" {
-			obj.ip = b.getIP(node)
+	if _, ok := b[node]; ok {
+		for _, obj := range b[node].Objects.x {
+			if obj.ip == "" {
+				obj.ip = b.getIP(node)
+			}
 		}
+		return &b[node].Objects
 	}
-	return &b[node].Objects
+	return &Objects{}
 }

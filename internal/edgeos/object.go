@@ -42,6 +42,16 @@ func (o *Objects) addObj(c *Config, node string) {
 	}
 }
 
+// func (o *object) area() string {
+// 	switch getType(o.nType).(string) {
+// 	case PreDomns:
+// 		return domains
+// 	case PreHosts:
+// 		return hosts
+// 	}
+// 	return getType(o.nType).(string)
+// }
+
 // excludes returns an io.Reader of blacklist includes
 func (o *object) excludes() io.Reader {
 	sort.Strings(o.exc)
@@ -115,6 +125,14 @@ func (o *Objects) Find(elem string) int {
 func (o *object) includes() io.Reader {
 	sort.Strings(o.inc)
 	return strings.NewReader(strings.Join(o.inc, "\n"))
+}
+
+func (o *object) isExclude() bool {
+	switch o.name {
+	case ExcDomns, ExcHosts, ExcRoots:
+		return true
+	}
+	return false
 }
 
 // Names returns a sorted slice of Objects names
