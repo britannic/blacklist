@@ -371,10 +371,10 @@ NEXT:
 
 	if ctr != i {
 		ctr -= i
-		atomic.AddInt32(&o.counter[typeInt(o.nType)].rejected, int32(ctr))
+		atomic.AddInt32(&o.counter[getType(o.nType).(string)].rejected, int32(ctr))
 	}
 
-	atomic.AddInt32(&o.counter[typeInt(o.nType)].retained, int32(i))
+	atomic.AddInt32(&o.counter[getType(o.nType).(string)].retained, int32(i))
 
 	switch {
 	case o.isExclude():
@@ -414,8 +414,6 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 		)
 
 		for _, o := range ct.GetList().x {
-			area = typeInt(o.nType)
-			c.counter[area] = tally
 			getErrors = make(chan error)
 
 			if o.err != nil {
@@ -423,6 +421,8 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 			}
 
 			go func(o *object) {
+				area = typeInt(o.nType)
+				c.counter[area] = tally
 				switch o.nType {
 				case excDomn, excHost, excRoot:
 					o.process()
@@ -439,7 +439,12 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 				close(getErrors)
 			}
 		}
-		c.log(fmt.Sprintf("Total %s: %d, rejected: %d", area, c.counter[area].retained, c.counter[area].rejected))
+
+		if area != "" {
+			if c.counter[area].retained+c.counter[area].rejected != 0 {
+				c.log(fmt.Sprintf("Total %s: %d, rejected: %d", area, c.counter[area].retained, c.counter[area].rejected))
+			}
+		}
 	}
 
 	if errs != nil {

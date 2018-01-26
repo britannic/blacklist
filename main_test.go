@@ -13,13 +13,50 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+func (o *opts) String() string {
+	var s string
+	o.VisitAll(func(f *mflag.Flag) {
+		s += fmt.Sprintf("  -%s", f.Name) // Two spaces before -; see next two comments.
+
+		name, usage := mflag.UnquoteUsage(f)
+		if len(name) > 0 {
+			s += " " + name
+		}
+		// Boolean flags of one ASCII letter are so common we
+		// treat them specially, putting their usage on the same line.
+		if len(s) <= 4 { // space, space, '-', 'x'.
+			s += "\t"
+		} else {
+			// Four spaces before the tab triggers good alignment
+			// for both 4- and 8-space tab stops.
+			s += "\n    \t"
+		}
+		s += usage
+		if !mflag.IsZeroValue(f, f.DefValue) {
+			if _, ok := f.Value.(*mflag.StringValue); ok {
+				// put quotes on the value
+				s += fmt.Sprintf(" (default %q)", f.DefValue)
+			} else {
+				s += fmt.Sprintf(" (default %v)", f.DefValue)
+			}
+		}
+		s = fmt.Sprint(s, "\n")
+
+	})
+
+	return s
+}
+
 func TestMain(t *testing.T) {
+	origArgs := os.Args
+
 	Convey("Testing main()", t, func() {
 		var (
 			act          []error
 			actReloadDNS string
+			prog         = path.Base(os.Args[0])
 		)
-
+		// defer func() { os.Args = origArgs }()
 		exitCmd = func(int) {}
 
 		logFatalln = func(vals ...interface{}) {
@@ -34,11 +71,29 @@ func TestMain(t *testing.T) {
 			actReloadDNS = fmt.Sprintf(s, vals)
 		}
 
-		objex = []edgeos.IFace{edgeos.ExRtObj}
 		screenLog()
 		main()
 		So(act, ShouldBeNil)
 		So(actReloadDNS, ShouldNotBeNil)
+
+		Convey("Testing main() with configuration file load", func() {
+			act = nil
+			os.Args = []string{prog, "-convey-json", "-f", "internal/testdata/config.erx.boot"}
+			main()
+			So(act, ShouldBeNil)
+			os.Args = origArgs
+		})
+
+		Convey("Testing main() with non-existent configuration file load", func() {
+			var s string
+			os.Args = []string{prog, "-convey-json", "-f", "internal/testdata/config.bad.boot"}
+			logFatalln = func(args ...interface{}) {
+				s = fmt.Sprint(args...)
+			}
+			main()
+			So(s, ShouldEqual, "Cannot open configuration file internal/testdata/config.bad.boot!")
+			os.Args = origArgs
+		})
 	})
 }
 
@@ -505,6 +560,8 @@ var (
 }`
 	vanillaArgs = `  -dir string
     	Override dnsmasq directory (default "/etc/dnsmasq.d")
+  -f <file>
+    	<file> # Load a configuration file
   -h	Display help
   -v	Verbose display
   -version

@@ -3,6 +3,7 @@ package edgeos
 import (
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"sync"
@@ -289,6 +290,24 @@ func TestInSession(t *testing.T) {
 
 func TestReadCfg(t *testing.T) {
 	Convey("Testing ReadCfg()", t, func() {
+		var (
+			err    error
+			f      []byte
+			file   = "../testdata/config.erx.boot"
+			reader io.Reader
+		)
+
+		if reader, err = GetFile(file); err != nil {
+			Printf("Cannot open configuration file %s!", file)
+		}
+
+		f, _ = ioutil.ReadAll(reader)
+
+		Convey("Testing with a configuration loaded from a file", func() {
+			act := NewConfig().ReadCfg(&CFGstatic{Cfg: string(f)})
+			So(act, ShouldBeEmpty)
+		})
+
 		Convey("Testing with an empty configuration", func() {
 			exp := errors.New("Configuration data is empty, cannot continue")
 			act := NewConfig().ReadCfg(&CFGstatic{Cfg: ""})
@@ -298,10 +317,12 @@ func TestReadCfg(t *testing.T) {
 			act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.DisabledCfg})
 			So(act, ShouldBeEmpty)
 		})
+
 		Convey("Testing with a single source configuration", func() {
 			act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.SingleSource})
 			So(act, ShouldBeEmpty)
 		})
+
 		Convey("Testing with an active configuration", func() {
 			c := NewConfig()
 			So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)

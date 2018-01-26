@@ -77,7 +77,7 @@ func getOpts() *opts {
 			DNSdir:  flags.String("dir", "/etc/dnsmasq.d", "Override dnsmasq directory", true),
 			DNStmp:  flags.String("tmp", "/tmp", "Override dnsmasq temporary directory", false),
 			Help:    flags.Bool("h", false, "Display help", true),
-			File:    flags.String("f", "", "`<file>` # Load a configuration file", false),
+			File:    flags.String("f", "", "`<file>` # Load a configuration file", true),
 			FlagSet: &flags,
 			MIPSLE:  flags.String("mipsle", "mipsle", "Override target EdgeOS CPU architecture", false),
 			MIPS64:  flags.String("mips64", "mips64", "Override target EdgeOS CPU architecture", false),
@@ -132,38 +132,4 @@ func (o *opts) setArgs() {
 		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n\n This software comes with ABSOLUTELY NO WARRANTY.\n %s is free software, and you are\n welcome to redistribute it under the terms of\n the Simplified BSD License.\n", version, build, githash, progname)
 		exitCmd(0)
 	}
-}
-
-func (o *opts) String() string {
-	var s string
-	o.VisitAll(func(f *mflag.Flag) {
-		s += fmt.Sprintf("  -%s", f.Name) // Two spaces before -; see next two comments.
-
-		name, usage := mflag.UnquoteUsage(f)
-		if len(name) > 0 {
-			s += " " + name
-		}
-		// Boolean flags of one ASCII letter are so common we
-		// treat them specially, putting their usage on the same line.
-		if len(s) <= 4 { // space, space, '-', 'x'.
-			s += "\t"
-		} else {
-			// Four spaces before the tab triggers good alignment
-			// for both 4- and 8-space tab stops.
-			s += "\n    \t"
-		}
-		s += usage
-		if !mflag.IsZeroValue(f, f.DefValue) {
-			if _, ok := f.Value.(*mflag.StringValue); ok {
-				// put quotes on the value
-				s += fmt.Sprintf(" (default %q)", f.DefValue)
-			} else {
-				s += fmt.Sprintf(" (default %v)", f.DefValue)
-			}
-		}
-		s = fmt.Sprint(s, "\n")
-
-	})
-
-	return s
 }
