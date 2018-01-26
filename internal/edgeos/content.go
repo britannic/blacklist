@@ -319,11 +319,15 @@ func (u *URLHostObjects) Len() int { return len(u.Objects.x) }
 // Process extracts hosts/domains from downloaded raw content
 func (o *object) process() *bList {
 	var (
-		add = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
-		ctr int
-		b   = bufio.NewScanner(o.r)
-		rx  = regx.Obj
+		add               = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+		b                 = bufio.NewScanner(o.r)
+		found, kept, drop int
+		rx                = regx.Obj
 	)
+
+	if o.name == ExcDomns {
+		fmt.Println(ExcDomns)
+	}
 
 NEXT:
 	for b.Scan() {
@@ -335,26 +339,31 @@ NEXT:
 
 		case bytes.HasPrefix(line, []byte(o.prefix)):
 			var ok bool
-			ctr++
+
 			if line, ok = rx.StripPrefixAndSuffix(line, o.prefix); ok {
+				found++
 				fqdns := rx.FQDN.FindAll(line, -1)
+
+				if len(fqdns) > 1 {
+					o.log(fmt.Sprintf("%s: extra entries found in same line.", o.name))
+				}
 
 			FQDN:
 				for _, fqdn := range fqdns {
-					isDEX := o.Dex.subKeyExists(string(fqdn))
-					isEXC := o.Exc.keyExists(string(fqdn))
-
 					switch {
-					case isDEX:
+					case o.Dex.subKeyExists(string(fqdn)):
+						drop++
 						continue FQDN
 
-					case !isEXC:
+					case !o.Exc.keyExists(string(fqdn)):
+						kept++
 						o.Exc.set(string(fqdn), 0)
 						add.set(string(fqdn), 0)
 					}
 				}
 			}
 		default:
+			drop++
 			continue NEXT
 		}
 	}
@@ -367,27 +376,26 @@ NEXT:
 	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
 
 	// Let's do some accounting
-	i := len(add.entry)
+	atomic.AddInt32(&o.counter[getType(o.nType).(string)].rejected, int32(drop))
+	atomic.AddInt32(&o.counter[getType(o.nType).(string)].retained, int32(kept))
 
-	if ctr != i {
-		ctr -= i
-		atomic.AddInt32(&o.counter[getType(o.nType).(string)].rejected, int32(ctr))
-	}
+	o.log(fmt.Sprintf("%s: downloaded: %d", o.name, found))
+	o.log(fmt.Sprintf("%s: extracted: %d", o.name, kept))
+	o.log(fmt.Sprintf("%s: rejected: %d", o.name, drop))
 
-	atomic.AddInt32(&o.counter[getType(o.nType).(string)].retained, int32(i))
+	// switch {
+	// case o.isExclude():
 
-	switch {
-	case o.isExclude():
+	// case o.name == "includes":
 
-	case o.name == "includes":
+	// case kept == 0:
+	// 	o.warning(fmt.Sprintf("%s 0 entries extracted!", o.name))
 
-	case i == 0:
-		o.warning(fmt.Sprintf("%s 0 entries extracted!", o.name))
-
-	default:
-		o.log(fmt.Sprintf("%s: downloaded: %d", o.name, ctr))
-		o.log(fmt.Sprintf("%s: extracted: %d", o.name, i))
-	}
+	// default:
+	// 	o.log(fmt.Sprintf("%s: downloaded: %d", o.name, found))
+	// 	o.log(fmt.Sprintf("%s: extracted: %d", o.name, kept))
+	// 	o.log(fmt.Sprintf("%s: rejected: %d", o.name, drop))
+	// }
 
 	return &bList{
 		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),
