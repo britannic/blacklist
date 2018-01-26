@@ -49,24 +49,30 @@ either expressed or implied, of the FreeBSD Project.
 
 ## Compatibility
 
-* edgeos-dnsmasq-blacklist has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X, UniFi Security Gateway USG3 routers, EdgeOS versions v1.7.0-v1.9.7+hotfix.4
+* edgeos-dnsmasq-blacklist has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X and UniFi Security Gateway USG-3 routers
+  * versions EdgeMAX: v1.7.0-v1.9.7+hotfix.4, UniFi: v4.4.12-v4.4.18
 * integration could be adapted to work on VyOS and Vyatta derived ports, since  EdgeOS is a fork and port of Vyatta 6.3
 
 ## Installation
 
 ### EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3
 
-    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.9_mips.deb.tgz | tar -xz
+    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.9_mips.deb.tgz | tar -xvz
     sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.9_mips.deb
 
 ### EdgeRouter ER-X & ER-X-SFP
 
-    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.9_mipsel.deb.tgz
+    curl
+    https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.9_mipsel.deb.tgz | tar -xvz
     sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.9_mipsel.deb
+
+## Upgrade
+
+* Since dpkg cannot upgrade the package, so use the instructions to install and the previous package version will be automatically removed before the new package version is installed
 
 ## Removal
 
-### EdgeMAX ERLite-x & EdgeMax ER-X
+### EdgeMAX - All Platforms
 
     sudo apt-get remove edgeos-dnsmasq-blacklist
 

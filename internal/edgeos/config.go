@@ -37,6 +37,8 @@ type Config struct {
 	tree
 }
 
+type counter map[string]*stats
+
 type stats struct {
 	rejected int32
 	retained int32

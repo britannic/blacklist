@@ -16,8 +16,6 @@ import (
 func TestAddInc(t *testing.T) {
 	Convey("Testing addInc()", t, func() {
 		var (
-			a   int32
-			b   int32
 			c   = NewConfig()
 			err = c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg})
 		)
@@ -38,15 +36,12 @@ func TestAddInc(t *testing.T) {
 							Node: "",
 							Name: "",
 						},
-						stats: &stats{
-							rejected: a,
-							retained: b,
-						},
-						API:   "",
-						Arch:  "",
-						Bash:  "",
-						Cores: 0,
-						Dbug:  false,
+						counter: make(counter),
+						API:     "",
+						Arch:    "",
+						Bash:    "",
+						Cores:   0,
+						Dbug:    false,
 						Dex: list{
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
@@ -97,15 +92,12 @@ func TestAddInc(t *testing.T) {
 							Node: "",
 							Name: "",
 						},
-						stats: &stats{
-							rejected: a,
-							retained: b,
-						},
-						API:   "",
-						Arch:  "",
-						Bash:  "",
-						Cores: 0,
-						Dbug:  false,
+						counter: make(counter),
+						API:     "",
+						Arch:    "",
+						Bash:    "",
+						Cores:   0,
+						Dbug:    false,
 						Dex: list{
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
@@ -155,15 +147,12 @@ func TestAddInc(t *testing.T) {
 							Node: "",
 							Name: "",
 						},
-						stats: &stats{
-							rejected: a,
-							retained: b,
-						},
-						API:   "",
-						Arch:  "",
-						Bash:  "",
-						Cores: 0,
-						Dbug:  false,
+						counter: make(counter),
+						API:     "",
+						Arch:    "",
+						Bash:    "",
+						Cores:   0,
+						Dbug:    false,
 						Dex: list{
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
@@ -307,6 +296,10 @@ func TestReadCfg(t *testing.T) {
 		})
 		Convey("Testing with a disabled configuration", func() {
 			act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.DisabledCfg})
+			So(act, ShouldBeEmpty)
+		})
+		Convey("Testing with a single source configuration", func() {
+			act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.SingleSource})
 			So(act, ShouldBeEmpty)
 		})
 		Convey("Testing with an active configuration", func() {

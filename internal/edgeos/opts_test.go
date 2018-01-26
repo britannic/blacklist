@@ -82,13 +82,7 @@ func TestParmsLog(t *testing.T) {
 
 func TestOption(t *testing.T) {
 	Convey("Testing Option()", t, func() {
-		var (
-			a int32
-			b int32
-		)
-
-		vanilla := Parms{stats: &stats{rejected: a, retained: b}}
-
+		vanilla := Parms{counter: make(counter)}
 		exp := `{
 	"Log": null,
 	"API": "/bin/cli-shell-api",
@@ -122,7 +116,7 @@ func TestOption(t *testing.T) {
 }`
 
 		expRaw := Parms{
-			stats:    &stats{rejected: a, retained: b},
+			counter:  make(counter),
 			API:      "/bin/cli-shell-api",
 			Arch:     "amd64",
 			Bash:     "/bin/bash",

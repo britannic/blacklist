@@ -25,9 +25,17 @@ type dummyConfig struct {
 }
 
 func (d *dummyConfig) ProcessContent(cts ...Contenter) error {
+	var (
+		a, b  int32
+		area  string
+		tally = &stats{rejected: a, retained: b}
+	)
+
 	for _, ct := range cts {
 		o := ct.GetList().x
 		for _, src := range o {
+			area = typeInt(src.nType)
+			src.counter[area] = tally
 			b, _ := ioutil.ReadAll(src.process().r)
 			d.s = append(d.s, strings.TrimSuffix(string(b), "\n"))
 		}

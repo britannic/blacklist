@@ -12,7 +12,7 @@ import (
 
 // Parms is struct of parameters
 type Parms struct {
-	*stats
+	counter
 	ioWriter io.Writer
 	Log      *logging.Logger
 	API      string        `json:"API,omitempty"`
@@ -229,19 +229,12 @@ func Method(method string) Option {
 
 // NewConfig returns a new *Config initialized with the parameter options passed to it
 func NewConfig(opts ...Option) *Config {
-	var (
-		a int32
-		b int32
-	)
 	c := Config{
 		tree: make(tree),
 		Parms: &Parms{
-			stats: &stats{
-				rejected: a,
-				retained: b,
-			},
-			Dex: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
-			Exc: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+			counter: make(counter),
+			Dex:     list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+			Exc:     list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 		},
 	}
 	for _, opt := range opts {

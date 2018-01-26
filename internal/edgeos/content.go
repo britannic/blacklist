@@ -371,23 +371,22 @@ NEXT:
 
 	if ctr != i {
 		ctr -= i
-		atomic.AddInt32(&o.rejected, int32(ctr))
+		atomic.AddInt32(&o.counter[typeInt(o.nType)].rejected, int32(ctr))
 	}
 
-	atomic.AddInt32(&o.retained, int32(i))
+	atomic.AddInt32(&o.counter[typeInt(o.nType)].retained, int32(i))
 
-	fmt.Printf("%d:%d\n", o.retained, o.rejected)
 	switch {
 	case o.isExclude():
 
 	case o.name == "includes":
 
 	case i == 0:
-		o.warning(fmt.Sprintf("0 entries were extracted from %s!", o.name))
+		o.warning(fmt.Sprintf("%s 0 entries extracted!", o.name))
 
 	default:
-		o.log(fmt.Sprintf("%s: entries downloaded: %d", o.name, ctr))
-		o.log(fmt.Sprintf("%s: entries extracted: %d", o.name, i))
+		o.log(fmt.Sprintf("%s: downloaded: %d", o.name, ctr))
+		o.log(fmt.Sprintf("%s: extracted: %d", o.name, i))
 	}
 
 	return &bList{
@@ -408,8 +407,17 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 	}
 
 	for _, ct := range cts {
+		var (
+			a, b  int32
+			area  string
+			tally = &stats{rejected: a, retained: b}
+		)
+
 		for _, o := range ct.GetList().x {
+			area = typeInt(o.nType)
+			c.counter[area] = tally
 			getErrors = make(chan error)
+
 			if o.err != nil {
 				errs = append(errs, o.err.Error())
 			}
@@ -431,13 +439,12 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 				close(getErrors)
 			}
 		}
+		c.log(fmt.Sprintf("Total %s: %d, rejected: %d", area, c.counter[area].retained, c.counter[area].rejected))
 	}
 
 	if errs != nil {
 		return fmt.Errorf(strings.Join(errs, "\n"))
 	}
-
-	c.log(fmt.Sprintf("Blacklisted entries extracted: %d, rejected: %d", c.retained, c.rejected))
 
 	return nil
 }
