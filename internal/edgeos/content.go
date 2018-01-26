@@ -320,14 +320,11 @@ func (u *URLHostObjects) Len() int { return len(u.Objects.x) }
 func (o *object) process() *bList {
 	var (
 		add               = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+		area              = typeInt(o.nType)
 		b                 = bufio.NewScanner(o.r)
-		found, kept, drop int
+		drop, found, kept int
 		rx                = regx.Obj
 	)
-
-	if o.name == ExcDomns {
-		fmt.Println(ExcDomns)
-	}
 
 NEXT:
 	for b.Scan() {
@@ -336,7 +333,6 @@ NEXT:
 		switch {
 		case bytes.HasPrefix(line, []byte("#")), bytes.HasPrefix(line, []byte("//")), bytes.HasPrefix(line, []byte("<")):
 			continue NEXT
-
 		case bytes.HasPrefix(line, []byte(o.prefix)):
 			var ok bool
 
@@ -344,17 +340,12 @@ NEXT:
 				found++
 				fqdns := rx.FQDN.FindAll(line, -1)
 
-				if len(fqdns) > 1 {
-					o.log(fmt.Sprintf("%s: extra entries found in same line.", o.name))
-				}
-
 			FQDN:
 				for _, fqdn := range fqdns {
 					switch {
 					case o.Dex.subKeyExists(string(fqdn)):
 						drop++
 						continue FQDN
-
 					case !o.Exc.keyExists(string(fqdn)):
 						kept++
 						o.Exc.set(string(fqdn), 0)
@@ -373,29 +364,15 @@ NEXT:
 		o.Dex = mergeList(o.Dex, add)
 	}
 
-	fmttr := o.Pfx + getSeparator(getType(o.nType).(string)) + "%v/" + o.ip
+	fmttr := o.Pfx + getSeparator(area) + "%v/" + o.ip
 
 	// Let's do some accounting
-	atomic.AddInt32(&o.counter[getType(o.nType).(string)].rejected, int32(drop))
-	atomic.AddInt32(&o.counter[getType(o.nType).(string)].retained, int32(kept))
+	atomic.AddInt32(&o.counter[area].dropped, int32(drop))
+	atomic.AddInt32(&o.counter[area].kept, int32(kept))
 
 	o.log(fmt.Sprintf("%s: downloaded: %d", o.name, found))
 	o.log(fmt.Sprintf("%s: extracted: %d", o.name, kept))
-	o.log(fmt.Sprintf("%s: rejected: %d", o.name, drop))
-
-	// switch {
-	// case o.isExclude():
-
-	// case o.name == "includes":
-
-	// case kept == 0:
-	// 	o.warning(fmt.Sprintf("%s 0 entries extracted!", o.name))
-
-	// default:
-	// 	o.log(fmt.Sprintf("%s: downloaded: %d", o.name, found))
-	// 	o.log(fmt.Sprintf("%s: extracted: %d", o.name, kept))
-	// 	o.log(fmt.Sprintf("%s: rejected: %d", o.name, drop))
-	// }
+	o.log(fmt.Sprintf("%s: dropped: %d", o.name, drop))
 
 	return &bList{
 		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),
@@ -418,7 +395,7 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 		var (
 			a, b  int32
 			area  string
-			tally = &stats{rejected: a, retained: b}
+			tally = &stats{dropped: a, kept: b}
 		)
 
 		for _, o := range ct.GetList().x {
@@ -449,8 +426,8 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 		}
 
 		if area != "" {
-			if c.counter[area].retained+c.counter[area].rejected != 0 {
-				c.log(fmt.Sprintf("Total %s: %d, rejected: %d", area, c.counter[area].retained, c.counter[area].rejected))
+			if c.counter[area].kept+c.counter[area].dropped != 0 {
+				c.log(fmt.Sprintf("Total %s: %d, dropped: %d", area, c.counter[area].kept, c.counter[area].dropped))
 			}
 		}
 	}

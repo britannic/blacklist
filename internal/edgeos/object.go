@@ -125,14 +125,6 @@ func (o *object) includes() io.Reader {
 	return strings.NewReader(strings.Join(o.inc, "\n"))
 }
 
-// func (o *object) isExclude() bool {
-// 	switch o.name {
-// 	case ExcDomns, ExcHosts, ExcRoots:
-// 		return true
-// 	}
-// 	return false
-// }
-
 // Names returns a sorted slice of Objects names
 func (o *Objects) Names() (s sort.StringSlice) {
 	for _, obj := range o.x {

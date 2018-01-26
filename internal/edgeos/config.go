@@ -40,8 +40,8 @@ type Config struct {
 type counter map[string]*stats
 
 type stats struct {
-	rejected int32
-	retained int32
+	dropped int32
+	kept    int32
 }
 
 const (
@@ -326,7 +326,6 @@ LINE:
 					c.tree[tnode].inc = append(c.tree[tnode].inc, string(incExc[2]))
 				}
 			}
-
 		case rx.NODE.Match(line):
 			node := regx.Get([]byte("node"), line)
 			tnode = string(node[1])
@@ -334,7 +333,6 @@ LINE:
 			if isTnode(tnode) {
 				c.tree[tnode] = newObject()
 			}
-
 		case rx.LEAF.Match(line):
 			srcName := regx.Get([]byte("leaf"), line)
 			leaf = string(srcName[2])
@@ -345,18 +343,15 @@ LINE:
 				o.name = leaf
 				o.nType = getType(tnode).(ntype)
 			}
-
 		case rx.DSBL.Match(line):
 			if isTnode(tnode) {
 				c.tree[tnode].disabled = strToBool(string(regx.Get([]byte("dsbl"), line)[1]))
 				c.Parms.Disabled = c.tree[tnode].disabled
 			}
-
 		case rx.IPBH.Match(line) && nodes[len(nodes)-1] != src:
 			if isTnode(tnode) {
 				c.tree[tnode].ip = string(regx.Get([]byte("ipbh"), line)[1])
 			}
-
 		case rx.NAME.Match(line):
 			if isTnode(tnode) {
 				name := regx.Get([]byte("name"), line)
@@ -364,18 +359,14 @@ LINE:
 					switch string(name[1]) {
 					case "description":
 						o.desc = string(name[2])
-
 					case blackhole:
 						o.ip = string(name[2])
-
 					case files:
 						o.file = string(name[2])
 						o.ltype = string(name[1])
 						c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
-
 					case "prefix":
 						o.prefix = string(name[2])
-
 					case urls:
 						o.ltype = string(name[1])
 						o.url = string(name[2])
@@ -386,7 +377,6 @@ LINE:
 
 		case rx.DESC.Match(line) || rx.CMNT.Match(line) || rx.MISC.Match(line):
 			continue LINE
-
 		case rx.RBRC.Match(line):
 			if len(nodes) > 1 {
 				nodes = nodes[:len(nodes)-1] // pop last node

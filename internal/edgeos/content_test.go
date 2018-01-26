@@ -28,7 +28,7 @@ func (d *dummyConfig) ProcessContent(cts ...Contenter) error {
 	var (
 		a, b  int32
 		area  string
-		tally = &stats{rejected: a, retained: b}
+		tally = &stats{dropped: a, kept: b}
 	)
 
 	for _, ct := range cts {
