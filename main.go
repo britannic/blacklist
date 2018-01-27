@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"runtime"
-	"time"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
 	"github.com/britannic/mflag"
@@ -24,6 +22,15 @@ var (
 	githash = "UNKNOWN"
 	version = "UNKNOWN"
 	// ---
+
+	boldcolors = []string{
+		logging.CRITICAL: logging.ColorSeqBold(logging.ColorMagenta),
+		logging.ERROR:    logging.ColorSeqBold(logging.ColorRed),
+		logging.WARNING:  logging.ColorSeqBold(logging.ColorYellow),
+		logging.NOTICE:   logging.ColorSeqBold(logging.ColorCyan),
+		logging.INFO:     logging.ColorSeqBold(logging.ColorGreen),
+		logging.DEBUG:    logging.ColorSeqBold(logging.ColorBlue),
+	}
 
 	progname = basename(os.Args[0])
 	exitCmd  = os.Exit
@@ -47,7 +54,6 @@ var (
 	logInfof  = log.Infof
 	logNotice = log.Notice
 	logPrintf = logInfof
-	// logPrintln = logInfo
 
 	objex = []e.IFace{
 		e.ExRtObj,
@@ -72,6 +78,7 @@ func main() {
 		exitCmd(0)
 	}
 
+	// logDebugf(o, "Dumping env variable: %v\n", env)
 	logNotice(fmt.Sprintf("Starting blacklist update..."))
 
 	logInfo("Removing stale blacklists...")
@@ -110,32 +117,6 @@ func basename(s string) string {
 		}
 	}
 	return s
-}
-
-func (o *opts) initEdgeOS() *e.Config {
-	return e.NewConfig(
-		e.API("/bin/cli-shell-api"),
-		e.Arch(runtime.GOARCH),
-		e.Bash("/bin/bash"),
-		e.Cores(2),
-		e.Disabled(false),
-		e.Dbug(*o.Dbug),
-		e.Dir(o.setDir(*o.ARCH)),
-		e.DNSsvc("/etc/init.d/dnsmasq restart"),
-		e.Ext("blacklist.conf"),
-		e.File(*o.File),
-		e.FileNameFmt("%v/%v.%v.%v"),
-		e.InCLI("inSession"),
-		e.Level("service dns forwarding"),
-		e.Method("GET"),
-		e.Prefix("address="),
-		e.Logger(log),
-		e.LTypes([]string{files, e.PreDomns, e.PreHosts, urls}),
-		e.Timeout(30*time.Second),
-		e.Verb(*o.Verb),
-		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
-		e.Writer(ioutil.Discard),
-	)
 }
 
 func initEnv() (env *e.Config, err error) {
@@ -225,22 +206,13 @@ func screenLog() {
 		if runtime.GOOS == "darwin" {
 			logFile = fmt.Sprintf("/tmp/%s.log", progname)
 		}
+
+		scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)
+		scr.ColorConfig = boldcolors
+		scr.Color = true
 		scrFmt := logging.MustStringFormatter(
 			`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000}: %{message}`,
 		)
-
-		scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)
-		colors := []string{
-			logging.CRITICAL: logging.ColorSeqBold(logging.ColorMagenta),
-			logging.DEBUG:    logging.ColorSeqBold(logging.ColorCyan),
-			logging.ERROR:    logging.ColorSeqBold(logging.ColorRed),
-			logging.INFO:     logging.ColorSeqBold(logging.ColorGreen),
-			logging.NOTICE:   logging.ColorSeqBold(logging.ColorBlue),
-			logging.WARNING:  logging.ColorSeqBold(logging.ColorYellow),
-		}
-		scr.Color = true
-		scr.ColorConfig = colors
-
 		scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
 		sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
 		if err != nil {

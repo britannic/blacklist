@@ -97,6 +97,21 @@ func TestMain(t *testing.T) {
 	})
 }
 
+func TestExitCmd(t *testing.T) {
+	Convey("Testing exitCmd", t, func() {
+		var (
+			act int
+		)
+		exitCmd = func(i int) {
+			act = i
+		}
+
+		exitCmd(0)
+
+		So(act, ShouldEqual, 0)
+	})
+}
+
 func TestInitEnv(t *testing.T) {
 	Convey("Testing initEnv", t, func() {
 		initEnv := func() (*edgeos.Config, error) {

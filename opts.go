@@ -7,8 +7,9 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"time"
 
-	"github.com/britannic/blacklist/internal/edgeos"
+	e "github.com/britannic/blacklist/internal/edgeos"
 	"github.com/britannic/blacklist/internal/tdata"
 	"github.com/britannic/mflag"
 )
@@ -30,19 +31,24 @@ type opts struct {
 	Version *bool
 }
 
-// setDir sets the directory according to the host CPU arch
-func (o *opts) setDir(arch string) (dir string) {
-	switch arch {
-	case *o.MIPSLE, *o.MIPS64:
-		dir = *o.DNSdir
-	default:
-		dir = *o.DNStmp
+// cleanArgs removes flags when code is being tested
+func cleanArgs(args []string) (r []string) {
+NEXT:
+	for _, a := range args {
+		switch {
+		case strings.HasPrefix(a, "-test"):
+			continue NEXT
+		case strings.HasPrefix(a, "-convey"):
+			continue NEXT
+		default:
+			r = append(r, a)
+		}
 	}
-	return dir
+	return r
 }
 
-// getCFG returns a edgeos.ConfLoader
-func (o *opts) getCFG(c *edgeos.Config) (r edgeos.ConfLoader) {
+// getCFG returns a e.ConfLoader
+func (o *opts) getCFG(c *e.Config) (r e.ConfLoader) {
 	if *o.File != "" {
 		var (
 			f      []byte
@@ -50,19 +56,19 @@ func (o *opts) getCFG(c *edgeos.Config) (r edgeos.ConfLoader) {
 			reader io.Reader
 		)
 
-		if reader, err = edgeos.GetFile(*o.File); err != nil {
+		if reader, err = e.GetFile(*o.File); err != nil {
 			logFatalln(fmt.Sprintf("Cannot open configuration file %s!", *o.File))
 		}
 
 		f, _ = ioutil.ReadAll(reader)
-		r = &edgeos.CFGstatic{Config: c, Cfg: string(f)}
+		r = &e.CFGstatic{Config: c, Cfg: string(f)}
 		return r
 	}
 	switch *o.ARCH {
 	case *o.MIPSLE, *o.MIPS64:
-		r = &edgeos.CFGcli{Config: c}
+		r = &e.CFGcli{Config: c}
 	default:
-		r = &edgeos.CFGstatic{Config: c, Cfg: tdata.Live}
+		r = &e.CFGstatic{Config: c, Cfg: tdata.Live}
 	}
 	return r
 }
@@ -93,20 +99,30 @@ func getOpts() *opts {
 	return o
 }
 
-// cleanArgs removes flags when code is being tested
-func cleanArgs(args []string) (r []string) {
-NEXT:
-	for _, a := range args {
-		switch {
-		case strings.HasPrefix(a, "-test"):
-			continue NEXT
-		case strings.HasPrefix(a, "-convey"):
-			continue NEXT
-		default:
-			r = append(r, a)
-		}
-	}
-	return r
+func (o *opts) initEdgeOS() *e.Config {
+	return e.NewConfig(
+		e.API("/bin/cli-shell-api"),
+		e.Arch(runtime.GOARCH),
+		e.Bash("/bin/bash"),
+		e.Cores(2),
+		e.Disabled(false),
+		e.Dbug(*o.Dbug),
+		e.Dir(o.setDir(*o.ARCH)),
+		e.DNSsvc("/etc/init.d/dnsmasq restart"),
+		e.Ext("blacklist.conf"),
+		e.File(*o.File),
+		e.FileNameFmt("%v/%v.%v.%v"),
+		e.InCLI("inSession"),
+		e.Level("service dns forwarding"),
+		e.Method("GET"),
+		e.Prefix("address="),
+		e.Logger(log),
+		e.LTypes([]string{files, e.PreDomns, e.PreHosts, urls}),
+		e.Timeout(30*time.Second),
+		e.Verb(*o.Verb),
+		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
+		e.Writer(ioutil.Discard),
+	)
 }
 
 // setArgs retrieves arguments entered on the command line
@@ -117,19 +133,29 @@ func (o *opts) setArgs() {
 	}
 
 	switch {
+	case *o.Dbug:
+		e.Dbug(true)
 	case *o.Help:
 		o.Usage()
 		exitCmd(0)
-
 	case *o.Test:
 		fmt.Println("Test activated!")
 		exitCmd(0)
-
 	case *o.Verb:
 		screenLog()
-
 	case *o.Version:
 		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n\n This software comes with ABSOLUTELY NO WARRANTY.\n %s is free software, and you are\n welcome to redistribute it under the terms of\n the Simplified BSD License.\n", version, build, githash, progname)
 		exitCmd(0)
 	}
+}
+
+// setDir sets the directory according to the host CPU arch
+func (o *opts) setDir(arch string) (dir string) {
+	switch arch {
+	case *o.MIPSLE, *o.MIPS64:
+		dir = *o.DNSdir
+	default:
+		dir = *o.DNStmp
+	}
+	return dir
 }

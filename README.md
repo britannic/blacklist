@@ -78,7 +78,7 @@ either expressed or implied, of the FreeBSD Project.
 
 ### EdgeOS dnsmasq Configuration
 
-* dnsmasq will need to be configured to ensure blacklisting works correctly
+* dnsmasq may need to be configured to ensure blacklisting works correctly
   * Here is an example using the EdgeOS configuration shell
 
         configure
