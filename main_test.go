@@ -7,7 +7,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/britannic/blacklist/internal/edgeos"
+	e "github.com/britannic/blacklist/internal/edgeos"
 	"github.com/britannic/mflag"
 	. "github.com/britannic/testutils"
 	. "github.com/smartystreets/goconvey/convey"
@@ -94,6 +94,27 @@ func TestMain(t *testing.T) {
 			So(s, ShouldEqual, "Cannot open configuration file internal/testdata/config.bad.boot!")
 			os.Args = origArgs
 		})
+
+		Convey("Testing main() with failed initEnv()", func() {
+			var (
+				act = new(bytes.Buffer)
+				exp = ""
+			)
+
+			initEnvirons = func() (env *e.Config, err error) {
+				env, _ = setUpEnv()
+				err = fmt.Errorf("initEnvirons failed.")
+				return env, err
+			}
+
+			os.Args = []string{prog, "-convey-json"}
+			o := getOpts()
+			o.Init("blacklist", mflag.ContinueOnError)
+			o.SetOutput(act)
+			main()
+			So(act.String(), ShouldEqual, exp)
+			os.Args = origArgs
+		})
 	})
 }
 
@@ -107,16 +128,15 @@ func TestExitCmd(t *testing.T) {
 		}
 
 		exitCmd(0)
-
 		So(act, ShouldEqual, 0)
 	})
 }
 
 func TestInitEnv(t *testing.T) {
 	Convey("Testing initEnv", t, func() {
-		initEnv := func() (*edgeos.Config, error) {
-			return &edgeos.Config{
-				Parms: &edgeos.Parms{Arch: "MegaOS"},
+		initEnv := func() (*e.Config, error) {
+			return &e.Config{
+				Parms: &e.Parms{Arch: "MegaOS"},
 			}, nil
 		}
 		act, _ := initEnv()
@@ -132,10 +152,10 @@ func TestProcessObjects(t *testing.T) {
 		Convey("Testing that the config is correctly loaded ", func() {
 			So(c.String(), ShouldEqual, mainGetConfig)
 			err := processObjects(c,
-				[]edgeos.IFace{
-					edgeos.ExRtObj,
-					edgeos.ExDmObj,
-					edgeos.ExHtObj,
+				[]e.IFace{
+					e.ExRtObj,
+					e.ExDmObj,
+					e.ExHtObj,
 				})
 			So(err, ShouldBeNil)
 		})
@@ -147,13 +167,13 @@ func TestProcessObjects(t *testing.T) {
 		})
 
 		Convey("Forcing processObjects to fail ", func() {
-			So(processObjects(c, []edgeos.IFace{100}), ShouldNotBeNil)
+			So(processObjects(c, []e.IFace{100}), ShouldNotBeNil)
 		})
 
 		Convey("Testing processObjects() with a non-existent directory ", func() {
 			c.Dir = "EinenSieAugenBlick"
 			So(
-				processObjects(c, []edgeos.IFace{edgeos.FileObj}),
+				processObjects(c, []e.IFace{e.FileObj}),
 				ShouldResemble,
 				fmt.Errorf("%v", badFileError),
 			)
@@ -190,6 +210,17 @@ func TestGetOpts(t *testing.T) {
 			o.setArgs()
 			exp = allArgs
 			So(o.String(), ShouldEqual, exp)
+		})
+
+		Convey("Testing getOpts() with -debug", func() {
+			os.Args = []string{prog, "-debug"}
+
+			o := getOpts()
+			o.Init("blacklist", mflag.ContinueOnError)
+			o.SetOutput(act)
+			o.setArgs()
+
+			So(act.String(), ShouldEqual, "")
 		})
 
 		Convey("Testing getOpts() with -t", func() {
@@ -342,7 +373,7 @@ func TestRemoveStaleFiles(t *testing.T) {
 	Convey("Testing removeStaleFiles()", t, func() {
 		c, _ := setUpEnv()
 		So(removeStaleFiles(c), ShouldBeNil)
-		_ = c.SetOpt(edgeos.Dir("EinenSieAugenBlick"), edgeos.Ext("[]a]"), edgeos.FileNameFmt("[]a]"), edgeos.WCard(edgeos.Wildcard{Node: "[]a]", Name: "]"}))
+		_ = c.SetOpt(e.Dir("EinenSieAugenBlick"), e.Ext("[]a]"), e.FileNameFmt("[]a]"), e.WCard(e.Wildcard{Node: "[]a]", Name: "]"}))
 		So(removeStaleFiles(c), ShouldNotBeNil)
 	})
 }
@@ -366,14 +397,6 @@ func TestSetArch(t *testing.T) {
 		}
 	})
 }
-
-// type cfgCLI struct {
-// 	edgeos.CFGcli
-// }
-
-// func (c cfgCLI) Load() io.Reader {
-// 	return strings.NewReader(tdata.Cfg)
-// }
 
 func TestInitEdgeOS(t *testing.T) {
 	Convey("Testing initEdgeOS", t, func() {

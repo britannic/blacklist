@@ -12,7 +12,7 @@ import (
 
 // Parms is struct of parameters
 type Parms struct {
-	counter
+	ctr
 	ioWriter io.Writer
 	Log      *logging.Logger
 	API      string        `json:"API,omitempty"`
@@ -232,9 +232,9 @@ func NewConfig(opts ...Option) *Config {
 	c := Config{
 		tree: make(tree),
 		Parms: &Parms{
-			counter: make(counter),
-			Dex:     list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
-			Exc:     list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+			ctr: make(ctr),
+			Dex: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+			Exc: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 		},
 	}
 	for _, opt := range opts {

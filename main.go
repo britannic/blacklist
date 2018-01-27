@@ -32,10 +32,11 @@ var (
 		logging.DEBUG:    logging.ColorSeqBold(logging.ColorBlue),
 	}
 
-	progname = basename(os.Args[0])
-	exitCmd  = os.Exit
-	fdFmttr  logging.Backend
-	log      = newLog()
+	progname     = basename(os.Args[0])
+	exitCmd      = os.Exit
+	fdFmttr      logging.Backend
+	initEnvirons = initEnv
+	log          = newLog()
 
 	logErrorf = func(s string, args ...interface{}) {
 		log.Errorf(s, args)
@@ -73,7 +74,7 @@ func main() {
 		err error
 	)
 
-	if env, err = initEnv(); err != nil {
+	if env, err = initEnvirons(); err != nil {
 		logErrorf("%s shutting down.", err)
 		exitCmd(0)
 	}

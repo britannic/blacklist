@@ -367,8 +367,8 @@ NEXT:
 	fmttr := o.Pfx + getSeparator(area) + "%v/" + o.ip
 
 	// Let's do some accounting
-	atomic.AddInt32(&o.counter[area].dropped, int32(drop))
-	atomic.AddInt32(&o.counter[area].kept, int32(kept))
+	atomic.AddInt32(&o.ctr[area].dropped, int32(drop))
+	atomic.AddInt32(&o.ctr[area].kept, int32(kept))
 
 	o.log(fmt.Sprintf("%s: downloaded: %d", o.name, found))
 	o.log(fmt.Sprintf("%s: extracted: %d", o.name, kept))
@@ -407,7 +407,7 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 
 			go func(o *object) {
 				area = typeInt(o.nType)
-				c.counter[area] = tally
+				c.ctr[area] = tally
 				switch o.nType {
 				case excDomn, excHost, excRoot:
 					o.process()
@@ -426,8 +426,8 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 		}
 
 		if area != "" {
-			if c.counter[area].kept+c.counter[area].dropped != 0 {
-				c.log(fmt.Sprintf("Total %s: %d, dropped: %d", area, c.counter[area].kept, c.counter[area].dropped))
+			if c.ctr[area].kept+c.ctr[area].dropped != 0 {
+				c.Log.Noticef("Total %s: %d, dropped: %d", area, c.ctr[area].kept, c.ctr[area].dropped)
 			}
 		}
 	}

@@ -35,7 +35,7 @@ func (d *dummyConfig) ProcessContent(cts ...Contenter) error {
 		o := ct.GetList().x
 		for _, src := range o {
 			area = typeInt(src.nType)
-			src.counter[area] = tally
+			src.ctr[area] = tally
 			b, _ := ioutil.ReadAll(src.process().r)
 			d.s = append(d.s, strings.TrimSuffix(string(b), "\n"))
 		}

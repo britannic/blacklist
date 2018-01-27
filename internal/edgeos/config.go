@@ -37,7 +37,7 @@ type Config struct {
 	tree
 }
 
-type counter map[string]*stats
+type ctr map[string]*stats
 
 type stats struct {
 	dropped int32
