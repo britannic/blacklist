@@ -28,7 +28,7 @@ var (
 		logging.ERROR:    logging.ColorSeqBold(logging.ColorRed),
 		logging.WARNING:  logging.ColorSeqBold(logging.ColorYellow),
 		logging.NOTICE:   logging.ColorSeqBold(logging.ColorCyan),
-		logging.INFO:     logging.ColorSeqBold(logging.ColorGreen),
+		logging.INFO:     logging.ColorSeqBold(logging.ColorCyan),
 		logging.DEBUG:    logging.ColorSeqBold(logging.ColorBlue),
 	}
 
@@ -39,14 +39,13 @@ var (
 	log          = newLog()
 
 	logErrorf = func(s string, args ...interface{}) {
-		log.Errorf(s, args)
+		log.Errorf(s, args...)
 	}
 
 	logCrit = log.Critical
 
-	logFatalln = func(args ...interface{}) {
-		err := fmt.Sprintf("%v", args)
-		logCrit(err)
+	logFatalf = func(f string, args ...interface{}) {
+		logCrit(f, args...)
 		exitCmd(1)
 	}
 
@@ -79,25 +78,29 @@ func main() {
 		exitCmd(0)
 	}
 
+	logInfo("Testing logInfo...")
+	logNotice("Testing logNotice...")
+	exitCmd(0)
+
 	// logDebugf(o, "Dumping env variable: %v\n", env)
-	logNotice(fmt.Sprintf("Starting blacklist update..."))
+	logNotice("Starting blacklist update...")
 
 	logInfo("Removing stale blacklists...")
 	if err = removeStaleFiles(env); err != nil {
-		logFatalln(err)
+		logFatalf("%v", err)
 	}
 
 	// _, _ = context.WithTimeout(context.Background(), c.Timeout)
 
 	if !env.Disabled {
 		if err := processObjects(env, objex); err != nil {
-			logFatalln(err)
+			logFatalf("%v", err)
 		}
 	}
 
 	reloadDNS(env)
 
-	logNotice(fmt.Sprintf("Blacklist update completed......"))
+	logNotice("Blacklist update completed......")
 }
 
 // basename removes directory components and file extensions.
@@ -128,7 +131,7 @@ func initEnv() (env *e.Config, err error) {
 		logInfo("Removing stale blacklists...")
 
 		if err = d.Remove(); err != nil {
-			logFatalln(err)
+			logFatalf("%v", err)
 		}
 		exitCmd(0)
 	}
@@ -204,9 +207,10 @@ func removeStaleFiles(c *e.Config) error {
 // screenLog adds stderr logging output to the screen
 func screenLog() {
 	if terminal.IsTerminal(int(os.Stdin.Fd())) {
-		if runtime.GOOS == "darwin" {
-			logFile = fmt.Sprintf("/tmp/%s.log", progname)
-		}
+		var (
+			err      error
+			sysFmttr *logging.SyslogBackend
+		)
 
 		scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)
 		scr.ColorConfig = boldcolors
@@ -215,11 +219,14 @@ func screenLog() {
 			`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000}: %{message}`,
 		)
 		scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
-		sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
-		if err != nil {
+
+		if sysFmttr, err = logging.NewSyslogBackend(progname + ": "); err != nil {
 			fmt.Println(err)
+
 		}
-		if runtime.GOOS != "amd64" {
+
+		if runtime.GOOS == "darwin" {
+			logFile = fmt.Sprintf("/tmp/%s.log", progname)
 			logging.SetBackend(fdFmttr, scrFmttr, sysFmttr)
 		}
 	}

@@ -47,48 +47,61 @@ func (o *opts) String() string {
 	return s
 }
 
+func TestLogFatalf(t *testing.T) {
+	var (
+		act string
+		exp = "Something fatal happened!"
+	)
+
+	exitCmd = func(int) {}
+	logCrit = func(f string, args ...interface{}) {
+		act = fmt.Sprintf(f, args...)
+	}
+
+	Convey("Testing LogFatalf", t, func() {
+		logFatalf("%v", exp)
+		So(act, ShouldEqual, exp)
+	})
+}
+
 func TestMain(t *testing.T) {
 	origArgs := os.Args
 
 	Convey("Testing main()", t, func() {
 		var (
-			act          []error
+			act          string
 			actReloadDNS string
 			prog         = path.Base(os.Args[0])
 		)
-		// defer func() { os.Args = origArgs }()
+
 		exitCmd = func(int) {}
 
-		logFatalln = func(vals ...interface{}) {
-			for _, v := range vals {
-				if v != nil {
-					act = append(act, v.(error))
-				}
-			}
+		logFatalf = func(f string, args ...interface{}) {
+			act = fmt.Sprintf(f, args...)
 		}
 
-		logPrintf = func(s string, vals ...interface{}) {
-			actReloadDNS = fmt.Sprintf(s, vals)
+		logPrintf = func(f string, vals ...interface{}) {
+			actReloadDNS = fmt.Sprintf(f, vals...)
 		}
 
 		screenLog()
 		main()
-		So(act, ShouldBeNil)
+		So(act, ShouldNotBeNil)
 		So(actReloadDNS, ShouldNotBeNil)
 
 		Convey("Testing main() with configuration file load", func() {
-			act = nil
+			act = ""
 			os.Args = []string{prog, "-convey-json", "-f", "internal/testdata/config.erx.boot"}
 			main()
-			So(act, ShouldBeNil)
+			So(act, ShouldBeEmpty)
 			os.Args = origArgs
 		})
 
 		Convey("Testing main() with non-existent configuration file load", func() {
 			var s string
 			os.Args = []string{prog, "-convey-json", "-f", "internal/testdata/config.bad.boot"}
-			logFatalln = func(args ...interface{}) {
-				s = fmt.Sprint(args...)
+			logFatalf = func(f string, args ...interface{}) {
+				s = fmt.Sprintf(f, args...)
 			}
 			main()
 			So(s, ShouldEqual, "Cannot open configuration file internal/testdata/config.bad.boot!")
