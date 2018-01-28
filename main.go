@@ -26,9 +26,9 @@ var (
 	boldcolors = []string{
 		logging.CRITICAL: logging.ColorSeqBold(logging.ColorMagenta),
 		logging.ERROR:    logging.ColorSeqBold(logging.ColorRed),
+		logging.INFO:     logging.ColorSeqBold(logging.ColorGreen),
 		logging.WARNING:  logging.ColorSeqBold(logging.ColorYellow),
 		logging.NOTICE:   logging.ColorSeqBold(logging.ColorCyan),
-		logging.INFO:     logging.ColorSeqBold(logging.ColorCyan),
 		logging.DEBUG:    logging.ColorSeqBold(logging.ColorBlue),
 	}
 
@@ -42,18 +42,18 @@ var (
 		log.Errorf(s, args...)
 	}
 
-	logCrit = log.Critical
+	logCritf = log.Critical
 
 	logFatalf = func(f string, args ...interface{}) {
-		logCrit(f, args...)
+		logCritf(f, args...)
 		exitCmd(1)
 	}
 
-	logFile   = fmt.Sprintf("/var/log/%s.log", progname)
-	logInfo   = log.Info
-	logInfof  = log.Infof
-	logNotice = log.Notice
-	logPrintf = logInfof
+	logFile    = fmt.Sprintf("/var/log/%s.log", progname)
+	logInfo    = log.Info
+	logInfof   = log.Infof
+	logNoticef = log.Noticef
+	logPrintf  = logInfof
 
 	objex = []e.IFace{
 		e.ExRtObj,
@@ -78,12 +78,8 @@ func main() {
 		exitCmd(0)
 	}
 
-	logInfo("Testing logInfo...")
-	logNotice("Testing logNotice...")
-	exitCmd(0)
-
 	// logDebugf(o, "Dumping env variable: %v\n", env)
-	logNotice("Starting blacklist update...")
+	logNoticef("%v", "Starting blacklist update...")
 
 	logInfo("Removing stale blacklists...")
 	if err = removeStaleFiles(env); err != nil {
@@ -100,7 +96,7 @@ func main() {
 
 	reloadDNS(env)
 
-	logNotice("Blacklist update completed......")
+	logNoticef("%v", "Blacklist update completed......")
 }
 
 // basename removes directory components and file extensions.

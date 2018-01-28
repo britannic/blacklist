@@ -54,7 +54,7 @@ func TestLogFatalf(t *testing.T) {
 	)
 
 	exitCmd = func(int) {}
-	logCrit = func(f string, args ...interface{}) {
+	logCritf = func(f string, args ...interface{}) {
 		act = fmt.Sprintf(f, args...)
 	}
 
