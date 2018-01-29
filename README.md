@@ -1,6 +1,6 @@
 # UBNT edgeos-dnsmasq-blacklist dnsmasq DNS blacklisting and redirection
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt) [![Alpha  Version](https://img.shields.io/badge/version-v0.0.9-green.svg)](https://github.com/britannic/blacklist) [![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist) [![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist) [![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master) [![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Alpha  Version](https://img.shields.io/badge/version-v0.0.10-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
 
 [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/Self-Installer-to-configure-Ad-Server-and-Blacklist-Blocking/td-p/1337892)
 
@@ -25,20 +25,20 @@ modification, are permitted provided that the following conditions are met:
    this list of conditions and the following disclaimer in the documentation
    and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+    ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-The views and conclusions contained in the software and documentation are those
-of the authors and should not be interpreted as representing official policies,
-either expressed or implied, of the FreeBSD Project.
+    The views and conclusions contained in the software and documentation are those
+    of the authors and should not be interpreted as representing official policies,
+    either expressed or implied, of the FreeBSD Project.
 
 ## Features
 
@@ -57,14 +57,18 @@ either expressed or implied, of the FreeBSD Project.
 
 ### EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3
 
-    curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.9_mips.deb.tgz | tar -xvz
-    sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.9_mips.deb
+```bash
+curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.10_mips.deb.tgz | tar -xvz
+sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.10_mips.deb
+```
 
 ### EdgeRouter ER-X & ER-X-SFP
 
-    curl
-    https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.9_mipsel.deb.tgz | tar -xvz
-    sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.9_mipsel.deb
+```bash
+curl
+https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.10_mipsel.deb.tgz | tar -xvz
+sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.10_mipsel.deb
+```
 
 ## Upgrade
 
@@ -74,31 +78,59 @@ either expressed or implied, of the FreeBSD Project.
 
 ### EdgeMAX - All Platforms
 
-    sudo apt-get remove edgeos-dnsmasq-blacklist
+```bash
+sudo apt-get remove edgeos-dnsmasq-blacklist
+```
+
+## Usage
+
+* In daily use, no additional interaction with update-dnsmasq is required. By default, cron will run update-dnsmasq at midnight each day to download the blacklist sources and update the dnsmasq configuration files in /etc/dnsmasq.d. dnsmasq will automatically be reloaded after the configuration file update is completed.
+* The daily task is scheduled using these configuration commands:
+
+```bash
+set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq
+set system task-scheduler task update_blacklists interval 1d
+```
+
+* update-dnsmasq has the following commandline switches available:
+
+```bash
+/config/scripts/update-dnsmasq.amd64 -h
+    -dir string
+            Override dnsmasq directory (default "/etc/dnsmasq.d")
+    -f [full file path]
+            [full file path] # Load a config.boot file
+    -h   Display help
+    -v   Verbose display
+    -version
+            Show version
+```
 
 ### EdgeOS dnsmasq Configuration
 
 * dnsmasq may need to be configured to ensure blacklisting works correctly
   * Here is an example using the EdgeOS configuration shell
 
-        configure
-        set service dns forwarding cache-size 2048
-        set service dns forwarding except-interface [Your WAN i/f]
-        set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
-        set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
-        set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
-        set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
-        set service dns forwarding options bogus-priv
-        set service dns forwarding options domain-needed
-        set service dns forwarding options domain=mydomain.local
-        set service dns forwarding options enable-ra
-        set service dns forwarding options expand-hosts
-        set service dns forwarding options localise-queries
-        set service dns forwarding options strict-order
-        set service dns forwarding system
-        set system name-server 127.0.0.1
-        set system name-server '::1'
-        commit; save;exit
+```bash
+configure
+set service dns forwarding cache-size 2048
+set service dns forwarding except-interface [Your WAN i/f]
+set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
+set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
+set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
+set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
+set service dns forwarding options bogus-priv
+set service dns forwarding options domain-needed
+set service dns forwarding options domain=mydomain.local
+set service dns forwarding options enable-ra
+set service dns forwarding options expand-hosts
+set service dns forwarding options localise-queries
+set service dns forwarding options strict-order
+set service dns forwarding system
+set system name-server 127.0.0.1
+set system name-server '::1'
+commit; save; exit
+```
 
 ## Releases
 
