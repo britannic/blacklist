@@ -38,11 +38,11 @@ var (
 	initEnvirons = initEnv
 	log          = newLog()
 
+	logCritf = log.Criticalf
+
 	logErrorf = func(f string, args ...interface{}) {
 		log.Errorf(f, args...)
 	}
-
-	logCritf = log.Critical
 
 	logFatalf = func(f string, args ...interface{}) {
 		logCritf(f, args...)

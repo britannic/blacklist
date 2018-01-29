@@ -25,8 +25,8 @@
   name = "github.com/britannic/testutils"
 
 [[constraint]]
-  name = "github.com/op/go-logging"
-  version = "1.0.1"
+  name = "github.com/britannic/go-logging"
+  version = "v2.0.1"
 
 [[constraint]]
   name = "github.com/smartystreets/goconvey"
