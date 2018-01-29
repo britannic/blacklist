@@ -72,7 +72,7 @@ sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.10_mipsel.deb
 
 ## Upgrade
 
-* Since dpkg cannot upgrade packages, follow the instructions to [Installation](# installation) and the previous package version will be automatically removed before the new package version is installed
+* Since dpkg cannot upgrade packages, follow the instructions to [Installation](#installation) and the previous package version will be automatically removed before the new package version is installed
 
 ## Removal
 
