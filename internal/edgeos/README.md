@@ -298,7 +298,7 @@ Config is a struct of configuration fields
 
 
 
-### <a name="NewConfig">func</a> [NewConfig](/src/target/opts.go?s=5068:5106#L221)
+### <a name="NewConfig">func</a> [NewConfig](/src/target/opts.go?s=5075:5113#L221)
 ``` go
 func NewConfig(opts ...Option) *Config
 ```
@@ -389,7 +389,7 @@ ReloadDNS reloads the dnsmasq configuration
 
 
 
-### <a name="Config.SetOpt">func</a> (\*Config) [SetOpt](/src/target/opts.go?s=1908:1954#L60)
+### <a name="Config.SetOpt">func</a> (\*Config) [SetOpt](/src/target/opts.go?s=1915:1961#L60)
 ``` go
 func (c *Config) SetOpt(opts ...Option) Option
 ```
@@ -865,7 +865,7 @@ func (o *Objects) Swap(i, j int)
 
 
 
-## <a name="Option">type</a> [Option](/src/target/opts.go?s=1518:1552#L39)
+## <a name="Option">type</a> [Option](/src/target/opts.go?s=1525:1559#L39)
 ``` go
 type Option func(c *Config) Option
 ```
@@ -877,154 +877,154 @@ Option is a recursive function
 
 
 
-### <a name="API">func</a> [API](/src/target/opts.go?s=2440:2465#L85)
+### <a name="API">func</a> [API](/src/target/opts.go?s=2447:2472#L85)
 ``` go
 func API(s string) Option
 ```
 API sets the EdgeOS CLI API command
 
 
-### <a name="Arch">func</a> [Arch](/src/target/opts.go?s=2269:2298#L76)
+### <a name="Arch">func</a> [Arch](/src/target/opts.go?s=2276:2305#L76)
 ``` go
 func Arch(arch string) Option
 ```
 Arch sets target CPU architecture
 
 
-### <a name="Bash">func</a> [Bash](/src/target/opts.go?s=2595:2623#L94)
+### <a name="Bash">func</a> [Bash](/src/target/opts.go?s=2602:2630#L94)
 ``` go
 func Bash(cmd string) Option
 ```
 Bash sets the shell processor
 
 
-### <a name="Cores">func</a> [Cores](/src/target/opts.go?s=2753:2777#L103)
+### <a name="Cores">func</a> [Cores](/src/target/opts.go?s=2760:2784#L103)
 ``` go
 func Cores(i int) Option
 ```
 Cores sets max CPU cores
 
 
-### <a name="DNSsvc">func</a> [DNSsvc](/src/target/opts.go?s=3427:3455#L140)
+### <a name="DNSsvc">func</a> [DNSsvc](/src/target/opts.go?s=3434:3462#L140)
 ``` go
 func DNSsvc(d string) Option
 ```
 DNSsvc sets dnsmasq restart command
 
 
-### <a name="Dbug">func</a> [Dbug](/src/target/opts.go?s=3111:3135#L122)
+### <a name="Dbug">func</a> [Dbug](/src/target/opts.go?s=3118:3142#L122)
 ``` go
 func Dbug(b bool) Option
 ```
 Dbug toggles debug level on or off
 
 
-### <a name="Dir">func</a> [Dir](/src/target/opts.go?s=3266:3291#L131)
+### <a name="Dir">func</a> [Dir](/src/target/opts.go?s=3273:3298#L131)
 ``` go
 func Dir(d string) Option
 ```
 Dir sets directory location
 
 
-### <a name="Disabled">func</a> [Disabled](/src/target/opts.go?s=2933:2961#L113)
+### <a name="Disabled">func</a> [Disabled](/src/target/opts.go?s=2940:2968#L113)
 ``` go
 func Disabled(b bool) Option
 ```
 Disabled toggles Disabled
 
 
-### <a name="Ext">func</a> [Ext](/src/target/opts.go?s=3604:3629#L149)
+### <a name="Ext">func</a> [Ext](/src/target/opts.go?s=3611:3636#L149)
 ``` go
 func Ext(e string) Option
 ```
 Ext sets the blacklist file n extension
 
 
-### <a name="File">func</a> [File](/src/target/opts.go?s=3769:3795#L158)
+### <a name="File">func</a> [File](/src/target/opts.go?s=3776:3802#L158)
 ``` go
 func File(f string) Option
 ```
 File sets the EdgeOS configuration file
 
 
-### <a name="FileNameFmt">func</a> [FileNameFmt](/src/target/opts.go?s=3957:3990#L167)
+### <a name="FileNameFmt">func</a> [FileNameFmt](/src/target/opts.go?s=3964:3997#L167)
 ``` go
 func FileNameFmt(f string) Option
 ```
 FileNameFmt sets the EdgeOS configuration file name format
 
 
-### <a name="InCLI">func</a> [InCLI](/src/target/opts.go?s=4139:4167#L176)
+### <a name="InCLI">func</a> [InCLI](/src/target/opts.go?s=4146:4174#L176)
 ``` go
 func InCLI(in string) Option
 ```
 InCLI sets the CLI inSession command
 
 
-### <a name="LTypes">func</a> [LTypes](/src/target/opts.go?s=4670:4700#L203)
+### <a name="LTypes">func</a> [LTypes](/src/target/opts.go?s=4677:4707#L203)
 ``` go
 func LTypes(s []string) Option
 ```
 LTypes sets an array of legal types used by Source
 
 
-### <a name="Level">func</a> [Level](/src/target/opts.go?s=4310:4337#L185)
+### <a name="Level">func</a> [Level](/src/target/opts.go?s=4317:4344#L185)
 ``` go
 func Level(s string) Option
 ```
 Level sets the EdgeOS API CLI level
 
 
-### <a name="Logger">func</a> [Logger](/src/target/opts.go?s=4479:4516#L194)
+### <a name="Logger">func</a> [Logger](/src/target/opts.go?s=4486:4523#L194)
 ``` go
 func Logger(l *logging.Logger) Option
 ```
 Logger sets a pointer to the logger
 
 
-### <a name="Method">func</a> [Method](/src/target/opts.go?s=4837:4870#L212)
+### <a name="Method">func</a> [Method](/src/target/opts.go?s=4844:4877#L212)
 ``` go
 func Method(method string) Option
 ```
 Method sets the HTTP method
 
 
-### <a name="Prefix">func</a> [Prefix](/src/target/opts.go?s=5423:5451#L237)
+### <a name="Prefix">func</a> [Prefix](/src/target/opts.go?s=5430:5458#L237)
 ``` go
 func Prefix(l string) Option
 ```
 Prefix sets the dnsmasq configuration address line prefix
 
 
-### <a name="Test">func</a> [Test](/src/target/opts.go?s=5740:5764#L252)
+### <a name="Test">func</a> [Test](/src/target/opts.go?s=5747:5771#L252)
 ``` go
 func Test(b bool) Option
 ```
 Test toggles testing mode on or off
 
 
-### <a name="Timeout">func</a> [Timeout](/src/target/opts.go?s=5933:5969#L261)
+### <a name="Timeout">func</a> [Timeout](/src/target/opts.go?s=5940:5976#L261)
 ``` go
 func Timeout(t time.Duration) Option
 ```
 Timeout sets how long before an unresponsive goroutine is aborted
 
 
-### <a name="Verb">func</a> [Verb](/src/target/opts.go?s=6116:6140#L270)
+### <a name="Verb">func</a> [Verb](/src/target/opts.go?s=6123:6147#L270)
 ``` go
 func Verb(b bool) Option
 ```
 Verb sets the verbosity level to v
 
 
-### <a name="WCard">func</a> [WCard](/src/target/opts.go?s=6284:6313#L279)
+### <a name="WCard">func</a> [WCard](/src/target/opts.go?s=6291:6320#L279)
 ``` go
 func WCard(w Wildcard) Option
 ```
 WCard sets file globbing wildcard values
 
 
-### <a name="Writer">func</a> [Writer](/src/target/opts.go?s=6488:6519#L288)
+### <a name="Writer">func</a> [Writer](/src/target/opts.go?s=6495:6526#L288)
 ``` go
 func Writer(w io.Writer) Option
 ```
@@ -1034,7 +1034,7 @@ Writer provides an address for anything that can use io.Writer
 
 
 
-## <a name="Parms">type</a> [Parms](/src/target/opts.go?s=148:1317#L4)
+## <a name="Parms">type</a> [Parms](/src/target/opts.go?s=155:1324#L4)
 ``` go
 type Parms struct {
     Log      *logging.Logger
@@ -1074,7 +1074,7 @@ Parms is struct of parameters
 
 
 
-### <a name="Parms.String">func</a> (\*Parms) [String](/src/target/opts.go?s=5601:5632#L246)
+### <a name="Parms.String">func</a> (\*Parms) [String](/src/target/opts.go?s=5608:5639#L246)
 ``` go
 func (p *Parms) String() string
 ```
@@ -1323,7 +1323,7 @@ func (u *URLHostObjects) String() string
 
 
 
-## <a name="Wildcard">type</a> [Wildcard](/src/target/opts.go?s=1384:1482#L33)
+## <a name="Wildcard">type</a> [Wildcard](/src/target/opts.go?s=1391:1489#L33)
 ``` go
 type Wildcard struct {
     Node string `json:"Node,omitempty"`
