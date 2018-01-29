@@ -6,8 +6,8 @@ import (
 	"runtime"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
+	logging "github.com/britannic/go-logging"
 	"github.com/britannic/mflag"
-	logging "github.com/op/go-logging"
 	"golang.org/x/crypto/ssh/terminal"
 )
 

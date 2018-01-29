@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	logging "github.com/op/go-logging"
+	logging "github.com/britannic/go-logging"
 )
 
 // Parms is struct of parameters

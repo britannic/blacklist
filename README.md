@@ -134,6 +134,13 @@ commit; save; exit
 
 ## Releases
 
+### Patch v0.0.10
+
+* Improved counters for statistics logging
+* Increased test coverage of code
+* Additional documentation
+* Added config.boot file loader
+
 ### Patch v0.0.9
 
 * Added logging for download errors and warnings for empty content
