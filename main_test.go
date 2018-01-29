@@ -611,8 +611,8 @@ var (
 }`
 	vanillaArgs = `  -dir string
     	Override dnsmasq directory (default "/etc/dnsmasq.d")
-  -f [full file path]
-    	[full file path] # Load a config.boot file
+  -f <file>
+    	<file> # Load a config.boot file
   -h	Display help
   -v	Verbose display
   -version
@@ -624,8 +624,8 @@ var (
     	Enable debug mode
   -dir string
     	Override dnsmasq directory (default "/etc/dnsmasq.d")
-  -f [full file path]
-    	[full file path] # Load a config.boot file
+  -f <file>
+    	<file> # Load a config.boot file
   -h
     	Display help
   -mips64 string

@@ -83,7 +83,7 @@ func getOpts() *opts {
 			DNSdir:  flags.String("dir", "/etc/dnsmasq.d", "Override dnsmasq directory", true),
 			DNStmp:  flags.String("tmp", "/tmp", "Override dnsmasq temporary directory", false),
 			Help:    flags.Bool("h", false, "Display help", true),
-			File:    flags.String("f", "", "`[full file path]` # Load a config.boot file", true),
+			File:    flags.String("f", "", "`<file>` # Load a config.boot file", true),
 			FlagSet: &flags,
 			MIPSLE:  flags.String("mipsle", "mipsle", "Override target EdgeOS CPU architecture", false),
 			MIPS64:  flags.String("mips64", "mips64", "Override target EdgeOS CPU architecture", false),

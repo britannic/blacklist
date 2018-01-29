@@ -1,6 +1,6 @@
 # UBNT edgeos-dnsmasq-blacklist dnsmasq DNS blacklisting and redirection
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Alpha  Version](https://img.shields.io/badge/version-v0.0.10-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v0.0.10-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
 
 [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/Self-Installer-to-configure-Ad-Server-and-Blacklist-Blocking/td-p/1337892)
 
@@ -52,6 +52,14 @@ modification, are permitted provided that the following conditions are met:
 * edgeos-dnsmasq-blacklist has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X and UniFi Security Gateway USG-3 routers
   * versions EdgeMAX: v1.7.0-v1.9.7+hotfix.4, UniFi: v4.4.12-v4.4.18
 * integration could be adapted to work on VyOS and Vyatta derived ports, since  EdgeOS is a fork and port of Vyatta 6.3
+
+## Latest Release
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest Release](https://img.shields.io/badge/-Latest%20Release-green.svg)](https://github.com/britannic/blacklist/releases/latest)
+
+## Change Log
+
+* See [changelog](CHANGELOG.md) for details.
 
 ## Installation
 
@@ -131,16 +139,3 @@ set system name-server 127.0.0.1
 set system name-server '::1'
 commit; save; exit
 ```
-
-## Releases
-
-### Patch v0.0.9
-
-* Added logging for download errors and warnings for empty content
-* Change HTTP user agent to emulate curl, to stop web servers from offering complex content
-* Removed embedded tabs in source prefixes that were interpreted by the EdgeOS configure shell as a completion request,  preventing correct prefix matches
-
-### Patch v0.0.8
-
-* Removes redundant references to blacklist.t and perl modules
-* Replace "▶" with ":" in log messages

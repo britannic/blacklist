@@ -58,7 +58,7 @@ modification, are permitted provided that the following conditions are met:
 ### EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3
 
 ```bash
-curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.10_mips.deb.tgz | tar -xvz
+curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/7/edgeos-dnsmasq-blacklist_0.0.10_mips.deb.tgz | tar -xvz
 sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.10_mips.deb
 ```
 
@@ -66,7 +66,7 @@ sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.10_mips.deb
 
 ```bash
 curl
-https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.10_mipsel.deb.tgz | tar -xvz
+https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/8/edgeos-dnsmasq-blacklist_0.0.10_mipsel.deb.tgz | tar -xvz
 sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.10_mipsel.deb
 ```
 
@@ -144,7 +144,6 @@ commit; save; exit
 
 * Removes redundant references to blacklist.t and perl modules
 * Replace "▶" with ":" in log messages
-
 
 > blacklist
 
