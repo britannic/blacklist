@@ -2,7 +2,6 @@
 
 ## Releases
 
-
 ### Patch v0.0.12 (January 30, 2018)
 
 * Added global exclude "evernote.com" as it is being false flagged by some sources

@@ -391,6 +391,24 @@ func TestRemoveStaleFiles(t *testing.T) {
 	})
 }
 
+func TestNewScreenLogBackend(t *testing.T) {
+	tests := []struct {
+		exp    bool
+		colors []string
+		prefix string
+	}{
+		{exp: true, colors: boldcolors, prefix: "test"},
+		{exp: false, colors: []string{}, prefix: "test"},
+	}
+
+	Convey("Testing newScreenLogBackend()", t, func() {
+		for _, test := range tests {
+			act := newScreenLogBackend(test.colors, test.prefix)
+			So(act.Color, ShouldEqual, test.exp)
+		}
+	})
+}
+
 func TestSetArch(t *testing.T) {
 	Convey("Testing getCFG()", t, func() {
 		exitCmd = func(int) {}

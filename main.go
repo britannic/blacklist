@@ -134,6 +134,10 @@ func initEnv() (env *e.Config, err error) {
 	return env, err
 }
 
+func inTerminal() bool {
+	return terminal.IsTerminal(int(os.Stdin.Fd()))
+}
+
 // killFiles returns an empty *e.CFile string array
 func killFiles(env *e.Config) *e.CFile {
 	return &e.CFile{Names: []string{}, Parms: env.Parms}
@@ -202,30 +206,42 @@ func removeStaleFiles(c *e.Config) error {
 
 // screenLog adds stderr logging output to the screen
 func screenLog() {
-	if terminal.IsTerminal(int(os.Stdin.Fd())) {
+	if inTerminal() {
 		var (
 			err      error
+			prefix   = fmt.Sprintf("%s: ", progname)
+			scrFmt   = `%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000}: %{message}`
 			sysFmttr *logging.SyslogBackend
 		)
 
-		scr := logging.NewLogBackend(os.Stderr, progname+": ", 0)
-		scr.ColorConfig = boldcolors
-		scr.Color = true
-		scrFmt := logging.MustStringFormatter(
-			`%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000}: %{message}`,
-		)
-		scrFmttr := logging.NewBackendFormatter(scr, scrFmt)
-
-		if sysFmttr, err = logging.NewSyslogBackend(progname + ": "); err != nil {
-			fmt.Println(err)
-
-		}
-
 		if runtime.GOOS == "darwin" {
 			logFile = fmt.Sprintf("/tmp/%s.log", progname)
-			logging.SetBackend(fdFmttr, scrFmttr, sysFmttr)
 		}
+
+		// scrFmttr := logging.NewBackendFormatter(newScreenLogBackend(boldcolors, prefix), logging.MustStringFormatter(scrFmt))
+
+		if sysFmttr, err = logging.NewSyslogBackend(prefix); err != nil {
+			fmt.Println(err)
+		}
+
+		logging.SetBackend(
+			logging.NewBackendFormatter(
+				newScreenLogBackend(boldcolors, prefix),
+				logging.MustStringFormatter(scrFmt),
+			),
+			fdFmttr,
+			sysFmttr,
+		)
 	}
+}
+
+func newScreenLogBackend(colors []string, prefix string) *logging.LogBackend {
+	scr := logging.NewLogBackend(os.Stderr, prefix, 0)
+	if len(colors) > 0 {
+		scr.ColorConfig = boldcolors
+		scr.Color = true
+	}
+	return scr
 }
 
 func setUpEnv() (*e.Config, error) {
