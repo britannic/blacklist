@@ -111,6 +111,15 @@ set service dns forwarding blacklist disabled false
 commit;save;exit
 ```
 
+**Which blacklist sources are installed by default?**
+
+* You can use this command in the CLI shell to view the current sources after installation or view the log and see previous downloads:
+
+```bash
+show configuration commands | match blacklist | match source
+more /var/log/update-dnsmasq.log
+```
+
 **How do I add or delete sources?**
 
 * Using the CLI configure command, to delete domains and hosts sources:
