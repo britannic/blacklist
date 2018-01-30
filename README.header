@@ -6,13 +6,13 @@
 
 NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
 
-## Copyright
-
-* Copyright © 2018 Helm Rock Consulting
-
 ## Overview
 
 EdgeMax dnsmasq DNS blacklisting and redirection is inspired by the users at [EdgeMAX Community](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
+
+## Copyright
+
+* Copyright © 2018 Helm Rock Consulting
 
 ## Licenses
 
