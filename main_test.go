@@ -72,6 +72,7 @@ func TestMain(t *testing.T) {
 			act          string
 			actReloadDNS string
 			prog         = path.Base(os.Args[0])
+			prfx         = fmt.Sprintf("%s: ", prog)
 		)
 
 		exitCmd = func(int) {}
@@ -84,7 +85,7 @@ func TestMain(t *testing.T) {
 			actReloadDNS = fmt.Sprintf(f, vals...)
 		}
 
-		screenLog()
+		screenLog(prfx)
 		main()
 		So(act, ShouldNotBeNil)
 		So(actReloadDNS, ShouldNotBeNil)
@@ -128,6 +129,16 @@ func TestMain(t *testing.T) {
 			So(act.String(), ShouldEqual, exp)
 			os.Args = origArgs
 		})
+	})
+}
+
+func TestScreenLog(t *testing.T) {
+	Convey("Testing ScreenLog(prefix)", t, func() {
+		haveTerm = func() bool {
+			return true
+		}
+
+		So(screenLog("prefix"), ShouldNotBeNil)
 	})
 }
 

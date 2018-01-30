@@ -142,7 +142,7 @@ func (o *opts) setArgs() {
 		fmt.Println("Test activated!")
 		exitCmd(0)
 	case *o.Verb:
-		screenLog()
+		screenLog(prefix)
 	case *o.Version:
 		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n\n This software comes with ABSOLUTELY NO WARRANTY.\n %s is free software, and you are\n welcome to redistribute it under the terms of\n the Simplified BSD License.\n", version, build, githash, progname)
 		exitCmd(0)

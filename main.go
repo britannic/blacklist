@@ -33,10 +33,12 @@ var (
 	}
 
 	progname     = basename(os.Args[0])
+	prefix       = fmt.Sprintf("%s: ", progname)
 	exitCmd      = os.Exit
 	fdFmttr      logging.Backend
+	haveTerm     = inTerminal
 	initEnvirons = initEnv
-	log          = newLog()
+	log          = newLog(prefix)
 
 	logCritf = log.Criticalf
 
@@ -144,7 +146,7 @@ func killFiles(env *e.Config) *e.CFile {
 }
 
 // newLog returns a logging.Logger pointer
-func newLog() *logging.Logger {
+func newLog(prefix string) *logging.Logger {
 	if runtime.GOOS == "darwin" {
 		logFile = fmt.Sprintf("/tmp/%s.log", progname)
 	}
@@ -205,11 +207,10 @@ func removeStaleFiles(c *e.Config) error {
 }
 
 // screenLog adds stderr logging output to the screen
-func screenLog() {
-	if inTerminal() {
+func screenLog(prefix string) logging.LeveledBackend {
+	if haveTerm() {
 		var (
 			err      error
-			prefix   = fmt.Sprintf("%s: ", progname)
 			scrFmt   = `%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000}: %{message}`
 			sysFmttr *logging.SyslogBackend
 		)
@@ -218,13 +219,11 @@ func screenLog() {
 			logFile = fmt.Sprintf("/tmp/%s.log", progname)
 		}
 
-		// scrFmttr := logging.NewBackendFormatter(newScreenLogBackend(boldcolors, prefix), logging.MustStringFormatter(scrFmt))
-
 		if sysFmttr, err = logging.NewSyslogBackend(prefix); err != nil {
 			fmt.Println(err)
 		}
 
-		logging.SetBackend(
+		return logging.SetBackend(
 			logging.NewBackendFormatter(
 				newScreenLogBackend(boldcolors, prefix),
 				logging.MustStringFormatter(scrFmt),
@@ -233,6 +232,7 @@ func screenLog() {
 			sysFmttr,
 		)
 	}
+	return nil
 }
 
 func newScreenLogBackend(colors []string, prefix string) *logging.LogBackend {
