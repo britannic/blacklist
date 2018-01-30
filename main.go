@@ -153,7 +153,7 @@ func newLog() *logging.Logger {
 		fmt.Println(err)
 	}
 
-	fdlog := logging.NewLogBackend(fd, progname+": ", 0)
+	fdlog := logging.NewLogBackend(fd, "", 0)
 	fdFmttr = logging.NewBackendFormatter(fdlog, fdFmt)
 
 	sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
