@@ -2,7 +2,7 @@
 
 ## Releases
 
-### Patch v0.0.10
+### Patch v0.0.10 (January 28, 2018)
 
 * Improved counters for statistics logging
 * Increased test coverage of code
