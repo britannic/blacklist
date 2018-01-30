@@ -1,6 +1,6 @@
 # **UBNT edgeos-dnsmasq-blacklist dnsmasq DNS Blacklisting and Redirection**
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v0.0.11-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v0.0.12-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
 
 [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/Self-Installer-to-configure-Ad-Server-and-Blacklist-Blocking/td-p/1337892)
 
@@ -66,16 +66,16 @@ modification, are permitted provided that the following conditions are met:
 ### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
 
 ```bash
-curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.11_mips.deb.tgz | tar -xvz
-sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.11_mips.deb
+curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/5/edgeos-dnsmasq-blacklist_0.0.12_mips.deb.tgz | tar -xvz
+sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.12_mips.deb
 ```
 
 ### **EdgeRouter ER-X & ER-X-SFP**
 
 ```bash
 curl
-https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.11_mipsel.deb.tgz | tar -xvz
-sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.11_mipsel.deb
+https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/6/edgeos-dnsmasq-blacklist_0.0.12_mipsel.deb.tgz | tar -xvz
+sudo dpkg -i edgeos-dnsmasq-blacklist_0.0.12_mipsel.deb
 ```
 
 ## **Upgrade**

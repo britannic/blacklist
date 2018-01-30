@@ -155,6 +155,7 @@ update_dns_configuration() {
 	try set service dns forwarding blacklist exclude dropbox.com
 	try set service dns forwarding blacklist exclude ebay.com
 	try set service dns forwarding blacklist exclude edgesuite.net
+	try set service dns forwarding blacklist exclude evernote.com
 	try set service dns forwarding blacklist exclude freedns.afraid.org
 	try set service dns forwarding blacklist exclude github.com
 	try set service dns forwarding blacklist exclude githubusercontent.com

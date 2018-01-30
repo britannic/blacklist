@@ -2,6 +2,18 @@
 
 ## Releases
 
+
+### Patch v0.0.12 (January 30, 2018)
+
+* Added global exclude "evernote.com" as it is being false flagged by some sources
+
+### Patch v0.0.11 (January 30, 2018)
+
+* Reformatted update-dnsmasq.log output
+* README Updates
+  * Added FAQ
+  * Refactored layout
+
 ### Patch v0.0.10 (January 28, 2018)
 
 * Improved counters for statistics logging
