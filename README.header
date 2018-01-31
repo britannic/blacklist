@@ -111,6 +111,31 @@ set service dns forwarding blacklist disabled false
 commit;save;exit
 ```
 
+**How do I back up my blacklist configuration before upgrading and restore it afterward?**
+
+* use the following commands (make a note of the file name):
+
+```bash
+export DATE=$(date +'%FT%H%M%S'); echo "Backing up blacklist configuration to: /config/user-data/blacklist.${DATE}.cmds"; show configuration commands | grep blacklist > /config/user-data/blacklist.$(date +'%FT%H%M%S').cmds
+```
+
+* After installing the latest version, you can merge your backed up configuration:
+
+```bash
+configure
+.  /config/user-data/blacklist.[date string].cmds
+commit;save;exit
+```
+
+* If you prefer to delete the default configuration and restore your previous configuration, run these commands:
+
+```bash
+configure
+delete service dns forwarding blacklist
+.  /config/user-data/blacklist.[date string].cmds
+commit;save;exit
+```
+
 **Which blacklist sources are installed by default?**
 
 * You can use this command in the CLI shell to view the current sources after installation or view the log and see previous downloads:

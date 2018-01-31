@@ -161,6 +161,7 @@ update_dns_configuration() {
 	try set service dns forwarding blacklist exclude githubusercontent.com
 	try set service dns forwarding blacklist exclude global.ssl.fastly.net
 	try set service dns forwarding blacklist exclude google.com
+	try set service dns forwarding blacklist exclude googleads.g.doubleclick.net
 	try set service dns forwarding blacklist exclude googleadservices.com
 	try set service dns forwarding blacklist exclude googleapis.com
 	try set service dns forwarding blacklist exclude googletagmanager.com
