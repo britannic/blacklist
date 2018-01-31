@@ -40,9 +40,9 @@ modification, are permitted provided that the following conditions are met:
     of the authors and should not be interpreted as representing official policies,
     either expressed or implied, of the FreeBSD Project.
 
-## **Latest Release**
+## **Latest Version**
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest Release](https://img.shields.io/badge/Latest%20Release-v1.0.0.rc3-green.svg)](https://github.com/britannic/blacklist/releases/latest)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.0.0.rc3-green.svg)](https://github.com/britannic/blacklist/releases/latest)
 
 ## **Change Log**
 
@@ -232,7 +232,7 @@ set system task-scheduler task update_blacklists interval 6h
 * update-dnsmasq has the following commandline switches available:
 
 ```bash
-/config/scripts/update-dnsmasq.amd64 -h
+/config/scripts/update-dnsmasq -h
     -dir string
             Override dnsmasq directory (default "/etc/dnsmasq.d")
     -f [full file path]

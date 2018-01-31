@@ -4,7 +4,7 @@
 
 ### Release Candidate v1.0.0.rc3 (January 31, 2018)
 
-* Added domains exclude nsatc.net
+* Added domains exclude nsatc.net as it was blocking MS Office logins
 
 ### Release Candidate v1.0.0.rc2 (January 31, 2018)
 
