@@ -5,11 +5,13 @@ declare -i DEC
 source /opt/vyatta/etc/functions/script-template
 OPRUN=/opt/vyatta/bin/vyatta-op-cmd-wrapper
 CFGRUN=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
+DATE=$(date +'%FT%H%M%S')
 API=/bin/cli-shell-api
 shopt -s expand_aliases
 
 alias AddImage='${OPRUN} add system image'
 alias begin='${CFGRUN} begin'
+alias check='/bin/cli-shell-api'
 alias cleanup='${CFGRUN} cleanup'
 alias comment='${CFGRUN} comment'
 alias commit='${CFGRUN} commit'
@@ -22,7 +24,7 @@ alias load='${CFGRUN} load'
 alias rename='${CFGRUN} rename'
 alias save='sudo ${CFGRUN} save'
 alias set='${CFGRUN} set'
-alias show='${API} showConfig'
+alias show='_vyatta_op_run show'
 alias showddns=/opt/vyatta/bin/sudo-users/vyatta-op-dynamic-dns.pl
 alias version='${OPRUN} show version'
 
@@ -51,7 +53,7 @@ echo_logger() {
 	shopt -s checkwinsize
 	COLUMNS=$(tput cols)
 	DEC+=1
-	CTR=$( printf "%03x" ${DEC} )
+	CTR=$(printf "%03x" ${DEC})
 	TIME=$(date +%H:%M:%S.%3N)
 
 	case "${1}" in
@@ -91,12 +93,12 @@ echo_logger() {
 
 	# MSG=$(echo "${MSG}" | ansi)
 	let COLUMNS=${#MSG}-${#@}+${COLUMNS}
-	echo "post-install: ${MSG}" | fold -sw ${COLUMNS}
+	echo "pre-remove: ${MSG}" | fold -sw ${COLUMNS}
 }
 
 # Function to output command status of success or failure to screen and log
 try() {
-	if eval ${@}; then
+	if eval "${@}"; then
 		echo_logger I "${@}"
 		return 0
 	else
@@ -105,7 +107,20 @@ try() {
 	fi
 }
 
-update_dns_configuration() {
+backup_dns_config() {
+	check existsActive service dns forwarding blacklist
+	if [[ $? == 0 ]]; then
+		echo_logger I "Backing up blacklist configuration to: /config/user-data/blacklist.${DATE}.cmds"
+		run show configuration commands | grep blacklist >/config/user-data/blacklist.${DATE}.cmds ||
+			echo_logger E 'Blacklist configuration backup failed!'
+	fi
+}
+
+set_vyattacfg_grp() {
+	try chgrp -R vyattacfg /opt/vyatta/config/active
+}
+
+update_dns_config() {
 	try begin
 	try delete system task-scheduler task update_blacklists
 	try delete service dns forwarding blacklist
@@ -114,5 +129,6 @@ update_dns_configuration() {
 	try end
 }
 
-update_dns_configuration
-try chgrp -R vyattacfg /opt/vyatta/config/active
+backup_dns_config
+update_dns_config
+set_vyattacfg_grp

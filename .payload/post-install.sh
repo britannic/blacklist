@@ -204,6 +204,9 @@ update_dns_configuration() {
 	try set service dns forwarding blacklist exclude yimg.com
 	try set service dns forwarding blacklist exclude ytimg.com
 	try set service dns forwarding blacklist hosts include beap.gemini.yahoo.com
+	try set service dns forwarding blacklist hosts source HostsFile.org description 'hostsfile.org bad hosts blacklist'
+	try set service dns forwarding blacklist hosts source HostsFile.org prefix 127.0.0.1
+	try set service dns forwarding blacklist hosts source HostsFile.org url 'http://www.hostsfile.org/Downloads/hosts.txt'
 	try set service dns forwarding blacklist hosts source openphish description '"OpenPhish automatic phishing detection"'
 	try set service dns forwarding blacklist hosts source openphish prefix 'http'
 	try set service dns forwarding blacklist hosts source openphish url 'https://openphish.com/feed.txt'
@@ -214,8 +217,8 @@ update_dns_configuration() {
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
 	try set service dns forwarding blacklist hosts source yoyo description '"Fully Qualified Domain Names only - no prefix to strip"'
-	try set service dns forwarding blacklist hosts source yoyo url "http://pgl.yoyo.org/as/serverlist.php"
 	try set service dns forwarding blacklist hosts source yoyo prefix '127.0.0.1 '
+	try set service dns forwarding blacklist hosts source yoyo url "http://pgl.yoyo.org/as/serverlist.php"
 	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq
 	try set system task-scheduler task update_blacklists interval 1d
 	try commit

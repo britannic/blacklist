@@ -2,6 +2,11 @@
 
 ## Releases
 
+### Release Candidate v1.0.0.rc1 (January 31, 2018)
+
+* Release candidate #1 v1.0.0
+* Includes pre-remove.sh back up routine
+
 ### Patch v0.0.12 (January 30, 2018)
 
 * Added global exclude "evernote.com" as it is being false flagged by some sources
