@@ -204,9 +204,9 @@ update_dns_configuration() {
 	try set service dns forwarding blacklist exclude yimg.com
 	try set service dns forwarding blacklist exclude ytimg.com
 	try set service dns forwarding blacklist hosts include beap.gemini.yahoo.com
-	try set service dns forwarding blacklist hosts source HostsFile.org description 'hostsfile.org bad hosts blacklist'
-	try set service dns forwarding blacklist hosts source HostsFile.org prefix 127.0.0.1
-	try set service dns forwarding blacklist hosts source HostsFile.org url 'http://www.hostsfile.org/Downloads/hosts.txt'
+	try set service dns forwarding blacklist hosts source hostsfile.org description '"hostsfile.org bad hosts blacklist"'
+	try set service dns forwarding blacklist hosts source hostsfile.org prefix '127.0.0.1'
+	try set service dns forwarding blacklist hosts source hostsfile.org url 'http://www.hostsfile.org/Downloads/hosts.txt'
 	try set service dns forwarding blacklist hosts source openphish description '"OpenPhish automatic phishing detection"'
 	try set service dns forwarding blacklist hosts source openphish prefix 'http'
 	try set service dns forwarding blacklist hosts source openphish url 'https://openphish.com/feed.txt'

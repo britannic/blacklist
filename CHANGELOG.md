@@ -2,6 +2,12 @@
 
 ## Releases
 
+### Release Candidate v1.0.0.rc2 (January 31, 2018)
+
+* Release candidate #2 v1.0.0
+* New source added: [http://www.hostsfile.org/Downloads/hosts.txt](http://www.hostsfile.org/Downloads/hosts.txt)
+* Added global exclude googleads.g.doubleclick.net to fix Google search results
+
 ### Release Candidate v1.0.0.rc1 (January 31, 2018)
 
 * Release candidate #1 v1.0.0
