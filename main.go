@@ -58,11 +58,11 @@ var (
 	logPrintf  = logInfof
 
 	objex = []e.IFace{
+		e.PreHObj,
+		e.PreDObj,
 		e.ExRtObj,
 		e.ExDmObj,
 		e.ExHtObj,
-		e.PreDObj,
-		e.PreHObj,
 		e.FileObj,
 		e.URLdObj,
 		e.URLhObj,

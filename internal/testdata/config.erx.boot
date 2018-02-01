@@ -119,6 +119,7 @@ service {
                 exclude dropbox.com
                 exclude ebay.com
                 exclude edgesuite.net
+                exclude feedly.com
                 exclude freedns.afraid.org
                 exclude github.com
                 exclude githubusercontent.com
@@ -167,6 +168,7 @@ service {
                 exclude ytimg.com
                 hosts {
                     include beap.gemini.yahoo.com
+                    include ads.feedly.com
                     source openphish {
                         description "OpenPhish automatic phishing detection"
                         prefix http

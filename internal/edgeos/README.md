@@ -64,13 +64,6 @@ Package edgeos provides methods and structures to retrieve, parse and render Edg
   * [func (f *FIODataObjects) String() string](#FIODataObjects.String)
 * [type IFace](#IFace)
   * [func (i IFace) String() (s string)](#IFace.String)
-* [type Msg](#Msg)
-  * [func NewMsg(s string) *Msg](#NewMsg)
-  * [func (m *Msg) GetTotal() int](#Msg.GetTotal)
-  * [func (m *Msg) ReadDupes() int](#Msg.ReadDupes)
-  * [func (m *Msg) ReadNew() int](#Msg.ReadNew)
-  * [func (m *Msg) ReadUniq() int](#Msg.ReadUniq)
-  * [func (m *Msg) String() string](#Msg.String)
 * [type Objects](#Objects)
   * [func (o *Objects) Files() *CFile](#Objects.Files)
   * [func (o *Objects) Filter(ltype string) *Objects](#Objects.Filter)
@@ -133,7 +126,7 @@ Package edgeos provides methods and structures to retrieve, parse and render Edg
 
 
 #### <a name="pkg-files">Package files</a>
-[config.go](/src/github.com/britannic/blacklist/internal/edgeos/config.go) [content.go](/src/github.com/britannic/blacklist/internal/edgeos/content.go) [data.go](/src/github.com/britannic/blacklist/internal/edgeos/data.go) [http.go](/src/github.com/britannic/blacklist/internal/edgeos/http.go) [io.go](/src/github.com/britannic/blacklist/internal/edgeos/io.go) [json.go](/src/github.com/britannic/blacklist/internal/edgeos/json.go) [list.go](/src/github.com/britannic/blacklist/internal/edgeos/list.go) [msg.go](/src/github.com/britannic/blacklist/internal/edgeos/msg.go) [ntype_string.go](/src/github.com/britannic/blacklist/internal/edgeos/ntype_string.go) [object.go](/src/github.com/britannic/blacklist/internal/edgeos/object.go) [opts.go](/src/github.com/britannic/blacklist/internal/edgeos/opts.go) 
+[config.go](/src/github.com/britannic/blacklist/internal/edgeos/config.go) [content.go](/src/github.com/britannic/blacklist/internal/edgeos/content.go) [data.go](/src/github.com/britannic/blacklist/internal/edgeos/data.go) [http.go](/src/github.com/britannic/blacklist/internal/edgeos/http.go) [io.go](/src/github.com/britannic/blacklist/internal/edgeos/io.go) [json.go](/src/github.com/britannic/blacklist/internal/edgeos/json.go) [list.go](/src/github.com/britannic/blacklist/internal/edgeos/list.go) [ntype_string.go](/src/github.com/britannic/blacklist/internal/edgeos/ntype_string.go) [object.go](/src/github.com/britannic/blacklist/internal/edgeos/object.go) [opts.go](/src/github.com/britannic/blacklist/internal/edgeos/opts.go) 
 
 
 ## <a name="pkg-constants">Constants</a>
@@ -702,79 +695,6 @@ IFace types for labeling interface types
 ### <a name="IFace.String">func</a> (IFace) [String](/src/target/content.go?s=10947:10981#L513)
 ``` go
 func (i IFace) String() (s string)
-```
-
-
-
-## <a name="Msg">type</a> [Msg](/src/target/msg.go?s=112:301#L1)
-``` go
-type Msg struct {
-    Name string `json:"name"`
-    Done bool   `json:"done"`
-    *sync.RWMutex
-    Dupes int `json:"dupes"`
-    New   int `json:"new"`
-    Total int `json:"total"`
-    Uniq  int `json:"uniq"`
-}
-```
-Msg is a struct for recording stats from ProcessContent
-
-
-
-
-
-
-
-### <a name="NewMsg">func</a> [NewMsg](/src/target/msg.go?s=760:786#L39)
-``` go
-func NewMsg(s string) *Msg
-```
-NewMsg initializes and returns a new Msg struct
-
-
-
-
-
-### <a name="Msg.GetTotal">func</a> (\*Msg) [GetTotal](/src/target/msg.go?s=343:371#L10)
-``` go
-func (m *Msg) GetTotal() int
-```
-GetTotal returns total m.New records
-
-
-
-
-### <a name="Msg.ReadDupes">func</a> (\*Msg) [ReadDupes](/src/target/msg.go?s=899:928#L47)
-``` go
-func (m *Msg) ReadDupes() int
-```
-ReadDupes returns current value of Msg.Dupes
-
-
-
-
-### <a name="Msg.ReadNew">func</a> (\*Msg) [ReadNew](/src/target/msg.go?s=1024:1051#L54)
-``` go
-func (m *Msg) ReadNew() int
-```
-ReadNew returns current value of Msg.New
-
-
-
-
-### <a name="Msg.ReadUniq">func</a> (\*Msg) [ReadUniq](/src/target/msg.go?s=1147:1175#L61)
-``` go
-func (m *Msg) ReadUniq() int
-```
-ReadUniq returns current value of msg.Uniq
-
-
-
-
-### <a name="Msg.String">func</a> (\*Msg) [String](/src/target/msg.go?s=1226:1255#L67)
-``` go
-func (m *Msg) String() string
 ```
 
 

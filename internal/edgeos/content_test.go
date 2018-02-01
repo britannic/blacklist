@@ -346,26 +346,26 @@ func TestNewContent(t *testing.T) {
 			case false:
 				So(err, ShouldBeNil)
 
-				m := make(chan *Msg)
+				// m := make(chan *Msg)
 				d := &dummyConfig{Parms: c.Parms, t: t}
 				d.ProcessContent(objs)
 
-				v := NewMsg(tt.name)
-			drainLoop:
-				for !v.Done {
-					select {
-					case v = <-m:
-						Println(v.Total)
-					default:
-						break drainLoop
-					}
-				}
+				// 	v := NewMsg(tt.name)
+				// drainLoop:
+				// 	for !v.Done {
+				// 		select {
+				// 		case v = <-m:
+				// 			Println(v.Total)
+				// 		default:
+				// 			break drainLoop
+				// 		}
+				// 	}
 
-				select {
-				case v = <-m:
-					Println(v.Total)
-				default:
-				}
+				// 	select {
+				// 	case v = <-m:
+				// 		Println(v.Total)
+				// 	default:
+				// 	}
 
 				So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
 
