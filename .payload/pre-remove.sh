@@ -47,6 +47,16 @@ alias tan='tput setaf 3'
 alias white='tput setaf 7'
 alias yellow='tput setaf 3'
 
+# Back up [service dns forwarding blacklist]
+backup_dns_config() {
+	check existsActive service dns forwarding blacklist
+	if [[ $? == 0 ]]; then
+		echo_logger I "Backing up blacklist configuration to: /config/user-data/blacklist.${DATE}.cmds"
+		run show configuration commands | grep blacklist >/config/user-data/blacklist.${DATE}.cmds ||
+			echo_logger E 'Blacklist configuration backup failed!'
+	fi
+}
+
 # Setup the echo_logger function
 echo_logger() {
 	local MSG
@@ -96,6 +106,11 @@ echo_logger() {
 	echo "pre-remove: ${MSG}" | fold -sw ${COLUMNS}
 }
 
+# Fix the group so that the admin user will be able to commit configs
+set_vyattacfg_grp() {
+	try chgrp -R vyattacfg /opt/vyatta/config/active
+}
+
 # Function to output command status of success or failure to screen and log
 try() {
 	if eval "${@}"; then
@@ -107,20 +122,8 @@ try() {
 	fi
 }
 
-backup_dns_config() {
-	check existsActive service dns forwarding blacklist
-	if [[ $? == 0 ]]; then
-		echo_logger I "Backing up blacklist configuration to: /config/user-data/blacklist.${DATE}.cmds"
-		run show configuration commands | grep blacklist >/config/user-data/blacklist.${DATE}.cmds ||
-			echo_logger E 'Blacklist configuration backup failed!'
-	fi
-}
-
-set_vyattacfg_grp() {
-	try chgrp -R vyattacfg /opt/vyatta/config/active
-}
-
-update_dns_config() {
+# Delete the [service dns forwarding blacklist] configuration
+delete_dns_config() {
 	try begin
 	try delete system task-scheduler task update_blacklists
 	try delete service dns forwarding blacklist
@@ -130,5 +133,5 @@ update_dns_config() {
 }
 
 backup_dns_config
-update_dns_config
+delete_dns_config
 set_vyattacfg_grp
