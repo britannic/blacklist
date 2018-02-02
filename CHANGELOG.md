@@ -4,10 +4,12 @@
 
 ### Release Candidate v1.0.0.rc4 (February 1, 2018)
 
+* Release candidate #4 v1.0.0
 * Fixed bug to ensure pre-configured includes are processed first, so that pre-configured excludes won't drop them
 
 ### Release Candidate v1.0.0.rc3 (January 31, 2018)
 
+* Release candidate #3 v1.0.0
 * Added domains exclude nsatc.net as it was blocking MS Office logins
 
 ### Release Candidate v1.0.0.rc2 (January 31, 2018)

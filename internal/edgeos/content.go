@@ -343,13 +343,13 @@ NEXT:
 			FQDN:
 				for _, fqdn := range fqdns {
 					switch {
-					case o.Dex.subKeyExists(string(fqdn)):
+					case o.Dex.subKeyExists(fqdn):
 						drop++
 						continue FQDN
-					case !o.Exc.keyExists(string(fqdn)):
+					case !o.Exc.keyExists(fqdn):
 						kept++
-						o.Exc.set(string(fqdn), 0)
-						add.set(string(fqdn), 0)
+						o.Exc.set(fqdn, 0)
+						add.set(fqdn, 0)
 					}
 				}
 			}

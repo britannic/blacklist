@@ -69,7 +69,7 @@ func TestFormatData(t *testing.T) {
 			for b.Scan() {
 				k := b.Text()
 				lines = append(lines, fmt.Sprintf("address=%v%v/%v", eq, k, c.tree[node].ip)+"\n")
-				actList.set(k, 0)
+				actList.set([]byte(k), 0)
 			}
 
 			sort.Strings(lines)
@@ -89,8 +89,8 @@ func TestGetSubdomains(t *testing.T) {
 		d := getSubdomains([]byte("top.one.two.three.four.five.six.intellitxt.com"))
 		d.RWMutex = &sync.RWMutex{}
 
-		for key := range d.entry {
-			So(d.keyExists(key), ShouldBeTrue)
+		for k := range d.entry {
+			So(d.keyExists([]byte(k)), ShouldBeTrue)
 		}
 	})
 }

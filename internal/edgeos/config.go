@@ -201,7 +201,13 @@ func (c *Config) excludes(nodes ...string) list {
 			exc = append(exc, c.tree[node].exc...)
 		}
 	}
-	return updateEntry(exc)
+
+	entries := make([][]byte, len(exc))
+	for i, v := range exc {
+		entries[i] = []byte(v)
+	}
+
+	return updateEntry(entries)
 }
 
 // Get returns an *Object for a given node

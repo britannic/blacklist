@@ -16,9 +16,9 @@ type list struct {
 }
 
 // set sets the int value of entry
-func (l list) keyExists(k string) bool {
+func (l list) keyExists(k []byte) bool {
 	l.RLock()
-	_, ok := l.entry[k]
+	_, ok := l.entry[string(k)]
 	l.RUnlock()
 	return ok
 }
@@ -38,26 +38,26 @@ func mergeList(a, b list) list {
 }
 
 // mergeList combines two list maps
-func (l list) set(k string, v int) {
+func (l list) set(k []byte, v int) {
 	l.Lock()
-	l.entry[k] = v
+	l.entry[string(k)] = v
 	l.Unlock()
 }
 
 func (l list) String() string {
 	var lines sort.StringSlice
 	for k, v := range l.entry {
-		lines = append(lines, fmt.Sprintf("%q:%v,\n", k, v))
+		lines = append(lines, fmt.Sprintf("%q:%v,\n", string(k), v))
 	}
 	lines.Sort()
 	return strings.Join(lines, "")
 }
 
 // subKeyExists returns true if part of all of the key matches
-func (l list) subKeyExists(k string) bool {
-	keys := getSubdomains([]byte(k))
+func (l list) subKeyExists(k []byte) bool {
+	keys := getSubdomains(k)
 	for k := range keys.entry {
-		if l.keyExists(k) {
+		if l.keyExists([]byte(k)) {
 			return true
 		}
 	}
@@ -65,10 +65,10 @@ func (l list) subKeyExists(k string) bool {
 }
 
 // updateEntry converts []string to map of List
-func updateEntry(data []string) (l list) {
+func updateEntry(data [][]byte) (l list) {
 	l.entry = make(entry)
 	for _, k := range data {
-		l.entry[k] = 0
+		l.entry[string(k)] = 0
 	}
 	return l
 }

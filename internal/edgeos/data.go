@@ -48,11 +48,11 @@ func diffArray(a, b []string) (diff sort.StringSlice) {
 
 	dmap := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 	for _, k := range smallest {
-		dmap.set(k, 0)
+		dmap.set([]byte(k), 0)
 	}
 
 	for _, k := range biggest {
-		if !dmap.keyExists(k) {
+		if !dmap.keyExists([]byte(k)) {
 			diff = append(diff, k)
 		}
 	}
@@ -89,8 +89,8 @@ func getSubdomains(b []byte) (l list) {
 	l.entry = make(entry)
 	keys := bytes.Split(b, []byte("."))
 	for i := range Iter(len(keys) - 1) {
-		key := bytes.Join(keys[i:], []byte("."))
-		l.entry[string(key)] = 0
+		k := bytes.Join(keys[i:], []byte("."))
+		l.entry[string(k)] = 0
 	}
 	return l
 }

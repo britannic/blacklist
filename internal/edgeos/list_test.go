@@ -34,11 +34,11 @@ func TestKeyExists(t *testing.T) {
 		d := getSubdomains(full)
 		d.RWMutex = &sync.RWMutex{}
 
-		for key := range d.entry {
-			So(d.keyExists(key), ShouldBeTrue)
+		for k := range d.entry {
+			So(d.keyExists([]byte(k)), ShouldBeTrue)
 		}
 
-		So(d.keyExists(`zKeyDoesn'tExist`), ShouldBeFalse)
+		So(d.keyExists([]byte("zKeyDoesn'tExist")), ShouldBeFalse)
 	})
 }
 
@@ -97,46 +97,47 @@ func TestSubKeyExists(t *testing.T) {
 		d := getSubdomains(full)
 		d.RWMutex = &sync.RWMutex{}
 
-		key := `intellitxt.com`
-		d.set(key, 0)
-		So(d.subKeyExists(key), ShouldBeTrue)
+		k := `intellitxt.com`
+		d.set([]byte(k), 0)
+		So(d.subKeyExists([]byte(k)), ShouldBeTrue)
 
 		act := len(d.entry)
 		exp := bytes.Count(full, []byte(".")) + 1
 		So(act, ShouldEqual, exp)
 
-		for key = range d.entry {
-			So(d.subKeyExists(key), ShouldBeTrue)
+		for k = range d.entry {
+			So(d.subKeyExists([]byte(k)), ShouldBeTrue)
 		}
 
-		So(d.subKeyExists(`zKeyDoesn'tExist`), ShouldBeFalse)
+		So(d.subKeyExists([]byte(`zKeyDoesn'tExist`)), ShouldBeFalse)
 	})
 }
 
 var (
-	act = list{entry: entry{
-		"a.applovin.com":         0,
-		"a.glcdn.co":             0,
-		"a.vserv.mobi":           0,
-		"ad.leadboltapps.net":    0,
-		"ad.madvertise.de":       0,
-		"ad.where.com":           0,
-		"ad1.adinfuse.com":       0,
-		"ad2.adinfuse.com":       0,
-		"adcontent.saymedia.com": 0,
-		"adinfuse.com":           0,
-		"admicro1.vcmedia.vn":    0,
-		"admicro2.vcmedia.vn":    0,
-		"admin.vserv.mobi":       0,
-		"ads.adiquity.com":       0,
-		"ads.admarvel.com":       0,
-		"ads.admoda.com":         0,
-		"ads.celtra.com":         0,
-		"ads.flurry.com":         0,
-		"ads.matomymobile.com":   0,
-		"ads.mobgold.com":        0,
-		"ads.mobilityware.com":   0,
-		"ads.mopub.com":          0,
-	},
+	act = list{
+		entry: entry{
+			"a.applovin.com":         0,
+			"a.glcdn.co":             0,
+			"a.vserv.mobi":           0,
+			"ad.leadboltapps.net":    0,
+			"ad.madvertise.de":       0,
+			"ad.where.com":           0,
+			"ad1.adinfuse.com":       0,
+			"ad2.adinfuse.com":       0,
+			"adcontent.saymedia.com": 0,
+			"adinfuse.com":           0,
+			"admicro1.vcmedia.vn":    0,
+			"admicro2.vcmedia.vn":    0,
+			"admin.vserv.mobi":       0,
+			"ads.adiquity.com":       0,
+			"ads.admarvel.com":       0,
+			"ads.admoda.com":         0,
+			"ads.celtra.com":         0,
+			"ads.flurry.com":         0,
+			"ads.matomymobile.com":   0,
+			"ads.mobgold.com":        0,
+			"ads.mobilityware.com":   0,
+			"ads.mopub.com":          0,
+		},
 	}
 )
