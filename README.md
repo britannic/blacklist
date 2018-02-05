@@ -1,10 +1,11 @@
 # **UBNT edgeos-dnsmasq-blacklist dnsmasq DNS Blacklisting and Redirection**
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v1.0.0.rc4-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v1.0.0.rc5-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
 
-[community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/Self-Installer-to-configure-Ad-Server-and-Blacklist-Blocking/td-p/1337892)
+Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/DNS-Adblocking-amp-Blacklisting-dnsmasq-Configuration/td-p/2215008/jump-to/first-unread-message)
 
-NOTE: THIS IS NOT OFFICIAL UBIQUITI SOFTWARE AND THEREFORE NOT SUPPORTED OR ENDORSED BY Ubiquiti Networks®
+
+## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti Networks®
 
 ## **Overview**
 
@@ -42,7 +43,7 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Latest Version**
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.0.0.rc4-green.svg)](https://github.com/britannic/blacklist/releases/latest)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.0.0.rc5-green.svg)](https://github.com/britannic/blacklist/releases/latest)
 
 ## **Change Log**
 
@@ -66,16 +67,15 @@ modification, are permitted provided that the following conditions are met:
 ### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
 
 ```bash
-curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/13/edgeos-dnsmasq-blacklist_1.0.0.rc4_mips.deb.tgz | tar -xvz
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.0.rc4_mips.deb
+curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/195918/1/edgeos-pixelserv_1.0.1_mips.deb.tgz | tar -xvz
+sudo dpkg -i edgeos-pixelserv_1.0.1_mips.deb
 ```
 
 ### **EdgeRouter ER-X & ER-X-SFP**
 
 ```bash
-curl
-https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/14/edgeos-dnsmasq-blacklist_1.0.0.rc4_mipsel.deb.tgz | tar -xvz
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.0.rc4_mipsel.deb
+curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/195918/2/edgeos-pixelserv_1.0.1_mipsel.deb.tgz | tar -xvz
+sudo dpkg -i edgeos-pixelserv_1.0.1_mipsel.deb
 ```
 
 ## **Upgrade**
@@ -227,7 +227,7 @@ set system task-scheduler task update_blacklists interval 6h
 
 * In daily use, no additional interaction with update-dnsmasq is required. By default, cron will run update-dnsmasq at midnight each day to download the blacklist sources and update the dnsmasq configuration files in /etc/dnsmasq.d. dnsmasq will automatically be reloaded after the configuration file update is completed.
 
-**How I use the command line switches?**
+**How do I use the command line switches?**
 
 * update-dnsmasq has the following commandline switches available:
 

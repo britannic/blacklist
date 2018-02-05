@@ -2,6 +2,9 @@
 
 ## Releases
 
+### Release Candidate v1.0.0.rc5 (February 4, 2018)
+* Extended vyattacfg change group to include /opt/vyatta/config/tmp and /opt/vyatta/config/active 
+
 ### Release Candidate v1.0.0.rc4 (February 1, 2018)
 
 * Release candidate #4 v1.0.0

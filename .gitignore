@@ -29,3 +29,5 @@
 *.VC.db
 blacklist.*
 vendor/
+
+*.file

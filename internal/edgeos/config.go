@@ -301,6 +301,7 @@ func isTnode(tnode string) bool {
 	case rootNode, domains, hosts:
 		return true
 	}
+
 	return false
 }
 
@@ -380,7 +381,6 @@ LINE:
 					}
 				}
 			}
-
 		case rx.DESC.Match(line) || rx.CMNT.Match(line) || rx.MISC.Match(line):
 			continue LINE
 		case rx.RBRC.Match(line):
