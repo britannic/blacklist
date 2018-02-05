@@ -67,15 +67,15 @@ modification, are permitted provided that the following conditions are met:
 ### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
 
 ```bash
-curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/195918/1/edgeos-pixelserv_1.0.1_mips.deb.tgz | tar -xvz
-sudo dpkg -i edgeos-pixelserv_1.0.1_mips.deb
+curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/15/edgeos-dnsmasq-blacklist_1.0.0.rc5_mips.deb.tgz | tar -xvz
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.0.rc5_mips.deb
 ```
 
 ### **EdgeRouter ER-X & ER-X-SFP**
 
 ```bash
-curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/195918/2/edgeos-pixelserv_1.0.1_mipsel.deb.tgz | tar -xvz
-sudo dpkg -i edgeos-pixelserv_1.0.1_mipsel.deb
+curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/16/edgeos-dnsmasq-blacklist_1.0.0.rc5_mipsel.deb.tgz | tar -xvz
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.0.rc5_mipsel.deb
 ```
 
 ## **Upgrade**
