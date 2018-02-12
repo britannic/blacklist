@@ -339,6 +339,17 @@ func TestInSession(t *testing.T) {
 	})
 }
 
+func TestNodeExists(t *testing.T) {
+	Convey("Testing TestNodeExists()", t, func() {
+		var (
+			c   = NewConfig()
+			err = c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg})
+		)
+		So(err, ShouldBeNil)
+		So(c.nodeExists("broken"), ShouldBeFalse)
+	})
+}
+
 func TestReadCfg(t *testing.T) {
 	Convey("Testing ReadCfg()", t, func() {
 		var (
@@ -520,6 +531,13 @@ func TestGetAll(t *testing.T) {
 				}
 			})
 		}
+	})
+}
+
+func TestValidate(t *testing.T) {
+	Convey("Testing validate() objects", t, func() {
+		b := make(tree)
+		So(b.validate("borked").String(), ShouldEqual, "[]")
 	})
 }
 

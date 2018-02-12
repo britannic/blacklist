@@ -139,6 +139,9 @@ update_dns_config() {
 	try set service dns forwarding blacklist domains source simple_tracking url 'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt'
 	try set service dns forwarding blacklist domains source zeus description '"abuse.ch ZeuS domain blocklist"'
 	try set service dns forwarding blacklist domains source zeus url 'https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist'
+	try set service dns forwarding blacklist domains source NoBitCoin description '"Blocking Web Browser Bitcoin Mining"'
+	try set service dns forwarding blacklist domains source NoBitCoin prefix '0.0.0.0'
+	try set service dns forwarding blacklist domains source NoBitCoin url 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'	
 	try set service dns forwarding blacklist exclude 1e100.net
 	try set service dns forwarding blacklist exclude 2o7.net
 	try set service dns forwarding blacklist exclude adobedtm.com

@@ -76,7 +76,7 @@ func main() {
 	)
 
 	if env, err = initEnvirons(); err != nil {
-		logErrorf("%s shutting down.", err)
+		logErrorf("%s shutting down.", err.Error())
 		exitCmd(0)
 	}
 
@@ -85,14 +85,14 @@ func main() {
 
 	logInfo("Removing stale blacklists...")
 	if err = removeStaleFiles(env); err != nil {
-		logFatalf("%v", err)
+		logFatalf("%v", err.Error())
 	}
 
 	// _, _ = context.WithTimeout(context.Background(), c.Timeout)
 
 	if !env.Disabled {
 		if err := processObjects(env, objex); err != nil {
-			logFatalf("%v", err)
+			logFatalf("%v", err.Error())
 		}
 	}
 
@@ -129,7 +129,7 @@ func initEnv() (env *e.Config, err error) {
 		logInfo("Removing stale blacklists...")
 
 		if err = d.Remove(); err != nil {
-			logFatalf("%v", err)
+			logFatalf("%v", err.Error())
 		}
 		exitCmd(0)
 	}
@@ -156,7 +156,7 @@ func newLog(prefix string) *logging.Logger {
 
 	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 	}
 
 	fdlog := logging.NewLogBackend(fd, "", 0)
@@ -164,7 +164,7 @@ func newLog(prefix string) *logging.Logger {
 
 	sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 	}
 
 	logging.SetBackend(fdFmttr, sysFmttr)
@@ -192,7 +192,7 @@ func processObjects(c *e.Config, objects []e.IFace) error {
 func reloadDNS(c *e.Config) {
 	b, err := c.ReloadDNS()
 	if err != nil {
-		logErrorf("ReloadDNS(): \n error: %v\n", string(b), err)
+		logErrorf("ReloadDNS(): \n error: %v\n", string(b), err.Error())
 		exitCmd(1)
 	}
 	logPrintf("ReloadDNS(): %v\n", string(b))
@@ -201,7 +201,7 @@ func reloadDNS(c *e.Config) {
 // removeStaleFiles deletes redundant files
 func removeStaleFiles(c *e.Config) error {
 	if err := c.GetAll().Files().Remove(); err != nil {
-		return fmt.Errorf("c.GetAll().Files().Remove() error: %v", err)
+		return fmt.Errorf("c.GetAll().Files().Remove() error: %v", err.Error())
 	}
 	return nil
 }
@@ -220,7 +220,7 @@ func screenLog(prefix string) logging.LeveledBackend {
 		}
 
 		if sysFmttr, err = logging.NewSyslogBackend(prefix); err != nil {
-			fmt.Println(err)
+			fmt.Println(err.Error())
 		}
 
 		return logging.SetBackend(

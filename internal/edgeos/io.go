@@ -115,7 +115,7 @@ func purgeFiles(files []string) error {
 func (c *CFGcli) read() io.Reader {
 	b, err := c.load("showCfg", c.Level)
 	if err != nil {
-		log.Print(err)
+		log.Print(err.Error())
 	}
 	return bytes.NewReader(b)
 }

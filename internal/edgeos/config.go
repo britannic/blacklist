@@ -75,6 +75,13 @@ const (
 	True = "true"
 )
 
+func (c *Config) nodeExists(node string) bool {
+	if _, ok := c.tree[node]; ok {
+		return ok
+	}
+	return false
+}
+
 func (c *Config) addExc(node string) *Objects {
 	var (
 		exc   = []string{}
@@ -91,7 +98,7 @@ func (c *Config) addExc(node string) *Objects {
 		ltype = ExcRoots
 	}
 
-	if _, ok := c.tree[node]; ok {
+	if c.nodeExists(node) {
 		exc = c.tree[node].exc
 	}
 
@@ -114,7 +121,7 @@ func (c *Config) addInc(node string) *object {
 		n     ntype
 	)
 
-	if _, ok := c.tree[node]; ok {
+	if c.nodeExists(node) {
 		inc = c.tree[node].inc
 	}
 
