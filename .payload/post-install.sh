@@ -217,9 +217,9 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude ytimg.com
 	try set service dns forwarding blacklist hosts include ads.feedly.com
 	try set service dns forwarding blacklist hosts include beap.gemini.yahoo.com
-	try set service dns forwarding blacklist hosts source githubSteveBlack description '"Blacklists fakenews, gambling, porn and social websites"'
+	try set service dns forwarding blacklist hosts source githubSteveBlack description '"Blacklists fakenews, gambling, porn websites"'
 	try set service dns forwarding blacklist hosts source githubSteveBlack prefix '0.0.0.0 '
-	try set service dns forwarding blacklist hosts source githubSteveBlack url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts'
+	try set service dns forwarding blacklist hosts source githubSteveBlack url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts'
 	try set service dns forwarding blacklist hosts source hostsfile.org description '"hostsfile.org bad hosts blacklist"'
 	try set service dns forwarding blacklist hosts source hostsfile.org prefix '127.0.0.1'
 	try set service dns forwarding blacklist hosts source hostsfile.org url 'http://www.hostsfile.org/Downloads/hosts.txt'

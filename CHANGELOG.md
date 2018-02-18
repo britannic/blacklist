@@ -2,10 +2,15 @@
 
 ## Releases
 
+### Release v1.0.1 (February 18, 2018)
+
+* Updated sources
+  * Amended hosts source [https://github.com/StevenBlack/hosts/](https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts) to whitelist social networks
+
 ### GA Release v1.0.0 (February 17, 2018)
 
 * Updated sources
-  * Added hosts source [https://github.com/StevenBlack/hosts/](https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts)
+  * Added hosts source [https://github.com/StevenBlack/hosts/](https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts)
   * Removed Yoyo and raw.github.com, since the new sources make them redundant
 * Fixed bug where "domains" was reported as "hosts" source type
 
