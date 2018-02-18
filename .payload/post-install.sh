@@ -130,6 +130,9 @@ update_dns_config() {
 	try set service dns forwarding blacklist domains include themillionaireinpjs.com
 	try set service dns forwarding blacklist domains include traktrafficflow.com
 	try set service dns forwarding blacklist domains include wwwpromoter.com
+	try set service dns forwarding blacklist domains source SteveBlack url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts'
+	try set service dns forwarding blacklist domains source SteveBlack description '"Blacklists fakenews, gambling, porn and social websites"'
+	try set service dns forwarding blacklist domains source SteveBlack prefix '0.0.0.0 '
 	try set service dns forwarding blacklist domains source malc0de description '"List of zones serving malicious executables observed by malc0de.com/database/"'
 	try set service dns forwarding blacklist domains source malc0de prefix 'zone '
 	try set service dns forwarding blacklist domains source malc0de url 'http://malc0de.com/bl/ZONES'
@@ -228,9 +231,9 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
-	try set service dns forwarding blacklist hosts source yoyo description '"Fully Qualified Domain Names only - no prefix to strip"'
-	try set service dns forwarding blacklist hosts source yoyo prefix '127.0.0.1 '
-	try set service dns forwarding blacklist hosts source yoyo url "http://pgl.yoyo.org/as/serverlist.php"
+	# try set service dns forwarding blacklist hosts source yoyo description '"Fully Qualified Domain Names only - no prefix to strip"'
+	# try set service dns forwarding blacklist hosts source yoyo prefix '127.0.0.1 '
+	# try set service dns forwarding blacklist hosts source yoyo url "http://pgl.yoyo.org/as/serverlist.php"
 	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq
 	try set system task-scheduler task update_blacklists interval 1d
 	try commit

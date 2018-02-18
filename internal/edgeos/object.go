@@ -44,7 +44,7 @@ func (o *Objects) addObj(c *Config, node string) {
 
 func (o *object) area() string {
 	switch getType(o.nType).(string) {
-	case PreDomns:
+	case domains, PreDomns:
 		return domains
 	}
 	return hosts
