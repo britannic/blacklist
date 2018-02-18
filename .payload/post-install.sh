@@ -130,9 +130,9 @@ update_dns_config() {
 	try set service dns forwarding blacklist domains include themillionaireinpjs.com
 	try set service dns forwarding blacklist domains include traktrafficflow.com
 	try set service dns forwarding blacklist domains include wwwpromoter.com
-	try set service dns forwarding blacklist domains source SteveBlack url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts'
-	try set service dns forwarding blacklist domains source SteveBlack description '"Blacklists fakenews, gambling, porn and social websites"'
-	try set service dns forwarding blacklist domains source SteveBlack prefix '0.0.0.0 '
+	try set service dns forwarding blacklist domains source githubSteveBlack url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts'
+	try set service dns forwarding blacklist domains source githubSteveBlack description '"Blacklists fakenews, gambling, porn and social websites"'
+	try set service dns forwarding blacklist domains source githubSteveBlack prefix '0.0.0.0 '
 	try set service dns forwarding blacklist domains source malc0de description '"List of zones serving malicious executables observed by malc0de.com/database/"'
 	try set service dns forwarding blacklist domains source malc0de prefix 'zone '
 	try set service dns forwarding blacklist domains source malc0de url 'http://malc0de.com/bl/ZONES'
@@ -212,6 +212,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude sstatic.net
 	try set service dns forwarding blacklist exclude static.chartbeat.com
 	try set service dns forwarding blacklist exclude storage.googleapis.com
+	try set service dns forwarding blacklist exclude twimg.com
 	try set service dns forwarding blacklist exclude viewpoint.com
 	try set service dns forwarding blacklist exclude windows.net
 	try set service dns forwarding blacklist exclude xboxlive.com
@@ -225,9 +226,9 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source openphish description '"OpenPhish automatic phishing detection"'
 	try set service dns forwarding blacklist hosts source openphish prefix 'http'
 	try set service dns forwarding blacklist hosts source openphish url 'https://openphish.com/feed.txt'
-	try set service dns forwarding blacklist hosts source raw.github.com description '"This hosts file is a merged collection of hosts from reputable sources"'
-	try set service dns forwarding blacklist hosts source raw.github.com prefix '0.0.0.0 '
-	try set service dns forwarding blacklist hosts source raw.github.com url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'
+	# try set service dns forwarding blacklist hosts source raw.github.com description '"This hosts file is a merged collection of hosts from reputable sources"'
+	# try set service dns forwarding blacklist hosts source raw.github.com prefix '0.0.0.0 '
+	# try set service dns forwarding blacklist hosts source raw.github.com url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'
 	try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
