@@ -5,7 +5,7 @@
 ### Release v1.0.1 (February 18, 2018)
 
 * Updated sources
-  * Amended hosts source [https://github.com/StevenBlack/hosts/](https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts) to whitelist social networks
+  * Changed hosts source [https://github.com/StevenBlack/hosts/](https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts) to version that doesn't blacklist social networks
 
 ### GA Release v1.0.0 (February 17, 2018)
 
