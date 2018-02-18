@@ -66,14 +66,14 @@ modification, are permitted provided that the following conditions are met:
 ### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
 
 ```bash
-curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/19/edgeos-dnsmasq-blacklist_1.0.1_mips.deb.tgz | tar -xvz
+curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/20/edgeos-dnsmasq-blacklist_1.0.1_mips.deb.tgz | tar -xvz
 sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.1_mips.deb
 ```
 
 ### **EdgeRouter ER-X & ER-X-SFP**
 
 ```bash
-curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/20/edgeos-dnsmasq-blacklist_1.0.1_mipsel.deb.tgz | tar -xvz
+curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/19/edgeos-dnsmasq-blacklist_1.0.1_mipsel.deb.tgz | tar -xvz
 sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.1_mipsel.deb
 ```
 
