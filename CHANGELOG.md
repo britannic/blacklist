@@ -2,6 +2,11 @@
 
 ## Releases
 
+### Release v1.0.2 (February 18, 2018)
+
+* Updated sources
+  * Changed hosts source [https://github.com/StevenBlack/hosts/](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts) to version that only blacklists ads and malware
+
 ### Release v1.0.1 (February 18, 2018)
 
 * Updated sources
