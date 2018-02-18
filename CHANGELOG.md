@@ -2,6 +2,13 @@
 
 ## Releases
 
+### GA Release v1.0.0 (February 17, 2018)
+
+* Updated sources
+  * Added [https://github.com/StevenBlack/hosts/](https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts)
+  * Removed Yoyo, since the new sources make it redundant
+* Fixed bug where "domains" was reported as "hosts" source type
+
 ### Release Candidate v1.0.0.rc5 (February 4, 2018)
 
 * Extended vyattacfg change group to include /opt/vyatta/config/tmp and /opt/vyatta/config/active
