@@ -2,7 +2,7 @@ language: go
 os:
 - osx
 go:
-- 1.10
+- master
 sudo: false
 before_install:
 # Setup dependency management tool
