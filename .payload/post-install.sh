@@ -185,6 +185,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude hulu.com
 	try set service dns forwarding blacklist exclude images-amazon.com
 	try set service dns forwarding blacklist exclude live.com
+	try set service dns forwarding blacklist exclude magnetmail1.net
 	try set service dns forwarding blacklist exclude microsoft.com
 	try set service dns forwarding blacklist exclude microsoftonline.com
 	try set service dns forwarding blacklist exclude msdn.com

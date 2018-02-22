@@ -45,7 +45,7 @@ func TestGetHTTP(t *testing.T) {
 			{ok: true, err: nil, method: method, URL: page, exp: want},
 			{ok: false, err: fmt.Errorf("%v", `Get bad%20url: unsupported protocol scheme ""`), method: method, URL: "bad url", exp: "Unable to get response for bad url..."},
 			{ok: false, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: page, exp: "Unable to form request for /domains.txt..."},
-			{ok: false, err: errors.New("Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: getsockopt: connection refused"), method: method, URL: "http://127.0.0.1:808/", exp: "Unable to get response for http://127.0.0.1:808/..."},
+			{ok: false, err: errors.New("Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connect: connection refused"), method: method, URL: "http://127.0.0.1:808/", exp: "Unable to get response for http://127.0.0.1:808/..."},
 			{ok: true, err: nil, method: method, URL: page, exp: ""},
 			{ok: true, err: nil, method: method, URL: "/biccies.txt", exp: "404 page not found\n"},
 			{ok: true, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: page, exp: "Unable to form request for "},
