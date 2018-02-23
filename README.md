@@ -21,7 +21,16 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 1. [Upgrade](#upgrade)
 1. [Removal](#removal)
 1. [Frequently Asked Questions](#frequently-asked-questions)
+   1. [Does the install backup my blacklist configuration before deleting it?](#does-the-install-backup-my-blacklist-configuration-before-deleting-it)
+   1. [Does update-dnsmasq run automatically?](#does-update-dnsmasq-run-automatically)
+   1. [How do I add or delete sources?](#how-do-i-add-or-delete-sources)
+   1. [How do I back up my blacklist configuration and restore it later?](#how-do-i-back-up-my-blacklist-configuration-and-restore-it-later)
    1. [How do I configure dnsmasq?](#how-do-i-configure-dnsmasq)
+   1. [How do I disable/enable dnsmasq blacklisting?](#how-do-i-disableenable-dnsmasq-blacklisting)
+   1. [How do I exclude or include a host or a domain?](#how-do-i-exclude-or-include-a-host-or-a-domain)
+   1. [How do I globally exclude or include hosts or a domains?](#how-do-i-globally-exclude-or-include-hosts-or-a-domains)
+   1. [How do I use the command line switches?](#how-do-i-use-the-command-line-switches)
+   1. [Which blacklist sources are installed by default?](#which-blacklist-sources-are-installed-by-default)
 
 ## **Overview**
 
