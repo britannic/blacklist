@@ -63,10 +63,10 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Installation**
 
-* [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp--unifi-gateway-3-apt-get) - works for all routers
-* [Using dpkg](#dpkg-installation---best-for-disk-space-constrained-routers-dpk) - best for disk space constrained routers
+* [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp--unifi-gateway-3) - works for all routers
+* [Using dpkg](#dpkg-installation---best-for-disk-space-constrained-routers) - best for disk space constrained routers
 
-### **apt-get Installation - ERLite-3, ERPoe-5, ER-X, ER-X-SFP & UniFi-Gateway-3 [apt-get]**
+### **apt-get Installation - ERLite-3, ERPoe-5, ER-X, ER-X-SFP & UniFi-Gateway-3**
 
 * Add the blacklist debian package repository using the router's CLI shell
 
@@ -91,7 +91,7 @@ sudo curl -L https://raw.githubusercontent.com/britannic/debian-repo/master/blac
 sudo apt-get update && apt-get install edgeos-dnsmasq-blacklist
 ```
 
-## **dpkg Installation - best for disk space constrained routers [dpkg]**
+## **dpkg Installation - best for disk space constrained routers**
 
 ### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
 
