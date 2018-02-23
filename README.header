@@ -6,6 +6,24 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 
 ## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti Networks®
 
+## **Contents**
+
+1; [Overview](#overview)
+1; [Copyright](#copyright)
+1; [Licenses](#licenses)
+1; [Latest Version](#latest-version)
+1; [Change Log](#change-Log)
+1; [Features](#features)
+1; [Compatibility](#compatibility)
+1; [Installation](#installation)
+    1; [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp--unifi-gateway-3) 
+    1; [Using dpkg](#dpkg-installation---best-for-disk-space-constrained-routers)
+1; [Upgrade](#upgrade)
+1; [Removal](#removal)
+1; [Frequently Asked Questions](#frequently-asked-questions)
+1; [EdgeOS dnsmasq Configuration](#edgeos-dnsmasq-configuration)
+
+
 ## **Overview**
 
 EdgeMax dnsmasq DNS blacklisting and redirection is inspired by the users at [EdgeMAX Community](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
@@ -122,7 +140,7 @@ sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.3_mipsel.deb
 apt-get upgrade edgeos-dnsmasq-blacklist
 ```
 
-* If you are using dpkg, note it cannot upgrade packages, so follow the instructions under [Installation](#dpkg) and the previous package version will be automatically removed before the new package version is installed
+* Note, if you are using dpkg, it cannot upgrade packages, so follow these [instructions](#dpkg-installation---best-for-disk-space-constrained-routers) and the previous package version will be automatically removed before the new package version is installed
 
 ## **Removal**
 
