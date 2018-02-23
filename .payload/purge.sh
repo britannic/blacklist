@@ -93,7 +93,7 @@ echo_logger() {
 
 	# MSG=$(echo "${MSG}" | ansi)
 	let COLUMNS=${#MSG}-${#@}+${COLUMNS}
-	echo "pre-upgrade: ${MSG}" | fold -sw ${COLUMNS}
+	echo "purge: ${MSG}" | fold -sw ${COLUMNS}
 }
 
 # Fix the group so that the admin user will be able to commit configs
@@ -112,14 +112,15 @@ try() {
 	fi
 }
 
-# Back up [service dns forwarding blacklist]
-backup_dns_config() {
-	/bin/cli-shell-api existsActive service dns forwarding blacklist
-	if [[ $? == 0 ]]; then
-		echo_logger I "Backing up blacklist configuration to: /config/user-data/blacklist.${DATE}.cmds"
-		run show configuration commands | grep blacklist >/config/user-data/blacklist.${DATE}.cmds ||
-			echo_logger E 'Blacklist configuration backup failed!'
-	fi
+# Delete the [service dns forwarding blacklist] configuration
+delete_dns_config() {
+	try begin
+	try delete system task-scheduler task update_blacklists
+	try delete service dns forwarding blacklist
+	try commit
+	try save
+	try end
 }
 
-backup_dns_config
+delete_dns_config
+set_vyattacfg_grp

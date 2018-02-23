@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.0.3 (February 23, 2018)
+
+* Switching to debian respository installation using apt-get
+
 ### Release v1.0.2 (February 18, 2018)
 
 * Updated sources

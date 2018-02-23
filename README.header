@@ -1,6 +1,6 @@
 # **UBNT edgeos-dnsmasq-blacklist dnsmasq DNS Blacklisting and Redirection**
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v1.0.2-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v1.0.3-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
 
 Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/DNS-Adblocking-amp-Blacklisting-dnsmasq-Configuration/td-p/2215008/jump-to/first-unread-message)
 
@@ -42,7 +42,7 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Latest Version**
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.0.2-green.svg)](https://github.com/britannic/blacklist/releases/latest)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.0.3-green.svg)](https://github.com/britannic/blacklist/releases/latest)
 
 ## **Change Log**
 
@@ -63,30 +63,73 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Installation**
 
+* [Using apt-get](#apt-get-installation) - works for all routers
+* [Using dpkg](#dpkg-installation) - best for disk space constrained routers
+
+### **apt-get Installation - ERLite-3, ERPoe-5, ER-X, ER-X-SFP & UniFi-Gateway-3**
+
+* Add the blacklist debian package repository using the router's CLI shell
+
+```bash
+configure
+set system package repository blacklist components main
+set system package repository blacklist description 'Britannic blacklist debian wheezy repository'
+set system package repository blacklist distribution wheezy
+set system package repository blacklist url 'https://raw.githubusercontent.com/britannic/debian-repo/master'
+commit;save;exit
+```
+
+* Add the GPG signing key
+
+```bash
+sudo curl -L https://raw.githubusercontent.com/britannic/debian-repo/master/blacklist/public.key | sudo apt-key add -
+```
+
+* Update the system repositorities and install edgeos-dnsmasq-blacklist
+
+```bash
+sudo apt-get update && apt-get install edgeos-dnsmasq-blacklist
+```
+
+## **dpkg Installation - best for disk space constrained routers**
+
 ### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
 
 ```bash
-curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/21/edgeos-dnsmasq-blacklist_1.0.2_mips.deb.tgz | tar -xvz
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.2_mips.deb
+curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/21/edgeos-dnsmasq-blacklist_1.0.3_mips.deb.tgz | tar -xvz
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.3_mips.deb
 ```
 
 ### **EdgeRouter ER-X & ER-X-SFP**
 
+* Ensure the router has enough space, by removing unnecessary files
+
 ```bash
-curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/22/edgeos-dnsmasq-blacklist_1.0.2_mipsel.deb.tgz | tar -xvz
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.2_mipsel.deb
+sudo apt-get clean cache
+delete system image
+```
+
+```bash
+curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/22/edgeos-dnsmasq-blacklist_1.0.3_mipsel.deb.tgz | tar -xvz
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.3_mipsel.deb
 ```
 
 ## **Upgrade**
 
-* Since dpkg cannot upgrade packages, follow the instructions under [Installation](#installation) and the previous package version will be automatically removed before the new package version is installed
+* If the repository is set up and you are using apt-get upgrade:
+
+```bash 
+apt-get upgrade edgeos-dnsmasq-blacklist
+```
+
+* If you are using dpkg, note it cannot upgrade packages, so follow the instructions under [Installation](#dpkg) and the previous package version will be automatically removed before the new package version is installed
 
 ## **Removal**
 
 ### **EdgeMAX - All Platforms**
 
 ```bash
-sudo apt-get remove edgeos-dnsmasq-blacklist
+sudo apt-get remove --purge edgeos-dnsmasq-blacklist
 ```
 
 ## **Frequently Asked Questions**
