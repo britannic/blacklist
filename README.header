@@ -117,7 +117,7 @@ configure
 set system package repository blacklist components main
 set system package repository blacklist description 'Britannic blacklist debian wheezy repository'
 set system package repository blacklist distribution wheezy
-set system package repository blacklist url 'https://raw.githubusercontent.com/britannic/debian-repo/master'
+set system package repository blacklist url 'https://raw.githubusercontent.com/britannic/debian-repo/master/blacklist/'
 commit;save;exit
 ```
 
@@ -130,7 +130,7 @@ sudo curl -L https://raw.githubusercontent.com/britannic/debian-repo/master/blac
 * Update the system repositorities and install edgeos-dnsmasq-blacklist
 
 ```bash
-sudo apt-get update && apt-get install edgeos-dnsmasq-blacklist
+sudo apt-get update && sudo apt-get install edgeos-dnsmasq-blacklist
 ```
 
 [[Top]](#contents)
