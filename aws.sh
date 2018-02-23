@@ -7,10 +7,12 @@ pkg=${2}
 tag=${3}
 
 ssh -tt ${host} <<-EOF
-	reprepro includedeb wheezy /tmp/${pkg}_*.deb
+	cd repositories/blacklist/
+	reprepro includedeb wheezy /tmp/${pkg}*.deb
+	cd ..
 	git add --all
-	git commit -am"Package repository release $(TAG)"
-	git tag $(TAG)
+	git commit -am"Package repository release ${tag}"
+	git tag ${tag}
 	git push origin master
 	git push --tags
 	exit
