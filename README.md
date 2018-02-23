@@ -63,10 +63,10 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Installation**
 
-* [Using apt-get](#apt-get-installation) - works for all routers
-* [Using dpkg](#dpkg-installation) - best for disk space constrained routers
+* [Using apt-get](#apt-get) - works for all routers
+* [Using dpkg](#dpkg) - best for disk space constrained routers
 
-### **apt-get Installation - ERLite-3, ERPoe-5, ER-X, ER-X-SFP & UniFi-Gateway-3**
+### **apt-get Installation - ERLite-3, ERPoe-5, ER-X, ER-X-SFP & UniFi-Gateway-3 [apt-get]**
 
 * Add the blacklist debian package repository using the router's CLI shell
 
@@ -91,7 +91,7 @@ sudo curl -L https://raw.githubusercontent.com/britannic/debian-repo/master/blac
 sudo apt-get update && apt-get install edgeos-dnsmasq-blacklist
 ```
 
-## **dpkg Installation - best for disk space constrained routers**
+## **dpkg Installation - best for disk space constrained routers [dpkg]**
 
 ### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
 
@@ -116,7 +116,13 @@ sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.3_mipsel.deb
 
 ## **Upgrade**
 
-* Since dpkg cannot upgrade packages, follow the instructions under [Installation](#dpkg) and the previous package version will be automatically removed before the new package version is installed
+* If the repository is set up and you are using apt-get upgrade:
+
+```bash 
+apt-get upgrade edgeos-dnsmasq-blacklist
+```
+
+* If you are using dpkg, note it cannot upgrade packages, so follow the instructions under [Installation](#dpkg) and the previous package version will be automatically removed before the new package version is installed
 
 ## **Removal**
 
