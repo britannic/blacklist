@@ -63,8 +63,8 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Installation**
 
-* [Using apt-get](#apt-get) - works for all routers
-* [Using dpkg](#dpkg) - best for disk space constrained routers
+* [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp--unifi-gateway-3-apt-get) - works for all routers
+* [Using dpkg](#dpkg-installation---best-for-disk-space-constrained-routers-dpk) - best for disk space constrained routers
 
 ### **apt-get Installation - ERLite-3, ERPoe-5, ER-X, ER-X-SFP & UniFi-Gateway-3 [apt-get]**
 
