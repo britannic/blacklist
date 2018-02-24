@@ -12,7 +12,7 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 1. [Copyright](#copyright)
 1. [Licenses](#licenses)
 1. [Latest Version](#latest-version)
-1. [Change Log](https://github.com/britannic/blacklist#change-log)
+1. [Change Log](https://github.com/britannic/blacklist/blob/master/CHANGELOG.md)
 1. [Features](#features)
 1. [Compatibility](#compatibility)
 1. [Installation](#installation)
