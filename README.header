@@ -156,6 +156,8 @@ sudo apt-get clean cache
 delete system image
 ```
 
+* Now download and install the edgeos-dnsmasq-blacklist package
+
 ```bash
 curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/24/edgeos-dnsmasq-blacklist_1.0.3_mipsel.deb.tgz | tar -xvz
 sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.3_mipsel.deb
