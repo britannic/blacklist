@@ -2,6 +2,11 @@
 
 ## Releases
 
+### Release v1.0.4 (February 24, 2018)
+
+* Implemented starting nightly update-dnsmasq cron job at random times to prevent a datastorm if a lot of users are in the same time zone
+  * Suggested by EdgeMax Community User [@sorvani](https://community.ubnt.com/t5/user/viewprofilepage/user-id/185589)
+
 ### Release v1.0.3 (February 23, 2018)
 
 * Switching to debian respository installation using apt-get
