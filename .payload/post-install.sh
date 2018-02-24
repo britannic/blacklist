@@ -165,6 +165,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude ebay.com
 	try set service dns forwarding blacklist exclude edgesuite.net
 	try set service dns forwarding blacklist exclude evernote.com
+	try set service dns forwarding blacklist exclude express.co.uk
 	try set service dns forwarding blacklist exclude feedly.com
 	try set service dns forwarding blacklist exclude freedns.afraid.org
 	try set service dns forwarding blacklist exclude github.com
