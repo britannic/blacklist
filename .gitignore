@@ -4,6 +4,7 @@
 # Add back files with extensions and directories
 !*.*
 !*/
+!Makefile
 !.travis.yml
 !testcoverage
 !VERSION
