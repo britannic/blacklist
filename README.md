@@ -30,7 +30,7 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
    1. [How do I exclude or include a host or a domain?](#how-do-i-exclude-or-include-a-host-or-a-domain)
    1. [How do I globally exclude or include hosts or a domains?](#how-do-i-globally-exclude-or-include-hosts-or-a-domains)
    1. [How do I use the command line switches?](#how-do-i-use-the-command-line-switches)
-   1. [How do can keep my USG configuration after a provision or reboot?]()
+   1. [How do can keep my USG configuration after a provision or reboot?](#how-do-can-keep-my-usg-configuration-after-a-provision-or-reboot)
    1. [Which blacklist sources are installed by default?](#which-blacklist-sources-are-installed-by-default)
 
 ## **Overview**
@@ -248,9 +248,10 @@ more /var/log/update-dnsmasq.log
 
 [[Top]](#contents)
 
-### **How do can keep my USG configuration after a provision or reboot?**
+### **How do can keep my USG configuration after an upgrade, provision or reboot?**
 
-* First create a config.gateway.json file following these [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
+* Follow these [instructions](https://github.com/britannic/install-edgeos-packages) on how to automatically install edgeos-dnsmasq-blacklist
+* Create a config.gateway.json file following these [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
 * Here's a sample config.gateway.json:
 
 ```bash
