@@ -81,7 +81,7 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Change Log**
 
-* See [changelog](CHANGELOG.md) for details.
+* See [changelog](https://github.com/britannic/blacklist/blob/master/CHANGELOG.md) for details.
 
 [[Top]](#contents)
 
