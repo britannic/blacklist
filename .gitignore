@@ -19,7 +19,6 @@
 *.amd64
 *.bak
 *.bkp
-*.deb
 *.debug
 *.lock
 *.log
