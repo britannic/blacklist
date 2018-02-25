@@ -2,6 +2,10 @@
 
 ## Releases
 
+## Release v1.0.6 (February 25, 2018)
+
+* Fix bug in task-scheduler stanza to insert missing key work "system
+
 ### Release v1.0.5 (February 25, 2018)
 
 * Nightly update-dnsmasq cron job now has a configurable argument to set how many seconds of random delay before starting
