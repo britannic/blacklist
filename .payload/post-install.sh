@@ -232,7 +232,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
 	try set system task-scheduler task update_blacklists executable path /config/scripts/blacklist-cronjob.sh
-	try set system task update_blacklists executable arguments 10800
+	try set system task-scheduler task update_blacklists executable arguments 10800
 	try set system task-scheduler task update_blacklists interval 1d
 	try commit
 	try save
