@@ -2,6 +2,16 @@
 
 ## Releases
 
+### Release v1.0.5 (February 25, 2018)
+
+* Nightly update-dnsmasq cron job now has a configurable argument to set how many seconds of random delay before starting
+
+```bash
+set system task-scheduler task update_blacklists executable arguments 60
+set system task-scheduler task update_blacklists executable path /config/scripts/blacklist-cronjob.sh
+set system task-scheduler task update_blacklists interval 1d
+```
+
 ### Release v1.0.4 (February 24, 2018)
 
 * Implemented starting nightly update-dnsmasq cron job at random times to prevent a datastorm if a lot of users are in the same time zone
