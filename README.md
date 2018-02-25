@@ -141,7 +141,7 @@ sudo apt-get update && sudo apt-get install edgeos-dnsmasq-blacklist
 ### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
 
 ```bash
-curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/23/edgeos-dnsmasq-blacklist_1.0.4_mips.deb.tgz | tar -xvz
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.0.4_mips.deb
 sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.4_mips.deb
 ```
 
@@ -159,7 +159,7 @@ delete system image
 * Now download and install the edgeos-dnsmasq-blacklist package
 
 ```bash
-curl https://community.ubnt.com/ubnt/attachments/ubnt/EdgeMAX/194030/24/edgeos-dnsmasq-blacklist_1.0.4_mipsel.deb.tgz | tar -xvz
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.0.4_mipsel.deb
 sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.4_mipsel.deb
 ```
 
