@@ -298,7 +298,7 @@ commit;save;exit
 
 ### **How do I globally exclude or include hosts or a domains?**
 
-* Use these commands to globally include or exclude blacklisted entries:
+* Use these example commands to globally include or exclude blacklisted entries:
 
 ```bash
 configure
@@ -311,7 +311,7 @@ commit;save;exit
 
 ### **How do I exclude or include a host or a domain?**
 
-* Use these commands to include or exclude blacklisted entries:
+* Use these example commands to include or exclude blacklisted entries:
 
 ```bash
 configure
