@@ -77,6 +77,10 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.0.9-green.svg)](https://github.com/britannic/blacklist/releases/latest)
 
+### Release v1.0.9 (February 26, 2018)
+
+* Added logic to not run the post installation script after an upgrade
+
 [[Top]](#contents)
 
 ## **Change Log**
