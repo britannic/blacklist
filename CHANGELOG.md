@@ -2,6 +2,10 @@
 
 ## Releases
 
+## Release v1.0.8 (February 26, 2018)
+
+* Algorithm to trap out of range cronjob arguments
+
 ### Release v1.0.7 (February 25, 2018)
 
 * Adjust task-scheduler argument
