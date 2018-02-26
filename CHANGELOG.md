@@ -2,6 +2,10 @@
 
 ## Releases
 
+## Release v1.0.9 (February 26, 2018)
+
+* Added logic to not run the post installation script after an upgrade
+
 ## Release v1.0.8 (February 26, 2018)
 
 * Algorithm to trap out of range cronjob arguments

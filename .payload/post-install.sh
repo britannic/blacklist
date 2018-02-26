@@ -239,5 +239,8 @@ update_dns_config() {
 	try end
 }
 
-update_dns_config
-set_vyattacfg_grp
+# Only run the post installation script if this is a first time installation
+if [[ -z "${2}" ]]; then
+	update_dns_config
+	set_vyattacfg_grp
+fi
