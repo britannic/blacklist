@@ -2,7 +2,11 @@
 
 ## Releases
 
-## Release v1.0.6 (February 25, 2018)
+### Release v1.0.7 (February 25, 2018)
+
+* Adjust task-scheduler argument
+
+### Release v1.0.6 (February 25, 2018)
 
 * Fix bug in task-scheduler stanza to insert missing key work "system
 
