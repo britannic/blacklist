@@ -326,11 +326,18 @@ commit;save;exit
 
 ### **Does update-dnsmasq run automatically?**
 
-* Yes, a scheduled task is created and run daily at midnight
+* Yes, a scheduled task is created and run daily at midnight with a random start delay is used ensure other routers in the same time zone won't overload the source servers.
+* The random start delay window is configured in seconds using this command - this example sets the start delay between 1-10800 seconds (0-3 hours):
+
+```bash
+set system task-scheduler task update_blacklists executable arguments 10800
+```
+
 * It can be reconfigured using these CLI configuration commands:
 
 ```bash
-set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq
+set system task-scheduler task update_blacklists executable path /config/scripts/blacklist-cronjob.sh
+set system task-scheduler task update_blacklists executable arguments 10800
 set system task-scheduler task update_blacklists interval 1d
 ```
 
