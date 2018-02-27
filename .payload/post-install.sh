@@ -2,29 +2,16 @@
 
 # Set up the Vyatta environment
 declare -i DEC
-source /opt/vyatta/etc/functions/script-template
-OPRUN=/opt/vyatta/bin/vyatta-op-cmd-wrapper
 CFGRUN=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
-API=/bin/cli-shell-api
 shopt -s expand_aliases
 
-alias AddImage='${OPRUN} add system image'
 alias begin='${CFGRUN} begin'
 alias cleanup='${CFGRUN} cleanup'
-alias comment='${CFGRUN} comment'
 alias commit='${CFGRUN} commit'
-alias copy='${CFGRUN} copy'
 alias delete='${CFGRUN} delete'
-alias DeleteImage='/usr/bin/ubnt-upgrade --delete-noprompt'
-alias discard='${CFGRUN} discard'
 alias end='${CFGRUN} end'
-alias load='${CFGRUN} load'
-alias rename='${CFGRUN} rename'
 alias save='sudo ${CFGRUN} save'
 alias set='${CFGRUN} set'
-alias show='${API} showConfig'
-alias showddns=/opt/vyatta/bin/sudo-users/vyatta-op-dynamic-dns.pl
-alias version='${OPRUN} show version'
 
 alias bold='tput bold'
 alias normal='tput sgr0'
@@ -112,7 +99,7 @@ try() {
 
 # Load the [service dns forwarding blacklist] configuration
 update_dns_config() {
-	try begin
+	try begin 
 	try set service dns forwarding blacklist disabled false
 	try set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
 	try set service dns forwarding blacklist domains include adk2x.com
@@ -242,5 +229,7 @@ update_dns_config() {
 # Only run the post installation script if this is a first time installation
 if [[ -z "${2}" ]]; then
 	update_dns_config
-	set_vyattacfg_grp
 fi
+
+# Reset group ownership to vyattacfg for /opt/vyatta/config
+set_vyattacfg_grp

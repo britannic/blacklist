@@ -3,30 +3,30 @@
 # Set up the Vyatta environment
 declare -i DEC
 source /opt/vyatta/etc/functions/script-template
-OPRUN=/opt/vyatta/bin/vyatta-op-cmd-wrapper
+# OPRUN=/opt/vyatta/bin/vyatta-op-cmd-wrapper
 CFGRUN=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
 DATE=$(date +'%FT%H%M%S')
-API=/bin/cli-shell-api
+# API=/bin/cli-shell-api
 shopt -s expand_aliases
 
-alias AddImage='${OPRUN} add system image'
+# alias AddImage='${OPRUN} add system image'
 alias begin='${CFGRUN} begin'
-alias check='/bin/cli-shell-api'
-alias cleanup='${CFGRUN} cleanup'
-alias comment='${CFGRUN} comment'
+# alias check='/bin/cli-shell-api'
+# alias cleanup='${CFGRUN} cleanup'
+# alias comment='${CFGRUN} comment'
 alias commit='${CFGRUN} commit'
-alias copy='${CFGRUN} copy'
+# alias copy='${CFGRUN} copy'
 alias delete='${CFGRUN} delete'
-alias DeleteImage='/usr/bin/ubnt-upgrade --delete-noprompt'
-alias discard='${CFGRUN} discard'
+# alias DeleteImage='/usr/bin/ubnt-upgrade --delete-noprompt'
+# alias discard='${CFGRUN} discard'
 alias end='${CFGRUN} end'
-alias load='${CFGRUN} load'
-alias rename='${CFGRUN} rename'
+# alias load='${CFGRUN} load'
+# alias rename='${CFGRUN} rename'
 alias save='sudo ${CFGRUN} save'
 alias set='${CFGRUN} set'
-alias show='_vyatta_op_run show'
-alias showddns=/opt/vyatta/bin/sudo-users/vyatta-op-dynamic-dns.pl
-alias version='${OPRUN} show version'
+# alias show='_vyatta_op_run show'
+# alias showddns=/opt/vyatta/bin/sudo-users/vyatta-op-dynamic-dns.pl
+# alias version='${OPRUN} show version'
 
 alias bold='tput bold'
 alias normal='tput sgr0'
@@ -114,7 +114,7 @@ try() {
 
 # Delete the [service dns forwarding blacklist] configuration
 delete_dns_config() {
-	try begin
+	try begin 
 	try delete system task-scheduler task update_blacklists
 	try delete service dns forwarding blacklist
 	try commit
