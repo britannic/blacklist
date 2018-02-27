@@ -4,7 +4,18 @@
 declare -i DEC
 source /opt/vyatta/etc/functions/script-template
 DATE=$(date +'%FT%H%M%S')
+CFGRUN=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
 shopt -s expand_aliases
+
+alias begin='${CFGRUN} begin'
+alias cleanup='${CFGRUN} cleanup'
+alias commit='${CFGRUN} commit'
+alias delete='${CFGRUN} delete'
+alias end='${CFGRUN} end'
+alias run='/opt/vyatta/bin/vyatta-op-cmd-wrapper'
+alias save='sudo ${CFGRUN} save'
+alias set='${CFGRUN} set'
+alias show='_vyatta_op_run show'
 
 alias bold='tput bold'
 alias normal='tput sgr0'
@@ -71,7 +82,7 @@ echo_logger() {
 
 	# MSG=$(echo "${MSG}" | ansi)
 	let COLUMNS=${#MSG}-${#@}+${COLUMNS}
-	echo "pre-upgrade: ${MSG}" | fold -sw ${COLUMNS}
+	echo "pre-remove: ${MSG}" | fold -sw ${COLUMNS}
 }
 
 # Fix the group so that the admin user will be able to commit configs
@@ -100,4 +111,21 @@ backup_dns_config() {
 	fi
 }
 
+# Delete the [service dns forwarding blacklist] configuration
+delete_dns_config() {
+	try begin
+	try delete system task-scheduler task update_blacklists
+	try delete service dns forwarding blacklist
+	try commit
+	try save
+	try end
+}
+
+restart_dnsmasq() {
+	/etc/init.d/dnsmasq restart
+}
+
 backup_dns_config
+delete_dns_config
+set_vyattacfg_grp
+restart_dnsmasq

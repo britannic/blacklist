@@ -1,6 +1,6 @@
 # **UBNT edgeos-dnsmasq-blacklist dnsmasq DNS Blacklisting and Redirection**
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v1.0.9-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v1.0.10-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
 
 Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/DNS-Adblocking-amp-Blacklisting-dnsmasq-Configuration/td-p/2215008/jump-to/first-unread-message)
 
@@ -75,11 +75,24 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Latest Version**
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.0.9-green.svg)](https://github.com/britannic/blacklist/releases/latest)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.0.10-green.svg)](https://github.com/britannic/blacklist/releases/latest)
 
-### Release v1.0.9 (February 26, 2018)
+## Release v1.0.10 (February 27, 2018)
 
-* Added logic to not run the post installation script after an upgrade
+* Added functions to ensure all blacklist configuration files are removed from /etc/dnsmasq.d/ when uninstalling using
+
+```bash 
+dpkg -P edgeos-dnsmasq-blacklist
+```
+
+* Or
+
+```bash
+apt-get remove --purge edgeos-dnsmasq-blacklist
+```
+
+* dnsmasq will be automatically restarted to remove stale redirects
+
 
 [[Top]](#contents)
 
@@ -145,8 +158,8 @@ sudo apt-get update && sudo apt-get install edgeos-dnsmasq-blacklist
 ### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.0.9_mips.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.9_mips.deb
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.0.10_mips.deb
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.10_mips.deb
 ```
 
 [[Top]](#contents)
@@ -163,8 +176,8 @@ delete system image
 * Now download and install the edgeos-dnsmasq-blacklist package
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.0.9_mipsel.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.9_mipsel.deb
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.0.10_mipsel.deb
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.10_mipsel.deb
 ```
 
 [[Top]](#contents)

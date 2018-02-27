@@ -2,6 +2,22 @@
 
 ## Releases
 
+## Release v1.0.10 (February 27, 2018)
+
+* Added functions to ensure all blacklist configuration files are removed from /etc/dnsmasq.d/ when uninstalling using
+
+```bash 
+dpkg -P edgeos-dnsmasq-blacklist
+```
+
+* Or
+
+```bash
+apt-get remove --purge edgeos-dnsmasq-blacklist
+```
+
+* dnsmasq will be automatically restarted to remove stale redirects
+
 ## Release v1.0.9 (February 26, 2018)
 
 * Added logic to not run the post installation script after an upgrade

@@ -3,30 +3,17 @@
 # Set up the Vyatta environment
 declare -i DEC
 source /opt/vyatta/etc/functions/script-template
-# OPRUN=/opt/vyatta/bin/vyatta-op-cmd-wrapper
 CFGRUN=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
 DATE=$(date +'%FT%H%M%S')
-# API=/bin/cli-shell-api
 shopt -s expand_aliases
 
-# alias AddImage='${OPRUN} add system image'
 alias begin='${CFGRUN} begin'
-# alias check='/bin/cli-shell-api'
-# alias cleanup='${CFGRUN} cleanup'
-# alias comment='${CFGRUN} comment'
 alias commit='${CFGRUN} commit'
-# alias copy='${CFGRUN} copy'
 alias delete='${CFGRUN} delete'
-# alias DeleteImage='/usr/bin/ubnt-upgrade --delete-noprompt'
-# alias discard='${CFGRUN} discard'
 alias end='${CFGRUN} end'
-# alias load='${CFGRUN} load'
-# alias rename='${CFGRUN} rename'
+alias run='/opt/vyatta/bin/vyatta-op-cmd-wrapper'
 alias save='sudo ${CFGRUN} save'
 alias set='${CFGRUN} set'
-# alias show='_vyatta_op_run show'
-# alias showddns=/opt/vyatta/bin/sudo-users/vyatta-op-dynamic-dns.pl
-# alias version='${OPRUN} show version'
 
 alias bold='tput bold'
 alias normal='tput sgr0'
@@ -96,6 +83,29 @@ echo_logger() {
 	echo "purge: ${MSG}" | fold -sw ${COLUMNS}
 }
 
+# Delete all blacklist configuration files /etc/dnsmasq.d
+clean_dnsmasq() {
+	ls /etc/dnsmasq.d/{domains,hosts}.*.blacklist.conf 1>/dev/null 2>&1 &&
+		try rm -f /etc/dnsmasq.d/{domains,hosts}.*.blacklist.conf
+}
+
+# Delete the [service dns forwarding blacklist] configuration if it exists
+delete_dns_config() {
+	/bin/cli-shell-api existsActive service dns forwarding blacklist
+	if [[ $? == 0 ]]; then
+		try begin
+		try delete system task-scheduler task update_blacklists
+		try delete service dns forwarding blacklist
+		try commit
+		try save
+		try end
+	fi
+}
+
+restart_dnsmasq() {
+	/etc/init.d/dnsmasq restart
+}
+
 # Fix the group so that the admin user will be able to commit configs
 set_vyattacfg_grp() {
 	try chgrp -R vyattacfg /opt/vyatta/config/active
@@ -112,15 +122,7 @@ try() {
 	fi
 }
 
-# Delete the [service dns forwarding blacklist] configuration
-delete_dns_config() {
-	try begin 
-	try delete system task-scheduler task update_blacklists
-	try delete service dns forwarding blacklist
-	try commit
-	try save
-	try end
-}
-
 delete_dns_config
+clean_dnsmasq
 set_vyattacfg_grp
+restart_dnsmasq
