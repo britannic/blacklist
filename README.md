@@ -26,6 +26,7 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
    1. [How do I add or delete sources?](#how-do-i-add-or-delete-sources)
    1. [How do I back up my blacklist configuration and restore it later?](#how-do-i-back-up-my-blacklist-configuration-and-restore-it-later)
    1. [How do I configure dnsmasq?](#how-do-i-configure-dnsmasq)
+   1. [How do I configure local file sources instead of internet based ones?](#how-do-i-configure-local-file-sources-instead-of-internet-based-ones)
    1. [How do I disable/enable dnsmasq blacklisting?](#how-do-i-disableenable-dnsmasq-blacklisting)
    1. [How do I exclude or include a host or a domain?](#how-do-i-exclude-or-include-a-host-or-a-domain)
    1. [How do I globally exclude or include hosts or a domains?](#how-do-i-globally-exclude-or-include-hosts-or-a-domains)
@@ -266,6 +267,40 @@ more /var/log/update-dnsmasq.log
 ```
 
 [[Top]](#contents)
+
+### **How do I configure local file sources instead of internet based ones?**
+
+* Use these commands to configure a local file source
+
+```bash
+set service dns forwarding blacklist hosts source myhosts description 'Blacklist file source'
+set service dns forwarding blacklist hosts source myhosts dns-redirect-ip 0.0.0.0
+set service dns forwarding blacklist hosts source myhosts file /config/user-data/blist.hosts.src
+```
+
+* File contents example for /config/user-data/blist.hosts.src:
+
+```bash
+gsmtop.net
+click.buzzcity.net
+ads.admoda.com
+stats.pflexads.com
+a.glcdn.co
+wwww.adleads.com
+ad.madvertise.de
+apps.buzzcity.net
+ads.mobgold.com
+android.bcfads.com
+req.appads.com
+show.buzzcity.net
+api.analytics.omgpop.com
+r.edge.inmobicdn.net
+www.mmnetwork.mobi
+img.ads.huntmad.com
+creative1cdn.mobfox.com
+admicro2.vcmedia.vn
+admicro1.vcmedia.vn
+```
 
 ### **How do can keep my USG configuration after an upgrade, provision or reboot?**
 
