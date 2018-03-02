@@ -16,7 +16,7 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 1. [Features](#features)
 1. [Compatibility](#compatibility)
 1. [Installation](#installation)
-    1. [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp--unifi-gateway-3) 
+    1. [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp--unifi-gateway-3)
     1. [Using dpkg](#dpkg-installation---best-for-disk-space-constrained-routers)
 1. [Upgrade](#upgrade)
 1. [Removal](#removal)
@@ -82,7 +82,7 @@ modification, are permitted provided that the following conditions are met:
 
 * Added functions to ensure all blacklist configuration files are removed from /etc/dnsmasq.d/ when uninstalling using
 
-```bash 
+```bash
 dpkg -P edgeos-dnsmasq-blacklist
 ```
 
@@ -93,7 +93,6 @@ apt-get remove --purge edgeos-dnsmasq-blacklist
 ```
 
 * dnsmasq will be automatically restarted to remove stale redirects
-
 
 [[Top]](#contents)
 
@@ -187,7 +186,7 @@ sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.10_mipsel.deb
 
 * If the repository is set up and you are using apt-get:
 
-```bash 
+```bash
 sudo apt-get upgrade && sudo apt-get upgrade edgeos-dnsmasq-blacklist
 ```
 
