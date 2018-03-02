@@ -6,7 +6,7 @@
 
 * Added functions to ensure all blacklist configuration files are removed from /etc/dnsmasq.d/ when uninstalling using
 
-```bash 
+```bash
 dpkg -P edgeos-dnsmasq-blacklist
 ```
 
