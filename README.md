@@ -187,7 +187,7 @@ sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.10_mipsel.deb
 * If the repository is set up and you are using apt-get:
 
 ```bash
-sudo apt-get upgrade && sudo apt-get upgrade edgeos-dnsmasq-blacklist
+sudo apt-get update && sudo apt-get upgrade edgeos-dnsmasq-blacklist
 ```
 
 * Note, if you are using dpkg, it cannot upgrade packages, so follow these [instructions](#dpkg-installation---best-for-disk-space-constrained-routers) and the previous package version will be automatically removed before the new package version is installed
