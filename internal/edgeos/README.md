@@ -134,15 +134,15 @@ Package edgeos provides methods and structures to retrieve, parse and render Edg
 const (
 
     // ExcDomns labels domain exclusions
-    ExcDomns = "excluded-domains"
+    ExcDomns = "whitelisted-subdomains"
     // ExcHosts labels host exclusions
-    ExcHosts = "excluded-hosts"
+    ExcHosts = "whitelisted-servers"
     // ExcRoots labels global domain exclusions
-    ExcRoots = "excluded-global"
+    ExcRoots = "whitelisted-global"
     // PreDomns designates string label for preconfigured blacklisted domains
-    PreDomns = "domains." + preNoun
+    PreDomns = "blacklisted-subdomains"
     // PreHosts designates string label for preconfigured blacklisted hosts
-    PreHosts = "hosts." + preNoun
+    PreHosts = "blacklisted-servers"
     // False is a string constant
     False = "false"
     // True is a string constant
@@ -160,7 +160,7 @@ GetFile reads a file and returns an io.Reader
 
 
 
-## <a name="Iter">func</a> [Iter](/src/target/data.go?s=2598:2625#L104)
+## <a name="Iter">func</a> [Iter](/src/target/data.go?s=2855:2882#L118)
 ``` go
 func Iter(i int) []struct{}
 ```
@@ -168,7 +168,7 @@ Iter iterates over ints - use it in for loops
 
 
 
-## <a name="NewWriter">func</a> [NewWriter](/src/target/data.go?s=2693:2719#L109)
+## <a name="NewWriter">func</a> [NewWriter](/src/target/data.go?s=2950:2976#L123)
 ``` go
 func NewWriter() io.Writer
 ```
@@ -232,7 +232,7 @@ CFile holds an array of file names
 
 
 
-### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=8960:8990#L411)
+### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=8965:8995#L411)
 ``` go
 func (c *CFile) Remove() error
 ```
@@ -241,7 +241,7 @@ Remove deletes a CFile array of file names
 
 
 
-### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=10368:10399#L467)
+### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=10373:10404#L467)
 ``` go
 func (c *CFile) String() string
 ```
@@ -250,7 +250,7 @@ String implements string method
 
 
 
-### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=10487:10521#L472)
+### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=10492:10526#L472)
 ``` go
 func (c *CFile) Strings() []string
 ```
@@ -301,7 +301,7 @@ NewConfig returns a new *Config initialized with the parameter options passed to
 
 
 
-### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4225:4267#L211)
+### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4230:4272#L211)
 ``` go
 func (c *Config) Get(node string) *Objects
 ```
@@ -310,7 +310,7 @@ Get returns an *Object for a given node
 
 
 
-### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4546:4596#L230)
+### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4551:4601#L230)
 ``` go
 func (c *Config) GetAll(ltypes ...string) *Objects
 ```
@@ -319,7 +319,7 @@ GetAll returns an array of Objects
 
 
 
-### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=5390:5423#L273)
+### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=5395:5428#L273)
 ``` go
 func (c *Config) InSession() bool
 ```
@@ -328,7 +328,7 @@ InSession returns true if VyOS/EdgeOS configuration is in session
 
 
 
-### <a name="Config.LTypes">func</a> (\*Config) [LTypes](/src/target/config.go?s=10613:10647#L478)
+### <a name="Config.LTypes">func</a> (\*Config) [LTypes](/src/target/config.go?s=10618:10652#L478)
 ``` go
 func (c *Config) LTypes() []string
 ```
@@ -337,7 +337,7 @@ LTypes returns an array of configured nodes
 
 
 
-### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=2742:2801#L139)
+### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=2747:2806#L139)
 ``` go
 func (c *Config) NewContent(iface IFace) (Contenter, error)
 ```
@@ -346,7 +346,7 @@ NewContent returns an interface of the requested IFace type
 
 
 
-### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5811:5852#L286)
+### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5816:5857#L286)
 ``` go
 func (c *Config) Nodes() (nodes []string)
 ```
@@ -355,7 +355,7 @@ Nodes returns an array of configured nodes
 
 
 
-### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/content.go?s=7889:7944#L374)
+### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/content.go?s=8106:8161#L384)
 ``` go
 func (c *Config) ProcessContent(cts ...Contenter) error
 ```
@@ -364,7 +364,7 @@ ProcessContent processes the Contents array
 
 
 
-### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=6207:6251#L306)
+### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=6212:6256#L306)
 ``` go
 func (c *Config) ReadCfg(r ConfLoader) error
 ```
@@ -373,7 +373,7 @@ ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 
 
 
-### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=8765:8809#L404)
+### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=8770:8814#L404)
 ``` go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
@@ -391,7 +391,7 @@ SetOpt sets the specified options passed as Parms and returns an option to resto
 
 
 
-### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=9475:9511#L432)
+### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=9480:9516#L432)
 ``` go
 func (c *Config) String() (s string)
 ```
@@ -465,7 +465,7 @@ Len returns how many objects there are
 
 
 
-### <a name="ExcDomnObjects.SetURL">func</a> (\*ExcDomnObjects) [SetURL](/src/target/content.go?s=9024:9073#L433)
+### <a name="ExcDomnObjects.SetURL">func</a> (\*ExcDomnObjects) [SetURL](/src/target/content.go?s=9303:9352#L444)
 ``` go
 func (e *ExcDomnObjects) SetURL(name, url string)
 ```
@@ -474,7 +474,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="ExcDomnObjects.String">func</a> (\*ExcDomnObjects) [String](/src/target/content.go?s=10324:10364#L504)
+### <a name="ExcDomnObjects.String">func</a> (\*ExcDomnObjects) [String](/src/target/content.go?s=10603:10643#L515)
 ``` go
 func (e *ExcDomnObjects) String() string
 ```
@@ -525,7 +525,7 @@ Len returns how many objects there are
 
 
 
-### <a name="ExcHostObjects.SetURL">func</a> (\*ExcHostObjects) [SetURL](/src/target/content.go?s=9192:9241#L442)
+### <a name="ExcHostObjects.SetURL">func</a> (\*ExcHostObjects) [SetURL](/src/target/content.go?s=9471:9520#L453)
 ``` go
 func (e *ExcHostObjects) SetURL(name, url string)
 ```
@@ -534,7 +534,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="ExcHostObjects.String">func</a> (\*ExcHostObjects) [String](/src/target/content.go?s=10395:10435#L505)
+### <a name="ExcHostObjects.String">func</a> (\*ExcHostObjects) [String](/src/target/content.go?s=10674:10714#L516)
 ``` go
 func (e *ExcHostObjects) String() string
 ```
@@ -585,7 +585,7 @@ Len returns how many objects there are
 
 
 
-### <a name="ExcRootObjects.SetURL">func</a> (\*ExcRootObjects) [SetURL](/src/target/content.go?s=9360:9409#L451)
+### <a name="ExcRootObjects.SetURL">func</a> (\*ExcRootObjects) [SetURL](/src/target/content.go?s=9639:9688#L462)
 ``` go
 func (e *ExcRootObjects) SetURL(name, url string)
 ```
@@ -594,7 +594,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="ExcRootObjects.String">func</a> (\*ExcRootObjects) [String](/src/target/content.go?s=10466:10506#L506)
+### <a name="ExcRootObjects.String">func</a> (\*ExcRootObjects) [String](/src/target/content.go?s=10745:10785#L517)
 ``` go
 func (e *ExcRootObjects) String() string
 ```
@@ -645,7 +645,7 @@ Len returns how many objects there are
 
 
 
-### <a name="FIODataObjects.SetURL">func</a> (\*FIODataObjects) [SetURL](/src/target/content.go?s=9528:9577#L460)
+### <a name="FIODataObjects.SetURL">func</a> (\*FIODataObjects) [SetURL](/src/target/content.go?s=9807:9856#L471)
 ``` go
 func (f *FIODataObjects) SetURL(name, url string)
 ```
@@ -654,7 +654,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="FIODataObjects.String">func</a> (\*FIODataObjects) [String](/src/target/content.go?s=10537:10577#L507)
+### <a name="FIODataObjects.String">func</a> (\*FIODataObjects) [String](/src/target/content.go?s=10816:10856#L518)
 ``` go
 func (f *FIODataObjects) String() string
 ```
@@ -692,7 +692,7 @@ IFace types for labeling interface types
 
 
 
-### <a name="IFace.String">func</a> (IFace) [String](/src/target/content.go?s=10893:10927#L513)
+### <a name="IFace.String">func</a> (IFace) [String](/src/target/content.go?s=11172:11206#L524)
 ``` go
 func (i IFace) String() (s string)
 ```
@@ -726,7 +726,7 @@ Files returns a list of dnsmasq conf files from all srcs
 
 
 
-### <a name="Objects.Filter">func</a> (\*Objects) [Filter](/src/target/object.go?s=1432:1479#L64)
+### <a name="Objects.Filter">func</a> (\*Objects) [Filter](/src/target/object.go?s=1646:1693#L73)
 ``` go
 func (o *Objects) Filter(ltype string) *Objects
 ```
@@ -735,7 +735,7 @@ Filter returns a subset of Objects; ltypes with "-" prepended remove ltype
 
 
 
-### <a name="Objects.Find">func</a> (\*Objects) [Find](/src/target/object.go?s=2214:2253#L103)
+### <a name="Objects.Find">func</a> (\*Objects) [Find](/src/target/object.go?s=2428:2467#L112)
 ``` go
 func (o *Objects) Find(elem string) int
 ```
@@ -744,7 +744,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="Objects.Len">func</a> (\*Objects) [Len](/src/target/object.go?s=3467:3494#L156)
+### <a name="Objects.Len">func</a> (\*Objects) [Len](/src/target/object.go?s=4782:4809#L211)
 ``` go
 func (o *Objects) Len() int
 ```
@@ -753,14 +753,14 @@ Implement Sort Interface for Objects
 
 
 
-### <a name="Objects.Less">func</a> (\*Objects) [Less](/src/target/object.go?s=3525:3562#L157)
+### <a name="Objects.Less">func</a> (\*Objects) [Less](/src/target/object.go?s=4840:4877#L212)
 ``` go
 func (o *Objects) Less(i, j int) bool
 ```
 
 
 
-### <a name="Objects.Names">func</a> (\*Objects) [Names](/src/target/object.go?s=2561:2607#L119)
+### <a name="Objects.Names">func</a> (\*Objects) [Names](/src/target/object.go?s=3876:3922#L174)
 ``` go
 func (o *Objects) Names() (s sort.StringSlice)
 ```
@@ -769,7 +769,7 @@ Names returns a sorted slice of Objects names
 
 
 
-### <a name="Objects.String">func</a> (\*Objects) [String](/src/target/object.go?s=3364:3397#L151)
+### <a name="Objects.String">func</a> (\*Objects) [String](/src/target/object.go?s=4679:4712#L206)
 ``` go
 func (o *Objects) String() string
 ```
@@ -778,7 +778,7 @@ Stringer for Objects
 
 
 
-### <a name="Objects.Swap">func</a> (\*Objects) [Swap](/src/target/object.go?s=3600:3632#L158)
+### <a name="Objects.Swap">func</a> (\*Objects) [Swap](/src/target/object.go?s=4915:4947#L213)
 ``` go
 func (o *Objects) Swap(i, j int)
 ```
@@ -1047,7 +1047,7 @@ Len returns how many objects there are
 
 
 
-### <a name="PreDomnObjects.SetURL">func</a> (\*PreDomnObjects) [SetURL](/src/target/content.go?s=9696:9745#L469)
+### <a name="PreDomnObjects.SetURL">func</a> (\*PreDomnObjects) [SetURL](/src/target/content.go?s=9975:10024#L480)
 ``` go
 func (p *PreDomnObjects) SetURL(name, url string)
 ```
@@ -1056,7 +1056,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="PreDomnObjects.String">func</a> (\*PreDomnObjects) [String](/src/target/content.go?s=10608:10648#L508)
+### <a name="PreDomnObjects.String">func</a> (\*PreDomnObjects) [String](/src/target/content.go?s=10887:10927#L519)
 ``` go
 func (p *PreDomnObjects) String() string
 ```
@@ -1107,7 +1107,7 @@ Len returns how many objects there are
 
 
 
-### <a name="PreHostObjects.SetURL">func</a> (\*PreHostObjects) [SetURL](/src/target/content.go?s=9864:9913#L478)
+### <a name="PreHostObjects.SetURL">func</a> (\*PreHostObjects) [SetURL](/src/target/content.go?s=10143:10192#L489)
 ``` go
 func (p *PreHostObjects) SetURL(name, url string)
 ```
@@ -1116,7 +1116,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="PreHostObjects.String">func</a> (\*PreHostObjects) [String](/src/target/content.go?s=10679:10719#L509)
+### <a name="PreHostObjects.String">func</a> (\*PreHostObjects) [String](/src/target/content.go?s=10958:10998#L520)
 ``` go
 func (p *PreHostObjects) String() string
 ```
@@ -1167,7 +1167,7 @@ Len returns how many objects there are
 
 
 
-### <a name="URLDomnObjects.SetURL">func</a> (\*URLDomnObjects) [SetURL](/src/target/content.go?s=10032:10081#L487)
+### <a name="URLDomnObjects.SetURL">func</a> (\*URLDomnObjects) [SetURL](/src/target/content.go?s=10311:10360#L498)
 ``` go
 func (u *URLDomnObjects) SetURL(name, url string)
 ```
@@ -1176,7 +1176,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="URLDomnObjects.String">func</a> (\*URLDomnObjects) [String](/src/target/content.go?s=10750:10790#L510)
+### <a name="URLDomnObjects.String">func</a> (\*URLDomnObjects) [String](/src/target/content.go?s=11029:11069#L521)
 ``` go
 func (u *URLDomnObjects) String() string
 ```
@@ -1227,7 +1227,7 @@ Len returns how many objects there are
 
 
 
-### <a name="URLHostObjects.SetURL">func</a> (\*URLHostObjects) [SetURL](/src/target/content.go?s=10200:10249#L496)
+### <a name="URLHostObjects.SetURL">func</a> (\*URLHostObjects) [SetURL](/src/target/content.go?s=10479:10528#L507)
 ``` go
 func (u *URLHostObjects) SetURL(name, url string)
 ```
@@ -1236,7 +1236,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="URLHostObjects.String">func</a> (\*URLHostObjects) [String](/src/target/content.go?s=10821:10861#L511)
+### <a name="URLHostObjects.String">func</a> (\*URLHostObjects) [String](/src/target/content.go?s=11100:11140#L522)
 ``` go
 func (u *URLHostObjects) String() string
 ```

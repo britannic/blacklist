@@ -78,21 +78,21 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.0a1-green.svg)](https://github.com/britannic/blacklist/releases/latest)
 
-## Release v1.0.10 (February 27, 2018)
+### Release v1.1.0a1 (March 9, 2018)
 
-* Added functions to ensure all blacklist configuration files are removed from /etc/dnsmasq.d/ when uninstalling using
-
-```bash
-dpkg -P edgeos-dnsmasq-blacklist
-```
-
-* Or
+* Fixed the bug in blacklist-cronjob.sh that inhibited the cron job delay
+* Added code to support dnsmasq configuration file whitelisting for domains and hosts (servers) using hash syntax (the "#" force dnsmasq to forward the DNS request to the configured nameservers)
+* i.e. servers (hosts)
 
 ```bash
-apt-get remove --purge edgeos-dnsmasq-blacklist
+server=/www.bing.com/#
 ```
 
-* dnsmasq will be automatically restarted to remove stale redirects
+* i.e. domains
+
+```bash
+address=/bing.com/#
+```
 
 [[Top]](#contents)
 
