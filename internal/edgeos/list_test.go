@@ -18,7 +18,7 @@ func TestKeys(t *testing.T) {
 
 		So(c.sortKeys(), ShouldResemble, sort.StringSlice{"blacklist", "domains", "hosts"})
 
-		So(c.GetAll().Names(), ShouldResemble, sort.StringSlice{"includes", "includes", "malc0de", "malwaredomains.com", "openphish", "raw.github.com", "simple_tracking", "sysctl.org", "tasty", "volkerschatz", "yoyo", "zeus"})
+		So(c.GetAll().Names(), ShouldResemble, sort.StringSlice{"blacklisted-servers", "blacklisted-subdomains", "malc0de", "malwaredomains.com", "openphish", "raw.github.com", "simple_tracking", "sysctl.org", "tasty", "volkerschatz", "yoyo", "zeus"})
 
 		for _, k := range []string{"a", "b", "c", "z", "q", "s", "e", "i", "x", "m"} {
 			keys = append(keys, k)

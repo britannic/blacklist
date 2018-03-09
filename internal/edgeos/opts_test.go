@@ -101,12 +101,12 @@ func TestOption(t *testing.T) {
 	"CLI Path": "service dns forwarding",
 	"Leaf nodes": [
 		"file",
-		"domains.pre-configured",
-		"hosts.pre-configured",
+		"blacklisted-subdomains",
+		"blacklisted-servers",
 		"url"
 	],
 	"HTTP method": "GET",
-	"Prefix": "address=",
+	"Prefix": {},
 	"Test": true,
 	"Timeout": 30000000000,
 	"Wildcard": {
@@ -134,7 +134,7 @@ func TestOption(t *testing.T) {
 			Level:    "service dns forwarding",
 			Ltypes:   []string{files, PreDomns, PreHosts, urls},
 			Method:   "GET",
-			Pfx:      "address=",
+			Pfx:      dnsPfx{domain: "address=", host: "server="},
 			Test:     true,
 			Timeout:  30000000000,
 			Wildcard: Wildcard{Node: "*s", Name: "*"},
@@ -159,7 +159,7 @@ func TestOption(t *testing.T) {
 			InCLI("inSession"),
 			Logger(nil),
 			Method("GET"),
-			Prefix("address="),
+			Prefix("address=", "server="),
 			Level("service dns forwarding"),
 			LTypes([]string{"file", PreDomns, PreHosts, urls}),
 			Test(true),

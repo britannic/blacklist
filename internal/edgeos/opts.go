@@ -32,11 +32,17 @@ type Parms struct {
 	Level    string        `json:"CLI Path,omitempty"`
 	Ltypes   []string      `json:"Leaf nodes,omitempty"`
 	Method   string        `json:"HTTP method,omitempty"`
-	Pfx      string        `json:"Prefix,omitempty"`
+	Pfx      dnsPfx        `json:"Prefix,omitempty"`
 	Test     bool          `json:"Test,omitempty"`
 	Timeout  time.Duration `json:"Timeout,omitempty"`
 	Verb     bool          `json:"Verbosity,omitempty"`
 	Wildcard/*..........*/ `json:"Wildcard,omitempty"`
+}
+
+// dnsPfx defines the prefix entries in the dnsmasq configuration file
+type dnsPfx struct {
+	domain string
+	host   string
 }
 
 // Wildcard struct sets globbing wildcards for filename searches
@@ -244,11 +250,12 @@ func NewConfig(opts ...Option) *Config {
 }
 
 // Prefix sets the dnsmasq configuration address line prefix
-func Prefix(l string) Option {
+func Prefix(d string, h string) Option {
 	return func(c *Config) Option {
-		previous := c.Pfx
-		c.Pfx = l
-		return Prefix(previous)
+		pd := c.Pfx.domain
+		ph := c.Pfx.host
+		c.Pfx = dnsPfx{domain: d, host: h}
+		return Prefix(pd, ph)
 	}
 }
 

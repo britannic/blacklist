@@ -58,12 +58,21 @@ func (o *object) excludes() io.Reader {
 
 // Files returns a list of dnsmasq conf files from all srcs
 func (o *Objects) Files() *CFile {
+	var f string
 	c := CFile{Parms: o.Parms}
+	format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
 	if !o.Disabled {
 		for _, obj := range o.x {
+			switch obj.nType {
+			case excDomn, excRoot, preDomn:
+				f = fmt.Sprintf(format, domains, obj.name)
+			case excHost, preHost:
+				f = fmt.Sprintf(format, hosts, obj.name)
+			default:
+				f = fmt.Sprintf(format, getType(obj.nType), obj.name)
+			}
+			c.Names = append(c.Names, f)
 			c.nType = obj.nType
-			format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
-			c.Names = append(c.Names, fmt.Sprintf(format, getType(obj.nType), obj.name))
 		}
 		sort.Strings(c.Names)
 	}
@@ -118,6 +127,52 @@ func (o *Objects) Find(elem string) int {
 	}
 	return -1
 }
+
+func getLtypeDesc(l string) string {
+	switch l {
+	case ExcDomns:
+		return preNoun + " whitelisted domains"
+	case ExcHosts:
+		return preNoun + " whitelisted hosts"
+	case ExcRoots:
+		return preNoun + " global whitelisted domains"
+	case PreDomns:
+		return preNoun + " blacklisted domains"
+	case PreHosts:
+		return preNoun + " blacklisted hosts"
+	case files:
+		return "file"
+	case urls:
+		return "url"
+	case "":
+		return "Unknown ltype"
+	default:
+		panic(fmt.Sprintf("getLtypeDesc(l) passed an illegal lType: %v", l))
+	}
+}
+
+// func getLtypeName(l string) string {
+// 	switch l {
+// 	case ExcDomns:
+// 		return preNoun + ".whitelisted-domains"
+// 	case ExcHosts:
+// 		return preNoun + ".whitelisted-hosts"
+// 	case ExcRoots:
+// 		return preNoun + ".global-whitelisted-domains"
+// 	case PreDomns:
+// 		return preNoun + ".blacklisted-domains"
+// 	case PreHosts:
+// 		return preNoun + ".blacklisted-hosts"
+// 	case files:
+// 		return "file"
+// 	case urls:
+// 		return "url"
+// 	case "":
+// 		return "Unknown ltype"
+// 	default:
+// 		panic(fmt.Sprintf("getLtypeName(l) passed an illegal : %v", l))
+// 	}
+// }
 
 // includes returns an io.Reader of blacklist includes
 func (o *object) includes() io.Reader {

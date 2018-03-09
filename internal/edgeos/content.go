@@ -322,6 +322,7 @@ func (o *object) process() *bList {
 		add               = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		area              = typeInt(o.nType)
 		b                 = bufio.NewScanner(o.r)
+		f                 string
 		drop, found, kept int
 		rx                = regx.Obj
 	)
@@ -364,7 +365,7 @@ NEXT:
 		o.Dex = mergeList(o.Dex, add)
 	}
 
-	fmttr := o.Pfx + getSeparator(area) + "%v/" + o.ip
+	fmttr := getDnsmasqPrefix(o)
 
 	// Let's do some accounting
 	atomic.AddInt32(&o.ctr[area].dropped, int32(drop))
@@ -374,8 +375,17 @@ NEXT:
 	o.log(fmt.Sprintf("%s: extracted: %d", o.name, kept))
 	o.log(fmt.Sprintf("%s: dropped: %d", o.name, drop))
 
+	switch o.nType {
+	case excDomn, excRoot, preDomn:
+		f = fmt.Sprintf(o.FnFmt, o.Dir, domains, o.name, o.Ext)
+	case excHost, preHost:
+		f = fmt.Sprintf(o.FnFmt, o.Dir, hosts, o.name, o.Ext)
+	default:
+		f = fmt.Sprintf(o.FnFmt, o.Dir, area, o.name, o.Ext)
+	}
+
 	return &bList{
-		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),
+		file: f,
 		r:    formatData(fmttr, add),
 	}
 }
@@ -408,13 +418,14 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 			go func(o *object) {
 				area = typeInt(o.nType)
 				c.ctr[area] = tally
-				switch o.nType {
-				case excDomn, excHost, excRoot:
-					o.process()
-					getErrors <- nil
-				default:
-					getErrors <- o.process().writeFile()
-				}
+				getErrors <- o.process().writeFile()
+				// switch o.nType {
+				// case excDomn, excHost, excRoot:
+				// 	o.process()
+				// 	getErrors <- nil
+				// default:
+				// 	getErrors <- o.process().writeFile()
+				// }
 			}(o)
 
 			for range cts {

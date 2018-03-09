@@ -101,7 +101,7 @@ mipsle: generate
 	GOOS=linux GOARCH=mipsle $(GOBUILD) -o $(EXECUTABLE).mipsel $(LDFLAGS)
 
 .PHONY: pkgs
-pkgs: pkg-mips pkg-mipsel 
+pkgs: docs pkg-mips pkg-mipsel 
 
 .PHONY: pkg-mips 
 pkg-mips: deps mips coverage copyright docs readme

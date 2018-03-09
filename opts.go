@@ -115,7 +115,7 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.InCLI("inSession"),
 		e.Level("service dns forwarding"),
 		e.Method("GET"),
-		e.Prefix("address="),
+		e.Prefix("address=", "server="),
 		e.Logger(log),
 		e.LTypes([]string{files, e.PreDomns, e.PreHosts, urls}),
 		e.Timeout(30*time.Second),

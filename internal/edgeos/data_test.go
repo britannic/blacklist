@@ -48,14 +48,28 @@ func TestFormatData(t *testing.T) {
 		c := NewConfig(
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
+			LTypes([]string{PreDomns}),
+			Prefix("address=", "server="),
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
 		for _, node := range c.sortKeys() {
 			var (
-				actList  = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
-				eq       = getSeparator(node)
+				actList = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+
+				o = &object{
+					ip: c.tree[node].ip,
+					Parms: &Parms{
+						Pfx: dnsPfx{
+							domain: "address=",
+							host:   "server=",
+						},
+					},
+					nType: domn,
+				}
+				// pfx      = dnsPfx{domain: "address=", host: "server="}
+				fmttr    = getDnsmasqPrefix(o)
 				expBytes []byte
 				lines    []string
 			)
@@ -68,14 +82,12 @@ func TestFormatData(t *testing.T) {
 			b := bufio.NewScanner(r())
 			for b.Scan() {
 				k := b.Text()
-				lines = append(lines, fmt.Sprintf("address=%v%v/%v", eq, k, c.tree[node].ip)+"\n")
+				lines = append(lines, fmt.Sprintf(fmttr, k)+"\n")
 				actList.set([]byte(k), 0)
 			}
 
 			sort.Strings(lines)
 			expBytes = []byte(strings.Join(lines, ""))
-
-			fmttr := "address=" + eq + "%v/" + c.tree[node].ip
 			actBytes, err := ioutil.ReadAll(formatData(fmttr, actList))
 
 			So(err, ShouldBeNil)

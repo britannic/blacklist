@@ -3,11 +3,11 @@
 # Since cron will run this script, we have to escape the modulus operator, 
 # otherwise cron will interpret it as a newline.
 
-random=$(awk 'BEGIN{srand();printf("%d", 65536*rand())}')
+random=$(/usr/bin/awk 'BEGIN{srand();printf("%d", 65536*rand())}')
 seconds=${1}
 
 [[ ${seconds} -lt 1 ]] && seconds=1
 [[ ${seconds} -gt 86400 ]] && seconds=86000 
 
-sleep $(( random \% seconds ))
+sleep $(( random % seconds ))
 /config/scripts/update-dnsmasq

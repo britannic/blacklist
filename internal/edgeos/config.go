@@ -60,15 +60,15 @@ const (
 	zones     = "zones"
 
 	// ExcDomns labels domain exclusions
-	ExcDomns = "excluded-domains"
+	ExcDomns = "whitelisted-subdomains"
 	// ExcHosts labels host exclusions
-	ExcHosts = "excluded-hosts"
+	ExcHosts = "whitelisted-servers"
 	// ExcRoots labels global domain exclusions
-	ExcRoots = "excluded-global"
+	ExcRoots = "whitelisted-global"
 	// PreDomns designates string label for preconfigured blacklisted domains
-	PreDomns = "domains." + preNoun
+	PreDomns = "blacklisted-subdomains"
 	// PreHosts designates string label for preconfigured blacklisted hosts
-	PreHosts = "hosts." + preNoun
+	PreHosts = "blacklisted-servers"
 	// False is a string constant
 	False = "false"
 	// True is a string constant
@@ -103,13 +103,13 @@ func (c *Config) addExc(node string) *Objects {
 	}
 
 	o.x = append(o.x, &object{
-		desc:  ltype + " exclusions",
+		Parms: c.Parms,
+		desc:  getLtypeDesc(ltype),
 		exc:   exc,
 		ip:    c.tree.getIP(node),
 		ltype: ltype,
-		name:  ltype,
 		nType: getType(ltype).(ntype),
-		Parms: c.Parms,
+		name:  ltype,
 	})
 	return o
 }
@@ -135,13 +135,13 @@ func (c *Config) addInc(node string) *object {
 	}
 
 	return &object{
-		desc:  ltype + " blacklist content",
+		Parms: c.Parms,
+		desc:  getLtypeDesc(ltype),
 		inc:   inc,
 		ip:    c.tree.getIP(node),
 		ltype: ltype,
-		name:  "includes",
 		nType: n,
-		Parms: c.Parms,
+		name:  ltype,
 	}
 }
 
