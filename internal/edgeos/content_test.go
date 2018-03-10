@@ -78,7 +78,7 @@ func TestConfigProcessContent(t *testing.T) {
 				c:      newCfg(),
 				cfg:    testCfg,
 				ct:     FileObj,
-				err:    fmt.Errorf("open /:~/=../../internal/testdata/blist.hosts.src: no such file or directory\nopen /:~//hosts.tasty.blacklist.conf: no such file or directory"),
+				err:    fmt.Errorf("open /:~/=../../internal/testdata/blist.hosts.src: no such file or directory"),
 				expErr: true,
 				name:   "File",
 			},
@@ -133,7 +133,7 @@ func TestNewContent(t *testing.T) {
 			},
 			{
 				i:     1,
-				exp:   "address=/adinfuse.com/#",
+				exp:   "server=/adinfuse.com/#",
 				fail:  false,
 				ltype: ExcDomns,
 				name:  ExcDomns,
@@ -403,7 +403,7 @@ func TestMultiObjNewContent(t *testing.T) {
 			exp   string
 			name  string
 		}{
-			{name: "ExRtObj", iFace: ExRtObj, exp: "address=/ytimg.com/#"},
+			{name: "ExRtObj", iFace: ExRtObj, exp: "server=/ytimg.com/#"},
 			{name: "ExDmObj", iFace: ExDmObj, exp: ""},
 			{name: "ExHtObj", iFace: ExHtObj, exp: ""},
 			{name: "PreDObj", iFace: PreDObj, exp: "address=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0"},
@@ -625,6 +625,7 @@ func TestWriteFile(t *testing.T) {
 				b := &bList{
 					file: f.Name(),
 					r:    tt.data,
+					size: 20,
 				}
 				So(b.writeFile(), ShouldBeNil)
 				os.Remove(f.Name())
@@ -633,6 +634,7 @@ func TestWriteFile(t *testing.T) {
 				b := &bList{
 					file: tt.dir + tt.fname,
 					r:    tt.data,
+					size: 20,
 				}
 				So(b.writeFile().Error(), ShouldResemble, tt.want)
 			}
@@ -859,7 +861,7 @@ var (
 
 	filesMin = "[\nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n \nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"/tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n]"
 
-	excRootContent = "address=/122.2o7.net/#\naddress=/1e100.net/#\naddress=/adobedtm.com/#\naddress=/akamai.net/#\naddress=/amazon.com/#\naddress=/amazonaws.com/#\naddress=/apple.com/#\naddress=/ask.com/#\naddress=/avast.com/#\naddress=/bitdefender.com/#\naddress=/cdn.visiblemeasures.com/#\naddress=/cloudfront.net/#\naddress=/coremetrics.com/#\naddress=/edgesuite.net/#\naddress=/freedns.afraid.org/#\naddress=/github.com/#\naddress=/githubusercontent.com/#\naddress=/google.com/#\naddress=/googleadservices.com/#\naddress=/googleapis.com/#\naddress=/googleusercontent.com/#\naddress=/gstatic.com/#\naddress=/gvt1.com/#\naddress=/gvt1.net/#\naddress=/hb.disney.go.com/#\naddress=/hp.com/#\naddress=/hulu.com/#\naddress=/images-amazon.com/#\naddress=/jumptap.com/#\naddress=/msdn.com/#\naddress=/paypal.com/#\naddress=/rackcdn.com/#\naddress=/schema.org/#\naddress=/skype.com/#\naddress=/smacargo.com/#\naddress=/sourceforge.net/#\naddress=/ssl-on9.com/#\naddress=/ssl-on9.net/#\naddress=/static.chartbeat.com/#\naddress=/storage.googleapis.com/#\naddress=/usemaxserver.de/#\naddress=/windows.net/#\naddress=/yimg.com/#\naddress=/ytimg.com/#"
+	excRootContent = "server=/122.2o7.net/#\nserver=/1e100.net/#\nserver=/adobedtm.com/#\nserver=/akamai.net/#\nserver=/amazon.com/#\nserver=/amazonaws.com/#\nserver=/apple.com/#\nserver=/ask.com/#\nserver=/avast.com/#\nserver=/bitdefender.com/#\nserver=/cdn.visiblemeasures.com/#\nserver=/cloudfront.net/#\nserver=/coremetrics.com/#\nserver=/edgesuite.net/#\nserver=/freedns.afraid.org/#\nserver=/github.com/#\nserver=/githubusercontent.com/#\nserver=/google.com/#\nserver=/googleadservices.com/#\nserver=/googleapis.com/#\nserver=/googleusercontent.com/#\nserver=/gstatic.com/#\nserver=/gvt1.com/#\nserver=/gvt1.net/#\nserver=/hb.disney.go.com/#\nserver=/hp.com/#\nserver=/hulu.com/#\nserver=/images-amazon.com/#\nserver=/jumptap.com/#\nserver=/msdn.com/#\nserver=/paypal.com/#\nserver=/rackcdn.com/#\nserver=/schema.org/#\nserver=/skype.com/#\nserver=/smacargo.com/#\nserver=/sourceforge.net/#\nserver=/ssl-on9.com/#\nserver=/ssl-on9.net/#\nserver=/static.chartbeat.com/#\nserver=/storage.googleapis.com/#\nserver=/usemaxserver.de/#\nserver=/windows.net/#\nserver=/yimg.com/#\nserver=/ytimg.com/#"
 
 	testCfg = `blacklist {
 	disabled false
@@ -876,13 +878,13 @@ var (
 	}
 	exclude ytimg.com
 	hosts {
-			dns-redirect-ip 192.168.168.1
-			include beap.gemini.yahoo.com
-			source tasty {
-									description "File source"
-									dns-redirect-ip 10.10.10.10
-									file /:~/=../../internal/testdata/blist.hosts.src
-							}
+		dns-redirect-ip 192.168.168.1
+		include beap.gemini.yahoo.com
+		source tasty {
+			description "File source"
+			dns-redirect-ip 10.10.10.10
+			file /:~/=../../internal/testdata/blist.hosts.src
+		}
 	}
 }`
 )

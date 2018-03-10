@@ -33,6 +33,7 @@ const (
 type bList struct {
 	file string
 	r    io.Reader
+	size int
 }
 
 // Contenter is a Content interface
@@ -387,6 +388,7 @@ NEXT:
 	return &bList{
 		file: f,
 		r:    formatData(fmttr, add),
+		size: kept,
 	}
 }
 
@@ -554,7 +556,11 @@ func (i IFace) String() (s string) {
 }
 
 // writeFile saves hosts/domains data to disk
-func (b *bList) writeFile() error {
+func (b *bList) writeFile() (err error) {
+	if b.size == 0 {
+		return err
+	}
+
 	w, err := os.Create(b.file)
 	if err != nil {
 		return err

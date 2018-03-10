@@ -80,9 +80,9 @@ func getDnsmasqPrefix(o *object) string {
 	switch o.nType {
 	case domn, preDomn, root:
 		return o.Pfx.domain + "/%v/" + o.ip
-	case excDomn, excRoot:
-		return o.Pfx.domain + "/%v/#"
-	case excHost:
+	// case excDomn, excRoot:
+	// 	return o.Pfx.domain + "/%v/#"
+	case excDomn, excHost, excRoot:
 		return o.Pfx.host + "/%v/#"
 	}
 	return o.Pfx.host + "/%v/" + o.ip
