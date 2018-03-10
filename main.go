@@ -192,7 +192,7 @@ func processObjects(c *e.Config, objects []e.IFace) error {
 func reloadDNS(c *e.Config) {
 	b, err := c.ReloadDNS()
 	if err != nil {
-		logErrorf("ReloadDNS(): \n error: %v\n", string(b), err.Error())
+		logErrorf("ReloadDNS(): %v\n error: %v\n", string(b), err.Error())
 		exitCmd(1)
 	}
 	logPrintf("ReloadDNS(): %v\n", string(b))

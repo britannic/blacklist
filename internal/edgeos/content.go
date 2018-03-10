@@ -309,7 +309,7 @@ func (c *Config) GetTotalStats() (dropped, kept int32) {
 	}
 
 	if kept+dropped != 0 {
-		c.Log.Noticef("Grand Totals: extracted: %d, dropped: %d", kept, dropped)
+		c.Log.Noticef("All extracted: %d, dropped: %d", kept, dropped)
 	}
 	return dropped, kept
 }
@@ -404,6 +404,10 @@ NEXT:
 		f = fmt.Sprintf(o.FnFmt, o.Dir, hosts, o.name, o.Ext)
 	default:
 		f = fmt.Sprintf(o.FnFmt, o.Dir, area, o.name, o.Ext)
+	}
+
+	if kept == 0 {
+		o.Log.Warningf("Zero records extracted for %s, dnsmasq conf file won't be written", o.name)
 	}
 
 	return &bList{
