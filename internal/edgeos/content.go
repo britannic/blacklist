@@ -293,6 +293,27 @@ func (u *URLHostObjects) GetList() *Objects {
 	return u.Objects
 }
 
+// GetTotalStats displays aggregate statistics for processed sources
+func (c *Config) GetTotalStats() (dropped, kept int32) {
+	var keys []string
+
+	for k := range c.ctr {
+		keys = append(keys, k)
+	}
+
+	for _, k := range keys {
+		if c.ctr[k].kept+c.ctr[k].dropped != 0 {
+			dropped += c.ctr[k].dropped
+			kept += c.ctr[k].kept
+		}
+	}
+
+	if kept+dropped != 0 {
+		c.Log.Noticef("Grand Totals: extracted: %d, dropped: %d", kept, dropped)
+	}
+	return dropped, kept
+}
+
 // Len returns how many objects there are
 func (e *ExcDomnObjects) Len() int { return len(e.Objects.x) }
 
@@ -421,13 +442,6 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 				area = typeInt(o.nType)
 				c.ctr[area] = tally
 				getErrors <- o.process().writeFile()
-				// switch o.nType {
-				// case excDomn, excHost, excRoot:
-				// 	o.process()
-				// 	getErrors <- nil
-				// default:
-				// 	getErrors <- o.process().writeFile()
-				// }
 			}(o)
 
 			for range cts {

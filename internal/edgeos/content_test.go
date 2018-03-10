@@ -450,6 +450,8 @@ func TestProcessContent(t *testing.T) {
 			)
 
 			tests := []struct {
+				dropped   int32
+				kept      int32
 				err       error
 				exp       string
 				expDexMap list
@@ -461,6 +463,8 @@ func TestProcessContent(t *testing.T) {
 			}{
 				{
 					name:      "ExRtObj",
+					dropped:   0,
+					kept:      1,
 					err:       nil,
 					exp:       "[\nDesc:\t \"pre-configured global whitelisted domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"whitelisted-global\"\nName:\t \"whitelisted-global\"\nnType:\t \"excRoot\"\nPrefix:\t \"\"\nType:\t \"whitelisted-global\"\nURL:\t \"\"\n]",
 					expDexMap: list{entry: entry{"ytimg.com": 0}},
@@ -469,6 +473,8 @@ func TestProcessContent(t *testing.T) {
 				},
 				{
 					name:      "ExDmObj",
+					dropped:   0,
+					kept:      0,
 					err:       nil,
 					exp:       "[\nDesc:\t \"pre-configured whitelisted domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"whitelisted-subdomains\"\nName:\t \"whitelisted-subdomains\"\nnType:\t \"excDomn\"\nPrefix:\t \"\"\nType:\t \"whitelisted-subdomains\"\nURL:\t \"\"\n]",
 					expDexMap: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
@@ -477,6 +483,8 @@ func TestProcessContent(t *testing.T) {
 				},
 				{
 					name:      "ExHtObj",
+					dropped:   0,
+					kept:      0,
 					err:       nil,
 					exp:       "[\nDesc:\t \"pre-configured whitelisted hosts\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"whitelisted-servers\"\nName:\t \"whitelisted-servers\"\nnType:\t \"excHost\"\nPrefix:\t \"\"\nType:\t \"whitelisted-servers\"\nURL:\t \"\"\n]",
 					expDexMap: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
@@ -484,9 +492,11 @@ func TestProcessContent(t *testing.T) {
 					obj:       ExHtObj,
 				},
 				{
-					name: "PreDObj",
-					err:  nil,
-					exp:  "[\nDesc:\t \"pre-configured blacklisted domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"blacklisted-subdomains\"\nName:\t \"blacklisted-subdomains\"\nnType:\t \"preDomn\"\nPrefix:\t \"\"\nType:\t \"blacklisted-subdomains\"\nURL:\t \"\"\n]",
+					name:    "PreDObj",
+					dropped: 0,
+					kept:    8,
+					err:     nil,
+					exp:     "[\nDesc:\t \"pre-configured blacklisted domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"blacklisted-subdomains\"\nName:\t \"blacklisted-subdomains\"\nnType:\t \"preDomn\"\nPrefix:\t \"\"\nType:\t \"blacklisted-subdomains\"\nURL:\t \"\"\n]",
 					expDexMap: list{
 						entry: entry{
 							"adsrvr.org":         0,
@@ -506,6 +516,8 @@ func TestProcessContent(t *testing.T) {
 				},
 				{
 					name:      "PreHObj",
+					dropped:   0,
+					kept:      1,
 					err:       nil,
 					exp:       "[\nDesc:\t \"pre-configured blacklisted hosts\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"blacklisted-servers\"\nName:\t \"blacklisted-servers\"\nnType:\t \"preHost\"\nPrefix:\t \"\"\nType:\t \"blacklisted-servers\"\nURL:\t \"\"\n]",
 					expDexMap: list{entry: entry{"ytimg.com": 0}},
@@ -515,9 +527,11 @@ func TestProcessContent(t *testing.T) {
 					obj:       PreHObj,
 				},
 				{
-					name: "FileObj",
-					err:  fmt.Errorf("open %v/hosts./tasty.blacklist.conf: no such file or directory", dir),
-					exp:  filesMin,
+					name:    "FileObj",
+					dropped: 0,
+					kept:    2,
+					err:     fmt.Errorf("open %v/hosts./tasty.blacklist.conf: no such file or directory", dir),
+					exp:     filesMin,
 					expDexMap: list{
 						entry: entry{
 							"cw.bad.ultraadverts.site.eu": 1,
@@ -545,6 +559,16 @@ func TestProcessContent(t *testing.T) {
 					var g errgroup.Group
 					g.Go(func() error { return c.ProcessContent(obj) })
 					err = g.Wait()
+
+					dropped, kept := c.GetTotalStats()
+
+					Convey("Dropped entries should match", func() {
+						So(dropped, ShouldEqual, tt.dropped)
+					})
+
+					Convey("Kept entries should match", func() {
+						So(kept, ShouldEqual, tt.kept)
+					})
 
 					if err != nil {
 						Convey("Testing "+tt.name+" ProcessContent().Error():", func() {

@@ -96,8 +96,8 @@ func main() {
 		}
 	}
 
+	env.GetTotalStats()
 	reloadDNS(env)
-
 	logNoticef("%v", "Blacklist update completed......")
 }
 
