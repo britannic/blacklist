@@ -92,7 +92,7 @@ func main() {
 
 	if !env.Disabled {
 		if err := processObjects(env, objex); err != nil {
-			logFatalf("%v", err.Error())
+			logErrorf("%v", err.Error())
 		}
 	}
 
