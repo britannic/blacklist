@@ -393,9 +393,9 @@ NEXT:
 	atomic.AddInt32(&o.ctr[area].dropped, int32(drop))
 	atomic.AddInt32(&o.ctr[area].kept, int32(kept))
 
-	o.log(fmt.Sprintf("%s: downloaded: %d", o.name, found))
-	o.log(fmt.Sprintf("%s: extracted: %d", o.name, kept))
-	o.log(fmt.Sprintf("%s: dropped: %d", o.name, drop))
+	o.Log.Infof("%s: downloaded: %d", o.name, found)
+	o.Log.Infof("%s: extracted: %d", o.name, kept)
+	o.Log.Infof("%s: dropped: %d", o.name, drop)
 
 	switch o.nType {
 	case excDomn, excRoot, preDomn:

@@ -55,19 +55,19 @@ func TestParmsLog(t *testing.T) {
 					So(act.String(), ShouldEqual, tt.str+"\n")
 
 				case tt.name == "Info":
-					p.log(tt.str)
+					p.Log.Info(tt.str)
 					So(act.String(), ShouldEqual, tt.str+"\n")
 
 				case tt.name == "Warning":
 					exp := tt.str
 					exp += tt.str
-					p.warning(tt.str)
+					p.Log.Warning(tt.str)
 					So(act.String(), ShouldEqual, exp)
 
 				case tt.name == "Error":
 					exp := tt.str
 					exp += tt.str
-					p.error(tt.str)
+					p.Log.Error(tt.str)
 					So(act.String(), ShouldEqual, exp)
 
 				default:

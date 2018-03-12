@@ -54,22 +54,10 @@ type Wildcard struct {
 // Option is a recursive function
 type Option func(c *Config) Option
 
-func (p *Parms) debug(s string) {
+func (p *Parms) debug(s ...interface{}) {
 	if p.Dbug {
-		p.Log.Debug(s)
+		p.Log.Debug(s...)
 	}
-}
-
-func (p *Parms) error(s string) {
-	p.Log.Error(s)
-}
-
-func (p *Parms) log(s string) {
-	p.Log.Info(s)
-}
-
-func (p *Parms) warning(s string) {
-	p.Log.Warning(s)
 }
 
 // SetOpt sets the specified options passed as Parms and returns an option to restore the last set of arg's previous values

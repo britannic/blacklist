@@ -20,7 +20,7 @@ func getHTTP(o *object) *object {
 	if req, err = http.NewRequest(o.Method, o.url, nil); err != nil {
 		s := fmt.Sprintf("Unable to form request for %s. Error: %v", o.url, err)
 		o.Log.Warning(s)
-		o.error(s)
+		// o.error(s)
 		o.r, o.err = strings.NewReader(s), err
 		return o
 	}
@@ -31,7 +31,7 @@ func getHTTP(o *object) *object {
 	if resp, err = (&http.Client{}).Do(req); err != nil {
 		s := fmt.Sprintf("Unable to get response for %s. Error: %v", o.url, err)
 		o.Log.Warning(s)
-		o.error(s)
+		// o.error(s)
 		o.r, o.err = strings.NewReader(s), err
 		return o
 	}
