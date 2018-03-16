@@ -49,7 +49,7 @@ func active(a string, inCLI bool) string {
 		case "returnActiveValues":
 			a = "returnValues"
 		case "showConfig":
-			a = "showCfg"
+			a = "showConfig"
 		}
 	}
 	return a
@@ -75,7 +75,7 @@ func apiCMD(a string, inCLI bool) string {
 		"returnActiveValues": "returnActiveValues",
 		"returnValue":        "returnValue",
 		"returnValues":       "returnValues",
-		"showCfg":            "showCfg",
+		"showCfg":            "showConfig",
 		"showConfig":         "showConfig",
 	}
 	return apiCMDs[active(a, inCLI)]
@@ -92,6 +92,14 @@ func deleteFile(f string) bool {
 // GetFile reads a file and returns an io.Reader
 func GetFile(f string) (io.Reader, error) {
 	return os.Open(f)
+}
+
+// mode returns a contextual VYOS API argument
+func mode(insession bool) string {
+	if insession {
+		return "--show-working-only"
+	}
+	return "--show-active-only"
 }
 
 // purgeFiles removes any orphaned blacklist files that don't have sources

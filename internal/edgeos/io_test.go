@@ -124,7 +124,7 @@ func TestAPICMD(t *testing.T) {
 			{
 				b: false,
 				q: "showCfg",
-				r: "showCfg",
+				r: "showConfig",
 			},
 			{
 				b: true,
@@ -134,7 +134,7 @@ func TestAPICMD(t *testing.T) {
 			{
 				b: false,
 				q: "showConfig",
-				r: "showCfg",
+				r: "showConfig",
 			},
 		}
 
@@ -145,11 +145,27 @@ func TestAPICMD(t *testing.T) {
 		c := NewConfig(
 			API("/bin/cli-shell-api"),
 			InCLI("inSession"),
-			Level("service dns forwarding"),
+			Level("service dns forwarding blacklist"),
 		)
-		act := fmt.Sprintf("%v %v", apiCMD("showConfig", c.InSession()), c.Level)
-		exp := "showCfg service dns forwarding"
-		So(act, ShouldEqual, exp)
+
+		sessions := []struct {
+			b   bool
+			arg string
+		}{
+			{b: true,
+				arg: "--show-working-only",
+			},
+			{b: false,
+				arg: "--show-active-only",
+			},
+		}
+
+		for _, session := range sessions {
+			act := fmt.Sprintf(
+				"%v %v %v %v", c.API, apiCMD("showConfig", c.InSession()), c.Level, mode(session.b))
+			exp := "/bin/cli-shell-api showConfig service dns forwarding blacklist " + session.arg
+			So(act, ShouldEqual, exp)
+		}
 	})
 }
 
@@ -187,5 +203,12 @@ func TestDeleteFile(t *testing.T) {
 				So(deleteFile(tt.f), ShouldEqual, tt.exp)
 			}
 		}
+	})
+}
+
+func TestMode(t *testing.T) {
+	Convey("Testing mode()", t, func() {
+		So(mode(true), ShouldEqual, "--show-working-only")
+		So(mode(false), ShouldEqual, "--show-active-only")
 	})
 }

@@ -226,8 +226,10 @@ update_dns_config() {
 	try end
 }
 
+echo "$@"
+
 # Only run the post installation script if this is a first time installation
-if [[ -z "${2}" ]]; then
+if [[ -z "${2}" ]] || [[ "${1}" == "configure" ]] ; then
 	update_dns_config
 fi
 

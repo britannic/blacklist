@@ -287,8 +287,10 @@ func (c *Config) InSession() bool {
 // load reads the config using the EdgeOS/VyOS cli-shell-api
 func (c *Config) load(act, lvl string) ([]byte, error) {
 	cmd := exec.Command(c.Bash)
-	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v %v --show-working-only", c.API, apiCMD(act, c.InSession()), lvl))
-
+	cmd.Stdin = strings.NewReader(
+		fmt.Sprintf(
+			"%v %v %v %v", c.API, apiCMD(act, c.InSession()), lvl, mode(c.InSession())),
+	)
 	return cmd.Output()
 }
 
