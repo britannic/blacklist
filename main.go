@@ -11,11 +11,6 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-const (
-	files = "file"
-	urls  = "url"
-)
-
 var (
 	// updated by go build -ldflags
 	build   = "UNKNOWN"
@@ -32,30 +27,21 @@ var (
 		logging.DEBUG:    logging.ColorSeqBold(logging.ColorBlue),
 	}
 
-	progname     = basename(os.Args[0])
-	prefix       = fmt.Sprintf("%s: ", progname)
 	exitCmd      = os.Exit
 	fdFmttr      logging.Backend
 	haveTerm     = inTerminal
 	initEnvirons = initEnv
 	log          = newLog(prefix)
-
-	logCritf = log.Criticalf
-
-	logErrorf = func(f string, args ...interface{}) {
-		log.Errorf(f, args...)
-	}
-
-	logFatalf = func(f string, args ...interface{}) {
-		logCritf(f, args...)
-		exitCmd(1)
-	}
-
-	logFile    = fmt.Sprintf("/var/log/%s.log", progname)
-	logInfo    = log.Info
-	logInfof   = log.Infof
-	logNoticef = log.Noticef
-	logPrintf  = logInfof
+	logCritf     = log.Criticalf
+	logErrorf    = func(f string, args ...interface{}) { log.Errorf(f, args...) }
+	logFatalf    = func(f string, args ...interface{}) { logCritf(f, args...); exitCmd(1) }
+	logFile      = fmt.Sprintf("/var/log/%s.log", progname)
+	logInfo      = log.Info
+	logInfof     = log.Infof
+	logNoticef   = log.Noticef
+	logPrintf    = logInfof
+	progname     = basename(os.Args[0])
+	prefix       = fmt.Sprintf("%s: ", progname)
 
 	objex = []e.IFace{
 		e.ExRtObj,
@@ -80,7 +66,8 @@ func main() {
 		exitCmd(0)
 	}
 
-	// logDebugf(o, "Dumping env variable: %v\n", env)
+	env.Debug(fmt.Sprintf("Dumping commandline args: %v", os.Args[1:]))
+	env.Debug(fmt.Sprintf("Dumping env variables: %v", env))
 	logNoticef("%v", "Starting blacklist update...")
 
 	logInfo("Removing stale blacklists...")
@@ -250,6 +237,5 @@ func setUpEnv() (*e.Config, error) {
 	o.setArgs()
 	c := o.initEdgeOS()
 	err := c.ReadCfg(o.getCFG(c))
-
 	return c, err
 }

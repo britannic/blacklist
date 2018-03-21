@@ -51,7 +51,7 @@ func TestParmsLog(t *testing.T) {
 
 				switch {
 				case tt.dbug:
-					p.debug(tt.str)
+					p.Debug(tt.str)
 					So(act.String(), ShouldEqual, tt.str+"\n")
 
 				case tt.name == "Info":
@@ -71,7 +71,7 @@ func TestParmsLog(t *testing.T) {
 					So(act.String(), ShouldEqual, exp)
 
 				default:
-					p.debug(tt.str)
+					p.Debug(tt.str)
 					So(act.String(), ShouldEqual, "")
 				}
 				act.Reset()

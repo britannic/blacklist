@@ -53,7 +53,8 @@ type Wildcard struct {
 // Option is a recursive function
 type Option func(c *Config) Option
 
-func (p *Parms) debug(s ...interface{}) {
+// Debug logs debug messages when the Dbug flag is true
+func (p *Parms) Debug(s ...interface{}) {
 	if p.Dbug {
 		p.Log.Debug(s...)
 	}
@@ -121,7 +122,7 @@ func Disabled(b bool) Option {
 	}
 }
 
-// Dbug toggles debug level on or off
+// Dbug toggles Debug level on or off
 func Dbug(b bool) Option {
 	return func(c *Config) Option {
 		previous := c.Dbug

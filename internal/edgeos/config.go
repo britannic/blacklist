@@ -409,7 +409,9 @@ LINE:
 
 // readDir returns a listing of dnsmasq blacklist configuration files
 func (c *CFile) readDir(pattern string) ([]string, error) {
-	return filepath.Glob(pattern)
+	files, err := filepath.Glob(pattern)
+	c.Debug(fmt.Sprintf("Files: %v\n: %v", pattern, files))
+	return files, err
 }
 
 // ReloadDNS reloads the dnsmasq configuration
@@ -425,7 +427,9 @@ func (c *CFile) Remove() error {
 	if err != nil {
 		return err
 	}
-	return purgeFiles(diffArray(c.Names, d))
+	files := diffArray(c.Names, d)
+	c.Debug(fmt.Sprintf("Removing: %v", files))
+	return purgeFiles(files)
 }
 
 // sortKeys returns a slice of keys in lexicographical sorted order.
