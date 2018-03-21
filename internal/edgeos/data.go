@@ -80,27 +80,11 @@ func getDnsmasqPrefix(o *object) string {
 	switch o.nType {
 	case domn, preDomn, root:
 		return o.Pfx.domain + "/%v/" + o.ip
-	// case excDomn, excRoot:
-	// 	return o.Pfx.domain + "/%v/#"
 	case excDomn, excHost, excRoot:
 		return o.Pfx.host + "/%v/#"
 	}
 	return o.Pfx.host + "/%v/" + o.ip
 }
-
-// func getArea(n ntype) (s string) {
-// 	switch n {
-// 	case domn, excDomn, excRoot, preDomn, root:
-// 		s = domains
-// 	case excHost, host, preHost:
-// 		s = hosts
-// 	case unknown:
-// 		s = notknown
-// 	case zone:
-// 		s = zones
-// 	}
-// 	return s
-// }
 
 // getSubdomains returns a map of subdomains
 func getSubdomains(b []byte) (l list) {

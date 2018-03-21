@@ -58,7 +58,6 @@ func TestConfigProcessContent(t *testing.T) {
 				InCLI("inSession"),
 				Level("service dns forwarding"),
 				Logger(newLog()),
-				LTypes([]string{files, PreDomns, PreHosts, urls}),
 				Method("GET"),
 				Prefix("address=", "server="),
 				Timeout(30*time.Second),
@@ -312,7 +311,6 @@ func TestNewContent(t *testing.T) {
 			InCLI("inSession"),
 			Level("service dns forwarding"),
 			Logger(newLog()),
-			LTypes([]string{files, PreDomns, PreHosts, urls}),
 			Method("GET"),
 			Prefix("address=", "server="),
 			Timeout(30*time.Second),
@@ -369,7 +367,6 @@ func TestGetAllContent(t *testing.T) {
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
 			FileNameFmt("%v/%v.%v.%v"),
-			LTypes([]string{PreDomns, PreHosts, files, urls}),
 			Method("GET"),
 			Prefix("address=", "server="),
 		)
@@ -393,7 +390,6 @@ func TestMultiObjNewContent(t *testing.T) {
 			Logger(newLog()),
 			Method("GET"),
 			Prefix("address=", "server="),
-			LTypes([]string{PreDomns, PreHosts, files, urls}),
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: CfgMimimal}), ShouldBeNil)
@@ -446,7 +442,6 @@ func TestProcessContent(t *testing.T) {
 				Logger(newLog()),
 				Method("GET"),
 				Prefix("address=", "server="),
-				LTypes([]string{PreDomns, PreHosts, files, urls}),
 			)
 
 			tests := []struct {

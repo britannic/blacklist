@@ -303,7 +303,6 @@ func TestFiles(t *testing.T) {
 		c := NewConfig(
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
-			LTypes([]string{files, PreDomns, PreHosts, urls}),
 		)
 
 		So(c.ReadCfg(r), ShouldBeNil)
@@ -419,7 +418,6 @@ func TestRemove(t *testing.T) {
 				Dir(dir),
 				Ext("blacklist.conf"),
 				FileNameFmt("%v/%v.%v.%v"),
-				LTypes([]string{files, PreDomns, PreHosts, urls}),
 				WCard(Wildcard{Node: "*s", Name: "*"}),
 			)
 			exp []string
@@ -466,17 +464,6 @@ func TestRemove(t *testing.T) {
 	})
 }
 
-func TestLTypes(t *testing.T) {
-	Convey("Testing LTypes()", t, func() {
-		exp := []string{files, PreDomns, PreHosts, urls}
-		c := NewConfig(Dir("/tmp"),
-			Ext("blacklist.conf"),
-			LTypes(exp),
-		)
-		So(c.LTypes(), ShouldResemble, exp)
-	})
-}
-
 func TestBooltoString(t *testing.T) {
 	Convey("Testing booltoString()", t, func() {
 		So(booltoStr(true), ShouldEqual, True)
@@ -496,7 +483,6 @@ func TestGetAll(t *testing.T) {
 		c := NewConfig(
 			Dir("/tmp"),
 			Ext(".blacklist.conf"),
-			LTypes([]string{files, PreDomns, PreHosts, urls}),
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)

@@ -13,7 +13,6 @@ func TestObjectsAddObj(t *testing.T) {
 		c := NewConfig(
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
-			LTypes([]string{files, PreDomns, PreHosts, urls}),
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
@@ -52,7 +51,6 @@ func TestObjectString(t *testing.T) {
 		c := NewConfig(
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
-			LTypes([]string{files, PreDomns, PreHosts, urls}),
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
@@ -107,7 +105,6 @@ func TestFilter(t *testing.T) {
 		c := NewConfig(
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
-			LTypes([]string{files, PreDomns, PreHosts, urls}),
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)

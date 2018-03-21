@@ -203,15 +203,6 @@ func Logger(l *logging.Logger) Option {
 	}
 }
 
-// LTypes sets an array of legal types used by Source
-func LTypes(s []string) Option {
-	return func(c *Config) Option {
-		previous := c.Ltypes
-		c.Ltypes = s
-		return LTypes(previous)
-	}
-}
-
 // Method sets the HTTP method
 func Method(method string) Option {
 	return func(c *Config) Option {

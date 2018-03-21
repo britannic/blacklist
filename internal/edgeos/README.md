@@ -30,7 +30,6 @@ Package edgeos provides methods and structures to retrieve, parse and render Edg
   * [func (c *Config) GetAll(ltypes ...string) *Objects](#Config.GetAll)
   * [func (c *Config) GetTotalStats() (dropped, kept int32)](#Config.GetTotalStats)
   * [func (c *Config) InSession() bool](#Config.InSession)
-  * [func (c *Config) LTypes() []string](#Config.LTypes)
   * [func (c *Config) NewContent(iface IFace) (Contenter, error)](#Config.NewContent)
   * [func (c *Config) Nodes() (nodes []string)](#Config.Nodes)
   * [func (c *Config) ProcessContent(cts ...Contenter) error](#Config.ProcessContent)
@@ -87,7 +86,6 @@ Package edgeos provides methods and structures to retrieve, parse and render Edg
   * [func File(f string) Option](#File)
   * [func FileNameFmt(f string) Option](#FileNameFmt)
   * [func InCLI(in string) Option](#InCLI)
-  * [func LTypes(s []string) Option](#LTypes)
   * [func Level(s string) Option](#Level)
   * [func Logger(l *logging.Logger) Option](#Logger)
   * [func Method(method string) Option](#Method)
@@ -161,7 +159,7 @@ GetFile reads a file and returns an io.Reader
 
 
 
-## <a name="Iter">func</a> [Iter](/src/target/data.go?s=2879:2906#L118)
+## <a name="Iter">func</a> [Iter](/src/target/data.go?s=2560:2587#L102)
 ``` go
 func Iter(i int) []struct{}
 ```
@@ -169,7 +167,7 @@ Iter iterates over ints - use it in for loops
 
 
 
-## <a name="NewWriter">func</a> [NewWriter](/src/target/data.go?s=2974:3000#L123)
+## <a name="NewWriter">func</a> [NewWriter](/src/target/data.go?s=2655:2681#L107)
 ``` go
 func NewWriter() io.Writer
 ```
@@ -292,7 +290,7 @@ Config is a struct of configuration fields
 
 
 
-### <a name="NewConfig">func</a> [NewConfig](/src/target/opts.go?s=5051:5089#L215)
+### <a name="NewConfig">func</a> [NewConfig](/src/target/opts.go?s=4861:4899#L206)
 ``` go
 func NewConfig(opts ...Option) *Config
 ```
@@ -334,15 +332,6 @@ GetTotalStats displays aggregate statistics for processed sources
 func (c *Config) InSession() bool
 ```
 InSession returns true if VyOS/EdgeOS configuration is in session
-
-
-
-
-### <a name="Config.LTypes">func</a> (\*Config) [LTypes](/src/target/config.go?s=10631:10665#L480)
-``` go
-func (c *Config) LTypes() []string
-```
-LTypes returns an array of configured nodes
 
 
 
@@ -891,13 +880,6 @@ func InCLI(in string) Option
 InCLI sets the CLI inSession command
 
 
-### <a name="LTypes">func</a> [LTypes](/src/target/opts.go?s=4653:4683#L197)
-``` go
-func LTypes(s []string) Option
-```
-LTypes sets an array of legal types used by Source
-
-
 ### <a name="Level">func</a> [Level](/src/target/opts.go?s=4293:4320#L179)
 ``` go
 func Level(s string) Option
@@ -912,49 +894,49 @@ func Logger(l *logging.Logger) Option
 Logger sets a pointer to the logger
 
 
-### <a name="Method">func</a> [Method](/src/target/opts.go?s=4820:4853#L206)
+### <a name="Method">func</a> [Method](/src/target/opts.go?s=4630:4663#L197)
 ``` go
 func Method(method string) Option
 ```
 Method sets the HTTP method
 
 
-### <a name="Prefix">func</a> [Prefix](/src/target/opts.go?s=5406:5444#L231)
+### <a name="Prefix">func</a> [Prefix](/src/target/opts.go?s=5216:5254#L222)
 ``` go
 func Prefix(d string, h string) Option
 ```
 Prefix sets the dnsmasq configuration address line prefix
 
 
-### <a name="Test">func</a> [Test](/src/target/opts.go?s=5776:5800#L247)
+### <a name="Test">func</a> [Test](/src/target/opts.go?s=5586:5610#L238)
 ``` go
 func Test(b bool) Option
 ```
 Test toggles testing mode on or off
 
 
-### <a name="Timeout">func</a> [Timeout](/src/target/opts.go?s=5969:6005#L256)
+### <a name="Timeout">func</a> [Timeout](/src/target/opts.go?s=5779:5815#L247)
 ``` go
 func Timeout(t time.Duration) Option
 ```
 Timeout sets how long before an unresponsive goroutine is aborted
 
 
-### <a name="Verb">func</a> [Verb](/src/target/opts.go?s=6152:6176#L265)
+### <a name="Verb">func</a> [Verb](/src/target/opts.go?s=5962:5986#L256)
 ``` go
 func Verb(b bool) Option
 ```
 Verb sets the verbosity level to v
 
 
-### <a name="WCard">func</a> [WCard](/src/target/opts.go?s=6320:6349#L274)
+### <a name="WCard">func</a> [WCard](/src/target/opts.go?s=6130:6159#L265)
 ``` go
 func WCard(w Wildcard) Option
 ```
 WCard sets file globbing wildcard values
 
 
-### <a name="Writer">func</a> [Writer](/src/target/opts.go?s=6524:6555#L283)
+### <a name="Writer">func</a> [Writer](/src/target/opts.go?s=6334:6365#L274)
 ``` go
 func Writer(w io.Writer) Option
 ```
@@ -1004,7 +986,7 @@ Parms is struct of parameters
 
 
 
-### <a name="Parms.String">func</a> (\*Parms) [String](/src/target/opts.go?s=5637:5668#L241)
+### <a name="Parms.String">func</a> (\*Parms) [String](/src/target/opts.go?s=5447:5478#L232)
 ``` go
 func (p *Parms) String() string
 ```

@@ -48,7 +48,6 @@ func TestFormatData(t *testing.T) {
 		c := NewConfig(
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
-			LTypes([]string{PreDomns}),
 			Prefix("address=", "server="),
 		)
 

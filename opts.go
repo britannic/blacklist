@@ -117,7 +117,6 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.Method("GET"),
 		e.Prefix("address=", "server="),
 		e.Logger(log),
-		e.LTypes([]string{files, e.PreDomns, e.PreHosts, urls}),
 		e.Timeout(30*time.Second),
 		e.Verb(*o.Verb),
 		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),

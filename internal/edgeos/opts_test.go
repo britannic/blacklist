@@ -161,7 +161,6 @@ func TestOption(t *testing.T) {
 			Method("GET"),
 			Prefix("address=", "server="),
 			Level("service dns forwarding"),
-			LTypes([]string{"file", PreDomns, PreHosts, urls}),
 			Test(true),
 			Timeout(30*time.Second),
 			Verb(false),

@@ -486,11 +486,6 @@ func (c *CFile) Strings() []string {
 	return c.Names
 }
 
-// LTypes returns an array of configured nodes
-func (c *Config) LTypes() []string {
-	return c.Parms.Ltypes
-}
-
 func (b tree) getIP(node string) (ip string) {
 	if _, ok := b[node]; ok {
 		if ip = b[node].ip; ip == "" {
