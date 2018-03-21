@@ -30,7 +30,6 @@ type Parms struct {
 	FnFmt    string        `json:"File name fmt,omitempty"`
 	InCLI    string        `json:"-"`
 	Level    string        `json:"CLI Path,omitempty"`
-	Ltypes   []string      `json:"Leaf nodes,omitempty"`
 	Method   string        `json:"HTTP method,omitempty"`
 	Pfx      dnsPfx        `json:"Prefix,omitempty"`
 	Test     bool          `json:"Test,omitempty"`

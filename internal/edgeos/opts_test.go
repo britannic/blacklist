@@ -99,12 +99,6 @@ func TestOption(t *testing.T) {
 	"File": "/config/config.boot",
 	"File name fmt": "%v/%v.%v.%v",
 	"CLI Path": "service dns forwarding",
-	"Leaf nodes": [
-		"file",
-		"blacklisted-subdomains",
-		"blacklisted-servers",
-		"url"
-	],
 	"HTTP method": "GET",
 	"Prefix": {},
 	"Test": true,
@@ -132,7 +126,6 @@ func TestOption(t *testing.T) {
 			FnFmt:    "%v/%v.%v.%v",
 			InCLI:    "inSession",
 			Level:    "service dns forwarding",
-			Ltypes:   []string{files, PreDomns, PreHosts, urls},
 			Method:   "GET",
 			Pfx:      dnsPfx{domain: "address=", host: "server="},
 			Test:     true,
