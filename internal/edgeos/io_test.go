@@ -124,7 +124,7 @@ func TestAPICMD(t *testing.T) {
 			{
 				b: false,
 				q: "showCfg",
-				r: "showConfig",
+				r: "showCfg",
 			},
 			{
 				b: true,
@@ -134,7 +134,7 @@ func TestAPICMD(t *testing.T) {
 			{
 				b: false,
 				q: "showConfig",
-				r: "showConfig",
+				r: "showCfg",
 			},
 		}
 
@@ -149,22 +149,37 @@ func TestAPICMD(t *testing.T) {
 		)
 
 		sessions := []struct {
-			b   bool
-			arg string
+			name string
+			b    bool
+			arg  string
+			cmd  string
 		}{
-			{b: true,
-				arg: "--show-working-only",
+			{
+				name: "configure session = true",
+				b:    true,
+				arg:  "--show-working-only",
+				cmd:  "showConfig",
 			},
-			{b: false,
-				arg: "--show-active-only",
+			{
+				name: "configure session = false",
+				b:    false,
+				arg:  "--show-active-only",
+				cmd:  "showCfg",
 			},
 		}
 
 		for _, session := range sessions {
 			act := fmt.Sprintf(
-				"%v %v %v %v", c.API, apiCMD("showConfig", c.InSession()), c.Level, mode(session.b))
-			exp := "/bin/cli-shell-api showConfig service dns forwarding blacklist " + session.arg
-			So(act, ShouldEqual, exp)
+				"%v %v %v %v",
+				c.API,
+				apiCMD("showConfig", session.b), c.Level, mode(session.b),
+			)
+			exp := fmt.Sprintf(
+				"/bin/cli-shell-api %v service dns forwarding blacklist %v",
+				session.cmd,
+				session.arg,
+			)
+			Convey(session.name, func() { So(act, ShouldEqual, exp) })
 		}
 	})
 }

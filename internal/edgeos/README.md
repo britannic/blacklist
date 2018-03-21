@@ -153,7 +153,7 @@ const (
 
 
 
-## <a name="GetFile">func</a> [GetFile](/src/target/io.go?s=1946:1987#L83)
+## <a name="GetFile">func</a> [GetFile](/src/target/io.go?s=1940:1981#L83)
 ``` go
 func GetFile(f string) (io.Reader, error)
 ```

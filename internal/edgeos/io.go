@@ -49,7 +49,7 @@ func active(a string, inCLI bool) string {
 		case "returnActiveValues":
 			a = "returnValues"
 		case "showConfig":
-			a = "showConfig"
+			a = "showCfg"
 		}
 	}
 	return a
@@ -75,7 +75,7 @@ func apiCMD(a string, inCLI bool) string {
 		"returnActiveValues": "returnActiveValues",
 		"returnValue":        "returnValue",
 		"returnValues":       "returnValues",
-		"showCfg":            "showConfig",
+		"showCfg":            "showCfg",
 		"showConfig":         "showConfig",
 	}
 	return apiCMDs[active(a, inCLI)]
