@@ -211,8 +211,7 @@ func TestExcludes(t *testing.T) {
 			Ext("blacklist.conf"),
 		)
 
-		err := c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg})
-		So(err, ShouldBeNil)
+		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
 		excludes := list{
 			entry: entry{

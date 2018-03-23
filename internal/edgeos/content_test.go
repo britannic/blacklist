@@ -553,7 +553,14 @@ func TestProcessContent(t *testing.T) {
 
 					var g errgroup.Group
 					g.Go(func() error { return c.ProcessContent(obj) })
-					err = g.Wait()
+
+					if g.Wait() != nil {
+						Convey("Testing "+tt.name+" ProcessContent().Error():", func() {
+							Convey("Error should match expected", func() {
+								So(err, ShouldResemble, tt.err)
+							})
+						})
+					}
 
 					dropped, kept := c.GetTotalStats()
 
@@ -564,14 +571,6 @@ func TestProcessContent(t *testing.T) {
 					Convey("Kept entries should match", func() {
 						So(kept, ShouldEqual, tt.kept)
 					})
-
-					if err != nil {
-						Convey("Testing "+tt.name+" ProcessContent().Error():", func() {
-							Convey("Error should match expected", func() {
-								So(err, ShouldResemble, tt.err)
-							})
-						})
-					}
 
 					switch tt.f {
 					default:

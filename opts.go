@@ -126,7 +126,7 @@ func (o *opts) initEdgeOS() *e.Config {
 
 // setArgs retrieves arguments entered on the command line
 func (o *opts) setArgs() {
-	if err := o.Parse(cleanArgs((os.Args[1:]))); err != nil {
+	if o.Parse(cleanArgs((os.Args[1:]))) != nil {
 		o.Usage()
 		exitCmd(0)
 	}
