@@ -169,7 +169,7 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 			o = c.Get(hosts).Filter(urls)
 			return &URLHostObjects{Objects: o}, nil
 		}
-	case "unknown":
+	case notknown:
 		err = errors.New("Invalid interface requested")
 	default:
 		o = c.GetAll(ltype)

@@ -140,39 +140,12 @@ func getLtypeDesc(l string) string {
 		return preNoun + " blacklisted domains"
 	case PreHosts:
 		return preNoun + " blacklisted hosts"
-	case files:
-		return "file"
-	case urls:
-		return "url"
 	case "":
 		return "Unknown ltype"
 	default:
 		panic(fmt.Sprintf("getLtypeDesc(l) passed an illegal lType: %v", l))
 	}
 }
-
-// func getLtypeName(l string) string {
-// 	switch l {
-// 	case ExcDomns:
-// 		return preNoun + ".whitelisted-domains"
-// 	case ExcHosts:
-// 		return preNoun + ".whitelisted-hosts"
-// 	case ExcRoots:
-// 		return preNoun + ".global-whitelisted-domains"
-// 	case PreDomns:
-// 		return preNoun + ".blacklisted-domains"
-// 	case PreHosts:
-// 		return preNoun + ".blacklisted-hosts"
-// 	case files:
-// 		return "file"
-// 	case urls:
-// 		return "url"
-// 	case "":
-// 		return "Unknown ltype"
-// 	default:
-// 		panic(fmt.Sprintf("getLtypeName(l) passed an illegal : %v", l))
-// 	}
-// }
 
 // includes returns an io.Reader of blacklist includes
 func (o *object) includes() io.Reader {
@@ -198,8 +171,8 @@ func newObject() *object {
 }
 
 // Stringer for Object
-func (o *object) String() (s string) {
-	s += fmt.Sprintf("\nDesc:\t %q\n", o.desc)
+func (o *object) String() string {
+	s := fmt.Sprintf("\nDesc:\t %q\n", o.desc)
 	s += fmt.Sprintf("Disabled: %v\n", o.disabled)
 	s += fmt.Sprintf("File:\t %q\n", o.file)
 	s += fmt.Sprintf("IP:\t %q\n", o.ip)
