@@ -287,10 +287,13 @@ func (c *Config) InSession() bool {
 // load reads the config using the EdgeOS/VyOS cli-shell-api
 func (c *Config) load(act, lvl string) ([]byte, error) {
 	cmd := exec.Command(c.Bash)
-	cmd.Stdin = strings.NewReader(
-		fmt.Sprintf(
-			"%v %v %v %v", c.API, apiCMD(act, c.InSession()), lvl, mode(c.InSession())),
+	x := fmt.Sprintf(
+		"%v %v %v %v",
+		c.API,
+		apiCMD(act, c.InSession()), lvl, mode(c.InSession()),
 	)
+	cmd.Stdin = strings.NewReader(x)
+	c.Debug(fmt.Sprintf("Running shell command: %v", x))
 	return cmd.Output()
 }
 
@@ -404,6 +407,7 @@ LINE:
 		return errors.New("Configuration data is empty, cannot continue")
 	}
 
+	c.Debug(fmt.Sprintf("Using router configuration %v", c.String()))
 	return nil
 }
 

@@ -112,7 +112,7 @@ func initEnv() (env *e.Config, err error) {
 	if env, err = setUpEnv(); err != nil {
 		d := killFiles(env)
 
-		logInfo(progname + ": commencing dnsmasq blacklist update...")
+		logInfo(progname + "starting up..")
 		logInfo("Removing stale blacklists...")
 
 		if err = d.Remove(); err != nil {
