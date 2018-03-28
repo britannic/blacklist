@@ -2,6 +2,11 @@
 
 ## Releases
 
+### Release v1.1.0a2 (March 28, 2018)
+
+* Renamed blacklist-cronjob.sh to update-dnsmasq-cronjob.sh to be consistent with update-dnsmasq
+* Fixed a bug when scripted configure session isn't detected, resulting in wrong showconfig mode being used
+
 ### Release v1.1.0a1 (March 11, 2018)
 
 * Fixed a bug in blacklist-cronjob.sh that inhibited the cron job delay
