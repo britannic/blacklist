@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.0a3 (March 28, 2018)
+
+* Fixed minor log message bug to insert space between progname and "starting up"
+
 ### Release v1.1.0a2 (March 28, 2018)
 
 * Renamed blacklist-cronjob.sh to update-dnsmasq-cronjob.sh to be consistent with update-dnsmasq
