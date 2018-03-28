@@ -3,6 +3,7 @@
 # Set up the Vyatta environment
 declare -i DEC
 CFGRUN=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
+# source /opt/vyatta/etc/functions/script-template
 shopt -s expand_aliases
 
 alias begin='${CFGRUN} begin'
@@ -99,7 +100,7 @@ try() {
 
 # Load the [service dns forwarding blacklist] configuration
 update_dns_config() {
-	try begin 
+	try begin
 	try set service dns forwarding blacklist disabled false
 	try set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
 	try set service dns forwarding blacklist domains include adk2x.com
@@ -218,7 +219,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
-	try set system task-scheduler task update_blacklists executable path /config/scripts/blacklist-cronjob.sh
+	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq-cronjob.sh
 	try set system task-scheduler task update_blacklists executable arguments 10800
 	try set system task-scheduler task update_blacklists interval 1d
 	try commit
@@ -230,6 +231,7 @@ echo "$@"
 
 # Only run the post installation script if this is a first time installation
 if [[ -z "${2}" ]] || [[ "${1}" == "configure" ]] ; then
+	echo "Running update_dns_config"
 	update_dns_config
 fi
 

@@ -574,9 +574,9 @@ func (i IFace) String() (s string) {
 }
 
 // writeFile saves hosts/domains data to disk
-func (b *bList) writeFile() (err error) {
+func (b *bList) writeFile() error {
 	if b.size == 0 {
-		return err
+		return nil
 	}
 
 	w, err := os.Create(b.file)

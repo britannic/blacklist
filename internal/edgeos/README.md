@@ -232,7 +232,7 @@ CFile holds an array of file names
 
 
 
-### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=9189:9219#L419)
+### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=9181:9211#L417)
 ``` go
 func (c *CFile) Remove() error
 ```
@@ -241,7 +241,7 @@ Remove deletes a CFile array of file names
 
 
 
-### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=10658:10689#L477)
+### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=10650:10681#L475)
 ``` go
 func (c *CFile) String() string
 ```
@@ -250,7 +250,7 @@ String implements string method
 
 
 
-### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=10777:10811#L482)
+### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=10769:10803#L480)
 ``` go
 func (c *CFile) Strings() []string
 ```
@@ -346,7 +346,7 @@ NewContent returns an interface of the requested IFace type
 
 
 
-### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5890:5931#L291)
+### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5882:5923#L289)
 ``` go
 func (c *Config) Nodes() (nodes []string)
 ```
@@ -364,7 +364,7 @@ ProcessContent processes the Contents array
 
 
 
-### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=6286:6330#L311)
+### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=6278:6322#L309)
 ``` go
 func (c *Config) ReadCfg(r ConfLoader) error
 ```
@@ -373,7 +373,7 @@ ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 
 
 
-### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=8994:9038#L412)
+### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=8986:9030#L410)
 ``` go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
@@ -391,7 +391,7 @@ SetOpt sets the specified options passed as Parms and returns an option to resto
 
 
 
-### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=9765:9801#L442)
+### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=9757:9793#L440)
 ``` go
 func (c *Config) String() (s string)
 ```

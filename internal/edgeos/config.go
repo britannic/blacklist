@@ -288,9 +288,7 @@ func (c *Config) InSession() bool {
 func (c *Config) load(act, lvl string) ([]byte, error) {
 	cmd := exec.Command(c.Bash)
 	x := fmt.Sprintf(
-		"%v %v %v %v",
-		c.API,
-		apiCMD(act, c.InSession()), lvl, mode(c.InSession()),
+		"%v %v %v --show-working-only", c.API, apiCMD(act, c.InSession()), lvl,
 	)
 	cmd.Stdin = strings.NewReader(x)
 	c.Debug(fmt.Sprintf("Running shell command: %v", x))
