@@ -26,19 +26,19 @@ type object struct {
 	url    string
 }
 
-// Objects is a struct of []*Object
+// Objects is a struct of []*object
 type Objects struct {
 	*Parms
-	x []*object
+	xx []*object
 }
 
 func (o *Objects) addObj(c *Config, node string) {
 	switch obj := c.addInc(node); obj {
 	case nil:
-		o.x = append(o.x, c.tree.validate(node).x...)
+		o.xx = append(o.xx, c.tree.validate(node).xx...)
 	default:
-		o.x = append(o.x, obj)
-		o.x = append(o.x, c.tree.validate(node).x...)
+		o.xx = append(o.xx, obj)
+		o.xx = append(o.xx, c.tree.validate(node).xx...)
 	}
 }
 
@@ -62,7 +62,7 @@ func (o *Objects) Files() *CFile {
 	c := CFile{Parms: o.Parms}
 	format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
 	if !o.Disabled {
-		for _, obj := range o.x {
+		for _, obj := range o.xx {
 			switch obj.nType {
 			case excDomn, excRoot, preDomn:
 				f = fmt.Sprintf(format, domains, obj.name)
@@ -89,27 +89,27 @@ func (o *Objects) Filter(ltype string) *Objects {
 
 	switch ltype {
 	case files:
-		for _, obj := range o.x {
+		for _, obj := range o.xx {
 			if obj.ltype == files && obj.file != "" {
-				objects.x = append(objects.x, obj)
+				objects.xx = append(objects.xx, obj)
 			}
 		}
 	case xFiles:
-		for _, obj := range o.x {
+		for _, obj := range o.xx {
 			if obj.ltype != files {
-				objects.x = append(objects.x, obj)
+				objects.xx = append(objects.xx, obj)
 			}
 		}
 	case urls:
-		for _, obj := range o.x {
+		for _, obj := range o.xx {
 			if obj.ltype == urls && obj.url != "" {
-				objects.x = append(objects.x, obj)
+				objects.xx = append(objects.xx, obj)
 			}
 		}
 	case xURLs:
-		for _, obj := range o.x {
+		for _, obj := range o.xx {
 			if obj.ltype != urls {
-				objects.x = append(objects.x, obj)
+				objects.xx = append(objects.xx, obj)
 			}
 		}
 	default:
@@ -120,7 +120,7 @@ func (o *Objects) Filter(ltype string) *Objects {
 
 // Find returns the int position of an Objects' element
 func (o *Objects) Find(elem string) int {
-	for i, obj := range o.x {
+	for i, obj := range o.xx {
 		if obj.name == elem {
 			return i
 		}
@@ -155,7 +155,7 @@ func (o *object) includes() io.Reader {
 
 // Names returns a sorted slice of Objects names
 func (o *Objects) Names() (s sort.StringSlice) {
-	for _, obj := range o.x {
+	for _, obj := range o.xx {
 		s = append(s, obj.name)
 	}
 	sort.Sort(s)
@@ -187,10 +187,10 @@ func (o *object) String() string {
 
 // Stringer for Objects
 func (o *Objects) String() string {
-	return fmt.Sprint(o.x)
+	return fmt.Sprint(o.xx)
 }
 
 // Implement Sort Interface for Objects
-func (o *Objects) Len() int           { return len(o.x) }
-func (o *Objects) Less(i, j int) bool { return o.x[i].name < o.x[j].name }
-func (o *Objects) Swap(i, j int)      { o.x[i], o.x[j] = o.x[j], o.x[i] }
+func (o *Objects) Len() int           { return len(o.xx) }
+func (o *Objects) Less(i, j int) bool { return o.xx[i].name < o.xx[j].name }
+func (o *Objects) Swap(i, j int)      { o.xx[i], o.xx[j] = o.xx[j], o.xx[i] }

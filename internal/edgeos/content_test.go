@@ -32,7 +32,7 @@ func (d *dummyConfig) ProcessContent(cts ...Contenter) error {
 	)
 
 	for _, ct := range cts {
-		o := ct.GetList().x
+		o := ct.GetList().xx
 		for _, src := range o {
 			area = typeInt(src.nType)
 			src.ctr[area] = tally

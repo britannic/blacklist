@@ -76,7 +76,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(0),
 					Objects: Objects{
 						Parms: nil,
-						x:     nil,
+						xx:    nil,
 					},
 					prefix: "",
 					r:      nil,
@@ -131,7 +131,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(6),
 					Objects: Objects{
 						Parms: nil,
-						x:     nil,
+						xx:    nil,
 					},
 					prefix: "",
 					r:      nil,
@@ -185,7 +185,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(7),
 					Objects: Objects{
 						Parms: nil,
-						x:     nil,
+						xx:    nil,
 					},
 					prefix: "",
 					r:      nil,
@@ -488,10 +488,10 @@ func TestGetAll(t *testing.T) {
 			ltype string
 			exp   string
 		}{
-			{name: "GetAll().x", ltype: "", exp: expGetAll},
-			{name: "GetAll(url).x", ltype: urls, exp: expURLS},
-			{name: "GetAll(files).x", ltype: files, exp: expFiles},
-			{name: "GetAll(PreDomns, PreHosts).x", ltype: PreDomns, exp: expPre},
+			{name: "GetAll().xx", ltype: "", exp: expGetAll},
+			{name: "GetAll(url).xx", ltype: urls, exp: expURLS},
+			{name: "GetAll(files).xx", ltype: files, exp: expFiles},
+			{name: "GetAll(PreDomns, PreHosts).xx", ltype: PreDomns, exp: expPre},
 			{name: "GetAll().String()", ltype: all, exp: c.Get(all).String()},
 			{name: "c.Get(hosts).String()", ltype: hosts, exp: expHostObj},
 		}
@@ -500,16 +500,16 @@ func TestGetAll(t *testing.T) {
 			Convey("Testing "+tt.name, func() {
 				switch tt.ltype {
 				case "":
-					So(fmt.Sprint(c.GetAll().x), ShouldEqual, tt.exp)
+					So(fmt.Sprint(c.GetAll().xx), ShouldEqual, tt.exp)
 				case all:
 					So(c.GetAll().String(), ShouldEqual, tt.exp)
 				case hosts:
 					So(c.Get(hosts).String(), ShouldEqual, tt.exp)
 				case PreDomns:
-					act := c.GetAll(PreDomns, PreHosts).x
+					act := c.GetAll(PreDomns, PreHosts).xx
 					So(fmt.Sprint(act), ShouldEqual, tt.exp)
 				default:
-					So(fmt.Sprint(c.GetAll(tt.ltype).x), ShouldResemble, tt.exp)
+					So(fmt.Sprint(c.GetAll(tt.ltype).xx), ShouldResemble, tt.exp)
 				}
 			})
 		}

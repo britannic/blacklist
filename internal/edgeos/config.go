@@ -102,7 +102,7 @@ func (c *Config) addExc(node string) *Objects {
 		exc = c.tree[node].exc
 	}
 
-	o.x = append(o.x, &object{
+	o.xx = append(o.xx, &object{
 		Parms: c.Parms,
 		desc:  getLtypeDesc(ltype),
 		exc:   exc,
@@ -219,7 +219,7 @@ func (c *Config) excludes(nodes ...string) list {
 
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) *Objects {
-	o := &Objects{Parms: c.Parms, x: []*object{}}
+	o := &Objects{Parms: c.Parms, xx: []*object{}}
 
 	switch node {
 	case all:
@@ -257,19 +257,19 @@ NEXT:
 				switch ltype {
 				case PreDomns:
 					if newDomns && node == domains {
-						o.x = append(o.x, c.addInc(node))
+						o.xx = append(o.xx, c.addInc(node))
 						newDomns = false
 					}
 				case PreHosts:
 					if newHosts && node == hosts {
-						o.x = append(o.x, c.addInc(node))
+						o.xx = append(o.xx, c.addInc(node))
 						newHosts = false
 					}
 				default:
-					obj := c.validate(node).x
+					obj := c.validate(node).xx
 					for i := range obj {
 						if obj[i].ltype == ltype {
-							o.x = append(o.x, obj[i])
+							o.xx = append(o.xx, obj[i])
 						}
 					}
 				}
@@ -287,11 +287,11 @@ func (c *Config) InSession() bool {
 // load reads the config using the EdgeOS/VyOS cli-shell-api
 func (c *Config) load(act, lvl string) ([]byte, error) {
 	cmd := exec.Command(c.Bash)
-	x := fmt.Sprintf(
+	s := fmt.Sprintf(
 		"%v %v %v --show-working-only", c.API, apiCMD(act, c.InSession()), lvl,
 	)
-	cmd.Stdin = strings.NewReader(x)
-	c.Debug(fmt.Sprintf("Running shell command: %v", x))
+	cmd.Stdin = strings.NewReader(s)
+	c.Debug(fmt.Sprintf("Running shell command: %v", s))
 	return cmd.Output()
 }
 
@@ -381,13 +381,13 @@ LINE:
 					case files:
 						o.file = string(name[2])
 						o.ltype = string(name[1])
-						c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
+						c.tree[tnode].Objects.xx = append(c.tree[tnode].Objects.xx, o)
 					case "prefix":
 						o.prefix = string(name[2])
 					case urls:
 						o.ltype = string(name[1])
 						o.url = string(name[2])
-						c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
+						c.tree[tnode].Objects.xx = append(c.tree[tnode].Objects.xx, o)
 					}
 				}
 			}
@@ -503,7 +503,7 @@ func (b tree) getIP(node string) (ip string) {
 
 func (b tree) validate(node string) *Objects {
 	if _, ok := b[node]; ok {
-		for _, obj := range b[node].Objects.x {
+		for _, obj := range b[node].Objects.xx {
 			if obj.ip == "" {
 				obj.ip = b.getIP(node)
 			}
