@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// object struct for normalizing EdgeOS data.
-type object struct {
+// source struct for normalizing EdgeOS data.
+type source struct {
 	*Parms
 	desc     string
 	disabled bool
@@ -26,10 +26,10 @@ type object struct {
 	url    string
 }
 
-// Objects is a struct of []*object
+// Objects is a struct of []*source
 type Objects struct {
 	*Parms
-	xx []*object
+	xx []*source
 }
 
 func (o *Objects) addObj(c *Config, node string) {
@@ -42,7 +42,7 @@ func (o *Objects) addObj(c *Config, node string) {
 	}
 }
 
-func (o *object) area() string {
+func (o *source) area() string {
 	switch getType(o.nType).(string) {
 	case domains, PreDomns:
 		return domains
@@ -51,7 +51,7 @@ func (o *object) area() string {
 }
 
 // excludes returns an io.Reader of blacklist includes
-func (o *object) excludes() io.Reader {
+func (o *source) excludes() io.Reader {
 	sort.Strings(o.exc)
 	return strings.NewReader(strings.Join(o.exc, "\n"))
 }
@@ -79,10 +79,10 @@ func (o *Objects) Files() *CFile {
 	return &c
 }
 
-// Filter returns a subset of Objects; ltypes with "-" prepended remove ltype
+// Filter returns a subset of Objects filtered by ltype
 func (o *Objects) Filter(ltype string) *Objects {
 	var (
-		objects = Objects{Parms: o.Parms}
+		sources = Objects{Parms: o.Parms}
 		xFiles  = "-" + files
 		xURLs   = "-" + urls
 	)
@@ -91,31 +91,31 @@ func (o *Objects) Filter(ltype string) *Objects {
 	case files:
 		for _, obj := range o.xx {
 			if obj.ltype == files && obj.file != "" {
-				objects.xx = append(objects.xx, obj)
+				sources.xx = append(sources.xx, obj)
 			}
 		}
 	case xFiles:
 		for _, obj := range o.xx {
 			if obj.ltype != files {
-				objects.xx = append(objects.xx, obj)
+				sources.xx = append(sources.xx, obj)
 			}
 		}
 	case urls:
 		for _, obj := range o.xx {
 			if obj.ltype == urls && obj.url != "" {
-				objects.xx = append(objects.xx, obj)
+				sources.xx = append(sources.xx, obj)
 			}
 		}
 	case xURLs:
 		for _, obj := range o.xx {
 			if obj.ltype != urls {
-				objects.xx = append(objects.xx, obj)
+				sources.xx = append(sources.xx, obj)
 			}
 		}
 	default:
-		objects = Objects{Parms: o.Parms}
+		sources = Objects{Parms: o.Parms}
 	}
-	return &objects
+	return &sources
 }
 
 // Find returns the int position of an Objects' element
@@ -148,7 +148,7 @@ func getLtypeDesc(l string) string {
 }
 
 // includes returns an io.Reader of blacklist includes
-func (o *object) includes() io.Reader {
+func (o *source) includes() io.Reader {
 	sort.Strings(o.inc)
 	return strings.NewReader(strings.Join(o.inc, "\n"))
 }
@@ -162,8 +162,8 @@ func (o *Objects) Names() (s sort.StringSlice) {
 	return s
 }
 
-func newObject() *object {
-	return &object{
+func newObject() *source {
+	return &source{
 		Objects: Objects{},
 		exc:     make([]string, 0),
 		inc:     make([]string, 0),
@@ -171,7 +171,7 @@ func newObject() *object {
 }
 
 // Stringer for Object
-func (o *object) String() string {
+func (o *source) String() string {
 	s := fmt.Sprintf("\nDesc:\t %q\n", o.desc)
 	s += fmt.Sprintf("Disabled: %v\n", o.disabled)
 	s += fmt.Sprintf("File:\t %q\n", o.file)

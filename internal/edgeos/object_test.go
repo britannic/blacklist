@@ -28,7 +28,7 @@ func TestObjectsAddObj(t *testing.T) {
 		// tests := []struct {
 		// 	name string
 		// 	rParms *Parms
-		// 	rx     []*object
+		// 	rx     []*source
 		// 	c    *Config
 		// 	node string
 		// }{
@@ -65,7 +65,7 @@ func TestObjectString(t *testing.T) {
 func TestSortObject(t *testing.T) {
 	Convey("Testing SortObject()", t, func() {
 		act := &Objects{
-			xx: []*object{
+			xx: []*source{
 				{name: "eagle"},
 				{name: "aardvark"},
 				{name: "dog"},
@@ -75,7 +75,7 @@ func TestSortObject(t *testing.T) {
 		}
 
 		exp := &Objects{
-			xx: []*object{
+			xx: []*source{
 				{name: "aardvark"},
 				{name: "beetle"},
 				{name: "crab"},

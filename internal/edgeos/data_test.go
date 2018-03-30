@@ -57,7 +57,7 @@ func TestFormatData(t *testing.T) {
 			var (
 				actList = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 
-				o = &object{
+				o = &source{
 					ip: c.tree[node].ip,
 					Parms: &Parms{
 						Pfx: dnsPfx{

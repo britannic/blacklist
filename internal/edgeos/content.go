@@ -209,12 +209,12 @@ func (e *ExcRootObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for FIODataObjects
 func (f *FIODataObjects) GetList() *Objects {
-	var responses = make(chan *object, len(f.xx))
+	var responses = make(chan *source, len(f.xx))
 	defer close(responses)
 
 	for _, o := range f.xx {
 		o.Parms = f.Objects.Parms
-		go func(o *object) {
+		go func(o *source) {
 			o.r, o.err = GetFile(o.file)
 			responses <- o
 		}(o)
@@ -252,13 +252,13 @@ func (p *PreHostObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLDomnObjects) GetList() *Objects {
-	var responses = make(chan *object, len(u.xx))
+	var responses = make(chan *source, len(u.xx))
 
 	defer close(responses)
 
 	for _, o := range u.xx {
 		o.Parms = u.Objects.Parms
-		go func(o *object) {
+		go func(o *source) {
 			responses <- getHTTP(o)
 		}(o)
 	}
@@ -273,13 +273,13 @@ func (u *URLDomnObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLHostObjects) GetList() *Objects {
-	var responses = make(chan *object, len(u.xx))
+	var responses = make(chan *source, len(u.xx))
 
 	defer close(responses)
 
 	for _, o := range u.xx {
 		o.Parms = u.Objects.Parms
-		go func(o *object) {
+		go func(o *source) {
 			responses <- getHTTP(o)
 		}(o)
 	}
@@ -314,32 +314,32 @@ func (c *Config) GetTotalStats() (dropped, kept int32) {
 	return dropped, kept
 }
 
-// Len returns how many objects there are
+// Len returns how many sources there are
 func (e *ExcDomnObjects) Len() int { return len(e.Objects.xx) }
 
-// Len returns how many objects there are
+// Len returns how many sources there are
 func (e *ExcHostObjects) Len() int { return len(e.Objects.xx) }
 
-// Len returns how many objects there are
+// Len returns how many sources there are
 func (e *ExcRootObjects) Len() int { return len(e.Objects.xx) }
 
-// Len returns how many objects there are
+// Len returns how many sources there are
 func (f *FIODataObjects) Len() int { return len(f.Objects.xx) }
 
-// Len returns how many objects there are
+// Len returns how many sources there are
 func (p *PreDomnObjects) Len() int { return len(p.Objects.xx) }
 
-// Len returns how many objects there are
+// Len returns how many sources there are
 func (p *PreHostObjects) Len() int { return len(p.Objects.xx) }
 
-// Len returns how many objects there are
+// Len returns how many sources there are
 func (u *URLDomnObjects) Len() int { return len(u.Objects.xx) }
 
-// Len returns how many objects there are
+// Len returns how many sources there are
 func (u *URLHostObjects) Len() int { return len(u.Objects.xx) }
 
 // Process extracts hosts/domains from downloaded raw content
-func (o *object) process() *bList {
+func (o *source) process() *bList {
 	var (
 		add               = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		area              = typeInt(o.nType)
@@ -442,7 +442,7 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 				errs = append(errs, o.err.Error())
 			}
 
-			go func(o *object) {
+			go func(o *source) {
 				area = typeInt(o.nType)
 				c.ctr[area] = tally
 				getErrors <- o.process().writeFile()

@@ -76,7 +76,7 @@ func formatData(fmttr string, l list) io.Reader {
 }
 
 // getDnsmasqPrefix returns the dnsmasq conf file delimiter
-func getDnsmasqPrefix(o *object) string {
+func getDnsmasqPrefix(o *source) string {
 	switch o.nType {
 	case domn, preDomn, root:
 		return o.Pfx.domain + "/%v/" + o.ip

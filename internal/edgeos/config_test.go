@@ -25,13 +25,13 @@ func TestAddInc(t *testing.T) {
 
 		tests := []struct {
 			name string
-			exp  *object
+			exp  *source
 			node string
 		}{
 			{
 				name: "rootNode",
 				node: rootNode,
-				exp: &object{
+				exp: &source{
 					Parms: &Parms{
 						Wildcard: Wildcard{
 							Node: "",
@@ -86,7 +86,7 @@ func TestAddInc(t *testing.T) {
 			{
 				name: "domains",
 				node: domains,
-				exp: &object{
+				exp: &source{
 					Parms: &Parms{
 						Wildcard: Wildcard{
 							Node: "",
@@ -140,7 +140,7 @@ func TestAddInc(t *testing.T) {
 			},
 			{name: "hosts",
 				node: hosts,
-				exp: &object{
+				exp: &source{
 					Parms: &Parms{
 						Wildcard: Wildcard{
 							Node: "",
@@ -475,7 +475,7 @@ func TestToBool(t *testing.T) {
 }
 
 func TestGetAll(t *testing.T) {
-	Convey("Testing GetAll() objects", t, func() {
+	Convey("Testing GetAll() sources", t, func() {
 		c := NewConfig(
 			Dir("/tmp"),
 			Ext(".blacklist.conf"),
@@ -517,7 +517,7 @@ func TestGetAll(t *testing.T) {
 }
 
 func TestValidate(t *testing.T) {
-	Convey("Testing validate() objects", t, func() {
+	Convey("Testing validate() sources", t, func() {
 		b := make(tree)
 		So(b.validate("borked").String(), ShouldEqual, "[]")
 	})

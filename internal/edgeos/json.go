@@ -79,7 +79,7 @@ func getJSONsrcArray(c *cfgJSON) (js string) {
 		cnt = len(c.tree[c.pk].Objects.xx)
 		i   int
 		ind = c.indent
-		o   *object
+		o   *source
 	)
 
 	if cnt == 0 {

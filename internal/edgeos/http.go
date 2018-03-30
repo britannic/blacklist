@@ -9,7 +9,7 @@ import (
 )
 
 // getHTTP creates http requests to download data
-func getHTTP(o *object) *object {
+func getHTTP(o *source) *source {
 	var (
 		body []byte
 		err  error

@@ -17,7 +17,7 @@ import (
 )
 
 // tree is a map of top nodes
-type tree map[string]*object
+type tree map[string]*source
 
 // ConfLoader interface defines configuration load method
 type ConfLoader interface {
@@ -102,7 +102,7 @@ func (c *Config) addExc(node string) *Objects {
 		exc = c.tree[node].exc
 	}
 
-	o.xx = append(o.xx, &object{
+	o.xx = append(o.xx, &source{
 		Parms: c.Parms,
 		desc:  getLtypeDesc(ltype),
 		exc:   exc,
@@ -114,7 +114,7 @@ func (c *Config) addExc(node string) *Objects {
 	return o
 }
 
-func (c *Config) addInc(node string) *object {
+func (c *Config) addInc(node string) *source {
 	var (
 		inc   = []string{}
 		ltype string
@@ -134,7 +134,7 @@ func (c *Config) addInc(node string) *object {
 		n = getType(ltype).(ntype)
 	}
 
-	return &object{
+	return &source{
 		Parms: c.Parms,
 		desc:  getLtypeDesc(ltype),
 		inc:   inc,
@@ -219,7 +219,7 @@ func (c *Config) excludes(nodes ...string) list {
 
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) *Objects {
-	o := &Objects{Parms: c.Parms, xx: []*object{}}
+	o := &Objects{Parms: c.Parms, xx: []*source{}}
 
 	switch node {
 	case all:
@@ -323,7 +323,7 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 		leaf  string
 		nodes []string
 		rx    = regx.Obj
-		o     *object
+		o     *source
 	)
 
 LINE:
