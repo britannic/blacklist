@@ -220,7 +220,6 @@ func (c *Config) excludes(nodes ...string) list {
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) *Objects {
 	o := &Objects{Parms: c.Parms, xx: []*source{}}
-
 	switch node {
 	case all:
 	NEXT:
@@ -301,7 +300,6 @@ func (c *Config) Nodes() (nodes []string) {
 		nodes = append(nodes, k)
 	}
 	sort.Strings(nodes)
-
 	return nodes
 }
 
@@ -311,19 +309,18 @@ func isTnode(tnode string) bool {
 	case rootNode, domains, hosts:
 		return true
 	}
-
 	return false
 }
 
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 func (c *Config) ReadCfg(r ConfLoader) error {
 	var (
-		tnode string
 		b     = bufio.NewScanner(r.read())
 		leaf  string
 		nodes []string
-		rx    = regx.Obj
 		o     *source
+		rx    = regx.Obj
+		tnode string
 	)
 
 LINE:
@@ -348,7 +345,7 @@ LINE:
 			tnode = string(node[1])
 			nodes = append(nodes, tnode)
 			if isTnode(tnode) {
-				c.tree[tnode] = newObject()
+				c.tree[tnode] = newSource()
 			}
 		case rx.LEAF.Match(line):
 			srcName := regx.Get([]byte("leaf"), line)
@@ -356,7 +353,7 @@ LINE:
 			nodes = append(nodes, string(srcName[1]))
 
 			if bytes.Equal(srcName[1], []byte(src)) {
-				o = newObject()
+				o = newSource()
 				o.name = leaf
 				o.nType = getType(tnode).(ntype)
 			}

@@ -162,11 +162,11 @@ func (o *Objects) Names() (s sort.StringSlice) {
 	return s
 }
 
-func newObject() *source {
+func newSource() *source {
 	return &source{
 		Objects: Objects{},
-		exc:     make([]string, 0),
-		inc:     make([]string, 0),
+		exc:     []string{},
+		inc:     []string{},
 	}
 }
 

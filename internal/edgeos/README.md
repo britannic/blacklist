@@ -232,7 +232,7 @@ CFile holds an array of file names
 
 
 
-### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=9181:9211#L417)
+### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=9192:9222#L414)
 ``` go
 func (c *CFile) Remove() error
 ```
@@ -241,7 +241,7 @@ Remove deletes a CFile array of file names
 
 
 
-### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=10650:10681#L475)
+### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=10661:10692#L472)
 ``` go
 func (c *CFile) String() string
 ```
@@ -250,7 +250,7 @@ String implements string method
 
 
 
-### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=10769:10803#L480)
+### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=10780:10814#L477)
 ``` go
 func (c *CFile) Strings() []string
 ```
@@ -301,7 +301,7 @@ NewConfig returns a new *Config initialized with the parameter options passed to
 
 
 
-### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4229:4271#L211)
+### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4231:4273#L211)
 ``` go
 func (c *Config) Get(node string) *Objects
 ```
@@ -310,7 +310,7 @@ Get returns an *Object for a given node
 
 
 
-### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4550:4600#L230)
+### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4552:4602#L229)
 ``` go
 func (c *Config) GetAll(ltypes ...string) *Objects
 ```
@@ -319,7 +319,7 @@ GetAll returns an array of Objects
 
 
 
-### <a name="Config.GetTotalStats">func</a> (\*Config) [GetTotalStats](/src/target/content.go?s=5526:5580#L287)
+### <a name="Config.GetTotalStats">func</a> (\*Config) [GetTotalStats](/src/target/content.go?s=5551:5605#L287)
 ``` go
 func (c *Config) GetTotalStats() (dropped, kept int32)
 ```
@@ -328,7 +328,7 @@ GetTotalStats displays aggregate statistics for processed sources
 
 
 
-### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=5394:5427#L273)
+### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=5403:5436#L272)
 ``` go
 func (c *Config) InSession() bool
 ```
@@ -337,7 +337,7 @@ InSession returns true if VyOS/EdgeOS configuration is in session
 
 
 
-### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=2747:2806#L139)
+### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=2749:2808#L139)
 ``` go
 func (c *Config) NewContent(iface IFace) (Contenter, error)
 ```
@@ -346,7 +346,7 @@ NewContent returns an interface of the requested IFace type
 
 
 
-### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5882:5923#L289)
+### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5891:5932#L288)
 ``` go
 func (c *Config) Nodes() (nodes []string)
 ```
@@ -355,7 +355,7 @@ Nodes returns an array of configured nodes
 
 
 
-### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/content.go?s=8672:8727#L411)
+### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/content.go?s=8705:8760#L411)
 ``` go
 func (c *Config) ProcessContent(cts ...Contenter) error
 ```
@@ -364,7 +364,7 @@ ProcessContent processes the Contents array
 
 
 
-### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=6278:6322#L309)
+### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=6285:6329#L306)
 ``` go
 func (c *Config) ReadCfg(r ConfLoader) error
 ```
@@ -373,7 +373,7 @@ ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 
 
 
-### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=8986:9030#L410)
+### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=8997:9041#L407)
 ``` go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
@@ -391,7 +391,7 @@ SetOpt sets the specified options passed as Parms and returns an option to resto
 
 
 
-### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=9757:9793#L440)
+### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=9768:9804#L437)
 ``` go
 func (c *Config) String() (s string)
 ```
@@ -447,7 +447,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="ExcDomnObjects.GetList">func</a> (\*ExcDomnObjects) [GetList](/src/target/content.go?s=2934:2977#L159)
+### <a name="ExcDomnObjects.GetList">func</a> (\*ExcDomnObjects) [GetList](/src/target/content.go?s=2942:2985#L159)
 ``` go
 func (e *ExcDomnObjects) GetList() *Objects
 ```
@@ -456,16 +456,16 @@ GetList implements the Contenter interface for ExcDomnObjects
 
 
 
-### <a name="ExcDomnObjects.Len">func</a> (\*ExcDomnObjects) [Len](/src/target/content.go?s=5948:5982#L308)
+### <a name="ExcDomnObjects.Len">func</a> (\*ExcDomnObjects) [Len](/src/target/content.go?s=5973:6007#L308)
 ``` go
 func (e *ExcDomnObjects) Len() int
 ```
-Len returns how many objects there are
+Len returns how many sources there are
 
 
 
 
-### <a name="ExcDomnObjects.SetURL">func</a> (\*ExcDomnObjects) [SetURL](/src/target/content.go?s=9691:9740#L464)
+### <a name="ExcDomnObjects.SetURL">func</a> (\*ExcDomnObjects) [SetURL](/src/target/content.go?s=9725:9774#L464)
 ``` go
 func (e *ExcDomnObjects) SetURL(name, url string)
 ```
@@ -474,7 +474,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="ExcDomnObjects.String">func</a> (\*ExcDomnObjects) [String](/src/target/content.go?s=10991:11031#L535)
+### <a name="ExcDomnObjects.String">func</a> (\*ExcDomnObjects) [String](/src/target/content.go?s=11033:11073#L535)
 ``` go
 func (e *ExcDomnObjects) String() string
 ```
@@ -498,7 +498,7 @@ ExcHostObjects implements GetList for host exclusions
 
 
 
-### <a name="ExcHostObjects.Find">func</a> (\*ExcHostObjects) [Find](/src/target/content.go?s=1630:1676#L89)
+### <a name="ExcHostObjects.Find">func</a> (\*ExcHostObjects) [Find](/src/target/content.go?s=1631:1677#L89)
 ``` go
 func (e *ExcHostObjects) Find(elem string) int
 ```
@@ -507,7 +507,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="ExcHostObjects.GetList">func</a> (\*ExcHostObjects) [GetList](/src/target/content.go?s=3212:3255#L173)
+### <a name="ExcHostObjects.GetList">func</a> (\*ExcHostObjects) [GetList](/src/target/content.go?s=3221:3264#L173)
 ``` go
 func (e *ExcHostObjects) GetList() *Objects
 ```
@@ -516,16 +516,16 @@ GetList implements the Contenter interface for ExcHostObjects
 
 
 
-### <a name="ExcHostObjects.Len">func</a> (\*ExcHostObjects) [Len](/src/target/content.go?s=6054:6088#L311)
+### <a name="ExcHostObjects.Len">func</a> (\*ExcHostObjects) [Len](/src/target/content.go?s=6080:6114#L311)
 ``` go
 func (e *ExcHostObjects) Len() int
 ```
-Len returns how many objects there are
+Len returns how many sources there are
 
 
 
 
-### <a name="ExcHostObjects.SetURL">func</a> (\*ExcHostObjects) [SetURL](/src/target/content.go?s=9859:9908#L473)
+### <a name="ExcHostObjects.SetURL">func</a> (\*ExcHostObjects) [SetURL](/src/target/content.go?s=9894:9943#L473)
 ``` go
 func (e *ExcHostObjects) SetURL(name, url string)
 ```
@@ -534,7 +534,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="ExcHostObjects.String">func</a> (\*ExcHostObjects) [String](/src/target/content.go?s=11062:11102#L536)
+### <a name="ExcHostObjects.String">func</a> (\*ExcHostObjects) [String](/src/target/content.go?s=11104:11144#L536)
 ``` go
 func (e *ExcHostObjects) String() string
 ```
@@ -558,7 +558,7 @@ ExcRootObjects implements GetList for global domain exclusions
 
 
 
-### <a name="ExcRootObjects.Find">func</a> (\*ExcRootObjects) [Find](/src/target/content.go?s=1815:1861#L99)
+### <a name="ExcRootObjects.Find">func</a> (\*ExcRootObjects) [Find](/src/target/content.go?s=1817:1863#L99)
 ``` go
 func (e *ExcRootObjects) Find(elem string) int
 ```
@@ -567,7 +567,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="ExcRootObjects.GetList">func</a> (\*ExcRootObjects) [GetList](/src/target/content.go?s=3490:3533#L187)
+### <a name="ExcRootObjects.GetList">func</a> (\*ExcRootObjects) [GetList](/src/target/content.go?s=3500:3543#L187)
 ``` go
 func (e *ExcRootObjects) GetList() *Objects
 ```
@@ -576,16 +576,16 @@ GetList implements the Contenter interface for ExcRootObjects
 
 
 
-### <a name="ExcRootObjects.Len">func</a> (\*ExcRootObjects) [Len](/src/target/content.go?s=6160:6194#L314)
+### <a name="ExcRootObjects.Len">func</a> (\*ExcRootObjects) [Len](/src/target/content.go?s=6187:6221#L314)
 ``` go
 func (e *ExcRootObjects) Len() int
 ```
-Len returns how many objects there are
+Len returns how many sources there are
 
 
 
 
-### <a name="ExcRootObjects.SetURL">func</a> (\*ExcRootObjects) [SetURL](/src/target/content.go?s=10027:10076#L482)
+### <a name="ExcRootObjects.SetURL">func</a> (\*ExcRootObjects) [SetURL](/src/target/content.go?s=10063:10112#L482)
 ``` go
 func (e *ExcRootObjects) SetURL(name, url string)
 ```
@@ -594,7 +594,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="ExcRootObjects.String">func</a> (\*ExcRootObjects) [String](/src/target/content.go?s=11133:11173#L537)
+### <a name="ExcRootObjects.String">func</a> (\*ExcRootObjects) [String](/src/target/content.go?s=11175:11215#L537)
 ``` go
 func (e *ExcRootObjects) String() string
 ```
@@ -618,7 +618,7 @@ FIODataObjects implements GetList for files
 
 
 
-### <a name="FIODataObjects.Find">func</a> (\*FIODataObjects) [Find](/src/target/content.go?s=2000:2046#L109)
+### <a name="FIODataObjects.Find">func</a> (\*FIODataObjects) [Find](/src/target/content.go?s=2003:2049#L109)
 ``` go
 func (f *FIODataObjects) Find(elem string) int
 ```
@@ -627,7 +627,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="FIODataObjects.GetList">func</a> (\*FIODataObjects) [GetList](/src/target/content.go?s=3768:3811#L201)
+### <a name="FIODataObjects.GetList">func</a> (\*FIODataObjects) [GetList](/src/target/content.go?s=3779:3822#L201)
 ``` go
 func (f *FIODataObjects) GetList() *Objects
 ```
@@ -636,16 +636,16 @@ GetList implements the Contenter interface for FIODataObjects
 
 
 
-### <a name="FIODataObjects.Len">func</a> (\*FIODataObjects) [Len](/src/target/content.go?s=6266:6300#L317)
+### <a name="FIODataObjects.Len">func</a> (\*FIODataObjects) [Len](/src/target/content.go?s=6294:6328#L317)
 ``` go
 func (f *FIODataObjects) Len() int
 ```
-Len returns how many objects there are
+Len returns how many sources there are
 
 
 
 
-### <a name="FIODataObjects.SetURL">func</a> (\*FIODataObjects) [SetURL](/src/target/content.go?s=10195:10244#L491)
+### <a name="FIODataObjects.SetURL">func</a> (\*FIODataObjects) [SetURL](/src/target/content.go?s=10232:10281#L491)
 ``` go
 func (f *FIODataObjects) SetURL(name, url string)
 ```
@@ -654,7 +654,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="FIODataObjects.String">func</a> (\*FIODataObjects) [String](/src/target/content.go?s=11204:11244#L538)
+### <a name="FIODataObjects.String">func</a> (\*FIODataObjects) [String](/src/target/content.go?s=11246:11286#L538)
 ``` go
 func (f *FIODataObjects) String() string
 ```
@@ -692,21 +692,21 @@ IFace types for labeling interface types
 
 
 
-### <a name="IFace.String">func</a> (IFace) [String](/src/target/content.go?s=11560:11594#L544)
+### <a name="IFace.String">func</a> (IFace) [String](/src/target/content.go?s=11602:11636#L544)
 ``` go
 func (i IFace) String() (s string)
 ```
 
 
 
-## <a name="Objects">type</a> [Objects](/src/target/object.go?s=401:445#L20)
+## <a name="Objects">type</a> [Objects](/src/target/object.go?s=401:446#L20)
 ``` go
 type Objects struct {
     *Parms
     // contains filtered or unexported fields
 }
 ```
-Objects is a struct of []*Object
+Objects is a struct of []*source
 
 
 
@@ -717,7 +717,7 @@ Objects is a struct of []*Object
 
 
 
-### <a name="Objects.Files">func</a> (\*Objects) [Files](/src/target/object.go?s=1046:1078#L50)
+### <a name="Objects.Files">func</a> (\*Objects) [Files](/src/target/object.go?s=1055:1087#L50)
 ``` go
 func (o *Objects) Files() *CFile
 ```
@@ -726,11 +726,11 @@ Files returns a list of dnsmasq conf files from all srcs
 
 
 
-### <a name="Objects.Filter">func</a> (\*Objects) [Filter](/src/target/object.go?s=1646:1693#L73)
+### <a name="Objects.Filter">func</a> (\*Objects) [Filter](/src/target/object.go?s=1634:1681#L73)
 ``` go
 func (o *Objects) Filter(ltype string) *Objects
 ```
-Filter returns a subset of Objects; ltypes with "-" prepended remove ltype
+Filter returns a subset of Objects filtered by ltype
 
 
 
@@ -744,7 +744,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="Objects.Len">func</a> (\*Objects) [Len](/src/target/object.go?s=4141:4168#L184)
+### <a name="Objects.Len">func</a> (\*Objects) [Len](/src/target/object.go?s=4130:4157#L184)
 ``` go
 func (o *Objects) Len() int
 ```
@@ -753,14 +753,14 @@ Implement Sort Interface for Objects
 
 
 
-### <a name="Objects.Less">func</a> (\*Objects) [Less](/src/target/object.go?s=4199:4236#L185)
+### <a name="Objects.Less">func</a> (\*Objects) [Less](/src/target/object.go?s=4189:4226#L185)
 ``` go
 func (o *Objects) Less(i, j int) bool
 ```
 
 
 
-### <a name="Objects.Names">func</a> (\*Objects) [Names](/src/target/object.go?s=3239:3285#L147)
+### <a name="Objects.Names">func</a> (\*Objects) [Names](/src/target/object.go?s=3240:3286#L147)
 ``` go
 func (o *Objects) Names() (s sort.StringSlice)
 ```
@@ -769,7 +769,7 @@ Names returns a sorted slice of Objects names
 
 
 
-### <a name="Objects.String">func</a> (\*Objects) [String](/src/target/object.go?s=4038:4071#L179)
+### <a name="Objects.String">func</a> (\*Objects) [String](/src/target/object.go?s=4026:4059#L179)
 ``` go
 func (o *Objects) String() string
 ```
@@ -778,7 +778,7 @@ Stringer for Objects
 
 
 
-### <a name="Objects.Swap">func</a> (\*Objects) [Swap](/src/target/object.go?s=4274:4306#L186)
+### <a name="Objects.Swap">func</a> (\*Objects) [Swap](/src/target/object.go?s=4266:4298#L186)
 ``` go
 func (o *Objects) Swap(i, j int)
 ```
@@ -1021,7 +1021,7 @@ PreDomnObjects implements GetList for pre-configured domains content
 
 
 
-### <a name="PreDomnObjects.Find">func</a> (\*PreDomnObjects) [Find](/src/target/content.go?s=2185:2231#L119)
+### <a name="PreDomnObjects.Find">func</a> (\*PreDomnObjects) [Find](/src/target/content.go?s=2189:2235#L119)
 ``` go
 func (p *PreDomnObjects) Find(elem string) int
 ```
@@ -1030,7 +1030,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="PreDomnObjects.GetList">func</a> (\*PreDomnObjects) [GetList](/src/target/content.go?s=4195:4238#L222)
+### <a name="PreDomnObjects.GetList">func</a> (\*PreDomnObjects) [GetList](/src/target/content.go?s=4210:4253#L222)
 ``` go
 func (p *PreDomnObjects) GetList() *Objects
 ```
@@ -1039,16 +1039,16 @@ GetList implements the Contenter interface for PreDomnObjects
 
 
 
-### <a name="PreDomnObjects.Len">func</a> (\*PreDomnObjects) [Len](/src/target/content.go?s=6372:6406#L320)
+### <a name="PreDomnObjects.Len">func</a> (\*PreDomnObjects) [Len](/src/target/content.go?s=6401:6435#L320)
 ``` go
 func (p *PreDomnObjects) Len() int
 ```
-Len returns how many objects there are
+Len returns how many sources there are
 
 
 
 
-### <a name="PreDomnObjects.SetURL">func</a> (\*PreDomnObjects) [SetURL](/src/target/content.go?s=10363:10412#L500)
+### <a name="PreDomnObjects.SetURL">func</a> (\*PreDomnObjects) [SetURL](/src/target/content.go?s=10401:10450#L500)
 ``` go
 func (p *PreDomnObjects) SetURL(name, url string)
 ```
@@ -1057,7 +1057,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="PreDomnObjects.String">func</a> (\*PreDomnObjects) [String](/src/target/content.go?s=11275:11315#L539)
+### <a name="PreDomnObjects.String">func</a> (\*PreDomnObjects) [String](/src/target/content.go?s=11317:11357#L539)
 ``` go
 func (p *PreDomnObjects) String() string
 ```
@@ -1081,7 +1081,7 @@ PreHostObjects implements GetList for pre-configured hosts content
 
 
 
-### <a name="PreHostObjects.Find">func</a> (\*PreHostObjects) [Find](/src/target/content.go?s=2370:2416#L129)
+### <a name="PreHostObjects.Find">func</a> (\*PreHostObjects) [Find](/src/target/content.go?s=2375:2421#L129)
 ``` go
 func (p *PreHostObjects) Find(elem string) int
 ```
@@ -1090,7 +1090,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="PreHostObjects.GetList">func</a> (\*PreHostObjects) [GetList](/src/target/content.go?s=4453:4496#L233)
+### <a name="PreHostObjects.GetList">func</a> (\*PreHostObjects) [GetList](/src/target/content.go?s=4469:4512#L233)
 ``` go
 func (p *PreHostObjects) GetList() *Objects
 ```
@@ -1099,16 +1099,16 @@ GetList implements the Contenter interface for PreHostObjects
 
 
 
-### <a name="PreHostObjects.Len">func</a> (\*PreHostObjects) [Len](/src/target/content.go?s=6478:6512#L323)
+### <a name="PreHostObjects.Len">func</a> (\*PreHostObjects) [Len](/src/target/content.go?s=6508:6542#L323)
 ``` go
 func (p *PreHostObjects) Len() int
 ```
-Len returns how many objects there are
+Len returns how many sources there are
 
 
 
 
-### <a name="PreHostObjects.SetURL">func</a> (\*PreHostObjects) [SetURL](/src/target/content.go?s=10531:10580#L509)
+### <a name="PreHostObjects.SetURL">func</a> (\*PreHostObjects) [SetURL](/src/target/content.go?s=10570:10619#L509)
 ``` go
 func (p *PreHostObjects) SetURL(name, url string)
 ```
@@ -1117,7 +1117,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="PreHostObjects.String">func</a> (\*PreHostObjects) [String](/src/target/content.go?s=11346:11386#L540)
+### <a name="PreHostObjects.String">func</a> (\*PreHostObjects) [String](/src/target/content.go?s=11388:11428#L540)
 ``` go
 func (p *PreHostObjects) String() string
 ```
@@ -1141,7 +1141,7 @@ URLDomnObjects implements GetList for URLs
 
 
 
-### <a name="URLDomnObjects.Find">func</a> (\*URLDomnObjects) [Find](/src/target/content.go?s=2740:2786#L149)
+### <a name="URLDomnObjects.Find">func</a> (\*URLDomnObjects) [Find](/src/target/content.go?s=2747:2793#L149)
 ``` go
 func (u *URLDomnObjects) Find(elem string) int
 ```
@@ -1150,7 +1150,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="URLDomnObjects.GetList">func</a> (\*URLDomnObjects) [GetList](/src/target/content.go?s=4711:4754#L244)
+### <a name="URLDomnObjects.GetList">func</a> (\*URLDomnObjects) [GetList](/src/target/content.go?s=4728:4771#L244)
 ``` go
 func (u *URLDomnObjects) GetList() *Objects
 ```
@@ -1159,16 +1159,16 @@ GetList implements the Contenter interface for URLHostObjects
 
 
 
-### <a name="URLDomnObjects.Len">func</a> (\*URLDomnObjects) [Len](/src/target/content.go?s=6584:6618#L326)
+### <a name="URLDomnObjects.Len">func</a> (\*URLDomnObjects) [Len](/src/target/content.go?s=6615:6649#L326)
 ``` go
 func (u *URLDomnObjects) Len() int
 ```
-Len returns how many objects there are
+Len returns how many sources there are
 
 
 
 
-### <a name="URLDomnObjects.SetURL">func</a> (\*URLDomnObjects) [SetURL](/src/target/content.go?s=10699:10748#L518)
+### <a name="URLDomnObjects.SetURL">func</a> (\*URLDomnObjects) [SetURL](/src/target/content.go?s=10739:10788#L518)
 ``` go
 func (u *URLDomnObjects) SetURL(name, url string)
 ```
@@ -1177,7 +1177,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="URLDomnObjects.String">func</a> (\*URLDomnObjects) [String](/src/target/content.go?s=11417:11457#L541)
+### <a name="URLDomnObjects.String">func</a> (\*URLDomnObjects) [String](/src/target/content.go?s=11459:11499#L541)
 ``` go
 func (u *URLDomnObjects) String() string
 ```
@@ -1201,7 +1201,7 @@ URLHostObjects implements GetList for URLs
 
 
 
-### <a name="URLHostObjects.Find">func</a> (\*URLHostObjects) [Find](/src/target/content.go?s=2555:2601#L139)
+### <a name="URLHostObjects.Find">func</a> (\*URLHostObjects) [Find](/src/target/content.go?s=2561:2607#L139)
 ``` go
 func (u *URLHostObjects) Find(elem string) int
 ```
@@ -1210,7 +1210,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="URLHostObjects.GetList">func</a> (\*URLHostObjects) [GetList](/src/target/content.go?s=5116:5159#L265)
+### <a name="URLHostObjects.GetList">func</a> (\*URLHostObjects) [GetList](/src/target/content.go?s=5137:5180#L265)
 ``` go
 func (u *URLHostObjects) GetList() *Objects
 ```
@@ -1219,16 +1219,16 @@ GetList implements the Contenter interface for URLHostObjects
 
 
 
-### <a name="URLHostObjects.Len">func</a> (\*URLHostObjects) [Len](/src/target/content.go?s=6690:6724#L329)
+### <a name="URLHostObjects.Len">func</a> (\*URLHostObjects) [Len](/src/target/content.go?s=6722:6756#L329)
 ``` go
 func (u *URLHostObjects) Len() int
 ```
-Len returns how many objects there are
+Len returns how many sources there are
 
 
 
 
-### <a name="URLHostObjects.SetURL">func</a> (\*URLHostObjects) [SetURL](/src/target/content.go?s=10867:10916#L527)
+### <a name="URLHostObjects.SetURL">func</a> (\*URLHostObjects) [SetURL](/src/target/content.go?s=10908:10957#L527)
 ``` go
 func (u *URLHostObjects) SetURL(name, url string)
 ```
@@ -1237,7 +1237,7 @@ SetURL sets the Object's url field value
 
 
 
-### <a name="URLHostObjects.String">func</a> (\*URLHostObjects) [String](/src/target/content.go?s=11488:11528#L542)
+### <a name="URLHostObjects.String">func</a> (\*URLHostObjects) [String](/src/target/content.go?s=11530:11570#L542)
 ``` go
 func (u *URLHostObjects) String() string
 ```
