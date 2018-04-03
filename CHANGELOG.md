@@ -2,17 +2,11 @@
 
 ## Releases
 
-### Release v1.1.0a3 (March 28, 2018)
+### Release v1.1.0 (April 3, 2018)
 
 * Fixed minor log message bug to insert space between progname and "starting up"
-
-### Release v1.1.0a2 (March 28, 2018)
-
 * Renamed blacklist-cronjob.sh to update-dnsmasq-cronjob.sh to be consistent with update-dnsmasq
 * Fixed a bug when scripted configure session isn't detected, resulting in wrong showconfig mode being used
-
-### Release v1.1.0a1 (March 11, 2018)
-
 * Fixed a bug in blacklist-cronjob.sh that inhibited the cron job delay
 * Changed http error handling from fatal to error notification, so that update-dnsmasq can continue processing for sources that don't have problems and complete the update
 * Added code to support dnsmasq configuration file whitelisting for domains and hosts (servers) using hash syntax (the "#" force dnsmasq to forward the DNS request to the configured nameservers)
