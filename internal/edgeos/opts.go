@@ -30,13 +30,18 @@ type Parms struct {
 	FnFmt    string        `json:"File name fmt,omitempty"`
 	InCLI    string        `json:"-"`
 	Level    string        `json:"CLI Path,omitempty"`
-	Ltypes   []string      `json:"Leaf nodes,omitempty"`
 	Method   string        `json:"HTTP method,omitempty"`
-	Pfx      string        `json:"Prefix,omitempty"`
+	Pfx      dnsPfx        `json:"Prefix,omitempty"`
 	Test     bool          `json:"Test,omitempty"`
 	Timeout  time.Duration `json:"Timeout,omitempty"`
 	Verb     bool          `json:"Verbosity,omitempty"`
 	Wildcard/*..........*/ `json:"Wildcard,omitempty"`
+}
+
+// dnsPfx defines the prefix entries in the dnsmasq configuration file
+type dnsPfx struct {
+	domain string
+	host   string
 }
 
 // Wildcard struct sets globbing wildcards for filename searches
@@ -48,22 +53,11 @@ type Wildcard struct {
 // Option is a recursive function
 type Option func(c *Config) Option
 
-func (p *Parms) debug(s string) {
+// Debug logs debug messages when the Dbug flag is true
+func (p *Parms) Debug(s ...interface{}) {
 	if p.Dbug {
-		p.Log.Debug(s)
+		p.Log.Debug(s...)
 	}
-}
-
-func (p *Parms) error(s string) {
-	p.Log.Error(s)
-}
-
-func (p *Parms) log(s string) {
-	p.Log.Info(s)
-}
-
-func (p *Parms) warning(s string) {
-	p.Log.Warning(s)
 }
 
 // SetOpt sets the specified options passed as Parms and returns an option to restore the last set of arg's previous values
@@ -128,7 +122,7 @@ func Disabled(b bool) Option {
 	}
 }
 
-// Dbug toggles debug level on or off
+// Dbug toggles Debug level on or off
 func Dbug(b bool) Option {
 	return func(c *Config) Option {
 		previous := c.Dbug
@@ -209,15 +203,6 @@ func Logger(l *logging.Logger) Option {
 	}
 }
 
-// LTypes sets an array of legal types used by Source
-func LTypes(s []string) Option {
-	return func(c *Config) Option {
-		previous := c.Ltypes
-		c.Ltypes = s
-		return LTypes(previous)
-	}
-}
-
 // Method sets the HTTP method
 func Method(method string) Option {
 	return func(c *Config) Option {
@@ -244,11 +229,12 @@ func NewConfig(opts ...Option) *Config {
 }
 
 // Prefix sets the dnsmasq configuration address line prefix
-func Prefix(l string) Option {
+func Prefix(d string, h string) Option {
 	return func(c *Config) Option {
-		previous := c.Pfx
-		c.Pfx = l
-		return Prefix(previous)
+		pd := c.Pfx.domain
+		ph := c.Pfx.host
+		c.Pfx = dnsPfx{domain: d, host: h}
+		return Prefix(pd, ph)
 	}
 }
 

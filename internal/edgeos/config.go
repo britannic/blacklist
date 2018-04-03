@@ -17,7 +17,7 @@ import (
 )
 
 // tree is a map of top nodes
-type tree map[string]*object
+type tree map[string]*source
 
 // ConfLoader interface defines configuration load method
 type ConfLoader interface {
@@ -60,15 +60,15 @@ const (
 	zones     = "zones"
 
 	// ExcDomns labels domain exclusions
-	ExcDomns = "excluded-domains"
+	ExcDomns = "whitelisted-subdomains"
 	// ExcHosts labels host exclusions
-	ExcHosts = "excluded-hosts"
+	ExcHosts = "whitelisted-servers"
 	// ExcRoots labels global domain exclusions
-	ExcRoots = "excluded-global"
+	ExcRoots = "whitelisted-global"
 	// PreDomns designates string label for preconfigured blacklisted domains
-	PreDomns = "domains." + preNoun
+	PreDomns = "blacklisted-subdomains"
 	// PreHosts designates string label for preconfigured blacklisted hosts
-	PreHosts = "hosts." + preNoun
+	PreHosts = "blacklisted-servers"
 	// False is a string constant
 	False = "false"
 	// True is a string constant
@@ -102,19 +102,19 @@ func (c *Config) addExc(node string) *Objects {
 		exc = c.tree[node].exc
 	}
 
-	o.x = append(o.x, &object{
-		desc:  ltype + " exclusions",
+	o.xx = append(o.xx, &source{
+		Parms: c.Parms,
+		desc:  getLtypeDesc(ltype),
 		exc:   exc,
 		ip:    c.tree.getIP(node),
 		ltype: ltype,
-		name:  ltype,
 		nType: getType(ltype).(ntype),
-		Parms: c.Parms,
+		name:  ltype,
 	})
 	return o
 }
 
-func (c *Config) addInc(node string) *object {
+func (c *Config) addInc(node string) *source {
 	var (
 		inc   = []string{}
 		ltype string
@@ -134,14 +134,14 @@ func (c *Config) addInc(node string) *object {
 		n = getType(ltype).(ntype)
 	}
 
-	return &object{
-		desc:  ltype + " blacklist content",
+	return &source{
+		Parms: c.Parms,
+		desc:  getLtypeDesc(ltype),
 		inc:   inc,
 		ip:    c.tree.getIP(node),
 		ltype: ltype,
-		name:  "includes",
 		nType: n,
-		Parms: c.Parms,
+		name:  ltype,
 	}
 }
 
@@ -169,7 +169,7 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 			o = c.Get(hosts).Filter(urls)
 			return &URLHostObjects{Objects: o}, nil
 		}
-	case "unknown":
+	case notknown:
 		err = errors.New("Invalid interface requested")
 	default:
 		o = c.GetAll(ltype)
@@ -219,8 +219,7 @@ func (c *Config) excludes(nodes ...string) list {
 
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) *Objects {
-	o := &Objects{Parms: c.Parms, x: []*object{}}
-
+	o := &Objects{Parms: c.Parms, xx: []*source{}}
 	switch node {
 	case all:
 	NEXT:
@@ -257,19 +256,19 @@ NEXT:
 				switch ltype {
 				case PreDomns:
 					if newDomns && node == domains {
-						o.x = append(o.x, c.addInc(node))
+						o.xx = append(o.xx, c.addInc(node))
 						newDomns = false
 					}
 				case PreHosts:
 					if newHosts && node == hosts {
-						o.x = append(o.x, c.addInc(node))
+						o.xx = append(o.xx, c.addInc(node))
 						newHosts = false
 					}
 				default:
-					obj := c.validate(node).x
+					obj := c.validate(node).xx
 					for i := range obj {
 						if obj[i].ltype == ltype {
-							o.x = append(o.x, obj[i])
+							o.xx = append(o.xx, obj[i])
 						}
 					}
 				}
@@ -287,8 +286,11 @@ func (c *Config) InSession() bool {
 // load reads the config using the EdgeOS/VyOS cli-shell-api
 func (c *Config) load(act, lvl string) ([]byte, error) {
 	cmd := exec.Command(c.Bash)
-	cmd.Stdin = strings.NewReader(fmt.Sprintf("%v %v %v --show-working-only", c.API, apiCMD(act, c.InSession()), lvl))
-
+	s := fmt.Sprintf(
+		"%v %v %v --show-working-only", c.API, apiCMD(act, c.InSession()), lvl,
+	)
+	cmd.Stdin = strings.NewReader(s)
+	c.Debug(fmt.Sprintf("Running shell command: %v", s))
 	return cmd.Output()
 }
 
@@ -298,7 +300,6 @@ func (c *Config) Nodes() (nodes []string) {
 		nodes = append(nodes, k)
 	}
 	sort.Strings(nodes)
-
 	return nodes
 }
 
@@ -308,19 +309,18 @@ func isTnode(tnode string) bool {
 	case rootNode, domains, hosts:
 		return true
 	}
-
 	return false
 }
 
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 func (c *Config) ReadCfg(r ConfLoader) error {
 	var (
-		tnode string
 		b     = bufio.NewScanner(r.read())
 		leaf  string
 		nodes []string
+		o     *source
 		rx    = regx.Obj
-		o     *object
+		tnode string
 	)
 
 LINE:
@@ -345,7 +345,7 @@ LINE:
 			tnode = string(node[1])
 			nodes = append(nodes, tnode)
 			if isTnode(tnode) {
-				c.tree[tnode] = newObject()
+				c.tree[tnode] = newSource()
 			}
 		case rx.LEAF.Match(line):
 			srcName := regx.Get([]byte("leaf"), line)
@@ -353,7 +353,7 @@ LINE:
 			nodes = append(nodes, string(srcName[1]))
 
 			if bytes.Equal(srcName[1], []byte(src)) {
-				o = newObject()
+				o = newSource()
 				o.name = leaf
 				o.nType = getType(tnode).(ntype)
 			}
@@ -378,13 +378,13 @@ LINE:
 					case files:
 						o.file = string(name[2])
 						o.ltype = string(name[1])
-						c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
+						c.tree[tnode].Objects.xx = append(c.tree[tnode].Objects.xx, o)
 					case "prefix":
 						o.prefix = string(name[2])
 					case urls:
 						o.ltype = string(name[1])
 						o.url = string(name[2])
-						c.tree[tnode].Objects.x = append(c.tree[tnode].Objects.x, o)
+						c.tree[tnode].Objects.xx = append(c.tree[tnode].Objects.xx, o)
 					}
 				}
 			}
@@ -402,12 +402,15 @@ LINE:
 		return errors.New("Configuration data is empty, cannot continue")
 	}
 
+	c.Debug(fmt.Sprintf("Using router configuration %v", c.String()))
 	return nil
 }
 
 // readDir returns a listing of dnsmasq blacklist configuration files
 func (c *CFile) readDir(pattern string) ([]string, error) {
-	return filepath.Glob(pattern)
+	files, err := filepath.Glob(pattern)
+	c.Debug(fmt.Sprintf("Files: %v\n: %v", pattern, files))
+	return files, err
 }
 
 // ReloadDNS reloads the dnsmasq configuration
@@ -423,7 +426,9 @@ func (c *CFile) Remove() error {
 	if err != nil {
 		return err
 	}
-	return purgeFiles(diffArray(c.Names, d))
+	files := diffArray(c.Names, d)
+	c.Debug(fmt.Sprintf("Removing: %v", files))
+	return purgeFiles(files)
 }
 
 // sortKeys returns a slice of keys in lexicographical sorted order.
@@ -484,11 +489,6 @@ func (c *CFile) Strings() []string {
 	return c.Names
 }
 
-// LTypes returns an array of configured nodes
-func (c *Config) LTypes() []string {
-	return c.Parms.Ltypes
-}
-
 func (b tree) getIP(node string) (ip string) {
 	if _, ok := b[node]; ok {
 		if ip = b[node].ip; ip == "" {
@@ -500,7 +500,7 @@ func (b tree) getIP(node string) (ip string) {
 
 func (b tree) validate(node string) *Objects {
 	if _, ok := b[node]; ok {
-		for _, obj := range b[node].Objects.x {
+		for _, obj := range b[node].Objects.xx {
 			if obj.ip == "" {
 				obj.ip = b.getIP(node)
 			}

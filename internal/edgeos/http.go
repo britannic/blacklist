@@ -9,7 +9,7 @@ import (
 )
 
 // getHTTP creates http requests to download data
-func getHTTP(o *object) *object {
+func getHTTP(o *source) *source {
 	var (
 		body []byte
 		err  error
@@ -18,8 +18,9 @@ func getHTTP(o *object) *object {
 	)
 
 	if req, err = http.NewRequest(o.Method, o.url, nil); err != nil {
-		o.error(fmt.Sprintf("Unable to form request for %s. Error: %v", o.url, err))
-		o.r, o.err = strings.NewReader(fmt.Sprintf("Unable to form request for %s...", o.url)), err
+		s := fmt.Sprintf("Unable to form request for %s. Error: %v", o.url, err)
+		o.Log.Warning(s)
+		o.r, o.err = strings.NewReader(s), err
 		return o
 	}
 
@@ -27,8 +28,9 @@ func getHTTP(o *object) *object {
 
 	req.Header.Set("User-Agent", agent)
 	if resp, err = (&http.Client{}).Do(req); err != nil {
-		o.error(fmt.Sprintf("Unable to get response for %s. Error: %v", o.url, err))
-		o.r, o.err = strings.NewReader(fmt.Sprintf("Unable to get response for %s...", o.url)), err
+		s := fmt.Sprintf("Unable to get response for %s. Error: %v", o.url, err)
+		o.Log.Warning(s)
+		o.r, o.err = strings.NewReader(s), err
 		return o
 	}
 
@@ -36,8 +38,9 @@ func getHTTP(o *object) *object {
 	body, err = ioutil.ReadAll(resp.Body)
 
 	if len(body) == 0 {
-		o.warning(fmt.Sprintf("No data returned for %s. Error: %v", o.url, err))
-		o.r, o.err = strings.NewReader(fmt.Sprintf("No data returned for %s...", o.url)), err
+		s := fmt.Sprintf("No data returned for %s.", o.url)
+		o.Log.Warning(s)
+		o.r, o.err = strings.NewReader(s), err
 		return o
 	}
 

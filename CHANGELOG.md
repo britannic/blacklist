@@ -2,7 +2,33 @@
 
 ## Releases
 
-## Release v1.0.10 (February 27, 2018)
+### Release v1.1.0a3 (March 28, 2018)
+
+* Fixed minor log message bug to insert space between progname and "starting up"
+
+### Release v1.1.0a2 (March 28, 2018)
+
+* Renamed blacklist-cronjob.sh to update-dnsmasq-cronjob.sh to be consistent with update-dnsmasq
+* Fixed a bug when scripted configure session isn't detected, resulting in wrong showconfig mode being used
+
+### Release v1.1.0a1 (March 11, 2018)
+
+* Fixed a bug in blacklist-cronjob.sh that inhibited the cron job delay
+* Changed http error handling from fatal to error notification, so that update-dnsmasq can continue processing for sources that don't have problems and complete the update
+* Added code to support dnsmasq configuration file whitelisting for domains and hosts (servers) using hash syntax (the "#" force dnsmasq to forward the DNS request to the configured nameservers)
+* i.e. servers (hosts)
+
+```bash
+server=/www.bing.com/#
+```
+
+* i.e. domains
+
+```bash
+address=/bing.com/#
+```
+
+### Release v1.0.10 (February 27, 2018)
 
 * Added functions to ensure all blacklist configuration files are removed from /etc/dnsmasq.d/ when uninstalling using
 
@@ -18,11 +44,11 @@ apt-get remove --purge edgeos-dnsmasq-blacklist
 
 * dnsmasq will be automatically restarted to remove stale redirects
 
-## Release v1.0.9 (February 26, 2018)
+### Release v1.0.9 (February 26, 2018)
 
 * Added logic to not run the post installation script after an upgrade
 
-## Release v1.0.8 (February 26, 2018)
+### Release v1.0.8 (February 26, 2018)
 
 * Algorithm to trap out of range cronjob arguments
 

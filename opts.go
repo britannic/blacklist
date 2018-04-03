@@ -79,7 +79,7 @@ func getOpts() *opts {
 		flags mflag.FlagSet
 		o     = &opts{
 			ARCH:    flags.String("arch", runtime.GOARCH, "Set EdgeOS CPU architecture", false),
-			Dbug:    flags.Bool("debug", false, "Enable debug mode", false),
+			Dbug:    flags.Bool("debug", false, "Enable Debug mode", false),
 			DNSdir:  flags.String("dir", "/etc/dnsmasq.d", "Override dnsmasq directory", true),
 			DNStmp:  flags.String("tmp", "/tmp", "Override dnsmasq temporary directory", false),
 			Help:    flags.Bool("h", false, "Display help", true),
@@ -115,9 +115,8 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.InCLI("inSession"),
 		e.Level("service dns forwarding"),
 		e.Method("GET"),
-		e.Prefix("address="),
+		e.Prefix("address=", "server="),
 		e.Logger(log),
-		e.LTypes([]string{files, e.PreDomns, e.PreHosts, urls}),
 		e.Timeout(30*time.Second),
 		e.Verb(*o.Verb),
 		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
@@ -127,25 +126,28 @@ func (o *opts) initEdgeOS() *e.Config {
 
 // setArgs retrieves arguments entered on the command line
 func (o *opts) setArgs() {
-	if err := o.Parse(cleanArgs((os.Args[1:]))); err != nil {
+	if o.Parse(cleanArgs((os.Args[1:]))) != nil {
 		o.Usage()
 		exitCmd(0)
 	}
 
-	switch {
-	case *o.Dbug:
-		e.Dbug(true)
-	case *o.Help:
-		o.Usage()
-		exitCmd(0)
-	case *o.Test:
-		fmt.Println("Test activated!")
-		exitCmd(0)
-	case *o.Verb:
-		screenLog(prefix)
-	case *o.Version:
-		fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n\n This software comes with ABSOLUTELY NO WARRANTY.\n %s is free software, and you are\n welcome to redistribute it under the terms of\n the Simplified BSD License.\n", version, build, githash, progname)
-		exitCmd(0)
+	for _, arg := range os.Args[1:] {
+		switch arg {
+		case "-debug":
+			screenLog(prefix)
+			e.Dbug(*o.Dbug)
+		case "-h":
+			o.Usage()
+			exitCmd(0)
+		case "-t":
+			fmt.Println("Test activated!")
+			exitCmd(0)
+		case "-v":
+			screenLog(prefix)
+		case "-version":
+			fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n\n This software comes with ABSOLUTELY NO WARRANTY.\n %s is free software, and you are\n welcome to redistribute it under the terms of\n the Simplified BSD License.\n", version, build, githash, progname)
+			exitCmd(0)
+		}
 	}
 }
 

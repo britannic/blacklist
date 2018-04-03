@@ -51,27 +51,27 @@ func TestParmsLog(t *testing.T) {
 
 				switch {
 				case tt.dbug:
-					p.debug(tt.str)
+					p.Debug(tt.str)
 					So(act.String(), ShouldEqual, tt.str+"\n")
 
 				case tt.name == "Info":
-					p.log(tt.str)
+					p.Log.Info(tt.str)
 					So(act.String(), ShouldEqual, tt.str+"\n")
 
 				case tt.name == "Warning":
 					exp := tt.str
 					exp += tt.str
-					p.warning(tt.str)
+					p.Log.Warning(tt.str)
 					So(act.String(), ShouldEqual, exp)
 
 				case tt.name == "Error":
 					exp := tt.str
 					exp += tt.str
-					p.error(tt.str)
+					p.Log.Error(tt.str)
 					So(act.String(), ShouldEqual, exp)
 
 				default:
-					p.debug(tt.str)
+					p.Debug(tt.str)
 					So(act.String(), ShouldEqual, "")
 				}
 				act.Reset()
@@ -99,14 +99,8 @@ func TestOption(t *testing.T) {
 	"File": "/config/config.boot",
 	"File name fmt": "%v/%v.%v.%v",
 	"CLI Path": "service dns forwarding",
-	"Leaf nodes": [
-		"file",
-		"domains.pre-configured",
-		"hosts.pre-configured",
-		"url"
-	],
 	"HTTP method": "GET",
-	"Prefix": "address=",
+	"Prefix": {},
 	"Test": true,
 	"Timeout": 30000000000,
 	"Wildcard": {
@@ -132,9 +126,8 @@ func TestOption(t *testing.T) {
 			FnFmt:    "%v/%v.%v.%v",
 			InCLI:    "inSession",
 			Level:    "service dns forwarding",
-			Ltypes:   []string{files, PreDomns, PreHosts, urls},
 			Method:   "GET",
-			Pfx:      "address=",
+			Pfx:      dnsPfx{domain: "address=", host: "server="},
 			Test:     true,
 			Timeout:  30000000000,
 			Wildcard: Wildcard{Node: "*s", Name: "*"},
@@ -159,9 +152,8 @@ func TestOption(t *testing.T) {
 			InCLI("inSession"),
 			Logger(nil),
 			Method("GET"),
-			Prefix("address="),
+			Prefix("address=", "server="),
 			Level("service dns forwarding"),
-			LTypes([]string{"file", PreDomns, PreHosts, urls}),
 			Test(true),
 			Timeout(30*time.Second),
 			Verb(false),

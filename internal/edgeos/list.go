@@ -37,7 +37,7 @@ func mergeList(a, b list) list {
 	return a
 }
 
-// mergeList combines two list maps
+// set adds a list entry map member
 func (l list) set(k []byte, v int) {
 	l.Lock()
 	l.entry[string(k)] = v

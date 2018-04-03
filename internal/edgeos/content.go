@@ -33,6 +33,7 @@ const (
 type bList struct {
 	file string
 	r    io.Reader
+	size int
 }
 
 // Contenter is a Content interface
@@ -86,7 +87,7 @@ type URLHostObjects struct {
 
 // Find returns the int position of an Objects' element
 func (e *ExcDomnObjects) Find(elem string) int {
-	for i, o := range e.x {
+	for i, o := range e.xx {
 		if o.name == elem {
 			return i
 		}
@@ -96,7 +97,7 @@ func (e *ExcDomnObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (e *ExcHostObjects) Find(elem string) int {
-	for i, o := range e.x {
+	for i, o := range e.xx {
 		if o.name == elem {
 			return i
 		}
@@ -106,7 +107,7 @@ func (e *ExcHostObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (e *ExcRootObjects) Find(elem string) int {
-	for i, o := range e.x {
+	for i, o := range e.xx {
 		if o.name == elem {
 			return i
 		}
@@ -116,7 +117,7 @@ func (e *ExcRootObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (f *FIODataObjects) Find(elem string) int {
-	for i, o := range f.x {
+	for i, o := range f.xx {
 		if o.name == elem {
 			return i
 		}
@@ -126,7 +127,7 @@ func (f *FIODataObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (p *PreDomnObjects) Find(elem string) int {
-	for i, o := range p.x {
+	for i, o := range p.xx {
 		if o.name == elem {
 			return i
 		}
@@ -136,7 +137,7 @@ func (p *PreDomnObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (p *PreHostObjects) Find(elem string) int {
-	for i, o := range p.x {
+	for i, o := range p.xx {
 		if o.name == elem {
 			return i
 		}
@@ -146,7 +147,7 @@ func (p *PreHostObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (u *URLHostObjects) Find(elem string) int {
-	for i, o := range u.x {
+	for i, o := range u.xx {
 		if o.name == elem {
 			return i
 		}
@@ -156,7 +157,7 @@ func (u *URLHostObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (u *URLDomnObjects) Find(elem string) int {
-	for i, o := range u.x {
+	for i, o := range u.xx {
 		if o.name == elem {
 			return i
 		}
@@ -166,7 +167,7 @@ func (u *URLDomnObjects) Find(elem string) int {
 
 // GetList implements the Contenter interface for ExcDomnObjects
 func (e *ExcDomnObjects) GetList() *Objects {
-	for _, o := range e.x {
+	for _, o := range e.xx {
 		switch o.nType {
 		case excDomn:
 			if o.exc != nil {
@@ -180,7 +181,7 @@ func (e *ExcDomnObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for ExcHostObjects
 func (e *ExcHostObjects) GetList() *Objects {
-	for _, o := range e.x {
+	for _, o := range e.xx {
 		switch o.nType {
 		case excHost:
 			if o.exc != nil {
@@ -194,7 +195,7 @@ func (e *ExcHostObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for ExcRootObjects
 func (e *ExcRootObjects) GetList() *Objects {
-	for _, o := range e.x {
+	for _, o := range e.xx {
 		switch o.nType {
 		case excRoot:
 			if o.exc != nil {
@@ -208,20 +209,20 @@ func (e *ExcRootObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for FIODataObjects
 func (f *FIODataObjects) GetList() *Objects {
-	var responses = make(chan *object, len(f.x))
+	var responses = make(chan *source, len(f.xx))
 	defer close(responses)
 
-	for _, o := range f.x {
+	for _, o := range f.xx {
 		o.Parms = f.Objects.Parms
-		go func(o *object) {
+		go func(o *source) {
 			o.r, o.err = GetFile(o.file)
 			responses <- o
 		}(o)
 	}
 
-	for range f.x {
+	for range f.xx {
 		response := <-responses
-		f.x[f.Find(response.name)] = response
+		f.xx[f.Find(response.name)] = response
 	}
 
 	return f.Objects
@@ -229,7 +230,7 @@ func (f *FIODataObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for PreDomnObjects
 func (p *PreDomnObjects) GetList() *Objects {
-	for _, o := range p.x {
+	for _, o := range p.xx {
 		if o.ltype == PreDomns && o.inc != nil {
 			o.r = o.includes()
 			o.Parms = p.Objects.Parms
@@ -240,7 +241,7 @@ func (p *PreDomnObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for PreHostObjects
 func (p *PreHostObjects) GetList() *Objects {
-	for _, o := range p.x {
+	for _, o := range p.xx {
 		if o.ltype == PreHosts && o.inc != nil {
 			o.r = o.includes()
 			o.Parms = p.Objects.Parms
@@ -251,20 +252,20 @@ func (p *PreHostObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLDomnObjects) GetList() *Objects {
-	var responses = make(chan *object, len(u.x))
+	var responses = make(chan *source, len(u.xx))
 
 	defer close(responses)
 
-	for _, o := range u.x {
+	for _, o := range u.xx {
 		o.Parms = u.Objects.Parms
-		go func(o *object) {
+		go func(o *source) {
 			responses <- getHTTP(o)
 		}(o)
 	}
 
-	for range u.x {
+	for range u.xx {
 		response := <-responses
-		u.x[u.Find(response.name)] = response
+		u.xx[u.Find(response.name)] = response
 	}
 
 	return u.Objects
@@ -272,56 +273,78 @@ func (u *URLDomnObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLHostObjects) GetList() *Objects {
-	var responses = make(chan *object, len(u.x))
+	var responses = make(chan *source, len(u.xx))
 
 	defer close(responses)
 
-	for _, o := range u.x {
+	for _, o := range u.xx {
 		o.Parms = u.Objects.Parms
-		go func(o *object) {
+		go func(o *source) {
 			responses <- getHTTP(o)
 		}(o)
 	}
 
-	for range u.x {
+	for range u.xx {
 		response := <-responses
-		u.x[u.Find(response.name)] = response
+		u.xx[u.Find(response.name)] = response
 
 	}
 
 	return u.Objects
 }
 
-// Len returns how many objects there are
-func (e *ExcDomnObjects) Len() int { return len(e.Objects.x) }
+// GetTotalStats displays aggregate statistics for processed sources
+func (c *Config) GetTotalStats() (dropped, kept int32) {
+	var keys []string
 
-// Len returns how many objects there are
-func (e *ExcHostObjects) Len() int { return len(e.Objects.x) }
+	for k := range c.ctr {
+		keys = append(keys, k)
+	}
 
-// Len returns how many objects there are
-func (e *ExcRootObjects) Len() int { return len(e.Objects.x) }
+	for _, k := range keys {
+		if c.ctr[k].kept+c.ctr[k].dropped != 0 {
+			dropped += c.ctr[k].dropped
+			kept += c.ctr[k].kept
+		}
+	}
 
-// Len returns how many objects there are
-func (f *FIODataObjects) Len() int { return len(f.Objects.x) }
+	if kept+dropped != 0 {
+		c.Log.Noticef("All extracted: %d, dropped: %d", kept, dropped)
+	}
+	return dropped, kept
+}
 
-// Len returns how many objects there are
-func (p *PreDomnObjects) Len() int { return len(p.Objects.x) }
+// Len returns how many sources there are
+func (e *ExcDomnObjects) Len() int { return len(e.Objects.xx) }
 
-// Len returns how many objects there are
-func (p *PreHostObjects) Len() int { return len(p.Objects.x) }
+// Len returns how many sources there are
+func (e *ExcHostObjects) Len() int { return len(e.Objects.xx) }
 
-// Len returns how many objects there are
-func (u *URLDomnObjects) Len() int { return len(u.Objects.x) }
+// Len returns how many sources there are
+func (e *ExcRootObjects) Len() int { return len(e.Objects.xx) }
 
-// Len returns how many objects there are
-func (u *URLHostObjects) Len() int { return len(u.Objects.x) }
+// Len returns how many sources there are
+func (f *FIODataObjects) Len() int { return len(f.Objects.xx) }
+
+// Len returns how many sources there are
+func (p *PreDomnObjects) Len() int { return len(p.Objects.xx) }
+
+// Len returns how many sources there are
+func (p *PreHostObjects) Len() int { return len(p.Objects.xx) }
+
+// Len returns how many sources there are
+func (u *URLDomnObjects) Len() int { return len(u.Objects.xx) }
+
+// Len returns how many sources there are
+func (u *URLHostObjects) Len() int { return len(u.Objects.xx) }
 
 // Process extracts hosts/domains from downloaded raw content
-func (o *object) process() *bList {
+func (o *source) process() *bList {
 	var (
 		add               = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		area              = typeInt(o.nType)
 		b                 = bufio.NewScanner(o.r)
+		f                 string
 		drop, found, kept int
 		rx                = regx.Obj
 	)
@@ -364,19 +387,33 @@ NEXT:
 		o.Dex = mergeList(o.Dex, add)
 	}
 
-	fmttr := o.Pfx + getSeparator(area) + "%v/" + o.ip
+	fmttr := getDnsmasqPrefix(o)
 
 	// Let's do some accounting
 	atomic.AddInt32(&o.ctr[area].dropped, int32(drop))
 	atomic.AddInt32(&o.ctr[area].kept, int32(kept))
 
-	o.log(fmt.Sprintf("%s: downloaded: %d", o.name, found))
-	o.log(fmt.Sprintf("%s: extracted: %d", o.name, kept))
-	o.log(fmt.Sprintf("%s: dropped: %d", o.name, drop))
+	o.Log.Infof("%s: downloaded: %d", o.name, found)
+	o.Log.Infof("%s: extracted: %d", o.name, kept)
+	o.Log.Infof("%s: dropped: %d", o.name, drop)
+
+	switch o.nType {
+	case excDomn, excRoot, preDomn:
+		f = fmt.Sprintf(o.FnFmt, o.Dir, domains, o.name, o.Ext)
+	case excHost, preHost:
+		f = fmt.Sprintf(o.FnFmt, o.Dir, hosts, o.name, o.Ext)
+	default:
+		f = fmt.Sprintf(o.FnFmt, o.Dir, area, o.name, o.Ext)
+	}
+
+	if kept == 0 {
+		o.Log.Warningf("Zero records extracted for %s, dnsmasq conf file won't be written", o.name)
+	}
 
 	return &bList{
-		file: fmt.Sprintf(o.FnFmt, o.Dir, getType(o.nType).(string), o.name, o.Ext),
+		file: f,
 		r:    formatData(fmttr, add),
+		size: kept,
 	}
 }
 
@@ -398,23 +435,17 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 			tally = &stats{dropped: a, kept: b}
 		)
 
-		for _, o := range ct.GetList().x {
+		for _, o := range ct.GetList().xx {
 			getErrors = make(chan error)
 
 			if o.err != nil {
 				errs = append(errs, o.err.Error())
 			}
 
-			go func(o *object) {
+			go func(o *source) {
 				area = typeInt(o.nType)
 				c.ctr[area] = tally
-				switch o.nType {
-				case excDomn, excHost, excRoot:
-					o.process()
-					getErrors <- nil
-				default:
-					getErrors <- o.process().writeFile()
-				}
+				getErrors <- o.process().writeFile()
 			}(o)
 
 			for range cts {
@@ -441,7 +472,7 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 
 // SetURL sets the Object's url field value
 func (e *ExcDomnObjects) SetURL(name, url string) {
-	for _, o := range e.x {
+	for _, o := range e.xx {
 		if o.name == name {
 			o.url = url
 		}
@@ -450,7 +481,7 @@ func (e *ExcDomnObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (e *ExcHostObjects) SetURL(name, url string) {
-	for _, o := range e.x {
+	for _, o := range e.xx {
 		if o.name == name {
 			o.url = url
 		}
@@ -459,7 +490,7 @@ func (e *ExcHostObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (e *ExcRootObjects) SetURL(name, url string) {
-	for _, o := range e.x {
+	for _, o := range e.xx {
 		if o.name == name {
 			o.url = url
 		}
@@ -468,7 +499,7 @@ func (e *ExcRootObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (f *FIODataObjects) SetURL(name, url string) {
-	for _, o := range f.x {
+	for _, o := range f.xx {
 		if o.name == name {
 			o.url = url
 		}
@@ -477,7 +508,7 @@ func (f *FIODataObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (p *PreDomnObjects) SetURL(name, url string) {
-	for _, o := range p.x {
+	for _, o := range p.xx {
 		if o.name == name {
 			o.url = url
 		}
@@ -486,7 +517,7 @@ func (p *PreDomnObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (p *PreHostObjects) SetURL(name, url string) {
-	for _, o := range p.x {
+	for _, o := range p.xx {
 		if o.name == name {
 			o.url = url
 		}
@@ -495,7 +526,7 @@ func (p *PreHostObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (u *URLDomnObjects) SetURL(name, url string) {
-	for _, o := range u.x {
+	for _, o := range u.xx {
 		if o.name == name {
 			o.url = url
 		}
@@ -504,7 +535,7 @@ func (u *URLDomnObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (u *URLHostObjects) SetURL(name, url string) {
-	for _, o := range u.x {
+	for _, o := range u.xx {
 		if o.name == name {
 			o.url = url
 		}
@@ -544,6 +575,10 @@ func (i IFace) String() (s string) {
 
 // writeFile saves hosts/domains data to disk
 func (b *bList) writeFile() error {
+	if b.size == 0 {
+		return nil
+	}
+
 	w, err := os.Create(b.file)
 	if err != nil {
 		return err

@@ -11,11 +11,6 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
-const (
-	files = "file"
-	urls  = "url"
-)
-
 var (
 	// updated by go build -ldflags
 	build   = "UNKNOWN"
@@ -32,35 +27,26 @@ var (
 		logging.DEBUG:    logging.ColorSeqBold(logging.ColorBlue),
 	}
 
-	progname     = basename(os.Args[0])
-	prefix       = fmt.Sprintf("%s: ", progname)
 	exitCmd      = os.Exit
 	fdFmttr      logging.Backend
 	haveTerm     = inTerminal
 	initEnvirons = initEnv
 	log          = newLog(prefix)
-
-	logCritf = log.Criticalf
-
-	logErrorf = func(f string, args ...interface{}) {
-		log.Errorf(f, args...)
-	}
-
-	logFatalf = func(f string, args ...interface{}) {
-		logCritf(f, args...)
-		exitCmd(1)
-	}
-
-	logFile    = fmt.Sprintf("/var/log/%s.log", progname)
-	logInfo    = log.Info
-	logInfof   = log.Infof
-	logNoticef = log.Noticef
-	logPrintf  = logInfof
+	logCritf     = log.Criticalf
+	logErrorf    = func(f string, args ...interface{}) { log.Errorf(f, args...) }
+	logFatalf    = func(f string, args ...interface{}) { logCritf(f, args...); exitCmd(1) }
+	logFile      = fmt.Sprintf("/var/log/%s.log", progname)
+	logInfo      = log.Info
+	logInfof     = log.Infof
+	logNoticef   = log.Noticef
+	logPrintf    = logInfof
+	progname     = basename(os.Args[0])
+	prefix       = fmt.Sprintf("%s: ", progname)
 
 	objex = []e.IFace{
-		e.PreHObj,
-		e.PreDObj,
 		e.ExRtObj,
+		e.PreDObj,
+		e.PreHObj,
 		e.ExDmObj,
 		e.ExHtObj,
 		e.FileObj,
@@ -80,7 +66,8 @@ func main() {
 		exitCmd(0)
 	}
 
-	// logDebugf(o, "Dumping env variable: %v\n", env)
+	env.Debug(fmt.Sprintf("Dumping commandline args: %v", os.Args[1:]))
+	env.Debug(fmt.Sprintf("Dumping env variables: %v", env))
 	logNoticef("%v", "Starting blacklist update...")
 
 	logInfo("Removing stale blacklists...")
@@ -92,12 +79,12 @@ func main() {
 
 	if !env.Disabled {
 		if err := processObjects(env, objex); err != nil {
-			logFatalf("%v", err.Error())
+			logErrorf("%v", err.Error())
 		}
 	}
 
+	env.GetTotalStats()
 	reloadDNS(env)
-
 	logNoticef("%v", "Blacklist update completed......")
 }
 
@@ -125,7 +112,7 @@ func initEnv() (env *e.Config, err error) {
 	if env, err = setUpEnv(); err != nil {
 		d := killFiles(env)
 
-		logInfo(progname + ": commencing dnsmasq blacklist update...")
+		logInfo(progname + " starting up..")
 		logInfo("Removing stale blacklists...")
 
 		if err = d.Remove(); err != nil {
@@ -192,7 +179,7 @@ func processObjects(c *e.Config, objects []e.IFace) error {
 func reloadDNS(c *e.Config) {
 	b, err := c.ReloadDNS()
 	if err != nil {
-		logErrorf("ReloadDNS(): \n error: %v\n", string(b), err.Error())
+		logErrorf("ReloadDNS(): %v\n error: %v\n", string(b), err.Error())
 		exitCmd(1)
 	}
 	logPrintf("ReloadDNS(): %v\n", string(b))
@@ -250,6 +237,5 @@ func setUpEnv() (*e.Config, error) {
 	o.setArgs()
 	c := o.initEdgeOS()
 	err := c.ReadCfg(o.getCFG(c))
-
 	return c, err
 }

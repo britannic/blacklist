@@ -1,6 +1,6 @@
 # **UBNT edgeos-dnsmasq-blacklist dnsmasq DNS Blacklisting and Redirection**
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v1.0.10-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/alpha/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v1.1.0a3-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
 
 Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/DNS-Adblocking-amp-Blacklisting-dnsmasq-Configuration/td-p/2215008/jump-to/first-unread-message)
 
@@ -12,7 +12,7 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 1. [Copyright](#copyright)
 1. [Licenses](#licenses)
 1. [Latest Version](#latest-version)
-1. [Change Log](https://github.com/britannic/blacklist/blob/master/CHANGELOG.md)
+1. [Change Log](https://github.com/britannic/blacklist/blob/alpha/CHANGELOG.md)
 1. [Features](#features)
 1. [Compatibility](#compatibility)
 1. [Installation](#installation)
@@ -32,6 +32,7 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
    1. [How do I globally exclude or include hosts or a domains?](#how-do-i-globally-exclude-or-include-hosts-or-a-domains)
    1. [How do I use the command line switches?](#how-do-i-use-the-command-line-switches)
    1. [How do can keep my USG configuration after an upgrade, provision or reboot?](#how-do-can-keep-my-usg-configuration-after-an-upgrade-provision-or-reboot)
+   1. [How does whitelisting work?](#how-does-whitelisting-work)
    1. [Which blacklist sources are installed by default?](#which-blacklist-sources-are-installed-by-default)
 
 ## **Overview**
@@ -76,29 +77,30 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Latest Version**
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.0.10-green.svg)](https://github.com/britannic/blacklist/releases/latest)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.0a3-green.svg)](https://github.com/britannic/blacklist/releases/latest)
 
-## Release v1.0.10 (February 27, 2018)
+### Release v1.1.0a1 (March 11, 2018)
 
-* Added functions to ensure all blacklist configuration files are removed from /etc/dnsmasq.d/ when uninstalling using
-
-```bash
-dpkg -P edgeos-dnsmasq-blacklist
-```
-
-* Or
+* Fixed a bug in blacklist-cronjob.sh that inhibited the cron job delay
+* Changed http error handling from fatal to error notification, so that update-dnsmasq can continue processing for sources that don't have problems and complete the update
+* Added code to support dnsmasq configuration file whitelisting for domains and hosts (servers) using hash syntax (the "#" force dnsmasq to forward the DNS request to the configured nameservers)
+* i.e. servers (hosts)
 
 ```bash
-apt-get remove --purge edgeos-dnsmasq-blacklist
+server=/www.bing.com/#
 ```
 
-* dnsmasq will be automatically restarted to remove stale redirects
+* i.e. domains
+
+```bash
+address=/bing.com/#
+```
 
 [[Top]](#contents)
 
 ## **Change Log**
 
-* See [changelog](https://github.com/britannic/blacklist/blob/master/CHANGELOG.md) for details.
+* See [changelog](https://github.com/britannic/blacklist/blob/alpha/CHANGELOG.md) for details.
 
 [[Top]](#contents)
 
@@ -135,14 +137,14 @@ configure
 set system package repository blacklist components main
 set system package repository blacklist description 'Britannic blacklist debian wheezy repository'
 set system package repository blacklist distribution wheezy
-set system package repository blacklist url 'https://raw.githubusercontent.com/britannic/debian-repo/master/blacklist/'
+set system package repository blacklist url 'https://raw.githubusercontent.com/britannic/debian-repo/alpha/blacklist/'
 commit;save;exit
 ```
 
 * Add the GPG signing key
 
 ```bash
-sudo curl -L https://raw.githubusercontent.com/britannic/debian-repo/master/blacklist/public.key | sudo apt-key add -
+sudo curl -L https://raw.githubusercontent.com/britannic/debian-repo/alpha/blacklist/public.key | sudo apt-key add -
 ```
 
 * Update the system repositorities and install edgeos-dnsmasq-blacklist
@@ -158,8 +160,8 @@ sudo apt-get update && sudo apt-get install edgeos-dnsmasq-blacklist
 ### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.0.10_mips.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.10_mips.deb
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/alpha/edgeos-dnsmasq-blacklist_1.1.0a3_mips.deb
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.1.0a3_mips.deb
 ```
 
 [[Top]](#contents)
@@ -176,8 +178,8 @@ delete system image
 * Now download and install the edgeos-dnsmasq-blacklist package
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.0.10_mipsel.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.0.10_mipsel.deb
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/alpha/edgeos-dnsmasq-blacklist_1.1.0a3_mipsel.deb
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.1.0a3_mipsel.deb
 ```
 
 [[Top]](#contents)
@@ -305,7 +307,7 @@ admicro1.vcmedia.vn
 
 * Follow these [instructions](https://britannic.github.io/britannic/install-edgeos-packages) on how to automatically install edgeos-dnsmasq-blacklist
 * Create a config.gateway.json file following these [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
-* Here's a sample [config.gateway.json](https://raw.githubusercontent.com/britannic/blacklist/master/config.gateway.json)
+* Here's a sample [config.gateway.json](https://raw.githubusercontent.com/britannic/blacklist/alpha/config.gateway.json)
 
 [[Top]](#contents)
 
@@ -371,6 +373,24 @@ set service dns forwarding blacklist domains include domainsnastywebsites.com
 set service dns forwarding blacklist hosts exclude cdn.visiblemeasures.com
 set service dns forwarding blacklist hosts include www.nastywebsites.com
 commit;save;exit
+```
+
+[[Top]](#contents)
+
+### **How does whitelisting work?**
+
+*dnsmasq will whitelist any entries in the configuration file domains and hosts (servers) with a hash in place of an IP address (the "#" force dnsmasq to forward the DNS request to the router's configured nameservers)
+
+* i.e. servers (hosts)
+
+```bash
+server=/www.bing.com/#
+```
+
+* i.e. domains
+
+```bash
+address=/bing.com/#
 ```
 
 [[Top]](#contents)

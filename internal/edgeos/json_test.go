@@ -13,7 +13,6 @@ func TestConfigString(t *testing.T) {
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
 			Method("GET"),
-			LTypes([]string{files, PreDomns, PreHosts, urls}),
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
@@ -23,7 +22,6 @@ func TestConfigString(t *testing.T) {
 			Dir("/tmp"),
 			Ext("blacklist.conf"),
 			Method("GET"),
-			LTypes([]string{files, PreDomns, PreHosts, urls}),
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: tdata.ZeroHostSourcesCfg}), ShouldBeNil)

@@ -17,11 +17,11 @@ type ntype int
 // ntype label blacklist source types
 const (
 	unknown ntype = iota // denotes a coding error
-	domn                 // Format type e.g. address=/.d.com/0.0.0.0
+	domn                 // Format type e.g. address=/d.com/0.0.0.0
 	excDomn              // Excluded from domains
 	excHost              // Excluded from hosts
 	excRoot              // Excluded globally
-	host                 // Format type e.g. address=/www.d.com/0.0.0.0
+	host                 // Format type e.g. server=/www.d.com/0.0.0.0
 	preDomn              // Pre-configured blacklisted domains
 	preHost              // Pre-configured blacklisted hosts
 	root                 // Topmost root node
@@ -75,13 +75,15 @@ func formatData(fmttr string, l list) io.Reader {
 	return strings.NewReader(strings.Join(lines, ""))
 }
 
-// getSeparator returns the dnsmasq conf file delimiter
-func getSeparator(node string) string {
-	switch node {
-	case domains, PreDomns:
-		return "/."
+// getDnsmasqPrefix returns the dnsmasq conf file delimiter
+func getDnsmasqPrefix(o *source) string {
+	switch o.nType {
+	case domn, preDomn, root:
+		return o.Pfx.domain + "/%v/" + o.ip
+	case excDomn, excHost, excRoot:
+		return o.Pfx.host + "/%v/#"
 	}
-	return "/"
+	return o.Pfx.host + "/%v/" + o.ip
 }
 
 // getSubdomains returns a map of subdomains
