@@ -83,7 +83,7 @@ func getDnsmasqPrefix(o *source) string {
 	case excDomn, excHost, excRoot:
 		return o.Pfx.host + "/%v/#"
 	}
-	return o.Pfx.host + "/%v/" + o.ip
+	return o.Pfx.domain + "/%v/" + o.ip
 }
 
 // getSubdomains returns a map of subdomains

@@ -51,7 +51,7 @@ Obj is a struct of *OBJ populated with precompiled regex objects
 
 
 
-## <a name="Get">func</a> [Get](/src/target/regx.go?s=1608:1642#L32)
+## <a name="Get">func</a> [Get](/src/target/regx.go?s=1447:1481#L38)
 ``` go
 func Get(t, b []byte) (r [][]byte)
 ```
@@ -60,7 +60,7 @@ Get returns an array compiled regx OBJs
 
 
 
-## <a name="OBJ">type</a> [OBJ](/src/target/regx.go?s=356:492#L6)
+## <a name="OBJ">type</a> [OBJ](/src/target/regx.go?s=195:331#L12)
 ``` go
 type OBJ struct {
     CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, IPBH, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
@@ -77,14 +77,14 @@ OBJ is a struct of regex precompiled objects
 
 
 
-### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=2550:2584#L78)
+### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=2389:2423#L84)
 ``` go
 func (rx *OBJ) String() (s string)
 ```
 
 
 
-### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2805:2883#L87)
+### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2644:2722#L93)
 ``` go
 func (rx *OBJ) StripPrefixAndSuffix(line []byte, prefix string) ([]byte, bool)
 ```

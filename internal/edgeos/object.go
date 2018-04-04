@@ -140,10 +140,8 @@ func getLtypeDesc(l string) string {
 		return preNoun + " blacklisted domains"
 	case PreHosts:
 		return preNoun + " blacklisted hosts"
-	case "":
-		return "Unknown ltype"
 	default:
-		panic(fmt.Sprintf("getLtypeDesc(l) passed an illegal lType: %v", l))
+		return "Unknown ltype"
 	}
 }
 

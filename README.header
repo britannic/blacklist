@@ -1,6 +1,6 @@
 # **UBNT edgeos-dnsmasq-blacklist dnsmasq DNS Blacklisting and Redirection**
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v1.1.0-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v1.1.1-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
 
 Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/DNS-Adblocking-amp-Blacklisting-dnsmasq-Configuration/td-p/2215008/jump-to/first-unread-message)
 
@@ -77,27 +77,11 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Latest Version**
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.0-green.svg)](https://github.com/britannic/blacklist/releases/latest)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.1-green.svg)](https://github.com/britannic/blacklist/releases/latest)
 
-### Release v1.1.0 (April 3, 2018)
+### Release v1.1.1 (April 4, 2018)
 
-* Fixed minor log message bug to insert space between progname and "starting up"
-* Renamed blacklist-cronjob.sh to update-dnsmasq-cronjob.sh to be consistent with update-dnsmasq
-* Fixed a bug when scripted configure session isn't detected, resulting in wrong showconfig mode being used
-* Fixed a bug in blacklist-cronjob.sh that inhibited the cron job delay
-* Changed http error handling from fatal to error notification, so that update-dnsmasq can continue processing for sources that don't have problems and complete the update
-* Added code to support dnsmasq configuration file whitelisting for domains and hosts (servers) using hash syntax (the "#" force dnsmasq to forward the DNS request to the configured nameservers)
-* i.e. servers (hosts)
-
-```bash
-server=/www.bing.com/#
-```
-
-* i.e. domains
-
-```bash
-address=/bing.com/#
-```
+* Fix bug to ensure pre-configured included hosts are correctly blacklisted
 
 [[Top]](#contents)
 
@@ -163,8 +147,8 @@ sudo apt-get update && sudo apt-get install edgeos-dnsmasq-blacklist
 ### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.1.0_mips.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.1.0_mips.deb
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.1.1_mips.deb
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.1.1_mips.deb
 ```
 
 [[Top]](#contents)
@@ -181,8 +165,8 @@ delete system image
 * Now download and install the edgeos-dnsmasq-blacklist package
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.1.0_mipsel.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.1.0_mipsel.deb
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.1.1_mipsel.deb
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.1.1_mipsel.deb
 ```
 
 [[Top]](#contents)

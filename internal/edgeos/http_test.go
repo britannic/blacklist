@@ -265,6 +265,11 @@ zone "roastfiles2017.com"  {type master; file "/etc/namedb/blockeddomain.hosts";
 127.0.0.1 d3oltyb66oj2v8.cloudfront.net
 127.0.0.1 d2bgg7rjywcwsy.cloudfront.net
 
+# [Duplicates]
+127.0.0.1 d3anogn3pbtk4v.cloudfront.net
+127.0.0.1 d3oltyb66oj2v8.cloudfront.net
+127.0.0.1 d2bgg7rjywcwsy.cloudfront.net
+
 # [vserv.mobi]
 127.0.0.1 a.vserv.mobi
 127.0.0.1 admin.vserv.mobi

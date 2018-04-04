@@ -898,7 +898,7 @@ system {
 ```
 
 
-## <a name="Get">func</a> [Get](/src/target/tdata.go?s=46:86#L1)
+## <a name="Get">func</a> [Get](/src/target/tdata.go?s=46:86#L6)
 ``` go
 func Get(s string) (r string, err error)
 ```

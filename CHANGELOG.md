@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.1 (April 4, 2018)
+
+* Fix bug to ensure pre-configured included hosts are correctly blacklisted
+
 ### Release v1.1.0 (April 3, 2018)
 
 * Fixed minor log message bug to insert space between progname and "starting up"
