@@ -155,7 +155,6 @@ func TestConfigProcessContent(t *testing.T) {
 				g.Go(func() error { return tt.c.ProcessContent(obj) })
 				err = g.Wait()
 				if (err != nil) == tt.expErr {
-					// Println(err)
 					So(err.Error(), ShouldEqual, tt.err.Error())
 				}
 			})
@@ -385,6 +384,10 @@ func TestNewContent(t *testing.T) {
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: Cfg}), ShouldBeNil)
+
+		c.Dex = mergeList(c.Dex, list{RWMutex: &sync.RWMutex{}, entry: entry{"amazon-de.com": 0}})
+		So(c.Dex.String(), ShouldEqual, `"amazon-de.com":0,
+`)
 
 		for _, tt := range tests {
 			Convey("processing "+tt.name, func() {
@@ -642,17 +645,6 @@ func TestProcessContent(t *testing.T) {
 					})
 
 					switch tt.f {
-					default:
-						reader, err := GetFile(tt.f)
-						So(err, ShouldBeNil)
-
-						act, err := ioutil.ReadAll(reader)
-						So(err, ShouldBeNil)
-
-						Convey("Testing "+tt.name+" ProcessContent(): file data should match expected", func() {
-							So(string(act), ShouldEqual, tt.fdata)
-						})
-
 					case "":
 						Convey("Testing "+tt.name+" ProcessContent(): Dex map should match expected", func() {
 							So(c.Dex.entry, ShouldResemble, tt.expDexMap.entry)
@@ -664,6 +656,16 @@ func TestProcessContent(t *testing.T) {
 
 						Convey("Testing "+tt.name+" ProcessContent(): Obj should match expected", func() {
 							So(obj.String(), ShouldEqual, tt.exp)
+						})
+					default:
+						reader, err := GetFile(tt.f)
+						So(err, ShouldBeNil)
+
+						act, err := ioutil.ReadAll(reader)
+						So(err, ShouldBeNil)
+
+						Convey("Testing "+tt.name+" ProcessContent(): file data should match expected", func() {
+							So(string(act), ShouldEqual, tt.fdata)
 						})
 					}
 				})
@@ -1078,6 +1080,7 @@ address=/wv.inner-active.mobi/192.168.168.1
 address=/www.eltrafiko.com/192.168.168.1
 address=/www.mmnetwork.mobi/192.168.168.1
 address=/www.pflexads.com/192.168.168.1
+address=/www.roastfiles2017.com/192.168.168.1
 address=/wwww.adleads.com/192.168.168.1`
 
 	domainsContent = "address=/192-168-0-255.com/192.1.1.1\naddress=/asi-37.fr/192.1.1.1\naddress=/bagbackpack.com/192.1.1.1\naddress=/bitmeyenkartusistanbul.com/192.1.1.1\naddress=/byxon.com/192.1.1.1\naddress=/img001.com/192.1.1.1\naddress=/loadto.net/192.1.1.1\naddress=/roastfiles2017.com/192.1.1.1"

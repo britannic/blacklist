@@ -175,6 +175,7 @@ zone "roastfiles2017.com"  {type master; file "/etc/namedb/blockeddomain.hosts";
 
 # [General]
 127.0.0.1 lb.usemaxserver.de
+127.0.0.1 www.roastfiles2017.com
 127.0.0.1 tracking.klickthru.com
 127.0.0.1 gsmtop.net
 127.0.0.1 click.buzzcity.net

@@ -184,6 +184,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude nsatc.net
 	try set service dns forwarding blacklist exclude paypal.com
 	try set service dns forwarding blacklist exclude pop.h-cdn.co
+	try set service dns forwarding blacklist exclude quora.com
 	try set service dns forwarding blacklist exclude rackcdn.com
 	try set service dns forwarding blacklist exclude rarlab.com
 	try set service dns forwarding blacklist exclude schema.org
