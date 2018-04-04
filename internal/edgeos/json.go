@@ -27,40 +27,40 @@ func tabs(t int) (s string) {
 }
 
 func getJSONArray(c *cfgJSON) (js string) {
-	cma := comma
+	ø := comma
 	cnt := len(c.array)
-	ind := c.indent
-	js += fmt.Sprintf("%v%q: [", tabs(ind), c.leaf)
-	ret := enter
+	ȹ := c.indent
+	js += fmt.Sprintf("%v%q: [", tabs(ȹ), c.leaf)
+	eof := enter
 
 	switch {
 	case c.pk != rootNode && cnt == 0:
-		js += "],\n"
+		js += "]," + enter
 		return js
 
 	case cnt == 1:
-		ret = null
-		ind = 0
+		eof = null
+		ȹ = 0
 
 	case cnt > 1:
 		js += enter
-		ind++
+		ȹ++
 	}
 
 	if cnt > 0 {
 		for i, s := range c.array {
 			if i == cnt-1 {
-				cma = null
+				ø = null
 			}
-			js += fmt.Sprintf("%v%q%v%v", tabs(ind), s, cma, ret)
+			js += fmt.Sprintf("%v%q%v%v", tabs(ȹ), s, ø, eof)
 		}
 
-		cma = comma
+		ø = comma
 		if c.pk == rootNode {
-			cma = null
+			ø = null
 		}
 
-		js += fmt.Sprintf("%v]%v\n", tabs(ind), cma)
+		js += fmt.Sprintf("%v]%v\n", tabs(ȹ), ø)
 	}
 
 	return js
@@ -74,12 +74,14 @@ func is(ind int, js, title, s string) string {
 	return js
 }
 
-func getJSONsrcArray(c *cfgJSON) (js string) {
+func getJSONsrcArray(c *cfgJSON) string {
 	var (
 		cnt = len(c.tree[c.pk].Objects.xx)
 		i   int
-		ind = c.indent
+		js  string
 		o   *source
+		ø   = comma
+		ȹ   = c.indent
 	)
 
 	if cnt == 0 {
@@ -90,26 +92,25 @@ func getJSONsrcArray(c *cfgJSON) (js string) {
 	js += fmt.Sprintf("%v%q: [{%v", tabs(c.indent), "sources", enter)
 
 	for i, o = range c.tree[c.pk].Objects.xx {
-		cma := comma
-		ind = c.indent + 1
+		ȹ = c.indent + 1
 
 		if i == cnt-1 {
-			cma = null
+			ø = null
 		}
 
-		js += fmt.Sprintf("%v%q: {\n", tabs(ind), o.name)
-		ind++
-		js += fmt.Sprintf("%v%q: %q,\n", tabs(ind), disabled, booltoStr(o.disabled))
-		js = is(ind, js, "description", o.desc)
-		js = is(ind, js, "ip", o.ip)
-		js = is(ind, js, "prefix", o.prefix)
-		js = is(ind, js, files, o.file)
-		js = is(ind, js, urls, o.url)
-		ind--
-		js += fmt.Sprintf("%v}%v%v", tabs(ind), cma, enter)
+		js += fmt.Sprintf("%v%q: {\n", tabs(ȹ), o.name)
+		ȹ++
+		js += fmt.Sprintf("%v%q: %q,\n", tabs(ȹ), disabled, booltoStr(o.disabled))
+		js = is(ȹ, js, "description", o.desc)
+		js = is(ȹ, js, "ip", o.ip)
+		js = is(ȹ, js, "prefix", o.prefix)
+		js = is(ȹ, js, files, o.file)
+		js = is(ȹ, js, urls, o.url)
+		ȹ--
+		js += fmt.Sprintf("%v}%v%v", tabs(ȹ), ø, enter)
 	}
 
-	ind -= 2
-	js += fmt.Sprintf("%v}]%v", tabs(ind), enter)
+	ȹ -= 2
+	js += fmt.Sprintf("%v}]%v", tabs(ȹ), enter)
 	return js
 }

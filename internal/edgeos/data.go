@@ -38,12 +38,12 @@ func booltoStr(b bool) string {
 
 // diffArray returns the delta of two arrays
 func diffArray(a, b []string) (diff sort.StringSlice) {
-	var biggest, smallest []string
+	var largest, smallest []string
 	switch {
 	case len(a) > len(b), len(a) == len(b):
-		biggest, smallest = a, b
+		largest, smallest = a, b
 	case len(a) < len(b):
-		biggest, smallest = b, a
+		largest, smallest = b, a
 	}
 
 	dmap := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
@@ -51,7 +51,7 @@ func diffArray(a, b []string) (diff sort.StringSlice) {
 		dmap.set([]byte(k), 0)
 	}
 
-	for _, k := range biggest {
+	for _, k := range largest {
 		if !dmap.keyExists([]byte(k)) {
 			diff = append(diff, k)
 		}
@@ -117,11 +117,6 @@ func Iter(i int) []struct{} {
 func NewWriter() io.Writer {
 	var b bytes.Buffer
 	return bufio.NewWriter(&b)
-}
-
-// logIt writes to io.Writer
-func logIt(w io.Writer, s string) {
-	io.Copy(w, strings.NewReader(s))
 }
 
 // strToBool converts a string ("true" or "false") to boolean

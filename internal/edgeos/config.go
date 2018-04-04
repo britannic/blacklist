@@ -446,13 +446,13 @@ func (c *Config) sortKeys() (pkeys sort.StringSlice) {
 // String returns pretty print for the Blacklist struct
 func (c *Config) String() (s string) {
 	indent := 1
-	cmma := comma
+	ø := comma
 	cnt := len(c.sortKeys())
 	s += fmt.Sprintf("{\n%v%q: [{\n", tabs(indent), "nodes")
 
 	for i, pkey := range c.sortKeys() {
 		if i == cnt-1 {
-			cmma = null
+			ø = null
 		}
 
 		indent++
@@ -470,7 +470,7 @@ func (c *Config) String() (s string) {
 		}
 
 		indent--
-		s += fmt.Sprintf("%v}%v\n", tabs(indent), cmma)
+		s += fmt.Sprintf("%v}%v\n", tabs(indent), ø)
 		indent--
 	}
 
@@ -480,6 +480,7 @@ func (c *Config) String() (s string) {
 
 // String implements string method
 func (c *CFile) String() string {
+	sort.Strings(c.Names)
 	return strings.Join(c.Names, "\n")
 }
 
@@ -500,9 +501,9 @@ func (b tree) getIP(node string) (ip string) {
 
 func (b tree) validate(node string) *Objects {
 	if _, ok := b[node]; ok {
-		for _, obj := range b[node].Objects.xx {
-			if obj.ip == "" {
-				obj.ip = b.getIP(node)
+		for _, o := range b[node].Objects.xx {
+			if o.ip == "" {
+				o.ip = b.getIP(node)
 			}
 		}
 		return &b[node].Objects

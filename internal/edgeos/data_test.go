@@ -17,6 +17,11 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+// logIt writes to io.Writer
+func logIt(w io.Writer, s string) {
+	io.Copy(w, strings.NewReader(s))
+}
+
 func shuffleArray(slice []string) {
 	rand.Seed(time.Now().UnixNano())
 	n := len(slice)
