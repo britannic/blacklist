@@ -128,7 +128,7 @@ func TestGetType(t *testing.T) {
 			{typeint: preHost, typestr: PreHosts, ntypestr: "preHost"},
 			{typeint: root, typestr: rootNode, ntypestr: "root"},
 			{typeint: unknown, typestr: notknown, ntypestr: "unknown"},
-			{typeint: zone, typestr: zones, ntypestr: "zone"},
+			// {typeint: zone, typestr: zones, ntypestr: "zone"},
 		}
 
 		for _, tt := range tests {

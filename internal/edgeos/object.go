@@ -87,8 +87,8 @@ func (o *Objects) Files() *CFile {
 func (o *Objects) Filter(ltype string) *Objects {
 	var (
 		sources = Objects{Parms: o.Parms}
-		xFiles  = "-" + files
-		xURLs   = "-" + urls
+		// xFiles  = "-" + files
+		// xURLs   = "-" + urls
 	)
 
 	switch ltype {
@@ -98,24 +98,24 @@ func (o *Objects) Filter(ltype string) *Objects {
 				sources.xx = append(sources.xx, obj)
 			}
 		}
-	case xFiles:
-		for _, obj := range o.xx {
-			if obj.ltype != files {
-				sources.xx = append(sources.xx, obj)
-			}
-		}
+	// case xFiles:
+	// 	for _, obj := range o.xx {
+	// 		if obj.ltype != files {
+	// 			sources.xx = append(sources.xx, obj)
+	// 		}
+	// 	}
 	case urls:
 		for _, obj := range o.xx {
 			if obj.ltype == urls && obj.url != "" {
 				sources.xx = append(sources.xx, obj)
 			}
 		}
-	case xURLs:
-		for _, obj := range o.xx {
-			if obj.ltype != urls {
-				sources.xx = append(sources.xx, obj)
-			}
-		}
+	// case xURLs:
+	// 	for _, obj := range o.xx {
+	// 		if obj.ltype != urls {
+	// 			sources.xx = append(sources.xx, obj)
+	// 		}
+	// 	}
 	default:
 		sources = Objects{Parms: o.Parms}
 	}

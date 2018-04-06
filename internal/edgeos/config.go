@@ -57,7 +57,7 @@ const (
 	rootNode  = "blacklist"
 	src       = "source"
 	urls      = "url"
-	zones     = "zones"
+	// zones     = "zones"
 
 	// ExcDomns labels domain exclusions
 	ExcDomns = "whitelisted-subdomains"

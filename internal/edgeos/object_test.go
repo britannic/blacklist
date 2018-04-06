@@ -96,10 +96,10 @@ func TestFilter(t *testing.T) {
 			exp   sort.StringSlice
 		}{
 			{ltype: urls, exp: urlsOnly},
-			{ltype: "-" + urls, exp: urlsNone},
+			// {ltype: "-" + urls, exp: urlsNone},
 			{ltype: files, exp: filesOnly},
-			{ltype: "-" + files, exp: filesNone},
-			{ltype: "zones", exp: nil},
+			// {ltype: "-" + files, exp: filesNone},
+			// {ltype: "zones", exp: nil},
 		}
 
 		c := NewConfig(
@@ -119,8 +119,8 @@ func TestFilter(t *testing.T) {
 }
 
 var (
-	filesNone = sort.StringSlice{"blacklisted-servers", "blacklisted-subdomains", "malc0de", "malwaredomains.com", "openphish", "raw.github.com", "simple_tracking", "sysctl.org", "volkerschatz", "yoyo", "zeus"}
+	// filesNone = sort.StringSlice{"blacklisted-servers", "blacklisted-subdomains", "malc0de", "malwaredomains.com", "openphish", "raw.github.com", "simple_tracking", "sysctl.org", "volkerschatz", "yoyo", "zeus"}
 	filesOnly = sort.StringSlice{"tasty"}
-	urlsNone  = sort.StringSlice{"blacklisted-servers", "blacklisted-subdomains", "tasty"}
-	urlsOnly  = sort.StringSlice{"malc0de", "malwaredomains.com", "openphish", "raw.github.com", "simple_tracking", "sysctl.org", "volkerschatz", "yoyo", "zeus"}
+	// urlsNone  = sort.StringSlice{"blacklisted-servers", "blacklisted-subdomains", "tasty"}
+	urlsOnly = sort.StringSlice{"malc0de", "malwaredomains.com", "openphish", "raw.github.com", "simple_tracking", "sysctl.org", "volkerschatz", "yoyo", "zeus"}
 )
