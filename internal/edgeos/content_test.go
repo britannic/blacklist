@@ -490,7 +490,6 @@ func TestMultiObjNewContent(t *testing.T) {
 				case ExRtObj, ExDmObj, ExHtObj, PreDObj, PreHObj:
 					d := &dummyConfig{Parms: c.Parms, t: t}
 					d.ProcessContent(ct)
-
 					So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
 				default:
 					So(ct.String(), ShouldEqual, tt.exp)

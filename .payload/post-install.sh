@@ -228,11 +228,17 @@ update_dns_config() {
 	try end
 }
 
-echo "$@"
+# echo "$@"
+
+# Set UPGRADE flag
+UPGRADE=0
+if [[ "${1}" == "configure" ]] && [[ -z "${2}" ]] ; then
+	UPGRADE=1
+fi
 
 # Only run the post installation script if this is a first time installation
-if [[ -z "${2}" ]] || [[ "${1}" == "configure" ]] ; then
-	echo "Running update_dns_config"
+if [[ ${UPGRADE} == 1 ]] ; then
+	echo "Installing blacklist configuration settings..."
 	update_dns_config
 fi
 

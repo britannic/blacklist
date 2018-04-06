@@ -2,9 +2,11 @@
 
 # Set up the Vyatta environment
 declare -i DEC
-source /opt/vyatta/etc/functions/script-template
-DATE=$(date +'%FT%H%M%S')
+# source /opt/vyatta/etc/functions/script-template
+API=/bin/cli-shell-api
 CFGRUN=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
+DATE=$(date +'%FT%H%M%S')
+
 shopt -s expand_aliases
 
 alias begin='${CFGRUN} begin'
@@ -12,7 +14,6 @@ alias cleanup='${CFGRUN} cleanup'
 alias commit='${CFGRUN} commit'
 alias delete='${CFGRUN} delete'
 alias end='${CFGRUN} end'
-alias run='/opt/vyatta/bin/vyatta-op-cmd-wrapper'
 alias save='sudo ${CFGRUN} save'
 alias set='${CFGRUN} set'
 alias show='_vyatta_op_run show'
@@ -103,11 +104,13 @@ try() {
 
 # Back up [service dns forwarding blacklist]
 backup_dns_config() {
-	/bin/cli-shell-api existsActive service dns forwarding blacklist
+	${API} existsActive service dns forwarding blacklist
 	if [[ $? == 0 ]]; then
 		echo_logger I "Backing up blacklist configuration to: /config/user-data/blacklist.${DATE}.cmds"
-		run show configuration commands | grep blacklist >/config/user-data/blacklist.${DATE}.cmds ||
-			echo_logger E 'Blacklist configuration backup failed!'
+		${API} showConfig service dns forwarding blacklist \
+		--show-commands --show-active-only | \
+		grep blacklist >/config/user-data/blacklist.${DATE}.cmds || \
+		echo_logger E 'Blacklist configuration backup failed!'
 	fi
 }
 
@@ -125,7 +128,16 @@ restart_dnsmasq() {
 	/etc/init.d/dnsmasq restart
 }
 
+# echo "$@"
+
+# Back up the existing blacklist configuration
 backup_dns_config
-delete_dns_config
+
+# Only run the pre-installation script if this is a first time installation
+if [[ "${1}" == "remove" ]] ; then
+	echo "Deleting blacklist configuration settings..."
+	delete_dns_config
+fi
+
 set_vyattacfg_grp
 restart_dnsmasq

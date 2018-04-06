@@ -2,9 +2,13 @@
 
 ## Releases
 
+### Release v1.1.2 (April 5, 2018)
+
+* Fixed bug that overwrote user configured blacklist settings during an upgrade
+
 ### Release v1.1.1 (April 4, 2018)
 
-* Fix bug to ensure pre-configured included hosts are correctly blacklisted
+* Fixed bug that prevented pre-configured included hosts being correctly blacklisted
 
 ### Release v1.1.0 (April 3, 2018)
 
