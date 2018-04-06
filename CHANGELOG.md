@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.3 (April 5, 2018)
+
+* Document updates
+
 ### Release v1.1.2 (April 5, 2018)
 
 * Fixed bug that overwrote user configured blacklist settings during an upgrade

@@ -79,8 +79,9 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.3-green.svg)](https://github.com/britannic/blacklist/releases/latest)
 
-### Release v1.1.2 (April 5, 2018)
+### Release v1.1.3 (April 5, 2018)
 
+* Document updates
 * Fixed bug that overwrote user configured blacklist settings during an upgrade
 
 [[Top]](#contents)
