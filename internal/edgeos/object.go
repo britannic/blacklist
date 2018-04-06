@@ -56,21 +56,25 @@ func (o *source) excludes() io.Reader {
 	return strings.NewReader(strings.Join(o.exc, "\n"))
 }
 
+func (o *source) setFilePrefix(format string) (f string) {
+	switch o.nType {
+	case excDomn, excRoot, preDomn:
+		f = fmt.Sprintf(format, domains, o.name)
+	case excHost, preHost:
+		f = fmt.Sprintf(format, hosts, o.name)
+	default:
+		f = fmt.Sprintf(format, getType(o.nType), o.name)
+	}
+	return f
+}
+
 // Files returns a list of dnsmasq conf files from all srcs
 func (o *Objects) Files() *CFile {
-	var f string
-	c := CFile{Parms: o.Parms}
-	format := o.Parms.Dir + "/%v.%v." + o.Parms.Ext
+	var c = CFile{Parms: o.Parms}
+
 	if !o.Disabled {
 		for _, obj := range o.xx {
-			switch obj.nType {
-			case excDomn, excRoot, preDomn:
-				f = fmt.Sprintf(format, domains, obj.name)
-			case excHost, preHost:
-				f = fmt.Sprintf(format, hosts, obj.name)
-			default:
-				f = fmt.Sprintf(format, getType(obj.nType), obj.name)
-			}
+			f := obj.setFilePrefix(o.Parms.Dir + "/%v.%v." + o.Parms.Ext)
 			c.Names = append(c.Names, f)
 			c.nType = obj.nType
 		}
