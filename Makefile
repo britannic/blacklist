@@ -24,7 +24,7 @@
 	# DATE=$(shell date -u '+%Y-%m-%d_%I:%M:%S%p')
 	DATE=$(shell date +'%FT%H%M%S')
 	GIT=$(shell git rev-parse --short HEAD)
-	LIC=LICENSE
+	LIC=license
 	PAYLOAD=./.payload
 	README=README.md
 	READMEHDR=README.header
@@ -66,6 +66,9 @@ clean:
 copyright:
 	$(GSED) '$(COPYRIGHT)' $(README)
 	$(GSED) '$(COPYRIGHT)' $(LIC)
+	cp $(LIC) internal/edgeos/
+	cp $(LIC) internal/regx/
+	cp $(LIC) internal/tdata/
 
 .PHONY: coverage 
 coverage: 
