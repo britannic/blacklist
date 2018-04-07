@@ -635,178 +635,179 @@ var (
     }
 }`
 
-// 	SingleSource = `interfaces {
-//     ethernet eth0 {
-//         address dhcp
-//         address dhcpv6
-//         description "External WAN"
-//         dhcp-options {
-//             default-route update
-//             default-route-distance 210
-//             name-server no-update
-//         }
-//         duplex auto
-//         speed auto
-//     }
-//     ethernet eth1 {
-//         address 192.168.150.1/24
-//         description "Internal LAN"
-//         duplex auto
-//         mtu 1500
-//         speed auto
-//     }
-//     ethernet eth2 {
-//         address 192.168.200.1/24
-//         description DMZ
-//         duplex auto
-//         mtu 1500
-//         speed auto
-//     }
-//     ethernet eth3 {
-//         duplex auto
-//         speed auto
-//     }
-//     ethernet eth4 {
-//         duplex auto
-//         speed auto
-//     }
-//     loopback lo {
-//     }
-//     switch switch0 {
-//         mtu 1500
-//     }
-// }
-// service {
-//     dhcp-server {
-//         disabled false
-//         hostfile-update enable
-//         shared-network-name LAN0 {
-//             authoritative enable
-//             subnet 192.168.150.0/24 {
-//                 default-router 192.168.150.1
-//                 dns-server 192.168.150.1
-//                 domain-name er-x.local
-//                 lease 86400
-//                 start 192.168.150.100 {
-//                     stop 192.168.150.200
-//                 }
-//             }
-//         }
-//     }
-//     dns {
-//         forwarding {
-//             blacklist {
-//                 disabled false
-//                 dns-redirect-ip 0.0.0.0
-//                 hosts {
-//                     source yoyo {
-//                         description "Fully Qualified Domain Names only - no prefix to strip"
-//                         prefix "127.0.0.1 "
-//                         url http://pgl.yoyo.org/as/serverlist.php
-//                     }
-//                 }
-//             }
-//             cache-size 150
-//             listen-on eth1
-//             listen-on eth2
-//             name-server 208.67.220.220
-//             options bogus-priv
-//             options domain=er-x.local
-//             options expand-hosts
-//             options listen-address=::1
-//             options listen-address=127.0.0.1
-//             options localise-queries
-//             options strict-order
-//         }
-//     }
-//     gui {
-//         https-port 443
-//         listen-address 192.168.150.1
-//     }
-//     ssh {
-//         disable-password-authentication
-//         port 22
-//         protocol-version v2
-//     }
-// }
-// system {
-//     conntrack {
-//         expect-table-size 4096
-//         hash-size 4096
-//         ignore {
-//             rule 10 {
-//                 destination {
-//                     address 255.255.255.255
-//                 }
-//             }
-//         }
-//         table-size 262144
-//     }
-//     domain-search {
-//         domain ashcreek.home
-//     }
-//     host-name er-x
-//     ip {
-//         override-hostname-ip 192.168.150.1
-//     }
-//     login {
-//         banner {
-//             post-login "\nWelcome to EdgeOS!\n"
-//             pre-login "\n\n\n\tWARNING *** WARNING *** WARNING *** WARNING *** WARNING\n\n\n\tWARNING: Criminal and civil penalties may be imposed for obtaining\n\tunauthorized access to this system or for causing intentional,\n\tunauthorized damage, deletion, alteration, or insertion of data.\n\tAny information stored, processed, or transmitted to this system\n\tmay be monitored, used, or disclosed by authorized personnel,\n\tincluding law enforcement. Email sysadmin@empirecreekcircle.com\n\tto gain access to this equipment if you need authorization.\n\n\n"
-//         }
-//         user nbnt {
-//             authentication {
-//                 encrypted-password ****************
-//                 plaintext-password ****************
-//                 public-keys root@MacBook-Air.local {
-//                     key ****************
-//                     type ssh-rsa
-//                 }
-//             }
-//             full-name Admin
-//             level admin
-//         }
-//     }
-//     name-server 127.0.0.1
-//     ntp {
-//         server 0.ubnt.pool.ntp.org {
-//         }
-//         server 1.ubnt.pool.ntp.org {
-//         }
-//     }
-//     package {
-//         repository wheezy {
-//             components "main contrib non-free"
-//             distribution wheezy
-//             url http://http.us.debian.org/debian/
-//         }
-//     }
-//     syslog {
-//         global {
-//             archive {
-//                 files 10
-//                 size 250
-//             }
-//             facility all {
-//                 level notice
-//             }
-//             facility cron {
-//                 level err
-//             }
-//             facility protocols {
-//                 level debug
-//             }
-//         }
-//     }
-//     task-scheduler {
-//         task update_blacklists {
-//             executable {
-//                 path /config/scripts/update-dnsmasq
-//             }
-//             interval 1d
-//         }
-//     }
-//     time-zone America/Los_Angeles
-// }
-// `
+	// SingleSource is a single source EdgeOS configuration
+	SingleSource = `interfaces {
+    ethernet eth0 {
+        address dhcp
+        address dhcpv6
+        description "External WAN"
+        dhcp-options {
+            default-route update
+            default-route-distance 210
+            name-server no-update
+        }
+        duplex auto
+        speed auto
+    }
+    ethernet eth1 {
+        address 192.168.150.1/24
+        description "Internal LAN"
+        duplex auto
+        mtu 1500
+        speed auto
+    }
+    ethernet eth2 {
+        address 192.168.200.1/24
+        description DMZ
+        duplex auto
+        mtu 1500
+        speed auto
+    }
+    ethernet eth3 {
+        duplex auto
+        speed auto
+    }
+    ethernet eth4 {
+        duplex auto
+        speed auto
+    }
+    loopback lo {
+    }
+    switch switch0 {
+        mtu 1500
+    }
+}
+service {
+    dhcp-server {
+        disabled false
+        hostfile-update enable
+        shared-network-name LAN0 {
+            authoritative enable
+            subnet 192.168.150.0/24 {
+                default-router 192.168.150.1
+                dns-server 192.168.150.1
+                domain-name er-x.local
+                lease 86400
+                start 192.168.150.100 {
+                    stop 192.168.150.200
+                }
+            }
+        }
+    }
+    dns {
+        forwarding {
+            blacklist {
+                disabled false
+                dns-redirect-ip 0.0.0.0
+                hosts {
+                    source yoyo {
+                        description "Fully Qualified Domain Names only - no prefix to strip"
+                        prefix "127.0.0.1 "
+                        url http://pgl.yoyo.org/as/serverlist.php
+                    }
+                }
+            }
+            cache-size 150
+            listen-on eth1
+            listen-on eth2
+            name-server 208.67.220.220
+            options bogus-priv
+            options domain=er-x.local
+            options expand-hosts
+            options listen-address=::1
+            options listen-address=127.0.0.1
+            options localise-queries
+            options strict-order
+        }
+    }
+    gui {
+        https-port 443
+        listen-address 192.168.150.1
+    }
+    ssh {
+        disable-password-authentication
+        port 22
+        protocol-version v2
+    }
+}
+system {
+    conntrack {
+        expect-table-size 4096
+        hash-size 4096
+        ignore {
+            rule 10 {
+                destination {
+                    address 255.255.255.255
+                }
+            }
+        }
+        table-size 262144
+    }
+    domain-search {
+        domain ashcreek.home
+    }
+    host-name er-x
+    ip {
+        override-hostname-ip 192.168.150.1
+    }
+    login {
+        banner {
+            post-login "\nWelcome to EdgeOS!\n"
+            pre-login "\n\n\n\tWARNING *** WARNING *** WARNING *** WARNING *** WARNING\n\n\n\tWARNING: Criminal and civil penalties may be imposed for obtaining\n\tunauthorized access to this system or for causing intentional,\n\tunauthorized damage, deletion, alteration, or insertion of data.\n\tAny information stored, processed, or transmitted to this system\n\tmay be monitored, used, or disclosed by authorized personnel,\n\tincluding law enforcement. Email sysadmin@empirecreekcircle.com\n\tto gain access to this equipment if you need authorization.\n\n\n"
+        }
+        user nbnt {
+            authentication {
+                encrypted-password ****************
+                plaintext-password ****************
+                public-keys root@MacBook-Air.local {
+                    key ****************
+                    type ssh-rsa
+                }
+            }
+            full-name Admin
+            level admin
+        }
+    }
+    name-server 127.0.0.1
+    ntp {
+        server 0.ubnt.pool.ntp.org {
+        }
+        server 1.ubnt.pool.ntp.org {
+        }
+    }
+    package {
+        repository wheezy {
+            components "main contrib non-free"
+            distribution wheezy
+            url http://http.us.debian.org/debian/
+        }
+    }
+    syslog {
+        global {
+            archive {
+                files 10
+                size 250
+            }
+            facility all {
+                level notice
+            }
+            facility cron {
+                level err
+            }
+            facility protocols {
+                level debug
+            }
+        }
+    }
+    task-scheduler {
+        task update_blacklists {
+            executable {
+                path /config/scripts/update-dnsmasq
+            }
+            interval 1d
+        }
+    }
+    time-zone America/Los_Angeles
+}
+`
 )

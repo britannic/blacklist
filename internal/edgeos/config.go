@@ -282,6 +282,38 @@ func isTnode(tnode string) bool {
 	return false
 }
 
+func (c *Config) excinc(t [][]byte, tnode string) {
+	switch string(t[1]) {
+	case "exclude":
+		if isTnode(tnode) {
+			c.tree[tnode].exc = append(c.tree[tnode].exc, string(t[2]))
+		}
+	case "include":
+		if isTnode(tnode) {
+			c.tree[tnode].inc = append(c.tree[tnode].inc, string(t[2]))
+		}
+	}
+}
+
+func (c *Config) label(name [][]byte, o *source, tnode string) {
+	switch string(name[1]) {
+	case "description":
+		o.desc = string(name[2])
+	case blackhole:
+		o.ip = string(name[2])
+	case files:
+		o.file = string(name[2])
+		o.ltype = string(name[1])
+		c.tree[tnode].Objects.xx = append(c.tree[tnode].Objects.xx, o)
+	case "prefix":
+		o.prefix = string(name[2])
+	case urls:
+		o.ltype = string(name[1])
+		o.url = string(name[2])
+		c.tree[tnode].Objects.xx = append(c.tree[tnode].Objects.xx, o)
+	}
+}
+
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 func (c *Config) ReadCfg(r ConfLoader) error {
 	var (
@@ -300,16 +332,7 @@ LINE:
 		switch {
 		case find.RX[regx.MLTI].Match(line):
 			incExc := find.SubMatch(regx.MLTI, line)
-			switch string(incExc[1]) {
-			case "exclude":
-				if isTnode(tnode) {
-					c.tree[tnode].exc = append(c.tree[tnode].exc, string(incExc[2]))
-				}
-			case "include":
-				if isTnode(tnode) {
-					c.tree[tnode].inc = append(c.tree[tnode].inc, string(incExc[2]))
-				}
-			}
+			c.excinc(incExc, tnode)
 		case find.RX[regx.NODE].Match(line):
 			node := find.SubMatch(regx.NODE, line)
 			tnode = string(node[1])
@@ -340,22 +363,7 @@ LINE:
 			if isTnode(tnode) {
 				name := find.SubMatch(regx.NAME, line)
 				if o != nil {
-					switch string(name[1]) {
-					case "description":
-						o.desc = string(name[2])
-					case blackhole:
-						o.ip = string(name[2])
-					case files:
-						o.file = string(name[2])
-						o.ltype = string(name[1])
-						c.tree[tnode].Objects.xx = append(c.tree[tnode].Objects.xx, o)
-					case "prefix":
-						o.prefix = string(name[2])
-					case urls:
-						o.ltype = string(name[1])
-						o.url = string(name[2])
-						c.tree[tnode].Objects.xx = append(c.tree[tnode].Objects.xx, o)
-					}
+					c.label(name, o, tnode)
 				}
 			}
 		case find.RX[regx.DESC].Match(line) || find.RX[regx.CMNT].Match(line) || find.RX[regx.MISC].Match(line):
