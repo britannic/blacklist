@@ -13,57 +13,74 @@ Package regx provides regex objects for processing data in files and web content
 
 
 ## <a name="pkg-index">Index</a>
-* [Variables](#pkg-variables)
-* [func Get(t, b []byte) (r [][]byte)](#Get)
+* [type Leaf](#Leaf)
+  * [func (i Leaf) String() string](#Leaf.String)
 * [type OBJ](#OBJ)
-  * [func (rx *OBJ) String() (s string)](#OBJ.String)
-  * [func (rx *OBJ) StripPrefixAndSuffix(line []byte, prefix string) ([]byte, bool)](#OBJ.StripPrefixAndSuffix)
+  * [func NewRegex() *OBJ](#NewRegex)
+  * [func (o *OBJ) String() string](#OBJ.String)
+  * [func (o *OBJ) StripPrefixAndSuffix(line []byte, prefix string) ([]byte, bool)](#OBJ.StripPrefixAndSuffix)
+  * [func (o *OBJ) SubMatch(t Leaf, b []byte) [][]byte](#OBJ.SubMatch)
 
 
 #### <a name="pkg-files">Package files</a>
-[regx.go](/src/github.com/britannic/blacklist/internal/regx/regx.go) 
+[leaf_string.go](/src/github.com/britannic/blacklist/internal/regx/leaf_string.go) [regx.go](/src/github.com/britannic/blacklist/internal/regx/regx.go) 
 
 
 
-## <a name="pkg-variables">Variables</a>
+
+
+
+## <a name="Leaf">type</a> [Leaf](/src/target/regx.go?s=181:194#L13)
 ``` go
-var Obj = &OBJ{
-    CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
-    DESC: regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
-    DSBL: regexp.MustCompile(`^(?:disabled)+\s([\S]+)$`),
-    FLIP: regexp.MustCompile(`^(?:address=[/][.]{0,1}.*[/])(.*)$`),
-    FQDN: regexp.MustCompile(`\b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\b`),
-    HOST: regexp.MustCompile(`^(?:address=[/][.]{0,1})(.*)(?:[/].*)$`),
-    HTTP: regexp.MustCompile(`(?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)`),
-    IPBH: regexp.MustCompile(`^(?:dns-redirect-ip)+\s([\S]+)$`),
-    LBRC: regexp.MustCompile(`[{]`),
-    LEAF: regexp.MustCompile(`^([\S]+)+\s([\S]+)\s[{]{1}$`),
-    MISC: regexp.MustCompile(`^([\w-]+)$`),
-    MLTI: regexp.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`),
-    MPTY: regexp.MustCompile(`^$`),
-    NAME: regexp.MustCompile(`^([\w-]+)\s["']{0,1}(.*?)["']{0,1}$`),
-    NODE: regexp.MustCompile(`^([\w-]+)\s[{]{1}$`),
-    RBRC: regexp.MustCompile(`[}]`),
-    SUFX: regexp.MustCompile(`(?:#.*|\{.*|[/[].*)\z`),
-}
+type Leaf int
 ```
-Obj is a struct of *OBJ populated with precompiled regex objects
+Leaf is a config label
 
 
-
-## <a name="Get">func</a> [Get](/src/target/regx.go?s=1447:1481#L38)
 ``` go
-func Get(t, b []byte) (r [][]byte)
+const (
+    CMNT Leaf = iota + 1000
+    DESC
+    DSBL
+    FLIP
+    FQDN
+    HOST
+    HTTP
+    IPBH
+    LEAF
+    LBRC
+    MISC
+    MLTI
+    MPTY
+    NAME
+    NODE
+    RBRC
+    SUFX
+)
 ```
-Get returns an array compiled regx OBJs
+go:generate stringer -type=Leaf
+Leaf label regx map keys
 
 
 
 
-## <a name="OBJ">type</a> [OBJ](/src/target/regx.go?s=195:331#L12)
+
+
+
+
+
+
+### <a name="Leaf.String">func</a> (Leaf) [String](/src/target/leaf_string.go?s=280:309#L11)
+``` go
+func (i Leaf) String() string
+```
+
+
+
+## <a name="OBJ">type</a> [OBJ](/src/target/regx.go?s=523:555#L42)
 ``` go
 type OBJ struct {
-    CMNT, DESC, DSBL, FLIP, FQDN, HOST, HTTP, IPBH, LEAF, LBRC, MISC, MLTI, MPTY, NAME, NODE, RBRC, SUFX *regexp.Regexp
+    RX regexMap
 }
 ```
 OBJ is a struct of regex precompiled objects
@@ -74,21 +91,37 @@ OBJ is a struct of regex precompiled objects
 
 
 
-
-
-
-### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=2389:2423#L84)
+### <a name="NewRegex">func</a> [NewRegex](/src/target/regx.go?s=640:660#L47)
 ``` go
-func (rx *OBJ) String() (s string)
+func NewRegex() *OBJ
+```
+NewRegex returns a map of OBJ populated with a map of precompiled regex objects
+
+
+
+
+
+### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=1993:2022#L81)
+``` go
+func (o *OBJ) String() string
 ```
 
 
 
-### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2644:2722#L93)
+### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2227:2304#L91)
 ``` go
-func (rx *OBJ) StripPrefixAndSuffix(line []byte, prefix string) ([]byte, bool)
+func (o *OBJ) StripPrefixAndSuffix(line []byte, prefix string) ([]byte, bool)
 ```
 StripPrefixAndSuffix strips the prefix and suffix
+
+
+
+
+### <a name="OBJ.SubMatch">func</a> (\*OBJ) [SubMatch](/src/target/regx.go?s=1787:1836#L72)
+``` go
+func (o *OBJ) SubMatch(t Leaf, b []byte) [][]byte
+```
+SubMatch extracts the configuration value for a matched label
 
 
 

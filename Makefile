@@ -88,6 +88,9 @@ generate:
 	cd internal/edgeos
 	$(GOGEN)
 	cd ../..
+	cd internal/regx
+	$(GOGEN)
+	cd ../..	
 
 .PHONY: mips
 mips: mips64 mipsle

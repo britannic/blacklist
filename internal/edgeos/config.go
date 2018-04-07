@@ -57,7 +57,6 @@ const (
 	rootNode  = "blacklist"
 	src       = "source"
 	urls      = "url"
-	// zones     = "zones"
 
 	// ExcDomns labels domain exclusions
 	ExcDomns = "whitelisted-subdomains"
@@ -237,43 +236,14 @@ func (c *Config) Get(node string) *Objects {
 
 // GetAll returns an array of Objects
 func (c *Config) GetAll(ltypes ...string) *Objects {
-	var (
-		newDomns = true
-		newHosts = true
-		o        = &Objects{Parms: c.Parms}
-	)
+	o := &Objects{Parms: c.Parms}
 
 NEXT:
 	for _, node := range c.sortKeys() {
 		if node == rootNode {
 			continue NEXT
 		}
-		switch ltypes {
-		case nil:
-			o.addObj(c, node)
-		default:
-			for _, ltype := range ltypes {
-				switch ltype {
-				case PreDomns:
-					if newDomns && node == domains {
-						o.xx = append(o.xx, c.addInc(node))
-						newDomns = false
-					}
-				case PreHosts:
-					if newHosts && node == hosts {
-						o.xx = append(o.xx, c.addInc(node))
-						newHosts = false
-					}
-				default:
-					obj := c.validate(node).xx
-					for i := range obj {
-						if obj[i].ltype == ltype {
-							o.xx = append(o.xx, obj[i])
-						}
-					}
-				}
-			}
-		}
+		o.objects(c, node, ltypes...)
 	}
 	return o
 }
@@ -319,7 +289,7 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 		leaf  string
 		nodes []string
 		o     *source
-		rx    = regx.Obj
+		find  = regx.NewRegex()
 		tnode string
 	)
 
@@ -328,8 +298,8 @@ LINE:
 		line := bytes.TrimSpace(b.Bytes())
 
 		switch {
-		case rx.MLTI.Match(line):
-			incExc := regx.Get([]byte("mlti"), line)
+		case find.RX[regx.MLTI].Match(line):
+			incExc := find.SubMatch(regx.MLTI, line)
 			switch string(incExc[1]) {
 			case "exclude":
 				if isTnode(tnode) {
@@ -340,15 +310,15 @@ LINE:
 					c.tree[tnode].inc = append(c.tree[tnode].inc, string(incExc[2]))
 				}
 			}
-		case rx.NODE.Match(line):
-			node := regx.Get([]byte("node"), line)
+		case find.RX[regx.NODE].Match(line):
+			node := find.SubMatch(regx.NODE, line)
 			tnode = string(node[1])
 			nodes = append(nodes, tnode)
 			if isTnode(tnode) {
 				c.tree[tnode] = newSource()
 			}
-		case rx.LEAF.Match(line):
-			srcName := regx.Get([]byte("leaf"), line)
+		case find.RX[regx.LEAF].Match(line):
+			srcName := find.SubMatch(regx.LEAF, line)
 			leaf = string(srcName[2])
 			nodes = append(nodes, string(srcName[1]))
 
@@ -357,18 +327,18 @@ LINE:
 				o.name = leaf
 				o.nType = getType(tnode).(ntype)
 			}
-		case rx.DSBL.Match(line):
+		case find.RX[regx.DSBL].Match(line):
 			if isTnode(tnode) {
-				c.tree[tnode].disabled = strToBool(string(regx.Get([]byte("dsbl"), line)[1]))
+				c.tree[tnode].disabled = strToBool(string(find.SubMatch(regx.DSBL, line)[1]))
 				c.Parms.Disabled = c.tree[tnode].disabled
 			}
-		case rx.IPBH.Match(line) && nodes[len(nodes)-1] != src:
+		case find.RX[regx.IPBH].Match(line) && nodes[len(nodes)-1] != src:
 			if isTnode(tnode) {
-				c.tree[tnode].ip = string(regx.Get([]byte("ipbh"), line)[1])
+				c.tree[tnode].ip = string(find.SubMatch(regx.IPBH, line)[1])
 			}
-		case rx.NAME.Match(line):
+		case find.RX[regx.NAME].Match(line):
 			if isTnode(tnode) {
-				name := regx.Get([]byte("name"), line)
+				name := find.SubMatch(regx.NAME, line)
 				if o != nil {
 					switch string(name[1]) {
 					case "description":
@@ -388,9 +358,9 @@ LINE:
 					}
 				}
 			}
-		case rx.DESC.Match(line) || rx.CMNT.Match(line) || rx.MISC.Match(line):
+		case find.RX[regx.DESC].Match(line) || find.RX[regx.CMNT].Match(line) || find.RX[regx.MISC].Match(line):
 			continue LINE
-		case rx.RBRC.Match(line):
+		case find.RX[regx.RBRC].Match(line):
 			if len(nodes) > 1 {
 				nodes = nodes[:len(nodes)-1] // pop last node
 				tnode = nodes[len(nodes)-1]

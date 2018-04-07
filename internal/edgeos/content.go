@@ -346,7 +346,7 @@ func (o *source) process() *bList {
 		b                 = bufio.NewScanner(o.r)
 		f                 string
 		drop, found, kept int
-		rx                = regx.Obj
+		find              = regx.NewRegex()
 	)
 
 NEXT:
@@ -359,9 +359,9 @@ NEXT:
 		case bytes.HasPrefix(line, []byte(o.prefix)):
 			var ok bool
 
-			if line, ok = rx.StripPrefixAndSuffix(line, o.prefix); ok {
+			if line, ok = find.StripPrefixAndSuffix(line, o.prefix); ok {
 				found++
-				fqdns := rx.FQDN.FindAll(line, -1)
+				fqdns := find.RX[regx.FQDN].FindAll(line, -1)
 
 			FQDN:
 				for _, fqdn := range fqdns {

@@ -85,11 +85,7 @@ func (o *Objects) Files() *CFile {
 
 // Filter returns a subset of Objects filtered by ltype
 func (o *Objects) Filter(ltype string) *Objects {
-	var (
-		sources = Objects{Parms: o.Parms}
-		// xFiles  = "-" + files
-		// xURLs   = "-" + urls
-	)
+	sources := Objects{Parms: o.Parms}
 
 	switch ltype {
 	case files:
@@ -98,24 +94,12 @@ func (o *Objects) Filter(ltype string) *Objects {
 				sources.xx = append(sources.xx, obj)
 			}
 		}
-	// case xFiles:
-	// 	for _, obj := range o.xx {
-	// 		if obj.ltype != files {
-	// 			sources.xx = append(sources.xx, obj)
-	// 		}
-	// 	}
 	case urls:
 		for _, obj := range o.xx {
 			if obj.ltype == urls && obj.url != "" {
 				sources.xx = append(sources.xx, obj)
 			}
 		}
-	// case xURLs:
-	// 	for _, obj := range o.xx {
-	// 		if obj.ltype != urls {
-	// 			sources.xx = append(sources.xx, obj)
-	// 		}
-	// 	}
 	default:
 		sources = Objects{Parms: o.Parms}
 	}
@@ -153,6 +137,40 @@ func getLtypeDesc(l string) string {
 func (o *source) includes() io.Reader {
 	sort.Strings(o.inc)
 	return strings.NewReader(strings.Join(o.inc, "\n"))
+}
+
+func (o *Objects) objects(c *Config, node string, ltypes ...string) {
+	var (
+		newDomns = true
+		newHosts = true
+	)
+
+	switch ltypes {
+	case nil:
+		o.addObj(c, node)
+	default:
+		for _, ltype := range ltypes {
+			switch ltype {
+			case PreDomns:
+				if newDomns && node == domains {
+					o.xx = append(o.xx, c.addInc(node))
+					newDomns = false
+				}
+			case PreHosts:
+				if newHosts && node == hosts {
+					o.xx = append(o.xx, c.addInc(node))
+					newHosts = false
+				}
+			default:
+				obj := c.validate(node).xx
+				for i := range obj {
+					if obj[i].ltype == ltype {
+						o.xx = append(o.xx, obj[i])
+					}
+				}
+			}
+		}
+	}
 }
 
 // Names returns a sorted slice of Objects names

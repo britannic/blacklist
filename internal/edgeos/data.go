@@ -25,7 +25,6 @@ const (
 	preDomn              // Pre-configured blacklisted domains
 	preHost              // Pre-configured blacklisted hosts
 	root                 // Topmost root node
-	// zone                 // Unused - future application
 )
 
 // booltoStr converts a boolean ("true" or "false") to a string equivalent
@@ -144,8 +143,6 @@ func typeInt(n ntype) (s string) {
 		s = rootNode
 	case unknown:
 		s = notknown
-		// case zone:
-		// 	s = zones
 	}
 	return s
 }
@@ -170,8 +167,6 @@ func typeStr(s string) (n ntype) {
 		n = preHost
 	case rootNode:
 		n = root
-		// case zones:
-		// 	n = zone
 	}
 	return n
 }
