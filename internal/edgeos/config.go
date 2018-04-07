@@ -19,7 +19,7 @@ import (
 // tree is a map of top nodes
 type tree map[string]*source
 
-// ConfLoader interface defines configuration load method
+// ConfLoader interface handles multiple configuration load methods
 type ConfLoader interface {
 	read() io.Reader
 }
@@ -320,13 +320,34 @@ func (c *Config) addSource(tnode string) {
 	}
 }
 
-// func (o *source) addLeaf(srcName [][]byte, tnode string) {
-// 	if bytes.Equal(srcName[1], []byte(src)) {
-// 		o = newSource()
-// 		o.name = string(srcName[2])
-// 		o.nType = getType(tnode).(ntype)
-// 	}
-// }
+func addLeaf(o *source, srcName [][]byte, tnode string) {
+	if bytes.Equal(srcName[1], []byte(src)) {
+		o.name = string(srcName[2])
+		o.nType = getType(tnode).(ntype)
+	}
+}
+
+func (c *Config) disable(line []byte, tnode string, find *regx.OBJ) {
+	if isTnode(tnode) {
+		c.tree[tnode].disabled = strToBool(string(find.SubMatch(regx.DSBL, line)[1]))
+		c.Parms.Disabled = c.tree[tnode].disabled
+	}
+}
+
+func (c *Config) redirect(line []byte, tnode string, find *regx.OBJ) {
+	if isTnode(tnode) {
+		c.tree[tnode].ip = string(find.SubMatch(regx.IPBH, line)[1])
+	}
+}
+
+func (c *Config) leafname(o *source, line []byte, tnode string, find *regx.OBJ) {
+	if isTnode(tnode) {
+		name := find.SubMatch(regx.NAME, line)
+		if o != nil {
+			c.label(name, o, tnode)
+		}
+	}
+}
 
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 func (c *Config) ReadCfg(r ConfLoader) error {
@@ -353,31 +374,15 @@ LINE:
 			c.addSource(tnode)
 		case find.RX[regx.LEAF].Match(line):
 			srcName := find.SubMatch(regx.LEAF, line)
-			leaf := string(srcName[2])
 			nodes = append(nodes, string(srcName[1]))
-			// o.addLeaf(srcName, tnode)
-
-			if bytes.Equal(srcName[1], []byte(src)) {
-				o = newSource()
-				o.name = leaf
-				o.nType = getType(tnode).(ntype)
-			}
+			o = newSource()
+			addLeaf(o, srcName, tnode)
 		case find.RX[regx.DSBL].Match(line):
-			if isTnode(tnode) {
-				c.tree[tnode].disabled = strToBool(string(find.SubMatch(regx.DSBL, line)[1]))
-				c.Parms.Disabled = c.tree[tnode].disabled
-			}
+			c.disable(line, tnode, find)
 		case find.RX[regx.IPBH].Match(line) && nodes[len(nodes)-1] != src:
-			if isTnode(tnode) {
-				c.tree[tnode].ip = string(find.SubMatch(regx.IPBH, line)[1])
-			}
+			c.redirect(line, tnode, find)
 		case find.RX[regx.NAME].Match(line):
-			if isTnode(tnode) {
-				name := find.SubMatch(regx.NAME, line)
-				if o != nil {
-					c.label(name, o, tnode)
-				}
-			}
+			c.leafname(o, line, tnode, find)
 		case find.RX[regx.DESC].Match(line) || find.RX[regx.CMNT].Match(line) || find.RX[regx.MISC].Match(line):
 			continue LINE
 		case find.RX[regx.RBRC].Match(line):
