@@ -320,7 +320,7 @@ func (c *Config) addSource(tnode string) {
 	}
 }
 
-func addLeaf(o *source, srcName [][]byte, tnode string) {
+func (o *source) addLeaf(srcName [][]byte, tnode string) {
 	if bytes.Equal(srcName[1], []byte(src)) {
 		o.name = string(srcName[2])
 		o.nType = getType(tnode).(ntype)
@@ -359,7 +359,6 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 		tnode string
 	)
 
-LINE:
 	for b.Scan() {
 		line := bytes.TrimSpace(b.Bytes())
 
@@ -376,7 +375,7 @@ LINE:
 			srcName := find.SubMatch(regx.LEAF, line)
 			nodes = append(nodes, string(srcName[1]))
 			o = newSource()
-			addLeaf(o, srcName, tnode)
+			o.addLeaf(srcName, tnode)
 		case find.RX[regx.DSBL].Match(line):
 			c.disable(line, tnode, find)
 		case find.RX[regx.IPBH].Match(line) && nodes[len(nodes)-1] != src:
@@ -384,7 +383,7 @@ LINE:
 		case find.RX[regx.NAME].Match(line):
 			c.leafname(o, line, tnode, find)
 		case find.RX[regx.DESC].Match(line), find.RX[regx.CMNT].Match(line), find.RX[regx.MISC].Match(line):
-			continue LINE
+			continue 
 		case find.RX[regx.RBRC].Match(line):
 			if len(nodes) > 1 {
 				nodes = nodes[:len(nodes)-1] // pop last node
