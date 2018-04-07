@@ -314,11 +314,24 @@ func (c *Config) label(name [][]byte, o *source, tnode string) {
 	}
 }
 
+func (c *Config) addSource(tnode string) {
+	if isTnode(tnode) {
+		c.tree[tnode] = newSource()
+	}
+}
+
+// func (o *source) addLeaf(srcName [][]byte, tnode string) {
+// 	if bytes.Equal(srcName[1], []byte(src)) {
+// 		o = newSource()
+// 		o.name = string(srcName[2])
+// 		o.nType = getType(tnode).(ntype)
+// 	}
+// }
+
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 func (c *Config) ReadCfg(r ConfLoader) error {
 	var (
 		b     = bufio.NewScanner(r.read())
-		leaf  string
 		nodes []string
 		o     *source
 		find  = regx.NewRegex()
@@ -337,13 +350,12 @@ LINE:
 			node := find.SubMatch(regx.NODE, line)
 			tnode = string(node[1])
 			nodes = append(nodes, tnode)
-			if isTnode(tnode) {
-				c.tree[tnode] = newSource()
-			}
+			c.addSource(tnode)
 		case find.RX[regx.LEAF].Match(line):
 			srcName := find.SubMatch(regx.LEAF, line)
-			leaf = string(srcName[2])
+			leaf := string(srcName[2])
 			nodes = append(nodes, string(srcName[1]))
+			// o.addLeaf(srcName, tnode)
 
 			if bytes.Equal(srcName[1], []byte(src)) {
 				o = newSource()
