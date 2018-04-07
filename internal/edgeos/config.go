@@ -383,7 +383,7 @@ LINE:
 			c.redirect(line, tnode, find)
 		case find.RX[regx.NAME].Match(line):
 			c.leafname(o, line, tnode, find)
-		case find.RX[regx.DESC].Match(line) || find.RX[regx.CMNT].Match(line) || find.RX[regx.MISC].Match(line):
+		case find.RX[regx.DESC].Match(line), find.RX[regx.CMNT].Match(line), find.RX[regx.MISC].Match(line):
 			continue LINE
 		case find.RX[regx.RBRC].Match(line):
 			if len(nodes) > 1 {
