@@ -216,9 +216,13 @@ set service dns forwarding blacklist disabled false
 commit;save;exit
 ```
 
+[[Top]](#contents)
+
 ### **Does the install backup my blacklist configuration before deleting it?**
 
 * If a blacklist configuration already exists, the install routine will automatically back it up to /config/user-data/blacklist.$(date +'%FT%H%M%S').cmds
+
+[[Top]](#contents)
 
 ### **How do I back up my blacklist configuration and restore it later?**
 
@@ -291,6 +295,8 @@ creative1cdn.mobfox.com
 admicro2.vcmedia.vn
 admicro1.vcmedia.vn
 ```
+
+[[Top]](#contents)
 
 ### **How do can keep my USG configuration after an upgrade, provision or reboot?**
 
