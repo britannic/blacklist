@@ -13,6 +13,20 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+func init() {
+	/*
+	   The default failure mode is FailureHalts, which causes test execution
+	   within a `Convey` block to halt at the first failure. You could use
+	   that mode if the test were re-worked to aggregate all results into
+	   a collection that was verified after all goroutines have finished.
+	   But, as the code stands, you need to use the FailureContinues mode.
+
+	   The following line sets the failure mode for all tests in the package:
+	*/
+
+	SetDefaultFailureMode(FailureContinues)
+}
+
 func (o *opts) String() string {
 	var s string
 	o.VisitAll(func(f *mflag.Flag) {
@@ -171,7 +185,7 @@ func TestInitEnv(t *testing.T) {
 
 func TestProcessObjects(t *testing.T) {
 	c, _ := setUpEnv()
-	badFileError := `open EinenSieAugenBlick/hosts.tasty.blacklist.conf: no such file or directory`
+	badFileError := `open EinenSieAugenBlick/domains.tasty.blacklist.conf: no such file or directory`
 	Convey("Testing processObjects", t, func() {
 		Convey("Testing that the config is correctly loaded ", func() {
 			So(c.String(), ShouldEqual, mainGetConfig)
@@ -500,13 +514,18 @@ var (
         "cdn.visiblemeasures.com",
         "cloudfront.net",
         "coremetrics.com",
+        "dropbox.com",
         "ebay.com",
         "edgesuite.net",
+        "evernote.com",
+        "express.co.uk",
+        "feedly.com",
         "freedns.afraid.org",
         "github.com",
         "githubusercontent.com",
         "global.ssl.fastly.net",
         "google.com",
+        "googleads.g.doubleclick.net",
         "googleadservices.com",
         "googleapis.com",
         "googletagmanager.com",
@@ -515,16 +534,19 @@ var (
         "gvt1.com",
         "gvt1.net",
         "hb.disney.go.com",
-        "help.evernote.com",
         "herokuapp.com",
         "hp.com",
         "hulu.com",
         "images-amazon.com",
         "live.com",
+        "magnetmail1.net",
         "microsoft.com",
+        "microsoftonline.com",
         "msdn.com",
         "msecnd.net",
         "msftncsi.com",
+        "mywot.com",
+        "nsatc.net",
         "paypal.com",
         "pop.h-cdn.co",
         "rackcdn.com",
@@ -542,6 +564,8 @@ var (
         "sstatic.net",
         "static.chartbeat.com",
         "storage.googleapis.com",
+        "twimg.com",
+        "viewpoint.com",
         "windows.net",
         "xboxlive.com",
         "yimg.com",
@@ -550,7 +574,7 @@ var (
     },
     "domains": {
       "disabled": "false",
-      "excludes": ["bing.com"],
+      "excludes": [],
       "includes": [
         "adk2x.com",
         "adsrvr.org",
@@ -569,15 +593,21 @@ var (
         "wwwpromoter.com"
         ],
       "sources": [{
+        "NoBitCoin": {
+          "disabled": "false",
+          "description": "Blocking Web Browser Bitcoin Mining",
+          "prefix": "0.0.0.0",
+          "url": "https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt",
+        },
         "malc0de": {
           "disabled": "false",
           "description": "List of zones serving malicious executables observed by malc0de.com/database/",
-          "prefix": "zone ",
+          "prefix": "zone",
           "url": "http://malc0de.com/bl/ZONES",
         },
         "malwaredomains.com": {
           "disabled": "false",
-          "description": "Just domains",
+          "description": "Just Domains",
           "url": "http://mirror1.malwaredomains.com/files/justdomains",
         },
         "simple_tracking": {
@@ -589,36 +619,6 @@ var (
           "disabled": "false",
           "description": "abuse.ch ZeuS domain blocklist",
           "url": "https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist",
-        }
-    }]
-    },
-    "hosts": {
-      "disabled": "false",
-      "excludes": [],
-      "includes": ["beap.gemini.yahoo.com"],
-      "sources": [{
-        "openphish": {
-          "disabled": "false",
-          "description": "OpenPhish automatic phishing detection",
-          "prefix": "http",
-          "url": "https://openphish.com/feed.txt",
-        },
-        "raw.github.com": {
-          "disabled": "false",
-          "description": "This hosts file is a merged collection of hosts from reputable sources",
-          "prefix": "0.0.0.0 ",
-          "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
-        },
-        "sysctl.org": {
-          "disabled": "false",
-          "description": "This hosts file is a merged collection of hosts from cameleon",
-          "prefix": "127.0.0.1\t ",
-          "url": "http://sysctl.org/cameleon/hosts",
-        },
-        "yoyo": {
-          "disabled": "false",
-          "description": "Fully Qualified Domain Names only - no prefix to strip",
-          "url": "https://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext",
         },
         "tasty": {
           "disabled": "false",
@@ -627,9 +627,44 @@ var (
           "file": "./internal/testdata/blist.hosts.src",
         }
     }]
+    },
+    "hosts": {
+      "disabled": "false",
+      "excludes": [],
+      "includes": [
+        "ads.feedly.com",
+        "beap.gemini.yahoo.com"
+        ],
+      "sources": [{
+        "githubSteveBlack": {
+          "disabled": "false",
+          "description": "Blacklists adware and malware websites",
+          "prefix": "0.0.0.0",
+          "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
+        },
+        "hostsfile.org": {
+          "disabled": "false",
+          "description": "hostsfile.org bad hosts blacklist",
+          "prefix": "127.0.0.1",
+          "url": "http://www.hostsfile.org/Downloads/hosts.txt",
+        },
+        "openphish": {
+          "disabled": "false",
+          "description": "OpenPhish automatic phishing detection",
+          "prefix": "http",
+          "url": "https://openphish.com/feed.txt",
+        },
+        "sysctl.org": {
+          "disabled": "false",
+          "description": "This hosts file is a merged collection of hosts from Cameleon",
+          "prefix": "127.0.0.1",
+          "url": "http://sysctl.org/cameleon/hosts",
+        }
+    }]
     }
   }]
 }`
+
 	vanillaArgs = `  -dir string
     	Override dnsmasq directory (default "/etc/dnsmasq.d")
   -f <file>
@@ -686,13 +721,18 @@ var (
 "cdn.visiblemeasures.com":0,
 "cloudfront.net":0,
 "coremetrics.com":0,
+"dropbox.com":0,
 "ebay.com":0,
 "edgesuite.net":0,
+"evernote.com":0,
+"express.co.uk":0,
+"feedly.com":0,
 "freedns.afraid.org":0,
 "github.com":0,
 "githubusercontent.com":0,
 "global.ssl.fastly.net":0,
 "google.com":0,
+"googleads.g.doubleclick.net":0,
 "googleadservices.com":0,
 "googleapis.com":0,
 "googletagmanager.com":0,
@@ -701,16 +741,19 @@ var (
 "gvt1.com":0,
 "gvt1.net":0,
 "hb.disney.go.com":0,
-"help.evernote.com":0,
 "herokuapp.com":0,
 "hp.com":0,
 "hulu.com":0,
 "images-amazon.com":0,
 "live.com":0,
+"magnetmail1.net":0,
 "microsoft.com":0,
+"microsoftonline.com":0,
 "msdn.com":0,
 "msecnd.net":0,
 "msftncsi.com":0,
+"mywot.com":0,
+"nsatc.net":0,
 "paypal.com":0,
 "pop.h-cdn.co":0,
 "rackcdn.com":0,
@@ -728,6 +771,8 @@ var (
 "sstatic.net":0,
 "static.chartbeat.com":0,
 "storage.googleapis.com":0,
+"twimg.com":0,
+"viewpoint.com":0,
 "windows.net":0,
 "xboxlive.com":0,
 "yimg.com":0,

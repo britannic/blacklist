@@ -501,7 +501,7 @@ var (
 	// Live is a working EdgeOS configuration
 	Live = `blacklist {
         disabled false
-        dns-redirect-ip 0.0.0.0
+        dns-redirect-ip 192.168.168.1
         domains {
             include adk2x.com
             include adsrvr.org
@@ -539,6 +539,11 @@ var (
             source zeus {
                 description "abuse.ch ZeuS domain blocklist"
                 url https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
+            }
+        source tasty {
+            description "File source"
+            dns-redirect-ip 10.10.10.10
+            file ./internal/testdata/blist.hosts.src
             }
         }
         exclude 1e100.net
