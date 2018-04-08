@@ -33,6 +33,7 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
    1. [How do I use the command line switches?](#how-do-i-use-the-command-line-switches)
    1. [How do can keep my USG configuration after an upgrade, provision or reboot?](#how-do-can-keep-my-usg-configuration-after-an-upgrade-provision-or-reboot)
    1. [How does whitelisting work?](#how-does-whitelisting-work)
+   1. [What is the difference between blocking domains and hosts?](#what-is-the-difference-between-blocking-domains-and-hosts)
    1. [Which blacklist sources are installed by default?](#which-blacklist-sources-are-installed-by-default)
 
 ## **Overview**
@@ -453,6 +454,12 @@ set system name-server 127.0.0.1
 set system name-server '::1'
 commit; save; exit
 ```
+
+[[Top]](#contents)
+
+### **What is the difference between blocking domains and hosts?**
+
+* The difference is in the order of update-dnsmasq's processing algorithm. Domains are processed first and take precedence over hosts, so that a blacklisted domain will force the source parser to exclude subsequent hosts in the same domain. This makes for less entries to add to dnsmasq's list of lookups, since it will automatically redirect hosts for a blacklisted domain.
 
 [[Top]](#contents)
 
