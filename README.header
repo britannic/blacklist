@@ -459,6 +459,6 @@ commit; save; exit
 
 ### **What is the difference between blocking domains and hosts?**
 
-* The difference is in the order of update-dnsmasq's processing algorithm. Domains are processed first and take precedence over hosts, so that a blacklisted domain will force the source parser to exclude subsequent hosts in the same domain. This makes for less entries to add to dnsmasq's list of lookups, since it will automatically redirect hosts for a blacklisted domain.
+* The difference lies in the order of update-dnsmasq's processing algorithm. Domains are processed first and take precedence over hosts, so that a blacklisted domain will force update-dnsmasq's source parser to exclude subsequent hosts from the same domain. This reduces dnsmasq's list of lookups, since it will automatically redirect hosts for a blacklisted domain.
 
 [[Top]](#contents)
