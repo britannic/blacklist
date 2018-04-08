@@ -221,10 +221,9 @@ func (c *Config) Get(node string) *Objects {
 	o := &Objects{Parms: c.Parms, xx: []*source{}}
 	switch node {
 	case all:
-	NEXT:
 		for _, node := range c.sortKeys() {
 			if node == rootNode {
-				continue NEXT
+				continue
 			}
 			o.addObj(c, node)
 		}
@@ -238,10 +237,9 @@ func (c *Config) Get(node string) *Objects {
 func (c *Config) GetAll(ltypes ...string) *Objects {
 	o := &Objects{Parms: c.Parms}
 
-NEXT:
 	for _, node := range c.sortKeys() {
 		if node == rootNode {
-			continue NEXT
+			continue
 		}
 		o.objects(c, node, ltypes...)
 	}
@@ -349,6 +347,13 @@ func (c *Config) leafname(o *source, line []byte, tnode string, find *regx.OBJ) 
 	}
 }
 
+func isSource(nodes []string) bool {
+	if len(nodes) == 0 {
+		return true
+	}
+	return nodes[len(nodes)-1] != src
+}
+
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 func (c *Config) ReadCfg(r ConfLoader) error {
 	var (
@@ -378,12 +383,12 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 			o.addLeaf(srcName, tnode)
 		case find.RX[regx.DSBL].Match(line):
 			c.disable(line, tnode, find)
-		case find.RX[regx.IPBH].Match(line) && nodes[len(nodes)-1] != src:
+		case find.RX[regx.IPBH].Match(line) && isSource(nodes):
 			c.redirect(line, tnode, find)
 		case find.RX[regx.NAME].Match(line):
 			c.leafname(o, line, tnode, find)
 		case find.RX[regx.DESC].Match(line), find.RX[regx.CMNT].Match(line), find.RX[regx.MISC].Match(line):
-			continue 
+			continue
 		case find.RX[regx.RBRC].Match(line):
 			if len(nodes) > 1 {
 				nodes = nodes[:len(nodes)-1] // pop last node

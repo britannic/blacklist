@@ -349,13 +349,12 @@ func (o *source) process() *bList {
 		find              = regx.NewRegex()
 	)
 
-NEXT:
 	for b.Scan() {
 		line := bytes.TrimSpace(bytes.ToLower(b.Bytes()))
 
 		switch {
 		case bytes.HasPrefix(line, []byte("#")), bytes.HasPrefix(line, []byte("//")), bytes.HasPrefix(line, []byte("<")):
-			continue NEXT
+			continue
 		case bytes.HasPrefix(line, []byte(o.prefix)):
 			var ok bool
 
@@ -363,12 +362,11 @@ NEXT:
 				found++
 				fqdns := find.RX[regx.FQDN].FindAll(line, -1)
 
-			FQDN:
 				for _, fqdn := range fqdns {
 					switch {
 					case o.Dex.subKeyExists(fqdn):
 						drop++
-						continue FQDN
+						continue
 					case !o.Exc.keyExists(fqdn):
 						kept++
 						o.Exc.set(fqdn, 0)
@@ -378,7 +376,7 @@ NEXT:
 			}
 		default:
 			drop++
-			continue NEXT
+			continue
 		}
 	}
 

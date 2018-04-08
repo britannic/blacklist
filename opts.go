@@ -33,13 +33,12 @@ type opts struct {
 
 // cleanArgs removes flags when code is being tested
 func cleanArgs(args []string) (r []string) {
-NEXT:
 	for _, a := range args {
 		switch {
 		case strings.HasPrefix(a, "-test"):
-			continue NEXT
+			continue
 		case strings.HasPrefix(a, "-convey"):
-			continue NEXT
+			continue
 		default:
 			r = append(r, a)
 		}
