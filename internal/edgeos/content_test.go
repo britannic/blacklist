@@ -615,9 +615,9 @@ func TestProcessContent(t *testing.T) {
 				},
 				{
 					name:      "FileObj",
-					dropped:   6,
+					dropped:   7,
 					extracted: 20,
-					kept:      14,
+					kept:      13,
 					err:       fmt.Errorf("open %v/hosts./tasty.blacklist.conf: no such file or directory", dir),
 					exp:       filesMin,
 					expDexMap: list{
@@ -628,7 +628,7 @@ func TestProcessContent(t *testing.T) {
 					},
 					expExcMap: list{entry: entry{"ytimg.com": 0}},
 					f:         dir + "/hosts.tasty.blacklist.conf",
-					fdata:     "address=/0.really.bad.phishing.site.ru/10.10.10.10\naddress=/cw.bad.ultraadverts.site.eu/10.10.10.10\naddress=/really.bad.phishing.site.ru/10.10.10.10\naddress=/www.ytimg.com/10.10.10.10\n",
+					fdata:     "address=/0.really.bad.phishing.site.ru/10.10.10.10\naddress=/cw.bad.ultraadverts.site.eu/10.10.10.10\naddress=/really.bad.phishing.site.ru/10.10.10.10\n",
 					obj:       FileObj,
 				},
 			}

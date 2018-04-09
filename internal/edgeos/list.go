@@ -56,12 +56,11 @@ func (l list) String() string {
 
 // subKeyExists returns true if part of all of the key matches
 func (l list) subKeyExists(b []byte) bool {
-	// keys := getSubdomains(k)
-
-	// for k := range keys.entry {
-
-	for _, k := range bytes.Split(b, []byte(".")) {
-		if l.keyExists([]byte(k)) {
+	domainparts := bytes.Split(b, []byte("."))
+	for i := range Iter(len(domainparts) - 1) {
+		k := bytes.Join(domainparts[i:], []byte("."))
+		// fmt.Println(string(k))
+		if l.keyExists(k) {
 			return true
 		}
 	}

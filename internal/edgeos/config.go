@@ -348,7 +348,7 @@ func (c *Config) leafname(o *source, line []byte, tnode string, find *regx.OBJ) 
 	}
 }
 
-func isSource(nodes []string) bool {
+func isntSource(nodes []string) bool {
 	if len(nodes) == 0 {
 		return true
 	}
@@ -384,7 +384,7 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 			o.addLeaf(srcName, tnode)
 		case find.RX[regx.DSBL].Match(line):
 			c.disable(line, tnode, find)
-		case find.RX[regx.IPBH].Match(line) && isSource(nodes):
+		case find.RX[regx.IPBH].Match(line) && isntSource(nodes):
 			c.redirect(line, tnode, find)
 		case find.RX[regx.NAME].Match(line):
 			c.leafname(o, line, tnode, find)

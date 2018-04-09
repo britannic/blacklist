@@ -334,6 +334,12 @@ func TestInSession(t *testing.T) {
 	})
 }
 
+func TestIsSource(t *testing.T) {
+	Convey("Testing TestIsSource()", t, func() {
+		var node []string
+		So(isntSource(node), ShouldBeTrue)
+	})
+}
 func TestNodeExists(t *testing.T) {
 	Convey("Testing TestNodeExists()", t, func() {
 		var (
