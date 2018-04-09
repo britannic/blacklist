@@ -348,8 +348,8 @@ func (o *source) process() *bList {
 		add                   = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		area                  = typeInt(o.nType)
 		b                     = bufio.NewScanner(o.r)
-		f                     string
 		drop, extracted, kept int
+		f                     string
 		find                  = regx.NewRegex()
 	)
 

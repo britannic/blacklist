@@ -33,8 +33,7 @@ type Objects struct {
 }
 
 func (o *Objects) addObj(c *Config, node string) {
-	obj := c.addInc(node)
-	o.xx = append(o.xx, obj)
+	o.xx = append(o.xx, c.addInc(node))
 	o.xx = append(o.xx, c.tree.validate(node).xx...)
 }
 
@@ -52,16 +51,14 @@ func (o *source) excludes() io.Reader {
 	return strings.NewReader(strings.Join(o.exc, "\n"))
 }
 
-func (o *source) setFilePrefix(format string) (f string) {
+func (o *source) setFilePrefix(format string) string {
 	switch o.nType {
 	case excDomn, excRoot, preDomn:
-		f = fmt.Sprintf(format, domains, o.name)
+		return fmt.Sprintf(format, domains, o.name)
 	case excHost, preHost:
-		f = fmt.Sprintf(format, hosts, o.name)
-	default:
-		f = fmt.Sprintf(format, getType(o.nType), o.name)
+		return fmt.Sprintf(format, hosts, o.name)
 	}
-	return f
+	return fmt.Sprintf(format, getType(o.nType), o.name)
 }
 
 // Files returns a list of dnsmasq conf files from all srcs
@@ -96,8 +93,6 @@ func (o *Objects) Filter(ltype string) *Objects {
 				sources.xx = append(sources.xx, obj)
 			}
 		}
-	default:
-		sources = Objects{Parms: o.Parms}
 	}
 	return &sources
 }

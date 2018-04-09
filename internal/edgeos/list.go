@@ -58,9 +58,7 @@ func (l list) String() string {
 func (l list) subKeyExists(b []byte) bool {
 	domainparts := bytes.Split(b, []byte("."))
 	for i := range Iter(len(domainparts) - 1) {
-		k := bytes.Join(domainparts[i:], []byte("."))
-		// fmt.Println(string(k))
-		if l.keyExists(k) {
+		if l.keyExists(bytes.Join(domainparts[i:], []byte("."))) {
 			return true
 		}
 	}

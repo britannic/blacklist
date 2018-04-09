@@ -103,8 +103,7 @@ func Iter(i int) []struct{} {
 
 // NewWriter returns an io.Writer
 func NewWriter() io.Writer {
-	var b bytes.Buffer
-	return bufio.NewWriter(&b)
+	return bufio.NewWriter(&bytes.Buffer{})
 }
 
 // strToBool converts a string ("true" or "false") to boolean

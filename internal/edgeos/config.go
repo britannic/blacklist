@@ -86,7 +86,6 @@ func (c *Config) addExc(node string) *Objects {
 	var (
 		exc   = []string{}
 		ltype string
-		o     = &Objects{Parms: c.Parms}
 	)
 
 	switch node {
@@ -102,16 +101,20 @@ func (c *Config) addExc(node string) *Objects {
 		exc = c.tree[node].exc
 	}
 
-	o.xx = append(o.xx, &source{
+	return &Objects{
 		Parms: c.Parms,
-		desc:  getLtypeDesc(ltype),
-		exc:   exc,
-		ip:    c.tree.getIP(node),
-		ltype: ltype,
-		nType: getType(ltype).(ntype),
-		name:  ltype,
-	})
-	return o
+		xx: []*source{
+			&source{
+				Parms: c.Parms,
+				desc:  getLtypeDesc(ltype),
+				exc:   exc,
+				ip:    c.tree.getIP(node),
+				ltype: ltype,
+				nType: getType(ltype).(ntype),
+				name:  ltype,
+			},
+		},
+	}
 }
 
 func (c *Config) addInc(node string) *source {
@@ -247,7 +250,7 @@ func (c *Config) GetAll(ltypes ...string) *Objects {
 	return o
 }
 
-// InSession returns true if VyOS/EdgeOS configuration is in session
+// InSession returns true if VyOS/EdgeOS configure is in session
 func (c *Config) InSession() bool {
 	return os.ExpandEnv("$_OFR_CONFIGURE") == "ok"
 }
@@ -489,14 +492,13 @@ func (c *CFile) Strings() []string {
 	sort.Strings(c.Names)
 	return c.Names
 }
-
-func (b tree) getIP(node string) (ip string) {
+func (b tree) getIP(node string) string {
 	if _, ok := b[node]; ok {
-		if ip = b[node].ip; ip == "" {
-			ip = b[rootNode].ip
+		if b[node].ip != "" {
+			return b[node].ip
 		}
 	}
-	return ip
+	return b[rootNode].ip
 }
 
 func (b tree) validate(node string) *Objects {
