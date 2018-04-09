@@ -40,8 +40,9 @@ type Config struct {
 type ctr map[string]*stats
 
 type stats struct {
-	dropped int32
-	kept    int32
+	dropped   int32
+	extracted int32
+	kept      int32
 }
 
 const (

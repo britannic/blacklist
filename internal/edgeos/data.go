@@ -85,17 +85,6 @@ func getDnsmasqPrefix(o *source) string {
 	return o.Pfx.domain + "/%v/" + o.ip
 }
 
-// getSubdomains returns a map of subdomains
-func getSubdomains(b []byte) (l list) {
-	l.entry = make(entry)
-	keys := bytes.Split(b, []byte("."))
-	for i := range Iter(len(keys) - 1) {
-		k := bytes.Join(keys[i:], []byte("."))
-		l.entry[string(k)] = 0
-	}
-	return l
-}
-
 // getType returns the converted "in" type
 func getType(in interface{}) (out interface{}) {
 	switch in.(type) {

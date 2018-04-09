@@ -31,14 +31,20 @@ func TestKeys(t *testing.T) {
 func TestKeyExists(t *testing.T) {
 	Convey("Testing KeyExists()", t, func() {
 		full := []byte("top.one.two.three.four.five.six.intellitxt.com")
-		d := getSubdomains(full)
-		d.RWMutex = &sync.RWMutex{}
-
-		for k := range d.entry {
-			So(d.keyExists([]byte(k)), ShouldBeTrue)
+		exp := list{
+			RWMutex: &sync.RWMutex{},
+			entry: entry{"five.six.intellitxt.com": 0,
+				"four.five.six.intellitxt.com":                   0,
+				"intellitxt.com":                                 0,
+				"one.two.three.four.five.six.intellitxt.com":     0,
+				"six.intellitxt.com":                             0,
+				"three.four.five.six.intellitxt.com":             0,
+				"top.one.two.three.four.five.six.intellitxt.com": 0,
+				"two.three.four.five.six.intellitxt.com":         0,
+			},
 		}
-
-		So(d.keyExists([]byte("zKeyDoesn'tExist")), ShouldBeFalse)
+		So(exp.keyExists([]byte(full)), ShouldBeTrue)
+		So(exp.keyExists([]byte("zKeyDoesn'tExist")), ShouldBeFalse)
 	})
 }
 
@@ -94,8 +100,18 @@ func TestString(t *testing.T) {
 func TestSubKeyExists(t *testing.T) {
 	Convey("Testing SubKeyExists()", t, func() {
 		full := []byte("top.one.two.three.four.five.six.com")
-		d := getSubdomains(full)
-		d.RWMutex = &sync.RWMutex{}
+		d := list{
+			RWMutex: &sync.RWMutex{},
+			entry: entry{"five.six.intellitxt.com": 0,
+				"four.five.six.intellitxt.com":                   0,
+				"intellitxt.com":                                 0,
+				"one.two.three.four.five.six.intellitxt.com":     0,
+				"six.intellitxt.com":                             0,
+				"three.four.five.six.intellitxt.com":             0,
+				"top.one.two.three.four.five.six.intellitxt.com": 0,
+				"two.three.four.five.six.intellitxt.com":         0,
+			},
+		}
 
 		k := `intellitxt.com`
 		d.set([]byte(k), 0)

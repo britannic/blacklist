@@ -294,7 +294,7 @@ func (u *URLHostObjects) GetList() *Objects {
 }
 
 // GetTotalStats displays aggregate statistics for processed sources
-func (c *Config) GetTotalStats() (dropped, kept int32) {
+func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
 	var keys []string
 
 	for k := range c.ctr {
@@ -304,14 +304,18 @@ func (c *Config) GetTotalStats() (dropped, kept int32) {
 	for _, k := range keys {
 		if c.ctr[k].kept+c.ctr[k].dropped != 0 {
 			dropped += c.ctr[k].dropped
+			extracted += c.ctr[k].extracted
 			kept += c.ctr[k].kept
 		}
 	}
 
 	if kept+dropped != 0 {
-		c.Log.Noticef("All extracted: %d, dropped: %d", kept, dropped)
+		c.Log.Noticef("Total entries found: %d", extracted)
+		c.Log.Noticef("Total entries extracted %d", kept)
+		c.Log.Noticef("Total entries dropped %d", dropped)
+		// c.Log.Noticef("All extracted: %d, dropped: %d", kept, dropped)
 	}
-	return dropped, kept
+	return dropped, extracted, kept
 }
 
 // Len returns how many sources there are
@@ -341,12 +345,12 @@ func (u *URLHostObjects) Len() int { return len(u.Objects.xx) }
 // Process extracts hosts/domains from downloaded raw content
 func (o *source) process() *bList {
 	var (
-		add               = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
-		area              = typeInt(o.nType)
-		b                 = bufio.NewScanner(o.r)
-		f                 string
-		drop, found, kept int
-		find              = regx.NewRegex()
+		add                   = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+		area                  = typeInt(o.nType)
+		b                     = bufio.NewScanner(o.r)
+		f                     string
+		drop, extracted, kept int
+		find                  = regx.NewRegex()
 	)
 
 	for b.Scan() {
@@ -359,23 +363,25 @@ func (o *source) process() *bList {
 			var ok bool
 
 			if line, ok = find.StripPrefixAndSuffix(line, o.prefix); ok {
-				found++
+				// extracted++
 				fqdns := find.RX[regx.FQDN].FindAll(line, -1)
 
 				for _, fqdn := range fqdns {
-					switch {
-					case o.Dex.subKeyExists(fqdn):
+					extracted++
+					if o.Dex.subKeyExists(fqdn) {
 						drop++
 						continue
-					case !o.Exc.keyExists(fqdn):
+					}
+					if !o.Exc.keyExists(fqdn) {
 						kept++
 						o.Exc.set(fqdn, 0)
 						add.set(fqdn, 0)
+						continue
 					}
+					drop++
 				}
 			}
 		default:
-			drop++
 			continue
 		}
 	}
@@ -389,9 +395,10 @@ func (o *source) process() *bList {
 
 	// Let's do some accounting
 	atomic.AddInt32(&o.ctr[area].dropped, int32(drop))
+	atomic.AddInt32(&o.ctr[area].extracted, int32(extracted))
 	atomic.AddInt32(&o.ctr[area].kept, int32(kept))
 
-	o.Log.Infof("%s: downloaded: %d", o.name, found)
+	o.Log.Infof("%s: downloaded: %d", o.name, extracted)
 	o.Log.Infof("%s: extracted: %d", o.name, kept)
 	o.Log.Infof("%s: dropped: %d", o.name, drop)
 
@@ -456,7 +463,9 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 
 		if area != "" {
 			if c.ctr[area].kept+c.ctr[area].dropped != 0 {
-				c.Log.Noticef("Total %s: %d, dropped: %d", area, c.ctr[area].kept, c.ctr[area].dropped)
+				c.Log.Noticef("Total %s found: %d", area, c.ctr[area].extracted)
+				c.Log.Noticef("Total %s extracted %d", area, c.ctr[area].kept)
+				c.Log.Noticef("Total %s dropped %d", area, c.ctr[area].dropped)
 			}
 		}
 	}

@@ -2,6 +2,11 @@
 
 ## Releases
 
+### Release v1.1.4 (April 8, 2018)
+
+* Performance enhancements for source entry processing
+* Improved data counter metrics for found, extracted and dropped
+
 ### Release v1.1.3 (April 5, 2018)
 
 * Document updates

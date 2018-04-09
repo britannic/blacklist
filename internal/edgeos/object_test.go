@@ -97,6 +97,7 @@ func TestFilter(t *testing.T) {
 		}{
 			{ltype: urls, exp: urlsOnly},
 			{ltype: files, exp: filesOnly},
+			{ltype: hosts, exp: sort.StringSlice(nil)},
 		}
 
 		c := NewConfig(

@@ -33,13 +33,9 @@ type Objects struct {
 }
 
 func (o *Objects) addObj(c *Config, node string) {
-	switch obj := c.addInc(node); obj {
-	case nil:
-		o.xx = append(o.xx, c.tree.validate(node).xx...)
-	default:
-		o.xx = append(o.xx, obj)
-		o.xx = append(o.xx, c.tree.validate(node).xx...)
-	}
+	obj := c.addInc(node)
+	o.xx = append(o.xx, obj)
+	o.xx = append(o.xx, c.tree.validate(node).xx...)
 }
 
 func (o *source) area() string {

@@ -1,6 +1,7 @@
 package edgeos
 
 import (
+	"bytes"
 	"fmt"
 	"sort"
 	"strings"
@@ -54,14 +55,17 @@ func (l list) String() string {
 }
 
 // subKeyExists returns true if part of all of the key matches
-func (l list) subKeyExists(k []byte) bool {
-	keys := getSubdomains(k)
-	for k := range keys.entry {
+func (l list) subKeyExists(b []byte) bool {
+	// keys := getSubdomains(k)
+
+	// for k := range keys.entry {
+
+	for _, k := range bytes.Split(b, []byte(".")) {
 		if l.keyExists([]byte(k)) {
 			return true
 		}
 	}
-	return l.keyExists(k)
+	return l.keyExists(b)
 }
 
 // updateEntry converts []string to map of List
