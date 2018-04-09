@@ -83,7 +83,7 @@ modification, are permitted provided that the following conditions are met:
 ### Release v1.1.4 (April 8, 2018)
 
 * Performance enhancements for source entry processing
-* Improved data counter metrics for found, extracted and dropped
+* Improved data counter metrics for found, extracted and dropped records
 
 [[Top]](#contents)
 
