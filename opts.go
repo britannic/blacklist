@@ -47,7 +47,7 @@ func cleanArgs(args []string) (r []string) {
 }
 
 // getCFG returns a e.ConfLoader
-func (o *opts) getCFG(c *e.Config) (r e.ConfLoader) {
+func (o *opts) getCFG(c *e.Config) e.ConfLoader {
 	if *o.File != "" {
 		var (
 			err    error
@@ -60,16 +60,13 @@ func (o *opts) getCFG(c *e.Config) (r e.ConfLoader) {
 		}
 
 		f, _ = ioutil.ReadAll(reader)
-		r = &e.CFGstatic{Config: c, Cfg: string(f)}
-		return r
+		return &e.CFGstatic{Config: c, Cfg: string(f)}
 	}
 	switch *o.ARCH {
 	case *o.MIPSLE, *o.MIPS64:
-		r = &e.CFGcli{Config: c}
-	default:
-		r = &e.CFGstatic{Config: c, Cfg: tdata.Live}
+		return &e.CFGcli{Config: c}
 	}
-	return r
+	return &e.CFGstatic{Config: c, Cfg: tdata.Live}
 }
 
 // getOpts returns command line flags and values or displays help
@@ -151,12 +148,10 @@ func (o *opts) setArgs() {
 }
 
 // setDir sets the directory according to the host CPU arch
-func (o *opts) setDir(arch string) (dir string) {
+func (o *opts) setDir(arch string) string {
 	switch arch {
 	case *o.MIPSLE, *o.MIPS64:
-		dir = *o.DNSdir
-	default:
-		dir = *o.DNStmp
+		return *o.DNSdir
 	}
-	return dir
+	return *o.DNStmp
 }

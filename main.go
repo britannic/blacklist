@@ -18,7 +18,7 @@ var (
 	githash      = "UNKNOWN"
 	hostOS       = "UNKNOWN"
 	version      = "UNKNOWN"
-	// ---
+	// ----------------------------
 
 	boldcolors = []string{
 		logging.CRITICAL: logging.ColorSeqBold(logging.ColorMagenta),
@@ -28,7 +28,6 @@ var (
 		logging.NOTICE:   logging.ColorSeqBold(logging.ColorCyan),
 		logging.DEBUG:    logging.ColorSeqBold(logging.ColorBlue),
 	}
-
 	exitCmd      = os.Exit
 	fdFmttr      logging.Backend
 	haveTerm     = inTerminal
@@ -44,8 +43,7 @@ var (
 	logPrintf    = logInfof
 	progname     = basename(os.Args[0])
 	prefix       = fmt.Sprintf("%s: ", progname)
-
-	objex = []e.IFace{
+	objex        = []e.IFace{
 		e.PreDObj,
 		e.PreHObj,
 		e.ExRtObj,
@@ -112,13 +110,9 @@ func basename(s string) string {
 
 func initEnv() (env *e.Config, err error) {
 	if env, err = setUpEnv(); err != nil {
-		d := killFiles(env)
-
-		logInfo(progname + " starting up..")
-		logInfo("Removing stale blacklists...")
-
-		if err = d.Remove(); err != nil {
-			logFatalf("%v", err.Error())
+		fmt.Fprintf(os.Stderr, "Removing stale blacklists due to error: %v", err.Error())
+		if err = killFiles(env).Remove(); err != nil {
+			fmt.Fprintf(os.Stderr, "%v", err.Error())
 		}
 		exitCmd(0)
 	}
@@ -145,7 +139,7 @@ func newLog(prefix string) *logging.Logger {
 
 	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Fprintf(os.Stderr, err.Error())
 	}
 
 	fdlog := logging.NewLogBackend(fd, "", 0)
@@ -153,7 +147,7 @@ func newLog(prefix string) *logging.Logger {
 
 	sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Fprintf(os.Stderr, err.Error())
 	}
 
 	logging.SetBackend(fdFmttr, sysFmttr)
@@ -238,7 +232,6 @@ func setUpEnv() (c *e.Config, err error) {
 	o.Init("blacklist", mflag.ExitOnError)
 	o.setArgs()
 	c = o.initEdgeOS()
-	r := o.getCFG(c)
-	c.ReadCfg(r)
+	err = c.ReadCfg(o.getCFG(c))
 	return c, err
 }
