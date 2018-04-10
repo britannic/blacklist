@@ -115,10 +115,9 @@ func TestMain(t *testing.T) {
 		Convey("Testing main() with non-existent configuration file load", func() {
 			var s string
 			os.Args = []string{prog, "-convey-json", "-f", "internal/testdata/config.bad.boot"}
-			// logFatalf = func(f string, args ...interface{}) {
-			// 	s = fmt.Sprintf(f, args...)
-			// }
-			logFatalf = func(f string, args ...interface{}) { logCritf(f, args...); exitCmd(1) }
+			logFatalf = func(f string, args ...interface{}) {
+				s = fmt.Sprintf(f, args...)
+			}
 
 			main()
 			So(s, ShouldEqual, "Cannot open configuration file internal/testdata/config.bad.boot!")
