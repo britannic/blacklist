@@ -50,8 +50,8 @@ func cleanArgs(args []string) (r []string) {
 func (o *opts) getCFG(c *e.Config) (r e.ConfLoader) {
 	if *o.File != "" {
 		var (
-			f      []byte
 			err    error
+			f      []byte
 			reader io.Reader
 		)
 

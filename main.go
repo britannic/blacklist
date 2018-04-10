@@ -231,11 +231,12 @@ func newScreenLogBackend(colors []string, prefix string) *logging.LogBackend {
 	return scr
 }
 
-func setUpEnv() (*e.Config, error) {
+func setUpEnv() (c *e.Config, err error) {
 	o := getOpts()
 	o.Init("blacklist", mflag.ExitOnError)
 	o.setArgs()
-	c := o.initEdgeOS()
-	err := c.ReadCfg(o.getCFG(c))
+	c = o.initEdgeOS()
+	r := o.getCFG(c)
+	c.ReadCfg(r)
 	return c, err
 }

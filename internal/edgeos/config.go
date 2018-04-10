@@ -497,8 +497,11 @@ func (b tree) getIP(node string) string {
 		if b[node].ip != "" {
 			return b[node].ip
 		}
+		if _, ok := b[rootNode]; ok {
+			return b[rootNode].ip
+		}
 	}
-	return b[rootNode].ip
+	return "0.0.0.0"
 }
 
 func (b tree) validate(node string) *Objects {

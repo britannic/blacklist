@@ -293,6 +293,51 @@ func TestExcludes(t *testing.T) {
 	})
 }
 
+func TestGetIP(t *testing.T) {
+	b := tree{}
+	Convey("Testing getIP(badnode)", t, func() {
+		So(b.getIP("badnode"), ShouldEqual, "0.0.0.0")
+	})
+	b = tree{
+		rootNode: &source{
+			// Parms: c.Parms,
+			// desc:  getLtypeDesc(ltype),
+			// exc:   exc,
+			ip: "192.168.1.50",
+			// ltype: ltype,
+			// nType: getType(ltype).(ntype),
+			// name:  ltype,
+		},
+		domains: &source{
+			// Parms: c.Parms,
+			// desc:  getLtypeDesc(ltype),
+			// exc:   exc,
+			ip: "192.168.1.20",
+			// ltype: ltype,
+			// nType: getType(ltype).(ntype),
+			// name:  ltype,
+		},
+		hosts: &source{
+			// Parms: c.Parms,
+			// desc:  getLtypeDesc(ltype),
+			// exc:   exc,
+			ip: "192.168.1.30",
+			// ltype: ltype,
+			// nType: getType(ltype).(ntype),
+			// name:  ltype,
+		},
+	}
+	Convey("Testing getIP("+rootNode+")", t, func() {
+		So(b.getIP(rootNode), ShouldEqual, "192.168.1.50")
+	})
+	Convey("Testing getIP("+domains+")", t, func() {
+		So(b.getIP(domains), ShouldEqual, "192.168.1.20")
+	})
+	Convey("Testing getIP("+hosts+")", t, func() {
+		So(b.getIP(hosts), ShouldEqual, "192.168.1.30")
+	})
+}
+
 func TestFiles(t *testing.T) {
 	Convey("Testing c.GetAll().Files()", t, func() {
 		r := &CFGstatic{Cfg: tdata.Cfg}
