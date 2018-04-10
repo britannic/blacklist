@@ -232,7 +232,7 @@ CFile holds an array of file names
 
 
 
-### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=9329:9359#L424)
+### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=9343:9373#L427)
 ``` go
 func (c *CFile) Remove() error
 ```
@@ -241,7 +241,7 @@ Remove deletes a CFile array of file names
 
 
 
-### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=10792:10823#L482)
+### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=10806:10837#L485)
 ``` go
 func (c *CFile) String() string
 ```
@@ -250,7 +250,7 @@ String implements string method
 
 
 
-### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=10934:10968#L488)
+### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=10948:10982#L491)
 ``` go
 func (c *CFile) Strings() []string
 ```
@@ -301,7 +301,7 @@ NewConfig returns a new *Config initialized with the parameter options passed to
 
 
 
-### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4241:4283#L221)
+### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4255:4297#L224)
 ``` go
 func (c *Config) Get(node string) *Objects
 ```
@@ -310,7 +310,7 @@ Get returns an *Object for a given node
 
 
 
-### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4550:4600#L238)
+### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4564:4614#L241)
 ``` go
 func (c *Config) GetAll(ltypes ...string) *Objects
 ```
@@ -328,16 +328,16 @@ GetTotalStats displays aggregate statistics for processed sources
 
 
 
-### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=4829:4862#L251)
+### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=4839:4872#L254)
 ``` go
 func (c *Config) InSession() bool
 ```
-InSession returns true if VyOS/EdgeOS configuration is in session
+InSession returns true if VyOS/EdgeOS configure is in session
 
 
 
 
-### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=2759:2818#L149)
+### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=2773:2832#L152)
 ``` go
 func (c *Config) NewContent(iface IFace) (Contenter, error)
 ```
@@ -346,7 +346,7 @@ NewContent returns an interface of the requested IFace type
 
 
 
-### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5317:5358#L267)
+### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5327:5368#L270)
 ``` go
 func (c *Config) Nodes() (nodes []string)
 ```
@@ -364,7 +364,7 @@ ProcessContent processes the Contents array
 
 
 
-### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=7466:7510#L359)
+### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=7478:7522#L362)
 ``` go
 func (c *Config) ReadCfg(r ConfLoader) error
 ```
@@ -373,7 +373,7 @@ ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 
 
 
-### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=9134:9178#L417)
+### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=9148:9192#L420)
 ``` go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
@@ -391,7 +391,7 @@ SetOpt sets the specified options passed as Parms and returns an option to resto
 
 
 
-### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=9905:9941#L447)
+### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=9919:9955#L450)
 ``` go
 func (c *Config) String() (s string)
 ```
@@ -717,7 +717,7 @@ Objects is a struct of []*source
 
 
 
-### <a name="Objects.Files">func</a> (\*Objects) [Files](/src/target/object.go?s=1260:1292#L68)
+### <a name="Objects.Files">func</a> (\*Objects) [Files](/src/target/object.go?s=1232:1264#L65)
 ``` go
 func (o *Objects) Files() *CFile
 ```
@@ -726,7 +726,7 @@ Files returns a list of dnsmasq conf files from all srcs
 
 
 
-### <a name="Objects.Filter">func</a> (\*Objects) [Filter](/src/target/object.go?s=1595:1642#L83)
+### <a name="Objects.Filter">func</a> (\*Objects) [Filter](/src/target/object.go?s=1567:1614#L80)
 ``` go
 func (o *Objects) Filter(ltype string) *Objects
 ```
@@ -735,7 +735,7 @@ Filter returns a subset of Objects filtered by ltype
 
 
 
-### <a name="Objects.Find">func</a> (\*Objects) [Find](/src/target/object.go?s=2094:2133#L106)
+### <a name="Objects.Find">func</a> (\*Objects) [Find](/src/target/object.go?s=2020:2059#L101)
 ``` go
 func (o *Objects) Find(elem string) int
 ```
@@ -744,7 +744,7 @@ Find returns the int position of an Objects' element
 
 
 
-### <a name="Objects.Len">func</a> (\*Objects) [Len](/src/target/object.go?s=4349:4376#L210)
+### <a name="Objects.Len">func</a> (\*Objects) [Len](/src/target/object.go?s=4275:4302#L205)
 ``` go
 func (o *Objects) Len() int
 ```
@@ -753,14 +753,14 @@ Implement Sort Interface for Objects
 
 
 
-### <a name="Objects.Less">func</a> (\*Objects) [Less](/src/target/object.go?s=4408:4445#L211)
+### <a name="Objects.Less">func</a> (\*Objects) [Less](/src/target/object.go?s=4334:4371#L206)
 ``` go
 func (o *Objects) Less(i, j int) bool
 ```
 
 
 
-### <a name="Objects.Names">func</a> (\*Objects) [Names](/src/target/object.go?s=3459:3505#L173)
+### <a name="Objects.Names">func</a> (\*Objects) [Names](/src/target/object.go?s=3385:3431#L168)
 ``` go
 func (o *Objects) Names() (s sort.StringSlice)
 ```
@@ -769,7 +769,7 @@ Names returns a sorted slice of Objects names
 
 
 
-### <a name="Objects.String">func</a> (\*Objects) [String](/src/target/object.go?s=4245:4278#L205)
+### <a name="Objects.String">func</a> (\*Objects) [String](/src/target/object.go?s=4171:4204#L200)
 ``` go
 func (o *Objects) String() string
 ```
@@ -778,7 +778,7 @@ Stringer for Objects
 
 
 
-### <a name="Objects.Swap">func</a> (\*Objects) [Swap](/src/target/object.go?s=4485:4517#L212)
+### <a name="Objects.Swap">func</a> (\*Objects) [Swap](/src/target/object.go?s=4411:4443#L207)
 ``` go
 func (o *Objects) Swap(i, j int)
 ```

@@ -13,9 +13,11 @@ import (
 
 var (
 	// updated by go build -ldflags
-	build   = "UNKNOWN"
-	githash = "UNKNOWN"
-	version = "UNKNOWN"
+	architecture = "UNKNOWN"
+	build        = "UNKNOWN"
+	githash      = "UNKNOWN"
+	hostOS       = "UNKNOWN"
+	version      = "UNKNOWN"
 	// ---
 
 	boldcolors = []string{

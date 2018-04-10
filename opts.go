@@ -144,7 +144,7 @@ func (o *opts) setArgs() {
 		case "-v":
 			screenLog(prefix)
 		case "-version":
-			fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Git short hash:\t%v\n\n This software comes with ABSOLUTELY NO WARRANTY.\n %s is free software, and you are\n welcome to redistribute it under the terms of\n the Simplified BSD License.\n", version, build, githash, progname)
+			fmt.Printf(" Version:\t\t%s\n Build date:\t\t%s\n Build arch.:\t\t%v\n Build OS:\t\t%v\n Git short hash:\t%v\n\n This software comes with ABSOLUTELY NO WARRANTY.\n %s is free software, and you are\n welcome to redistribute it under the terms of\n the Simplified BSD License.\n", version, build, architecture, hostOS, githash, progname)
 			exitCmd(0)
 		}
 	}

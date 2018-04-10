@@ -1,49 +1,53 @@
  # Makefile to build dnsmasq blacklist
- SHELL=/bin/bash
+ 	SHELL		= /bin/bash
 
  # Go parameters
-	GOBUILD=$(GOCMD) build
-	GOCLEAN=$(GOCMD) clean
-	GOCMD=go
-	GOGEN=$(GOCMD) generate
-	GOGET=$(GOCMD) get
-	GOTEST=$(GOCMD) test
-	SRC=$(shell find . -type f -name '*.go' -not -path "./vendor/*")
+	GOBUILD		= $(GOCMD) build
+	GOCLEAN		= $(GOCMD) clean
+	GOCMD		= go
+	GOGEN		= $(GOCMD) generate
+	GOGET		= $(GOCMD) get
+	GOTEST		= $(GOCMD) test
+	SRC			= $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 # Executable and package variables
-	EXECUTABLE=update-dnsmasq
-	PKG=edgeos-dnsmasq-blacklist
+	EXE			= update-dnsmasq
+	PKG			= edgeos-dnsmasq-blacklist
 
 # Executables
-	GSED=$(shell which gsed || which sed) -i.bak -e
+	GSED		= $(shell which gsed || which sed) -i.bak -e
 
 # Environment variables
-	AWS=aws
-	COPYRIGHT=s/Copyright © 20../Copyright © $(shell date +"%Y")/g
-	COVERALLS_TOKEN=W6VHc8ZFpwbfTzT3xoluEWbKkrsKT1w25
+	AWS			= aws
+	COPYRIGHT	= s/Copyright © 20../Copyright © $(shell date +"%Y")/g
+	COVERALLS_TOKEN	\
+				= W6VHc8ZFpwbfTzT3xoluEWbKkrsKT1w25
 	# DATE=$(shell date -u '+%Y-%m-%d_%I:%M:%S%p')
-	DATE=$(shell date +'%FT%H%M%S')
-	GIT=$(shell git rev-parse --short HEAD)
-	LIC=license
-	PAYLOAD=./.payload
-	README=README.md
-	READMEHDR=README.header
-	SCRIPTS=/config/scripts
-	OLDVER=$(shell cat ./OLDVERSION)
-	VER=$(shell cat ./VERSION)
-	VERSIONS=s/$(PKG)_$(OLDVER)_/$(PKG)_$(VER)_/g
-	BADGE=s/version-v$(OLDVER)-green.svg/version-v$(VER)-green.svg/g
-	RELEASE=s/Release-v$(OLDVER)-green.svg/Release-v$(VER)-green.svg/g
-	TAG="v$(VER)"
-	LDFLAGS=-ldflags "-X main.build=$(DATE) -X main.githash=$(GIT) \
-	-X main.version=$(VER) -s -w" -v 
+	DATE		= $(shell date +'%FT%H%M%S')
+	GIT			= $(shell git rev-parse --short HEAD)
+	LIC			= license
+	PAYLOAD 	= ./.payload
+	README 		= README.md
+	READMEHDR 	= README.header
+	SCRIPTS 	= /config/scripts
+	OLDVER 		= $(shell cat ./OLDVERSION)
+	VER 		= $(shell cat ./VERSION)
+	VERSIONS 	= s/$(PKG)_$(OLDVER)_/$(PKG)_$(VER)_/g
+	BADGE 		= s/version-v$(OLDVER)-green.svg/version-v$(VER)-green.svg/g
+	RELEASE 	= s/Release-v$(OLDVER)-green.svg/Release-v$(VER)-green.svg/g
+	TAG 		= "v$(VER)"
+	LDFLAGS 	= -X main.build=$(DATE) -X main.githash=$(GIT) -X main.version=$(VER)
+	FLAGS 		= -s -w
 
 .PHONY: all clean deps amd64 mips coverage copyright docs readme pkgs
 all: clean deps amd64 mips coverage copyright docs readme pkgs
 
 .PHONY: amd64 
 amd64: generate
-	GOOS=darwin GOARCH=amd64 $(GOBUILD) -o $(EXECUTABLE).amd64 $(LDFLAGS)
+	$(eval LDFLAGS += -X main.architecture=amd64 -X main.hostOS=darwin)
+	GOOS=darwin GOARCH=amd64 \
+	$(GOOS) $(GOARCH) $(GOBUILD) -o $(EXE).amd64 \
+	-ldflags "$(LDFLAGS) $(FLAGS)" -v
 
 .PHONY: build
 build: clean amd64 mips copyright docs readme 
@@ -55,7 +59,7 @@ cdeps:
 .PHONY: clean
 clean:
 	$(GOCLEAN)
-	find . -name "$(EXECUTABLE).*" -type f \
+	find . -name "$(EXE).*" -type f \
 	-o -name debug -type f \
 	-o -name "*.deb" -type f \
 	-o -name debug.test -type f \
@@ -100,24 +104,28 @@ mips: mips64 mipsle
 
 .PHONY: mips64
 mips64: generate
-	GOOS=linux GOARCH=mips64 $(GOBUILD) -o $(EXECUTABLE).mips $(LDFLAGS)
+	$(eval LDFLAGS += -X main.architecture=mips64 -X main.hostOS=linux)
+	GOOS=linux GOARCH=mips64 $(GOBUILD) -o $(EXE).mips \
+	-ldflags "$(LDFLAGS) $(FLAGS)" -v
 
 .PHONY: mipsle
 mipsle: generate
-	GOOS=linux GOARCH=mipsle $(GOBUILD) -o $(EXECUTABLE).mipsel $(LDFLAGS)
+	$(eval LDFLAGS += -X main.architecture=mipsle -X main.hostOS=linux)
+	GOOS=linux GOARCH=mipsle $(GOBUILD) -o $(EXE).mipsel \
+	-ldflags "$(LDFLAGS) $(FLAGS)" -v
 
 .PHONY: pkgs
 pkgs: docs pkg-mips pkg-mipsel 
 
 .PHONY: pkg-mips 
 pkg-mips: deps mips coverage copyright docs readme
-	cp $(EXECUTABLE).mips $(PAYLOAD)$(SCRIPTS)/$(EXECUTABLE) \
-	&& ./make_deb $(EXECUTABLE) mips
+	cp $(EXE).mips $(PAYLOAD)$(SCRIPTS)/$(EXE) \
+	&& ./make_deb $(EXE) mips
 
 .PHONY: pkg-mipsel
 pkg-mipsel: deps mipsle coverage copyright docs readme
-	cp $(EXECUTABLE).mipsel $(PAYLOAD)$(SCRIPTS)/$(EXECUTABLE) \
-	&& ./make_deb $(EXECUTABLE) mipsel
+	cp $(EXE).mipsel $(PAYLOAD)$(SCRIPTS)/$(EXE) \
+	&& ./make_deb $(EXE) mipsel
 
 .PHONY: readme 
 readme: version

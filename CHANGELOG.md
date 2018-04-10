@@ -2,6 +2,11 @@
 
 ## Releases
 
+### Release v1.1.5 (April 10, 2018)
+
+* Add build architecture and OS information to "-version" argument
+* Code refactor and parsing algorithm updates
+
 ### Release v1.1.4 (April 8, 2018)
 
 * Performance enhancements for source entry processing
