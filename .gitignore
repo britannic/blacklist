@@ -20,7 +20,10 @@
 *.amd64
 *.bak
 *.bkp
+*.cover
 *.debug
+*.file
+*.html
 *.lock
 *.log
 *.mips
@@ -29,6 +32,7 @@
 *.test
 *.tgz
 *.VC.db
+*.xml
 blacklist.*
 vendor/
-*.file
+

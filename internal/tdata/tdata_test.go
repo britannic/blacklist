@@ -52,7 +52,7 @@ func TestTdataDefault(t *testing.T) {
 	Convey("Testing TdataDefault()", t, func() {
 		_, err := tdata.Get("default")
 		So(err, ShouldNotBeNil)
-		So(err, ShouldResemble, fmt.Errorf("Get(default) is unknown!"))
+		So(err, ShouldResemble, fmt.Errorf("function Get(default) is unknown"))
 	})
 }
 

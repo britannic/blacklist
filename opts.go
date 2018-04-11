@@ -56,7 +56,7 @@ func (o *opts) getCFG(c *e.Config) e.ConfLoader {
 		)
 
 		if reader, err = e.GetFile(*o.File); err != nil {
-			logFatalf("Cannot open configuration file %s!", *o.File)
+			logFatalf("cannot open configuration file %s!", *o.File)
 		}
 
 		f, _ = ioutil.ReadAll(reader)

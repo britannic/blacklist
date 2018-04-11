@@ -232,7 +232,7 @@ CFile holds an array of file names
 
 
 
-### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=9343:9373#L427)
+### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/config.go?s=9336:9366#L427)
 ``` go
 func (c *CFile) Remove() error
 ```
@@ -241,7 +241,7 @@ Remove deletes a CFile array of file names
 
 
 
-### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=10806:10837#L485)
+### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/config.go?s=10799:10830#L485)
 ``` go
 func (c *CFile) String() string
 ```
@@ -250,7 +250,7 @@ String implements string method
 
 
 
-### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=10948:10982#L491)
+### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/config.go?s=10941:10975#L491)
 ``` go
 func (c *CFile) Strings() []string
 ```
@@ -301,7 +301,7 @@ NewConfig returns a new *Config initialized with the parameter options passed to
 
 
 
-### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4255:4297#L224)
+### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4248:4290#L224)
 ``` go
 func (c *Config) Get(node string) *Objects
 ```
@@ -310,7 +310,7 @@ Get returns an *Object for a given node
 
 
 
-### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4564:4614#L241)
+### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4557:4607#L241)
 ``` go
 func (c *Config) GetAll(ltypes ...string) *Objects
 ```
@@ -328,7 +328,7 @@ GetTotalStats displays aggregate statistics for processed sources
 
 
 
-### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=4839:4872#L254)
+### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=4832:4865#L254)
 ``` go
 func (c *Config) InSession() bool
 ```
@@ -337,7 +337,7 @@ InSession returns true if VyOS/EdgeOS configure is in session
 
 
 
-### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=2773:2832#L152)
+### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=2766:2825#L152)
 ``` go
 func (c *Config) NewContent(iface IFace) (Contenter, error)
 ```
@@ -346,7 +346,7 @@ NewContent returns an interface of the requested IFace type
 
 
 
-### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5327:5368#L270)
+### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5320:5361#L270)
 ``` go
 func (c *Config) Nodes() (nodes []string)
 ```
@@ -364,7 +364,7 @@ ProcessContent processes the Contents array
 
 
 
-### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=7478:7522#L362)
+### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=7471:7515#L362)
 ``` go
 func (c *Config) ReadCfg(r ConfLoader) error
 ```
@@ -373,7 +373,7 @@ ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 
 
 
-### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=9148:9192#L420)
+### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=9141:9185#L420)
 ``` go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
@@ -391,7 +391,7 @@ SetOpt sets the specified options passed as Parms and returns an option to resto
 
 
 
-### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=9919:9955#L450)
+### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=9912:9948#L450)
 ``` go
 func (c *Config) String() (s string)
 ```

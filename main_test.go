@@ -120,7 +120,7 @@ func TestMain(t *testing.T) {
 			}
 
 			main()
-			So(s, ShouldEqual, "Cannot open configuration file internal/testdata/config.bad.boot!")
+			So(s, ShouldEqual, "cannot open configuration file internal/testdata/config.bad.boot!")
 			os.Args = origArgs
 		})
 
@@ -132,7 +132,7 @@ func TestMain(t *testing.T) {
 
 			initEnvirons = func() (env *e.Config, err error) {
 				env, _ = setUpEnv()
-				err = fmt.Errorf("initEnvirons failed.")
+				err = fmt.Errorf("initEnvirons failed")
 				return env, err
 			}
 

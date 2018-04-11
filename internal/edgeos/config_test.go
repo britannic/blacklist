@@ -406,7 +406,7 @@ func TestReadCfg(t *testing.T) {
 		)
 
 		if reader, err = GetFile(file); err != nil {
-			Printf("Cannot open configuration file %s!", file)
+			Printf("cannot open configuration file %s!", file)
 		}
 
 		f, _ = ioutil.ReadAll(reader)
@@ -417,7 +417,7 @@ func TestReadCfg(t *testing.T) {
 		})
 
 		Convey("Testing with an empty configuration", func() {
-			exp := errors.New("Configuration data is empty, cannot continue")
+			exp := errors.New("configuration data is empty, cannot continue")
 			act := NewConfig().ReadCfg(&CFGstatic{Cfg: ""})
 			So(act, ShouldResemble, exp)
 		})
@@ -441,7 +441,7 @@ func TestReadCfg(t *testing.T) {
 
 func TestReadUnconfiguredCfg(t *testing.T) {
 	Convey("Testing ReadCfg()", t, func() {
-		exp := errors.New("Configuration data is empty, cannot continue")
+		exp := errors.New("configuration data is empty, cannot continue")
 		act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.NoBlacklist})
 		So(act, ShouldResemble, exp)
 	})

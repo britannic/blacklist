@@ -14,7 +14,7 @@ func Get(s string) (r string, err error) {
 	case "fileManifest":
 		r = FileManifest
 	default:
-		err = fmt.Errorf("Get(%v) is unknown!", s)
+		err = fmt.Errorf("function Get(%v) is unknown", s)
 	}
 	return r, err
 }

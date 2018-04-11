@@ -104,7 +104,7 @@ func (c *Config) addExc(node string) *Objects {
 	return &Objects{
 		Parms: c.Parms,
 		xx: []*source{
-			&source{
+			{
 				Parms: c.Parms,
 				desc:  getLtypeDesc(ltype),
 				exc:   exc,
@@ -402,7 +402,7 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 	}
 
 	if len(c.tree) < 1 {
-		return errors.New("Configuration data is empty, cannot continue")
+		return errors.New("configuration data is empty, cannot continue")
 	}
 
 	c.Debug(fmt.Sprintf("Using router configuration %v", c.String()))
