@@ -111,50 +111,46 @@ func strToBool(s string) bool {
 	return strings.ToLower(s) == True
 }
 
-func typeInt(n ntype) (s string) {
+func typeInt(n ntype) string {
 	switch n {
 	case domn:
-		s = domains
+		return domains
 	case excDomn:
-		s = ExcDomns
+		return ExcDomns
 	case excHost:
-		s = ExcHosts
+		return ExcHosts
 	case excRoot:
-		s = ExcRoots
+		return ExcRoots
 	case host:
-		s = hosts
+		return hosts
 	case preDomn:
-		s = PreDomns
+		return PreDomns
 	case preHost:
-		s = PreHosts
+		return PreHosts
 	case root:
-		s = rootNode
-	case unknown:
-		s = notknown
+		return rootNode
 	}
-	return s
+	return notknown
 }
 
-func typeStr(s string) (n ntype) {
+func typeStr(s string) ntype {
 	switch s {
 	case domains:
-		n = domn
+		return domn
 	case ExcDomns:
-		n = excDomn
+		return excDomn
 	case ExcHosts:
-		n = excHost
+		return excHost
 	case ExcRoots:
-		n = excRoot
+		return excRoot
 	case hosts:
-		n = host
-	case notknown:
-		n = unknown
+		return host
 	case PreDomns:
-		n = preDomn
+		return preDomn
 	case PreHosts:
-		n = preHost
+		return preHost
 	case rootNode:
-		n = root
+		return root
 	}
-	return n
+	return unknown
 }

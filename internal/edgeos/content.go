@@ -313,7 +313,6 @@ func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
 		c.Log.Noticef("Total entries found: %d", extracted)
 		c.Log.Noticef("Total entries extracted %d", kept)
 		c.Log.Noticef("Total entries dropped %d", dropped)
-		// c.Log.Noticef("All extracted: %d, dropped: %d", kept, dropped)
 	}
 	return dropped, extracted, kept
 }
@@ -349,7 +348,6 @@ func (o *source) process() *bList {
 		area                  = typeInt(o.nType)
 		b                     = bufio.NewScanner(o.r)
 		drop, extracted, kept int
-		f                     string
 		find                  = regx.NewRegex()
 	)
 
@@ -386,13 +384,6 @@ func (o *source) process() *bList {
 		}
 	}
 
-	switch o.nType {
-	case domn, excDomn, excRoot:
-		o.Dex = mergeList(o.Dex, add)
-	}
-
-	fmttr := getDnsmasqPrefix(o)
-
 	// Let's do some accounting
 	atomic.AddInt32(&o.ctr[area].dropped, int32(drop))
 	atomic.AddInt32(&o.ctr[area].extracted, int32(extracted))
@@ -402,24 +393,30 @@ func (o *source) process() *bList {
 	o.Log.Infof("%s: extracted: %d", o.name, kept)
 	o.Log.Infof("%s: dropped: %d", o.name, drop)
 
-	switch o.nType {
-	case excDomn, excRoot, preDomn:
-		f = fmt.Sprintf(o.FnFmt, o.Dir, domains, o.name, o.Ext)
-	case excHost, preHost:
-		f = fmt.Sprintf(o.FnFmt, o.Dir, hosts, o.name, o.Ext)
-	default:
-		f = fmt.Sprintf(o.FnFmt, o.Dir, area, o.name, o.Ext)
-	}
-
 	if kept == 0 {
 		o.Log.Warningf("Zero records extracted for %s, dnsmasq conf file won't be written", o.name)
 	}
 
+	switch o.nType {
+	case domn, excDomn, excRoot:
+		o.Dex = mergeList(o.Dex, add)
+	}
+
 	return &bList{
-		file: f,
-		r:    formatData(fmttr, add),
+		file: o.filename(area),
+		r:    formatData(getDnsmasqPrefix(o), add),
 		size: kept,
 	}
+}
+
+func (o *source) filename(area string) string {
+	switch o.nType {
+	case excDomn, excRoot, preDomn:
+		return fmt.Sprintf(o.FnFmt, o.Dir, domains, o.name, o.Ext)
+	case excHost, preHost:
+		return fmt.Sprintf(o.FnFmt, o.Dir, hosts, o.name, o.Ext)
+	}
+	return fmt.Sprintf(o.FnFmt, o.Dir, area, o.name, o.Ext)
 }
 
 // ProcessContent processes the Contents array
@@ -558,26 +555,24 @@ func (p *PreHostObjects) String() string { return p.Objects.String() }
 func (u *URLDomnObjects) String() string { return u.Objects.String() }
 func (u *URLHostObjects) String() string { return u.Objects.String() }
 
-func (i IFace) String() (s string) {
+func (i IFace) String() string {
 	switch i {
 	case ExDmObj:
-		s = ExcDomns
+		return ExcDomns
 	case ExHtObj:
-		s = ExcHosts
+		return ExcHosts
 	case ExRtObj:
-		s = ExcRoots
+		return ExcRoots
 	case FileObj:
-		s = files
+		return files
 	case PreDObj:
-		s = PreDomns
+		return PreDomns
 	case PreHObj:
-		s = PreHosts
+		return PreHosts
 	case URLhObj, URLdObj:
-		s = urls
-	default:
-		s = notknown
+		return urls
 	}
-	return s
+	return notknown
 }
 
 // writeFile saves hosts/domains data to disk

@@ -166,11 +166,9 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 	case urls:
 		switch iface {
 		case URLdObj:
-			o = c.Get(domains).Filter(urls)
-			return &URLDomnObjects{Objects: o}, nil
+			return &URLDomnObjects{Objects: c.Get(domains).Filter(urls)}, nil
 		case URLhObj:
-			o = c.Get(hosts).Filter(urls)
-			return &URLHostObjects{Objects: o}, nil
+			return &URLHostObjects{Objects: c.Get(hosts).Filter(urls)}, nil
 		}
 	case notknown:
 		err = errors.New("Invalid interface requested")
