@@ -46,19 +46,19 @@ func (l list) set(k []byte, v int) {
 }
 
 func (l list) String() string {
-	var lines sort.StringSlice
+	var ls sort.StringSlice
 	for k, v := range l.entry {
-		lines = append(lines, fmt.Sprintf("%q:%v,\n", string(k), v))
+		ls = append(ls, fmt.Sprintf("%q:%v,\n", string(k), v))
 	}
-	lines.Sort()
-	return strings.Join(lines, "")
+	ls.Sort()
+	return strings.Join(ls, "")
 }
 
 // subKeyExists returns true if part of all of the key matches
 func (l list) subKeyExists(b []byte) bool {
-	domainparts := bytes.Split(b, []byte("."))
-	for i := range Iter(len(domainparts) - 1) {
-		if l.keyExists(bytes.Join(domainparts[i:], []byte("."))) {
+	d := bytes.Split(b, []byte("."))
+	for i := range Iter(len(d) - 1) {
+		if l.keyExists(bytes.Join(d[i:], []byte("."))) {
 			return true
 		}
 	}
@@ -66,9 +66,9 @@ func (l list) subKeyExists(b []byte) bool {
 }
 
 // updateEntry converts []string to map of List
-func updateEntry(data [][]byte) (l list) {
+func updateEntry(d [][]byte) (l list) {
 	l.entry = make(entry)
-	for _, k := range data {
+	for _, k := range d {
 		l.entry[string(k)] = 0
 	}
 	return l

@@ -204,8 +204,8 @@ zone "roastfiles2017.com"  {type master; file "/etc/namedb/blockeddomain.hosts";
 127.0.0.1 go.vrvm.com
 127.0.0.1 static.estebull.com
 127.0.0.1 mobile.Banzai.it
-127.0.0.1 ads.xxxad.net
-127.0.0.1 hhbekxxw5d9e.pflexads.com
+127.0.0.1 ads.srcxad.net
+127.0.0.1 hhbeksrcw5d9e.pflexads.com
 127.0.0.1 img.ads.mojiva.com
 127.0.0.1 adcontent.saymedia.com
 127.0.0.1 ads.saymedia.com
@@ -280,7 +280,7 @@ zone "roastfiles2017.com"  {type master; file "/etc/namedb/blockeddomain.hosts";
 
 # [pflexads.com]
 127.0.0.1 hybl9bazbc35.pflexads.com
-127.0.0.1 hhbekxxw5d9e.pflexads.com
+127.0.0.1 hhbeksrcw5d9e.pflexads.com
 127.0.0.1 www.pflexads.com
 127.0.0.1 orencia.pflexads.com
 

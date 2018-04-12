@@ -3,20 +3,18 @@ package tdata
 import "fmt"
 
 // Get returns r
-func Get(s string) (r string, err error) {
+func Get(s string) (string, error) {
 	switch s {
 	case "cfg":
-		r = Cfg
+		return Cfg, nil
 	case "cfg2":
-		r = CfgPartial
+		return CfgPartial, nil
 	case "cfg3":
-		r = CfgMimimal
+		return CfgMimimal, nil
 	case "fileManifest":
-		r = FileManifest
-	default:
-		err = fmt.Errorf("function Get(%v) is unknown", s)
+		return FileManifest, nil
 	}
-	return r, err
+	return "", fmt.Errorf("function Get(%v) is unknown", s)
 }
 
 var (

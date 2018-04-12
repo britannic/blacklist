@@ -37,7 +37,7 @@ func TestObjectsAddObj(t *testing.T) {
 		// for _, tt := range tests {
 		// 	o := &Objects{
 		// 		Parms: tt.rParms,
-		// 	xx:     tt.rx,
+		// 	src:     tt.rx,
 		// 	}
 		// 	o.addObj(tt.c, tt.node)
 		// }
@@ -65,7 +65,7 @@ func TestObjectString(t *testing.T) {
 func TestSortObject(t *testing.T) {
 	Convey("Testing SortObject()", t, func() {
 		act := &Objects{
-			xx: []*source{
+			src: []*source{
 				{name: "eagle"},
 				{name: "aardvark"},
 				{name: "dog"},
@@ -75,7 +75,7 @@ func TestSortObject(t *testing.T) {
 		}
 
 		exp := &Objects{
-			xx: []*source{
+			src: []*source{
 				{name: "aardvark"},
 				{name: "beetle"},
 				{name: "crab"},

@@ -87,7 +87,7 @@ type URLHostObjects struct {
 
 // Find returns the int position of an Objects' element
 func (e *ExcDomnObjects) Find(elem string) int {
-	for i, o := range e.xx {
+	for i, o := range e.src {
 		if o.name == elem {
 			return i
 		}
@@ -97,7 +97,7 @@ func (e *ExcDomnObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (e *ExcHostObjects) Find(elem string) int {
-	for i, o := range e.xx {
+	for i, o := range e.src {
 		if o.name == elem {
 			return i
 		}
@@ -107,7 +107,7 @@ func (e *ExcHostObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (e *ExcRootObjects) Find(elem string) int {
-	for i, o := range e.xx {
+	for i, o := range e.src {
 		if o.name == elem {
 			return i
 		}
@@ -117,7 +117,7 @@ func (e *ExcRootObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (f *FIODataObjects) Find(elem string) int {
-	for i, o := range f.xx {
+	for i, o := range f.src {
 		if o.name == elem {
 			return i
 		}
@@ -127,7 +127,7 @@ func (f *FIODataObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (p *PreDomnObjects) Find(elem string) int {
-	for i, o := range p.xx {
+	for i, o := range p.src {
 		if o.name == elem {
 			return i
 		}
@@ -137,7 +137,7 @@ func (p *PreDomnObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (p *PreHostObjects) Find(elem string) int {
-	for i, o := range p.xx {
+	for i, o := range p.src {
 		if o.name == elem {
 			return i
 		}
@@ -147,7 +147,7 @@ func (p *PreHostObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (u *URLHostObjects) Find(elem string) int {
-	for i, o := range u.xx {
+	for i, o := range u.src {
 		if o.name == elem {
 			return i
 		}
@@ -157,7 +157,7 @@ func (u *URLHostObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (u *URLDomnObjects) Find(elem string) int {
-	for i, o := range u.xx {
+	for i, o := range u.src {
 		if o.name == elem {
 			return i
 		}
@@ -167,7 +167,7 @@ func (u *URLDomnObjects) Find(elem string) int {
 
 // GetList implements the Contenter interface for ExcDomnObjects
 func (e *ExcDomnObjects) GetList() *Objects {
-	for _, o := range e.xx {
+	for _, o := range e.src {
 		switch o.nType {
 		case excDomn:
 			if o.exc != nil {
@@ -181,7 +181,7 @@ func (e *ExcDomnObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for ExcHostObjects
 func (e *ExcHostObjects) GetList() *Objects {
-	for _, o := range e.xx {
+	for _, o := range e.src {
 		switch o.nType {
 		case excHost:
 			if o.exc != nil {
@@ -195,7 +195,7 @@ func (e *ExcHostObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for ExcRootObjects
 func (e *ExcRootObjects) GetList() *Objects {
-	for _, o := range e.xx {
+	for _, o := range e.src {
 		switch o.nType {
 		case excRoot:
 			if o.exc != nil {
@@ -209,10 +209,10 @@ func (e *ExcRootObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for FIODataObjects
 func (f *FIODataObjects) GetList() *Objects {
-	var responses = make(chan *source, len(f.xx))
+	var responses = make(chan *source, len(f.src))
 	defer close(responses)
 
-	for _, o := range f.xx {
+	for _, o := range f.src {
 		o.Parms = f.Objects.Parms
 		go func(o *source) {
 			o.r, o.err = GetFile(o.file)
@@ -220,9 +220,9 @@ func (f *FIODataObjects) GetList() *Objects {
 		}(o)
 	}
 
-	for range f.xx {
+	for range f.src {
 		response := <-responses
-		f.xx[f.Find(response.name)] = response
+		f.src[f.Find(response.name)] = response
 	}
 
 	return f.Objects
@@ -230,7 +230,7 @@ func (f *FIODataObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for PreDomnObjects
 func (p *PreDomnObjects) GetList() *Objects {
-	for _, o := range p.xx {
+	for _, o := range p.src {
 		if o.ltype == PreDomns && o.inc != nil {
 			o.r = o.includes()
 			o.Parms = p.Objects.Parms
@@ -241,7 +241,7 @@ func (p *PreDomnObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for PreHostObjects
 func (p *PreHostObjects) GetList() *Objects {
-	for _, o := range p.xx {
+	for _, o := range p.src {
 		if o.ltype == PreHosts && o.inc != nil {
 			o.r = o.includes()
 			o.Parms = p.Objects.Parms
@@ -252,20 +252,20 @@ func (p *PreHostObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLDomnObjects) GetList() *Objects {
-	var responses = make(chan *source, len(u.xx))
+	var responses = make(chan *source, len(u.src))
 
 	defer close(responses)
 
-	for _, o := range u.xx {
+	for _, o := range u.src {
 		o.Parms = u.Objects.Parms
 		go func(o *source) {
 			responses <- getHTTP(o)
 		}(o)
 	}
 
-	for range u.xx {
+	for range u.src {
 		response := <-responses
-		u.xx[u.Find(response.name)] = response
+		u.src[u.Find(response.name)] = response
 	}
 
 	return u.Objects
@@ -273,20 +273,20 @@ func (u *URLDomnObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLHostObjects) GetList() *Objects {
-	var responses = make(chan *source, len(u.xx))
+	var responses = make(chan *source, len(u.src))
 
 	defer close(responses)
 
-	for _, o := range u.xx {
+	for _, o := range u.src {
 		o.Parms = u.Objects.Parms
 		go func(o *source) {
 			responses <- getHTTP(o)
 		}(o)
 	}
 
-	for range u.xx {
+	for range u.src {
 		response := <-responses
-		u.xx[u.Find(response.name)] = response
+		u.src[u.Find(response.name)] = response
 
 	}
 
@@ -318,28 +318,28 @@ func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
 }
 
 // Len returns how many sources there are
-func (e *ExcDomnObjects) Len() int { return len(e.Objects.xx) }
+func (e *ExcDomnObjects) Len() int { return len(e.Objects.src) }
 
 // Len returns how many sources there are
-func (e *ExcHostObjects) Len() int { return len(e.Objects.xx) }
+func (e *ExcHostObjects) Len() int { return len(e.Objects.src) }
 
 // Len returns how many sources there are
-func (e *ExcRootObjects) Len() int { return len(e.Objects.xx) }
+func (e *ExcRootObjects) Len() int { return len(e.Objects.src) }
 
 // Len returns how many sources there are
-func (f *FIODataObjects) Len() int { return len(f.Objects.xx) }
+func (f *FIODataObjects) Len() int { return len(f.Objects.src) }
 
 // Len returns how many sources there are
-func (p *PreDomnObjects) Len() int { return len(p.Objects.xx) }
+func (p *PreDomnObjects) Len() int { return len(p.Objects.src) }
 
 // Len returns how many sources there are
-func (p *PreHostObjects) Len() int { return len(p.Objects.xx) }
+func (p *PreHostObjects) Len() int { return len(p.Objects.src) }
 
 // Len returns how many sources there are
-func (u *URLDomnObjects) Len() int { return len(u.Objects.xx) }
+func (u *URLDomnObjects) Len() int { return len(u.Objects.src) }
 
 // Len returns how many sources there are
-func (u *URLHostObjects) Len() int { return len(u.Objects.xx) }
+func (u *URLHostObjects) Len() int { return len(u.Objects.src) }
 
 // Process extracts hosts/domains from downloaded raw content
 func (o *source) process() *bList {
@@ -437,7 +437,7 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 			tally = &stats{dropped: a, kept: b}
 		)
 
-		for _, o := range ct.GetList().xx {
+		for _, o := range ct.GetList().src {
 			getErrors = make(chan error)
 
 			if o.err != nil {
@@ -476,7 +476,7 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 
 // SetURL sets the Object's url field value
 func (e *ExcDomnObjects) SetURL(name, url string) {
-	for _, o := range e.xx {
+	for _, o := range e.src {
 		if o.name == name {
 			o.url = url
 		}
@@ -485,7 +485,7 @@ func (e *ExcDomnObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (e *ExcHostObjects) SetURL(name, url string) {
-	for _, o := range e.xx {
+	for _, o := range e.src {
 		if o.name == name {
 			o.url = url
 		}
@@ -494,7 +494,7 @@ func (e *ExcHostObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (e *ExcRootObjects) SetURL(name, url string) {
-	for _, o := range e.xx {
+	for _, o := range e.src {
 		if o.name == name {
 			o.url = url
 		}
@@ -503,7 +503,7 @@ func (e *ExcRootObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (f *FIODataObjects) SetURL(name, url string) {
-	for _, o := range f.xx {
+	for _, o := range f.src {
 		if o.name == name {
 			o.url = url
 		}
@@ -512,7 +512,7 @@ func (f *FIODataObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (p *PreDomnObjects) SetURL(name, url string) {
-	for _, o := range p.xx {
+	for _, o := range p.src {
 		if o.name == name {
 			o.url = url
 		}
@@ -521,7 +521,7 @@ func (p *PreDomnObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (p *PreHostObjects) SetURL(name, url string) {
-	for _, o := range p.xx {
+	for _, o := range p.src {
 		if o.name == name {
 			o.url = url
 		}
@@ -530,7 +530,7 @@ func (p *PreHostObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (u *URLDomnObjects) SetURL(name, url string) {
-	for _, o := range u.xx {
+	for _, o := range u.src {
 		if o.name == name {
 			o.url = url
 		}
@@ -539,7 +539,7 @@ func (u *URLDomnObjects) SetURL(name, url string) {
 
 // SetURL sets the Object's url field value
 func (u *URLHostObjects) SetURL(name, url string) {
-	for _, o := range u.xx {
+	for _, o := range u.src {
 		if o.name == name {
 			o.url = url
 		}

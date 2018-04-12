@@ -73,11 +73,6 @@ func (o *OBJ) SubMatch(t Leaf, b []byte) [][]byte {
 	return o.RX[t].FindSubmatch(b)
 }
 
-// iter iterates over ints - use it in for loops
-// func iter(i int) []struct{} {
-// 	return make([]struct{}, i)
-// }
-
 func (o *OBJ) String() string {
 	var a []string
 	for k, v := range o.RX {
@@ -88,20 +83,20 @@ func (o *OBJ) String() string {
 }
 
 // StripPrefixAndSuffix strips the prefix and suffix
-func (o *OBJ) StripPrefixAndSuffix(line []byte, prefix string) ([]byte, bool) {
+func (o *OBJ) StripPrefixAndSuffix(l []byte, p string) ([]byte, bool) {
 	switch {
-	case prefix == "http", prefix == "https":
-		if !o.RX[HTTP].Match(line) {
-			return line, false
+	case p == "http", p == "https":
+		if !o.RX[HTTP].Match(l) {
+			return l, false
 		}
-		line = o.RX[HTTP].FindSubmatch(line)[1]
+		l = o.RX[HTTP].FindSubmatch(l)[1]
 
-	case bytes.HasPrefix(line, []byte(prefix)):
-		line = bytes.TrimPrefix(line, []byte(prefix))
+	case bytes.HasPrefix(l, []byte(p)):
+		l = bytes.TrimPrefix(l, []byte(p))
 	}
 
-	line = o.RX[SUFX].ReplaceAll(line, []byte{})
-	line = bytes.Replace(line, []byte(`"`), []byte{}, -1)
-	line = bytes.TrimSpace(line)
-	return line, true
+	l = o.RX[SUFX].ReplaceAll(l, []byte{})
+	l = bytes.Replace(l, []byte(`"`), []byte{}, -1)
+	l = bytes.TrimSpace(l)
+	return l, true
 }

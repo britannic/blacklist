@@ -103,7 +103,7 @@ func (c *Config) addExc(node string) *Objects {
 
 	return &Objects{
 		Parms: c.Parms,
-		xx: []*source{
+		src: []*source{
 			{
 				Parms: c.Parms,
 				desc:  getLtypeDesc(ltype),
@@ -220,7 +220,7 @@ func (c *Config) excludes(nodes ...string) list {
 
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) *Objects {
-	o := &Objects{Parms: c.Parms, xx: []*source{}}
+	o := &Objects{Parms: c.Parms, src: []*source{}}
 	switch node {
 	case all:
 		for _, node := range c.sortKeys() {
@@ -304,13 +304,13 @@ func (c *Config) label(name [][]byte, o *source, tnode string) {
 	case files:
 		o.file = string(name[2])
 		o.ltype = string(name[1])
-		c.tree[tnode].Objects.xx = append(c.tree[tnode].Objects.xx, o)
+		c.tree[tnode].Objects.src = append(c.tree[tnode].Objects.src, o)
 	case "prefix":
 		o.prefix = string(name[2])
 	case urls:
 		o.ltype = string(name[1])
 		o.url = string(name[2])
-		c.tree[tnode].Objects.xx = append(c.tree[tnode].Objects.xx, o)
+		c.tree[tnode].Objects.src = append(c.tree[tnode].Objects.src, o)
 	}
 }
 
@@ -504,7 +504,7 @@ func (b tree) getIP(node string) string {
 
 func (b tree) validate(node string) *Objects {
 	if _, ok := b[node]; ok {
-		for _, o := range b[node].Objects.xx {
+		for _, o := range b[node].Objects.src {
 			if o.ip == "" {
 				o.ip = b.getIP(node)
 			}

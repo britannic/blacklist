@@ -76,7 +76,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(0),
 					Objects: Objects{
 						Parms: nil,
-						xx:    nil,
+						src:    nil,
 					},
 					prefix: "",
 					r:      nil,
@@ -131,7 +131,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(6),
 					Objects: Objects{
 						Parms: nil,
-						xx:    nil,
+						src:    nil,
 					},
 					prefix: "",
 					r:      nil,
@@ -185,7 +185,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(7),
 					Objects: Objects{
 						Parms: nil,
-						xx:    nil,
+						src:    nil,
 					},
 					prefix: "",
 					r:      nil,
@@ -539,10 +539,10 @@ func TestGetAll(t *testing.T) {
 			ltype string
 			exp   string
 		}{
-			{name: "GetAll().xx", ltype: "", exp: expGetAll},
-			{name: "GetAll(url).xx", ltype: urls, exp: expURLS},
-			{name: "GetAll(files).xx", ltype: files, exp: expFiles},
-			{name: "GetAll(PreDomns, PreHosts).xx", ltype: PreDomns, exp: expPre},
+			{name: "GetAll().src", ltype: "", exp: expGetAll},
+			{name: "GetAll(url).src", ltype: urls, exp: expURLS},
+			{name: "GetAll(files).src", ltype: files, exp: expFiles},
+			{name: "GetAll(PreDomns, PreHosts).src", ltype: PreDomns, exp: expPre},
 			{name: "GetAll().String()", ltype: all, exp: c.Get(all).String()},
 			{name: "c.Get(hosts).String()", ltype: hosts, exp: expHostObj},
 		}
@@ -551,16 +551,16 @@ func TestGetAll(t *testing.T) {
 			Convey("Testing "+tt.name, func() {
 				switch tt.ltype {
 				case "":
-					So(fmt.Sprint(c.GetAll().xx), ShouldEqual, tt.exp)
+					So(fmt.Sprint(c.GetAll().src), ShouldEqual, tt.exp)
 				case all:
 					So(c.GetAll().String(), ShouldEqual, tt.exp)
 				case hosts:
 					So(c.Get(hosts).String(), ShouldEqual, tt.exp)
 				case PreDomns:
-					act := c.GetAll(PreDomns, PreHosts).xx
+					act := c.GetAll(PreDomns, PreHosts).src
 					So(fmt.Sprint(act), ShouldEqual, tt.exp)
 				default:
-					So(fmt.Sprint(c.GetAll(tt.ltype).xx), ShouldResemble, tt.exp)
+					So(fmt.Sprint(c.GetAll(tt.ltype).src), ShouldResemble, tt.exp)
 				}
 			})
 		}

@@ -29,12 +29,12 @@ type source struct {
 // Objects is a struct of []*source
 type Objects struct {
 	*Parms
-	xx []*source
+	src []*source
 }
 
 func (o *Objects) addObj(c *Config, node string) {
-	o.xx = append(o.xx, c.addInc(node))
-	o.xx = append(o.xx, c.tree.validate(node).xx...)
+	o.src = append(o.src, c.addInc(node))
+	o.src = append(o.src, c.tree.validate(node).src...)
 }
 
 func (o *source) area() string {
@@ -66,7 +66,7 @@ func (o *Objects) Files() *CFile {
 	var c = CFile{Parms: o.Parms}
 
 	if !o.Disabled {
-		for _, obj := range o.xx {
+		for _, obj := range o.src {
 			f := obj.setFilePrefix(o.Parms.Dir + "/%v.%v." + o.Parms.Ext)
 			c.Names = append(c.Names, f)
 			c.nType = obj.nType
@@ -82,15 +82,15 @@ func (o *Objects) Filter(ltype string) *Objects {
 
 	switch ltype {
 	case files:
-		for _, obj := range o.xx {
+		for _, obj := range o.src {
 			if obj.ltype == files && obj.file != "" {
-				sources.xx = append(sources.xx, obj)
+				sources.src = append(sources.src, obj)
 			}
 		}
 	case urls:
-		for _, obj := range o.xx {
+		for _, obj := range o.src {
 			if obj.ltype == urls && obj.url != "" {
-				sources.xx = append(sources.xx, obj)
+				sources.src = append(sources.src, obj)
 			}
 		}
 	}
@@ -99,7 +99,7 @@ func (o *Objects) Filter(ltype string) *Objects {
 
 // Find returns the int position of an Objects' element
 func (o *Objects) Find(elem string) int {
-	for i, obj := range o.xx {
+	for i, obj := range o.src {
 		if obj.name == elem {
 			return i
 		}
@@ -144,19 +144,19 @@ func (o *Objects) objects(c *Config, node string, ltypes ...string) {
 			switch ltype {
 			case PreDomns:
 				if newDomns && node == domains {
-					o.xx = append(o.xx, c.addInc(node))
+					o.src = append(o.src, c.addInc(node))
 					newDomns = false
 				}
 			case PreHosts:
 				if newHosts && node == hosts {
-					o.xx = append(o.xx, c.addInc(node))
+					o.src = append(o.src, c.addInc(node))
 					newHosts = false
 				}
 			default:
-				obj := c.validate(node).xx
+				obj := c.validate(node).src
 				for i := range obj {
 					if obj[i].ltype == ltype {
-						o.xx = append(o.xx, obj[i])
+						o.src = append(o.src, obj[i])
 					}
 				}
 			}
@@ -166,7 +166,7 @@ func (o *Objects) objects(c *Config, node string, ltypes ...string) {
 
 // Names returns a sorted slice of Objects names
 func (o *Objects) Names() (s sort.StringSlice) {
-	for _, obj := range o.xx {
+	for _, obj := range o.src {
 		s = append(s, obj.name)
 	}
 	sort.Sort(s)
@@ -198,10 +198,10 @@ func (o *source) String() string {
 
 // Stringer for Objects
 func (o *Objects) String() string {
-	return fmt.Sprint(o.xx)
+	return fmt.Sprint(o.src)
 }
 
 // Implement Sort Interface for Objects
-func (o *Objects) Len() int           { return len(o.xx) }
-func (o *Objects) Less(i, j int) bool { return o.xx[i].name < o.xx[j].name }
-func (o *Objects) Swap(i, j int)      { o.xx[i], o.xx[j] = o.xx[j], o.xx[i] }
+func (o *Objects) Len() int           { return len(o.src) }
+func (o *Objects) Less(i, j int) bool { return o.src[i].name < o.src[j].name }
+func (o *Objects) Swap(i, j int)      { o.src[i], o.src[j] = o.src[j], o.src[i] }

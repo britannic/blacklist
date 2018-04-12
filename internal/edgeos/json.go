@@ -76,7 +76,7 @@ func is(ind int, js, title, s string) string {
 
 func getJSONsrcArray(c *cfgJSON) string {
 	var (
-		cnt = len(c.tree[c.pk].Objects.xx)
+		cnt = len(c.tree[c.pk].Objects.src)
 		i   int
 		js  string
 		o   *source
@@ -91,7 +91,7 @@ func getJSONsrcArray(c *cfgJSON) string {
 
 	js += fmt.Sprintf("%v%q: [{%v", tabs(c.indent), "sources", enter)
 
-	for i, o = range c.tree[c.pk].Objects.xx {
+	for i, o = range c.tree[c.pk].Objects.src {
 		ȹ = c.indent + 1
 
 		if i == cnt-1 {

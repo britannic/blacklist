@@ -45,13 +45,13 @@ func diffArray(a, b []string) (diff sort.StringSlice) {
 		largest, smallest = b, a
 	}
 
-	dmap := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+	d := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 	for _, k := range smallest {
-		dmap.set([]byte(k), 0)
+		d.set([]byte(k), 0)
 	}
 
 	for _, k := range largest {
-		if !dmap.keyExists([]byte(k)) {
+		if !d.keyExists([]byte(k)) {
 			diff = append(diff, k)
 		}
 	}
@@ -61,17 +61,17 @@ func diffArray(a, b []string) (diff sort.StringSlice) {
 }
 
 // formatData returns an io.Reader loaded with dnsmasq formatted data
-func formatData(fmttr string, l list) io.Reader {
-	var lines sort.StringSlice
+func formatData(s string, l list) io.Reader {
+	var ls sort.StringSlice
 	l.RLock()
 
 	for k := range l.entry {
-		lines = append(lines, fmt.Sprintf(fmttr+"\n", k))
+		ls = append(ls, fmt.Sprintf(s+"\n", k))
 	}
 
-	lines.Sort()
+	ls.Sort()
 	l.RUnlock()
-	return strings.NewReader(strings.Join(lines, ""))
+	return strings.NewReader(strings.Join(ls, ""))
 }
 
 // getDnsmasqPrefix returns the dnsmasq conf file delimiter
