@@ -47,10 +47,11 @@ TAG 			 = "v$(VER)"
 LDFLAGS 		 = -X main.build=$(DATE) -X main.githash=$(GIT) -X main.version=$(VER)
 FLAGS 			 = -s -w
 
+PHONY: all clean deps amd64 mips coverage copyright docs readme pkgs
 amd64: amd64
 
-.PHONY: all clean deps amd64 mips coverage copyright docs readme pkgs
-all: clean deps amd64 mips coverage copyright docs readme pkgs ; @ $(info making everything...) ## Build everything
+all: all ; @ $(info making everything...) ## Build everything
+all: clean deps amd64 mips coverage copyright docs readme pkgs 
 
 # Tools
 DEP				 = $(BIN)/dep
