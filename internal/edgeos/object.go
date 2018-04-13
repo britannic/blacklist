@@ -74,9 +74,8 @@ func getLtypeDesc(l string) string {
 		return preNoun + " blacklisted domains"
 	case PreHosts:
 		return preNoun + " blacklisted hosts"
-	default:
-		return "Unknown ltype"
 	}
+	return "Unknown ltype"
 }
 
 func (o *Objects) objects(c *Config, node string, ltypes ...string) {

@@ -319,6 +319,7 @@ func (o *source) process() *bList {
 		b                     = bufio.NewScanner(o.r)
 		drop, extracted, kept int
 		find                  = regx.NewRegex()
+		ok                    bool
 	)
 
 	for b.Scan() {
@@ -328,10 +329,7 @@ func (o *source) process() *bList {
 		case bytes.HasPrefix(line, []byte("#")), bytes.HasPrefix(line, []byte("//")), bytes.HasPrefix(line, []byte("<")):
 			continue
 		case bytes.HasPrefix(line, []byte(o.prefix)):
-			var ok bool
-
 			if line, ok = find.StripPrefixAndSuffix(line, o.prefix); ok {
-				// extracted++
 				fqdns := find.RX[regx.FQDN].FindAll(line, -1)
 
 				for _, fqdn := range fqdns {
@@ -349,10 +347,9 @@ func (o *source) process() *bList {
 					drop++
 				}
 			}
-		default:
-			continue
 		}
 	}
+
 	switch o.nType {
 	case domn, excDomn, excRoot:
 		o.Dex = mergeList(o.Dex, add)

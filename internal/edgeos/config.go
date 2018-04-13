@@ -166,48 +166,28 @@ func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
 
 // NewContent returns an interface of the requested IFace type
 func (c *Config) NewContent(iface IFace) (Contenter, error) {
-	var (
-		err   error
-		ltype = iface.String()
-		o     *Objects
-	)
-
-	switch ltype {
-	case ExcDomns:
-		o = c.addExc(domains)
-	case ExcHosts:
-		o = c.addExc(hosts)
-	case ExcRoots:
-		o = c.addExc(rootNode)
-	case urls:
-		switch iface {
-		case URLdObj:
-			return &URLDomnObjects{Objects: c.Get(domains).Filter(urls)}, nil
-		case URLhObj:
-			return &URLHostObjects{Objects: c.Get(hosts).Filter(urls)}, nil
-		}
-	case notknown:
-		err = errors.New("Invalid interface requested")
-	default:
-		o = c.GetAll(ltype)
-	}
+	var ltype = iface.String()
 
 	switch iface {
 	case ExDmObj:
-		return &ExcDomnObjects{Objects: o}, nil
+		return &ExcDomnObjects{Objects: c.addExc(domains)}, nil
 	case ExHtObj:
-		return &ExcHostObjects{Objects: o}, nil
+		return &ExcHostObjects{Objects: c.addExc(hosts)}, nil
 	case ExRtObj:
-		return &ExcRootObjects{Objects: o}, nil
+		return &ExcRootObjects{Objects: c.addExc(rootNode)}, nil
 	case FileObj:
-		return &FIODataObjects{Objects: o}, nil
+		return &FIODataObjects{Objects: c.GetAll(ltype)}, nil
 	case PreDObj:
-		return &PreDomnObjects{Objects: o}, nil
+		return &PreDomnObjects{Objects: c.GetAll(ltype)}, nil
 	case PreHObj:
-		return &PreHostObjects{Objects: o}, nil
+		return &PreHostObjects{Objects: c.GetAll(ltype)}, nil
+	case URLdObj:
+		return &URLDomnObjects{Objects: c.Get(domains).Filter(urls)}, nil
+	case URLhObj:
+		return &URLHostObjects{Objects: c.Get(hosts).Filter(urls)}, nil
 	}
 
-	return nil, err
+	return nil, errors.New("Invalid interface requested")
 }
 
 // excludes returns a string array of excludes

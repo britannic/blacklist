@@ -35,9 +35,7 @@ type opts struct {
 func cleanArgs(args []string) (r []string) {
 	for _, a := range args {
 		switch {
-		case strings.HasPrefix(a, "-test"):
-			continue
-		case strings.HasPrefix(a, "-convey"):
+		case strings.HasPrefix(a, "-test"), strings.HasPrefix(a, "-convey"):
 			continue
 		default:
 			r = append(r, a)
@@ -50,16 +48,16 @@ func cleanArgs(args []string) (r []string) {
 func (o *opts) getCFG(c *e.Config) e.ConfLoader {
 	if *o.File != "" {
 		var (
-			err    error
-			f      []byte
-			reader io.Reader
+			err error
+			f   []byte
+			r   io.Reader
 		)
 
-		if reader, err = e.GetFile(*o.File); err != nil {
+		if r, err = e.GetFile(*o.File); err != nil {
 			logFatalf("cannot open configuration file %s!", *o.File)
 		}
 
-		f, _ = ioutil.ReadAll(reader)
+		f, _ = ioutil.ReadAll(r)
 		return &e.CFGstatic{Config: c, Cfg: string(f)}
 	}
 	switch *o.ARCH {
