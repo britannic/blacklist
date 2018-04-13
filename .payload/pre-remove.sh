@@ -102,10 +102,14 @@ try() {
 	fi
 }
 
+isblacklist() {
+	${API} existsActive service dns forwarding blacklist && return 0
+	return 1
+}
+
 # Back up [service dns forwarding blacklist]
 backup_dns_config() {
-	${API} existsActive service dns forwarding blacklist
-	if [[ $? == 0 ]]; then
+	if isblacklist; then
 		echo_logger I "Backing up blacklist configuration to: /config/user-data/blacklist.${DATE}.cmds"
 		${API} showConfig service dns forwarding blacklist \
 		--show-commands --show-active-only | \

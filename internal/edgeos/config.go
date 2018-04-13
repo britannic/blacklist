@@ -9,7 +9,6 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"sort"
 	"strings"
 
@@ -22,13 +21,6 @@ type tree map[string]*source
 // ConfLoader interface handles multiple configuration load methods
 type ConfLoader interface {
 	read() io.Reader
-}
-
-// CFile holds an array of file names
-type CFile struct {
-	*Parms
-	Names []string
-	nType ntype
 }
 
 // Config is a struct of configuration fields
@@ -65,7 +57,7 @@ const (
 	ExcHosts = "whitelisted-servers"
 	// ExcRoots labels global domain exclusions
 	ExcRoots = "whitelisted-global"
-	// PreDomns designates string label for preconfigured blacklisted domains
+	// PreDomns designates string label for preconfigured whitelisted domains
 	PreDomns = "blacklisted-subdomains"
 	// PreHosts designates string label for preconfigured blacklisted hosts
 	PreHosts = "blacklisted-servers"
@@ -146,6 +138,30 @@ func (c *Config) addInc(node string) *source {
 		nType: n,
 		name:  ltype,
 	}
+}
+
+// GetTotalStats displays aggregate statistics for processed sources
+func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
+	var keys []string
+
+	for k := range c.ctr {
+		keys = append(keys, k)
+	}
+
+	for _, k := range keys {
+		if c.ctr[k].kept+c.ctr[k].dropped != 0 {
+			dropped += c.ctr[k].dropped
+			extracted += c.ctr[k].extracted
+			kept += c.ctr[k].kept
+		}
+	}
+
+	if kept+dropped != 0 {
+		c.Log.Noticef("Total entries found: %d", extracted)
+		c.Log.Noticef("Total entries extracted %d", kept)
+		c.Log.Noticef("Total entries dropped %d", dropped)
+	}
+	return dropped, extracted, kept
 }
 
 // NewContent returns an interface of the requested IFace type
@@ -320,13 +336,6 @@ func (c *Config) addSource(tnode string) {
 	}
 }
 
-func (o *source) addLeaf(srcName [][]byte, tnode string) {
-	if bytes.Equal(srcName[1], []byte(src)) {
-		o.name = string(srcName[2])
-		o.nType = getType(tnode).(ntype)
-	}
-}
-
 func (c *Config) disable(line []byte, tnode string, find *regx.OBJ) {
 	if isTnode(tnode) {
 		c.tree[tnode].disabled = strToBool(string(find.SubMatch(regx.DSBL, line)[1]))
@@ -349,11 +358,59 @@ func (c *Config) leafname(o *source, line []byte, tnode string, find *regx.OBJ) 
 	}
 }
 
-func isntSource(nodes []string) bool {
-	if len(nodes) == 0 {
-		return true
+// ProcessContent processes the Contents array
+func (c *Config) ProcessContent(cts ...Contenter) error {
+	var (
+		errs      []string
+		getErrors chan error
+	)
+
+	if len(cts) < 1 {
+		return errors.New("Empty Contenter interface{} passed to ProcessContent()")
 	}
-	return nodes[len(nodes)-1] != src
+
+	for _, ct := range cts {
+		var (
+			a, b  int32
+			area  string
+			tally = &stats{dropped: a, kept: b}
+		)
+
+		for _, o := range ct.GetList().src {
+			getErrors = make(chan error)
+
+			if o.err != nil {
+				errs = append(errs, o.err.Error())
+			}
+
+			go func(o *source) {
+				area = typeInt(o.nType)
+				c.ctr[area] = tally
+				getErrors <- o.process().writeFile()
+			}(o)
+
+			for range cts {
+				if err := <-getErrors; err != nil {
+					errs = append(errs, err.Error())
+				}
+				close(getErrors)
+			}
+		}
+
+		if area != "" {
+			if c.ctr[area].kept+c.ctr[area].dropped != 0 {
+				c.Log.Noticef("Total %s found: %d", area, c.ctr[area].extracted)
+				c.Log.Noticef("Total %s extracted %d", area, c.ctr[area].kept)
+				c.Log.Noticef("Total %s dropped %d", area, c.ctr[area].dropped)
+			}
+		}
+	}
+
+	if errs != nil {
+		return fmt.Errorf(strings.Join(errs, "\n"))
+	}
+
+	return nil
 }
 
 // ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
@@ -400,18 +457,11 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 	}
 
 	if len(c.tree) < 1 {
-		return errors.New("configuration data is empty, cannot continue")
+		return errors.New("no blacklist configuration has been detected")
 	}
 
 	c.Debug(fmt.Sprintf("Using router configuration %v", c.String()))
 	return nil
-}
-
-// readDir returns a listing of dnsmasq blacklist configuration files
-func (c *CFile) readDir(pattern string) ([]string, error) {
-	files, err := filepath.Glob(pattern)
-	c.Debug(fmt.Sprintf("Files: %v\n: %v", pattern, files))
-	return files, err
 }
 
 // ReloadDNS reloads the dnsmasq configuration
@@ -419,17 +469,6 @@ func (c *Config) ReloadDNS() ([]byte, error) {
 	cmd := exec.Command(c.Bash)
 	cmd.Stdin = strings.NewReader(c.DNSsvc)
 	return cmd.CombinedOutput()
-}
-
-// Remove deletes a CFile array of file names
-func (c *CFile) Remove() error {
-	d, err := c.readDir(fmt.Sprintf(c.FnFmt, c.Dir, c.Wildcard.Node, c.Wildcard.Name, c.Ext))
-	if err != nil {
-		return err
-	}
-	files := diffArray(c.Names, d)
-	c.Debug(fmt.Sprintf("Removing: %v", files))
-	return purgeFiles(files)
 }
 
 // sortKeys returns a slice of keys in lexicographical sorted order.
@@ -479,17 +518,6 @@ func (c *Config) String() (s string) {
 	return s
 }
 
-// String implements string method
-func (c *CFile) String() string {
-	sort.Strings(c.Names)
-	return strings.Join(c.Names, "\n")
-}
-
-// Strings returns a sorted array of strings.
-func (c *CFile) Strings() []string {
-	sort.Strings(c.Names)
-	return c.Names
-}
 func (b tree) getIP(node string) string {
 	if _, ok := b[node]; ok {
 		if b[node].ip != "" {

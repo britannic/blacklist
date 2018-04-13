@@ -4,9 +4,9 @@ package edgeos
 
 import "strconv"
 
-const _ntype_name = "unknowndomnexcDomnexcHostexcRoothostpreDomnpreHostroot"
+const _ntype_name = "unknowndomnexcDomnexcHostexcRoothostpreDomnpreHostpreRootroot"
 
-var _ntype_index = [...]uint8{0, 7, 11, 18, 25, 32, 36, 43, 50, 54}
+var _ntype_index = [...]uint8{0, 7, 11, 18, 25, 32, 36, 43, 50, 57, 61}
 
 func (i ntype) String() string {
 	if i < 0 || i >= ntype(len(_ntype_index)-1) {

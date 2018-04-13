@@ -67,6 +67,8 @@ func (o *opts) getCFG(c *e.Config) e.ConfLoader {
 		return &e.CFGcli{Config: c}
 	}
 	return &e.CFGstatic{Config: c, Cfg: tdata.Live}
+	// return &e.CFGstatic{Config: c, Cfg: tdata.Get("none")}
+
 }
 
 // getOpts returns command line flags and values or displays help

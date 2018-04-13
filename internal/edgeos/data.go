@@ -24,6 +24,7 @@ const (
 	host                 // Format type e.g. server=/www.d.com/0.0.0.0
 	preDomn              // Pre-configured blacklisted domains
 	preHost              // Pre-configured blacklisted hosts
+	preRoot              // Pre-configured global blacklist domains
 	root                 // Topmost root node
 )
 
@@ -77,7 +78,7 @@ func formatData(s string, l list) io.Reader {
 // getDnsmasqPrefix returns the dnsmasq conf file delimiter
 func getDnsmasqPrefix(o *source) string {
 	switch o.nType {
-	case domn, preDomn, root:
+	case domn, preDomn, preRoot, root:
 		return o.Pfx.domain + "/%v/" + o.ip
 	case excDomn, excHost, excRoot:
 		return o.Pfx.host + "/%v/#"

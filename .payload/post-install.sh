@@ -2,6 +2,7 @@
 
 # Set up the Vyatta environment
 declare -i DEC
+API=/bin/cli-shell-api
 CFGRUN=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
 # source /opt/vyatta/etc/functions/script-template
 shopt -s expand_aliases
@@ -96,6 +97,11 @@ try() {
 		echo_logger E "${@}"
 		return 1
 	fi
+}
+
+noblacklist() {
+	${API} existsActive service dns forwarding blacklist && return 1
+	return 0
 }
 
 # Load the [service dns forwarding blacklist] configuration
@@ -232,9 +238,9 @@ update_dns_config() {
 
 # Set UPGRADE flag
 UPGRADE=0
-if [[ "${1}" == "configure" ]] && [[ -z "${2}" ]] ; then
-	UPGRADE=1
-fi
+[[ "${1}" == "configure" ]] && [[ -z "${2}" ]] && UPGRADE=1
+
+noblacklist && UPGRADE=1
 
 # Only run the post installation script if this is a first time installation
 if [[ ${UPGRADE} == 1 ]] ; then

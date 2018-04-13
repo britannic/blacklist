@@ -47,6 +47,11 @@ TAG 			 = "v$(VER)"
 LDFLAGS 		 = -X main.build=$(DATE) -X main.githash=$(GIT) -X main.version=$(VER)
 FLAGS 			 = -s -w
 
+amd64: amd64
+
+.PHONY: all clean deps amd64 mips coverage copyright docs readme pkgs
+all: clean deps amd64 mips coverage copyright docs readme pkgs ; @ $(info making everything...) ## Build everything
+
 # Tools
 DEP				 = $(BIN)/dep
 $(BIN)/dep: ; @ $(info $(M) building dep…) 
@@ -76,10 +81,6 @@ GO2XUNIT 		 = $(BIN)/go2xunit
 $(BIN)/go2xunit: ; @ $(info $(M) building go2xunit…)
 	$Q $(GO) get github.com/tebeka/go2xunit
 
-.PHONY: all clean deps amd64 mips coverage copyright docs readme pkgs
-all: clean deps amd64 mips coverage copyright docs readme pkgs ; @ $(info making everything...) ## Build everything
-
-.PHONY: amd64
 amd64: generate ; @ $(info building Mac OS binary…) ## Build Mac OS binary
 	$(eval LDFLAGS += -X main.architecture=amd64 -X main.hostOS=darwin)
 	GOOS=darwin GOARCH=amd64 \

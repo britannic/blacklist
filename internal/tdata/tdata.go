@@ -1,20 +1,20 @@
 package tdata
 
-import "fmt"
-
 // Get returns r
-func Get(s string) (string, error) {
+func Get(s string) string {
 	switch s {
 	case "cfg":
-		return Cfg, nil
+		return Cfg
 	case "cfg2":
-		return CfgPartial, nil
+		return CfgPartial
 	case "cfg3":
-		return CfgMimimal, nil
+		return CfgMimimal
+	case "none":
+		return CfgDeleted
 	case "fileManifest":
-		return FileManifest, nil
+		return FileManifest
 	}
-	return "", fmt.Errorf("function Get(%v) is unknown", s)
+	return ""
 }
 
 var (
@@ -242,6 +242,185 @@ var (
         }
     }
 }`
+
+	// CfgDeleted has no EdgeOS blacklist configuration
+	CfgDeleted = `interfaces {
+    ethernet eth0 {
+        address dhcp
+        address dhcpv6
+        description "External WAN"
+        dhcp-options {
+            default-route update
+            default-route-distance 210
+            name-server no-update
+        }
+        duplex auto
+        speed auto
+    }
+    ethernet eth1 {
+        address 192.168.150.1/24
+        description "Internal LAN"
+        duplex auto
+        mtu 1500
+        speed auto
+    }
+    ethernet eth2 {
+        address 192.168.200.1/24
+        description DMZ
+        duplex auto
+        mtu 1500
+        speed auto
+    }
+    ethernet eth3 {
+        duplex auto
+        speed auto
+    }
+    ethernet eth4 {
+        duplex auto
+        speed auto
+    }
+    loopback lo {
+    }
+    switch switch0 {
+        mtu 1500
+    }
+}
+service {
+    dhcp-server {
+        disabled false
+        hostfile-update enable
+        shared-network-name LAN0 {
+            authoritative enable
+            subnet 192.168.150.0/24 {
+                default-router 192.168.150.1
+                dns-server 192.168.150.1
+                domain-name er-x.local
+                lease 86400
+                start 192.168.150.100 {
+                    stop 192.168.150.200
+                }
+            }
+        }
+        static-arp disable
+        use-dnsmasq disable
+    }
+    dns {
+        forwarding {
+            cache-size 150
+            listen-on eth1
+            listen-on eth2
+            name-server 208.67.220.220
+            options bogus-priv
+            options domain=er-x.local
+            options expand-hosts
+            options listen-address=::1
+            options listen-address=127.0.0.1
+            options localise-queries
+            options strict-order
+        }
+    }
+    gui {
+        http-port 80
+        https-port 443
+        listen-address 192.168.150.1
+        older-ciphers enable
+    }
+    ssh {
+        disable-password-authentication
+        port 22
+        protocol-version v2
+    }
+    unms {
+        connection wss://unifi.helmrock.com:443+CWhNtqTneTNDLolDE_XirvZwLwJDQwfnxXD1ZYS0SwYAAAAA+allowUntrustedCertificate
+    }
+}
+system {
+    conntrack {
+        expect-table-size 4096
+        hash-size 4096
+        ignore {
+            rule 10 {
+                destination {
+                    address 255.255.255.255
+                }
+            }
+        }
+        table-size 262144
+    }
+    domain-search {
+        domain ashcreek.home
+    }
+    host-name er-x
+    ip {
+        override-hostname-ip 192.168.150.1
+    }
+    login {
+        banner {
+            post-login "\nWelcome to EdgeOS!\n"
+            pre-login "\n\n\n\tWARNING *** WARNING *** WARNING *** WARNING *** WARNING\n\n\n\tWARNING: Criminal and civil penalties may be imposed for obtaining\n\tunauthorized access to this system or for causing intentional,\n\tunauthorized damage, deletion, alteration, or insertion of data.\n\tAny information stored, processed, or transmitted to this system\n\tmay be monitored, used, or disclosed by authorized personnel,\n\tincluding law enforcement. Email sysadmin@empirecreekcircle.com\n\tto gain access to this equipment if you need authorization.\n\n\n"
+        }
+        user nbnt {
+            authentication {
+                encrypted-password $6$zIyYjCe4VW2iN$dO.858Qmu1.mAfEHw4VSuSavlEIKbhQdvzz3qXJs/ygC8Jd0kaRaparu5eJI0T05iI2uvICN1xONowGDoxTwu/
+                plaintext-password ""
+                public-keys root@MacBook-Air.local {
+                    key AAAAB3NzaC1yc2EAAAADAQABAAACAQDJOzuwOndcN1dDlgTPCkIVEJnDN07wmzUhxHEjWwBblHv/P3eSv9AQqBA46y1thlJyecBrEehgpXUECFUry2MEwyLcyUS7zPV/5zxRIAKCMRm+dhjfqwAFp7EiodYPO06dGWElQ0ND0+3MWJSd9TU+unnxipbGAySpobZtffNPdatJ0il5XxJULVgh3leyCqrLZQIYxK9X1wJWfD292mKJphoeYjlFdkBYq9oruG1cYyZrtt6x3Rf1Yp6/qQ2GHjAfumBT9AzgNeL6XbxiQGmOybdnNxfmqbKD5BIArXHaz4qysErhHwvqIbS/U5MHNPkEn/4OPbXEPkMqxWGPWuHhOokilIyFe8hdk0b5rJ9bYDn8uATtaXGL5nT1MjlLHTrWtkpH8eKfC/+hyXKZMNo2zpMr+b2gf769K7MgbIS6BxUsS0U43PneelO1G8RQZ1fjRy6WenA09oute2ARnvgMdcjqA+fzY8fgGpR837mXsOjW2zCP1pF/CYm56EyIG6cLp95dEt7VXclvIR/sTaOejE3jIXLW3mqsYkKxzCx6JCBDpi+Re6K2hEaHW80LvgMWs4wv3bjqsn5+RpctR7csp+tpbw6XYXpt0WsJDD0KGQ0t8KG9OVSQZ7xPM3T2SObAPQd/CRJlWK9ZE+Qk6xYWmWk65/1KTSKP+0qW7ZGETw==
+                    type ssh-rsa
+                }
+            }
+            full-name Admin
+            level admin
+        }
+    }
+    name-server 127.0.0.1
+    ntp {
+        server 0.ubnt.pool.ntp.org {
+        }
+        server 1.ubnt.pool.ntp.org {
+        }
+    }
+    package {
+        repository wheezy {
+            components "main contrib non-free"
+            distribution wheezy
+            password ""
+            url http://http.us.debian.org/debian/
+            username ""
+        }
+    }
+    syslog {
+        global {
+            archive {
+                files 10
+                size 250
+            }
+            facility all {
+                level notice
+            }
+            facility cron {
+                level err
+            }
+            facility protocols {
+                level debug
+            }
+        }
+    }
+    task-scheduler {
+        task update_blacklists {
+            executable {
+                path /config/scripts/update-dnsmasq
+            }
+            interval 1d
+        }
+    }
+    time-zone America/Los_Angeles
+}
+
+
+/* Warning: Do not remove the following line. */
+/* === vyatta-config-version: "config-management@1:conntrack@1:cron@1:dhcp-relay@1:dhcp-server@4:firewall@5:ipsec@5:nat@3:qos@1:quagga@2:system@4:ubnt-pptp@1:ubnt-udapi-server@1:ubnt-unms@1:ubnt-util@1:vrrp@1:webgui@1:webproxy@1:zone-policy@1" === */
+/* Release version: v1.10.0-beta.3.5051713.180109.1605 */
+`
 
 	// DisabledCfg contains a disabled valid EdgeOS blacklist configuration
 	DisabledCfg = `blacklist {

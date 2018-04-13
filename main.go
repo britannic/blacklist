@@ -110,7 +110,7 @@ func basename(s string) string {
 
 func initEnv() (env *e.Config, err error) {
 	if env, err = setUpEnv(); err != nil {
-		fmt.Fprintf(os.Stderr, "Removing stale blacklists because %v", err.Error())
+		fmt.Fprintf(os.Stderr, "Removing stale dnsmasq blaclist files, because %v\n", err.Error())
 		if err = killFiles(env).Remove(); err != nil {
 			fmt.Fprintf(os.Stderr, "%v", err.Error())
 		}

@@ -76,7 +76,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(0),
 					Objects: Objects{
 						Parms: nil,
-						src:    nil,
+						src:   nil,
 					},
 					prefix: "",
 					r:      nil,
@@ -131,7 +131,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(6),
 					Objects: Objects{
 						Parms: nil,
-						src:    nil,
+						src:   nil,
 					},
 					prefix: "",
 					r:      nil,
@@ -185,7 +185,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(7),
 					Objects: Objects{
 						Parms: nil,
-						src:    nil,
+						src:   nil,
 					},
 					prefix: "",
 					r:      nil,
@@ -417,7 +417,7 @@ func TestReadCfg(t *testing.T) {
 		})
 
 		Convey("Testing with an empty configuration", func() {
-			exp := errors.New("configuration data is empty, cannot continue")
+			exp := errors.New("no blacklist configuration has been detected")
 			act := NewConfig().ReadCfg(&CFGstatic{Cfg: ""})
 			So(act, ShouldResemble, exp)
 		})
@@ -441,7 +441,7 @@ func TestReadCfg(t *testing.T) {
 
 func TestReadUnconfiguredCfg(t *testing.T) {
 	Convey("Testing ReadCfg()", t, func() {
-		exp := errors.New("configuration data is empty, cannot continue")
+		exp := errors.New("no blacklist configuration has been detected")
 		act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.NoBlacklist})
 		So(act, ShouldResemble, exp)
 	})

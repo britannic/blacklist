@@ -18,7 +18,7 @@ Package regx provides regex objects for processing data in files and web content
 * [type OBJ](#OBJ)
   * [func NewRegex() *OBJ](#NewRegex)
   * [func (o *OBJ) String() string](#OBJ.String)
-  * [func (o *OBJ) StripPrefixAndSuffix(line []byte, prefix string) ([]byte, bool)](#OBJ.StripPrefixAndSuffix)
+  * [func (o *OBJ) StripPrefixAndSuffix(l []byte, p string) ([]byte, bool)](#OBJ.StripPrefixAndSuffix)
   * [func (o *OBJ) SubMatch(t Leaf, b []byte) [][]byte](#OBJ.SubMatch)
 
 
@@ -101,16 +101,16 @@ NewRegex returns a map of OBJ populated with a map of precompiled regex objects
 
 
 
-### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=1993:2022#L81)
+### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=1874:1903#L76)
 ``` go
 func (o *OBJ) String() string
 ```
 
 
 
-### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2227:2304#L91)
+### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2108:2177#L86)
 ``` go
-func (o *OBJ) StripPrefixAndSuffix(line []byte, prefix string) ([]byte, bool)
+func (o *OBJ) StripPrefixAndSuffix(l []byte, p string) ([]byte, bool)
 ```
 StripPrefixAndSuffix strips the prefix and suffix
 

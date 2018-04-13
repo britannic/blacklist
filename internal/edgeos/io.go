@@ -132,3 +132,19 @@ func (c *CFGcli) read() io.Reader {
 func (c *CFGstatic) read() io.Reader {
 	return strings.NewReader(c.Cfg)
 }
+
+// writeFile saves hosts/domains data to disk
+func (b *bList) writeFile() error {
+	if b.size == 0 {
+		return nil
+	}
+
+	w, err := os.Create(b.file)
+	if err != nil {
+		return err
+	}
+
+	defer w.Close()
+	_, err = io.Copy(w, b.r)
+	return err
+}
