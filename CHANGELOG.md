@@ -2,7 +2,7 @@
 
 ## Releases
 
-### Release v1.1.6 (April 13, 2018)
+### Release v1.1.6.1 (April 13, 2018)
 
 * Suppress log messages for predefined includes (blacklists) and excludes (whitelists)
 * Changed Debian pre-remove and post-install script algorithm to detect an existing installation and reinstall a default configuration if none exists
