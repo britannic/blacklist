@@ -226,6 +226,15 @@ func TestNewContent(t *testing.T) {
 			},
 			{
 				i:     1,
+				exp:   "address=/beap.gemini.yahoo.com/0.0.0.0",
+				fail:  false,
+				ltype: PreHosts,
+				name:  "z" + PreHosts,
+				obj:   PreHObj,
+				pos:   -1,
+			},
+			{
+				i:     1,
 				exp:   expFileObj,
 				fail:  false,
 				ltype: files,

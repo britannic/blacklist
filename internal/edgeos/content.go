@@ -72,11 +72,6 @@ type PreHostObjects struct {
 	*Objects
 }
 
-// PreRootObjects struct of *Objects for pre-configured root content
-type PreRootObjects struct {
-	*Objects
-}
-
 // URLDomnObjects struct of *Objects for domain URLs
 type URLDomnObjects struct {
 	*Objects
@@ -139,16 +134,6 @@ func (p *PreDomnObjects) Find(elem string) int {
 
 // Find returns the int position of an Objects' element
 func (p *PreHostObjects) Find(elem string) int {
-	for i, o := range p.src {
-		if o.name == elem {
-			return i
-		}
-	}
-	return -1
-}
-
-// Find returns the int position of an Objects' element
-func (p *PreRootObjects) Find(elem string) int {
 	for i, o := range p.src {
 		if o.name == elem {
 			return i
@@ -321,9 +306,6 @@ func (p *PreDomnObjects) Len() int { return len(p.Objects.src) }
 func (p *PreHostObjects) Len() int { return len(p.Objects.src) }
 
 // Len returns how many sources there are
-func (p *PreRootObjects) Len() int { return len(p.Objects.src) }
-
-// Len returns how many sources there are
 func (u *URLDomnObjects) Len() int { return len(u.Objects.src) }
 
 // Len returns how many sources there are
@@ -459,15 +441,6 @@ func (p *PreHostObjects) SetURL(name, url string) {
 }
 
 // SetURL sets the Object's url field value
-func (p *PreRootObjects) SetURL(name, url string) {
-	for _, o := range p.src {
-		if o.name == name {
-			o.url = url
-		}
-	}
-}
-
-// SetURL sets the Object's url field value
 func (u *URLDomnObjects) SetURL(name, url string) {
 	for _, o := range u.src {
 		if o.name == name {
@@ -491,7 +464,6 @@ func (e *ExcRootObjects) String() string { return e.Objects.String() }
 func (f *FIODataObjects) String() string { return f.Objects.String() }
 func (p *PreDomnObjects) String() string { return p.Objects.String() }
 func (p *PreHostObjects) String() string { return p.Objects.String() }
-func (p *PreRootObjects) String() string { return p.Objects.String() }
 func (u *URLDomnObjects) String() string { return u.Objects.String() }
 func (u *URLHostObjects) String() string { return u.Objects.String() }
 
