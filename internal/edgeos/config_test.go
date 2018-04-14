@@ -300,31 +300,13 @@ func TestGetIP(t *testing.T) {
 	})
 	b = tree{
 		rootNode: &source{
-			// Parms: c.Parms,
-			// desc:  getLtypeDesc(ltype),
-			// exc:   exc,
 			ip: "192.168.1.50",
-			// ltype: ltype,
-			// nType: getType(ltype).(ntype),
-			// name:  ltype,
 		},
 		domains: &source{
-			// Parms: c.Parms,
-			// desc:  getLtypeDesc(ltype),
-			// exc:   exc,
 			ip: "192.168.1.20",
-			// ltype: ltype,
-			// nType: getType(ltype).(ntype),
-			// name:  ltype,
 		},
 		hosts: &source{
-			// Parms: c.Parms,
-			// desc:  getLtypeDesc(ltype),
-			// exc:   exc,
 			ip: "192.168.1.30",
-			// ltype: ltype,
-			// nType: getType(ltype).(ntype),
-			// name:  ltype,
 		},
 	}
 	Convey("Testing getIP("+rootNode+")", t, func() {

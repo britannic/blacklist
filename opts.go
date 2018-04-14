@@ -74,22 +74,22 @@ func getOpts() *opts {
 	var (
 		flags mflag.FlagSet
 		o     = &opts{
+			FlagSet: &flags,
 			ARCH:    flags.String("arch", runtime.GOARCH, "Set EdgeOS CPU architecture", false),
-			Dbug:    flags.Bool("debug", false, "Enable Debug mode", false),
 			DNSdir:  flags.String("dir", "/etc/dnsmasq.d", "Override dnsmasq directory", true),
 			DNStmp:  flags.String("tmp", "/tmp", "Override dnsmasq temporary directory", false),
-			Help:    flags.Bool("h", false, "Display help", true),
+			Dbug:    flags.Bool("debug", false, "Enable Debug mode", false),
 			File:    flags.String("f", "", "`<file>` # Load a config.boot file", true),
-			FlagSet: &flags,
-			MIPSLE:  flags.String("mipsle", "mipsle", "Override target EdgeOS CPU architecture", false),
+			Help:    flags.Bool("h", false, "Display help", true),
 			MIPS64:  flags.String("mips64", "mips64", "Override target EdgeOS CPU architecture", false),
+			MIPSLE:  flags.String("mipsle", "mipsle", "Override target EdgeOS CPU architecture", false),
 			OS:      flags.String("os", runtime.GOOS, "Override native EdgeOS OS", false),
 			Test:    flags.Bool("t", false, "Run config and data validation tests", false),
 			Verb:    flags.Bool("v", false, "Verbose display", true),
 			Version: flags.Bool("version", false, "Show version", true),
 		}
 	)
-	flags.Init("blacklist", mflag.ExitOnError)
+	flags.Init(progname, mflag.ExitOnError)
 	flags.Usage = o.PrintDefaults
 
 	return o

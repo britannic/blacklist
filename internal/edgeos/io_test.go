@@ -141,47 +141,6 @@ func TestAPICMD(t *testing.T) {
 		for _, tt := range tests {
 			So(apiCMD(tt.q, tt.b), ShouldEqual, tt.r)
 		}
-
-		// c := NewConfig(
-		// 	API("/bin/cli-shell-api"),
-		// 	InCLI("inSession"),
-		// 	Level("service dns forwarding"),
-		// )
-
-		// 	sessions := []struct {
-		// 		name string
-		// 		b    bool
-		// 		arg  string
-		// 		cmd  string
-		// 	}{
-		// 		{
-		// 			name: "configure session = true",
-		// 			b:    true,
-		// 			arg:  "--show-working-only",
-		// 			cmd:  "showConfig",
-		// 		},
-		// 		{
-		// 			name: "configure session = false",
-		// 			b:    false,
-		// 			arg:  "--show-active-only",
-		// 			cmd:  "showCfg",
-		// 		},
-		// 	}
-
-		// 	for _, session := range sessions {
-		// 		act := fmt.Sprintf(
-		// 			"%v %v %v --show-working-only",
-		// 			c.API,
-		// 			apiCMD("showConfig", session.b),
-		// 			c.Level,
-		// 		)
-		// 		exp := fmt.Sprintf(
-		// 			"/bin/cli-shell-api %v service dns forwarding %v",
-		// 			session.cmd,
-		// 			session.arg,
-		// 		)
-		// 		Convey(session.name, func() { So(act, ShouldEqual, exp) })
-		// 	}
 	})
 }
 
