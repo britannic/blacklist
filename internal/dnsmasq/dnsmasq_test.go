@@ -3,10 +3,60 @@ package dnsmasq
 import (
 	"encoding/json"
 	"errors"
+	"io"
+	"io/ioutil"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+func TestConfigFile(t *testing.T) {
+	Convey("Testing ConfigFile()", t, func() {
+		var (
+			b   []byte
+			err error
+			f   = "../testdata/etc/dnsmasq.d/hosts.githubSteveBlack.blacklist.conf"
+			r   io.Reader
+		)
+
+		if r, err = ConfigFile(f); err != nil {
+			Printf("cannot open configuration file %s!", f)
+		}
+
+		b, _ = ioutil.ReadAll(r)
+
+		Convey("Testing with a configuration loaded from a file", func() {
+			c := make(Conf)
+			ip := "0.0.0.0"
+			c.Parse(&Mapping{Contents: b})
+			for k, _ := range c {
+				act := c.Redirect(k, ip)
+				So(act, ShouldBeTrue)
+			}
+		})
+
+		// Convey("Testing with an empty configuration", func() {
+		// 	exp := errors.New("no blacklist configuration has been detected")
+		// 	act := NewConfig().ReadCfg(&CFGstatic{Cfg: ""})
+		// 	So(act, ShouldResemble, exp)
+		// })
+		// Convey("Testing with a disabled configuration", func() {
+		// 	act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.DisabledCfg})
+		// 	So(act, ShouldBeEmpty)
+		// })
+
+		// Convey("Testing with a single source configuration", func() {
+		// 	act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.SingleSource})
+		// 	So(act, ShouldBeEmpty)
+		// })
+
+		// Convey("Testing with an active configuration", func() {
+		// 	c := NewConfig()
+		// 	So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+		// 	So(c.Nodes(), ShouldResemble, []string{"blacklist", "domains", "hosts"})
+		// })
+	})
+}
 
 func TestFetchHost(t *testing.T) {
 	tests := []struct {
@@ -86,7 +136,7 @@ func TestParse(t *testing.T) {
 			err:    nil,
 			exp:    "127.0.0.1",
 			name:   "badguys.com",
-			reader: Mapping{Contents: `address=/badguys.com/0.0.0.0`},
+			reader: Mapping{Contents: []byte(`address=/badguys.com/0.0.0.0`)},
 		},
 		{
 			Host: Host{
@@ -97,18 +147,18 @@ func TestParse(t *testing.T) {
 			err:    nil,
 			exp:    "127.0.0.1",
 			name:   "xrated.com",
-			reader: Mapping{Contents: `server=/xrated.com/0.0.0.0`},
+			reader: Mapping{Contents: []byte(`server=/xrated.com/0.0.0.0`)},
 		},
 		{
 			act:  `{}`,
 			err:  errors.New("no dnsmasq configuration mapping entries found"),
 			exp:  "127.0.0.1",
 			name: "No dnsmasq entry",
-			reader: Mapping{Contents: `# All files in this directory will be read by dnsmasq as 
+			reader: Mapping{Contents: []byte(`# All files in this directory will be read by dnsmasq as 
 # configuration files, except if their names end in 
 # ".dpkg-dist",".dpkg-old" or ".dpkg-new"
 #
-# This can be changed by editing /etc/default/dnsmasq`},
+# This can be changed by editing /etc/default/dnsmasq`)},
 		},
 	}
 	Convey("Conf map should show each map entry", t, func() {

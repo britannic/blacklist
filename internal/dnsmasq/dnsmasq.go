@@ -8,7 +8,12 @@ import (
 	"errors"
 	"io"
 	"net"
-	"strings"
+	"os"
+)
+
+const (
+	address = "address="
+	server  = "server="
 )
 
 // Host is a container for IP addresses
@@ -24,10 +29,23 @@ type confLoader interface {
 	read() io.Reader
 }
 
-const (
-	address = "address="
-	server  = "server="
-)
+// Mapping holds a dnsmasq configuration file contents
+type Mapping struct {
+	Contents []byte
+}
+
+// ConfigFile reads a file and returns an io.Reader
+func ConfigFile(f string) (io.Reader, error) {
+	return os.Open(f)
+}
+
+func fetchHost(k, ip string) bool {
+	ips, err := net.LookupHost(k)
+	if err != nil {
+		return false
+	}
+	return matchIP(ip, ips)
+}
 
 func ipv4(ip string) bool {
 	return net.IP([]byte(ip)).To4() == nil
@@ -41,15 +59,31 @@ func matchIP(ip string, ips []string) bool {
 	return b
 }
 
-func fetchHost(k, ip string) bool {
-	ips, err := net.LookupHost(k)
-	if err != nil {
-		return false
+// Parse extracts host to IP mappings from a dnsmasq configuration file
+func (c Conf) Parse(r confLoader) error {
+	b := bufio.NewScanner(r.read())
+
+	for b.Scan() {
+		l := bytes.TrimSpace(b.Bytes())
+		d := bytes.Split(l, []byte("/"))
+
+		switch {
+		case len(d) < 3:
+			return errors.New("no dnsmasq configuration mapping entries found")
+		case bytes.HasPrefix(d[0], []byte(address)):
+			c[string(d[1])] = Host{IP: string(d[2]), Server: false}
+		case bytes.HasPrefix(d[0], []byte(server)):
+			c[string(d[1])] = Host{IP: string(d[2]), Server: true}
+		}
 	}
-	return matchIP(ip, ips)
+	return nil
 }
 
-// Redirect return true if the resolved IP address matches the correct IP (redirected or normal)
+func (m *Mapping) read() io.Reader {
+	return bytes.NewReader(m.Contents)
+}
+
+// Redirect returns true if the resolved IP address matches the correct IP (redirected or normal)
 func (c Conf) Redirect(k, ip string) bool {
 	if _, ok := c[k]; ok {
 		if c[k].Server && c[k].IP == "#" {
@@ -58,43 +92,6 @@ func (c Conf) Redirect(k, ip string) bool {
 		return fetchHost(c[k].IP, ip)
 	}
 	return false
-}
-
-// Parse extracts host to IP mappings from a dnsmasq configuration file
-func (c Conf) Parse(r confLoader) error {
-	b := bufio.NewScanner(r.read())
-
-	for b.Scan() {
-		line := bytes.TrimSpace(b.Bytes())
-		b := bytes.Split(line, []byte("/"))
-
-		switch {
-		case len(b) < 3:
-			return errors.New("no dnsmasq configuration mapping entries found")
-		case bytes.HasPrefix(b[0], []byte(address)):
-			k := string(b[1])
-			c[k] = Host{
-				IP:     string(b[2]),
-				Server: false,
-			}
-		case bytes.HasPrefix(b[0], []byte(server)):
-			k := string(b[1])
-			c[k] = Host{
-				IP:     string(b[2]),
-				Server: true,
-			}
-		}
-	}
-	return nil
-}
-
-// Mapping holds a dnsmasq configuration file contents
-type Mapping struct {
-	Contents string
-}
-
-func (m *Mapping) read() io.Reader {
-	return strings.NewReader(m.Contents)
 }
 
 func (c Conf) String() string {

@@ -381,20 +381,20 @@ func TestNodeExists(t *testing.T) {
 func TestReadCfg(t *testing.T) {
 	Convey("Testing ReadCfg()", t, func() {
 		var (
-			err    error
-			f      []byte
-			file   = "../testdata/config.erx.boot"
-			reader io.Reader
+			err error
+			b   []byte
+			f   = "../testdata/config.erx.boot"
+			r   io.Reader
 		)
 
-		if reader, err = GetFile(file); err != nil {
-			Printf("cannot open configuration file %s!", file)
+		if r, err = GetFile(f); err != nil {
+			Printf("cannot open configuration file %s!", f)
 		}
 
-		f, _ = ioutil.ReadAll(reader)
+		b, _ = ioutil.ReadAll(r)
 
 		Convey("Testing with a configuration loaded from a file", func() {
-			act := NewConfig().ReadCfg(&CFGstatic{Cfg: string(f)})
+			act := NewConfig().ReadCfg(&CFGstatic{Cfg: string(b)})
 			So(act, ShouldBeEmpty)
 		})
 
