@@ -128,12 +128,15 @@ docs: version readme | $(GODOC2MD) ; @ $(info $(M) building docs…) ## Build do
 
 .PHONY: generate
 generate: ; @ $(info $(M) generating go boilerplate code…) ## Generate go boilerplate code
-	cd internal/edgeos
-	$(GOGEN)
-	cd ../..
-	cd internal/regx
-	$(GOGEN)
-	cd ../..	
+	@ret=0 && for d in $$($(GO) list -f '{{.Dir}}' ./...); do \
+		cd $$d ; $(GOGEN) || ret=$$? ; \
+	done ; exit $$ret
+	# cd internal/edgeos
+	# $(GOGEN)
+	# cd ../..
+	# cd internal/regx
+	# $(GOGEN)
+	# cd ../..	
 
 .PHONY: mips ; @ $(info building MIPS/MIPSLE binaries…) ## Build MIPS/MIPSLE binaries
 mips: mips64 mipsle
