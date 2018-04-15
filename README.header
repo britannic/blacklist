@@ -8,13 +8,13 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 
 * Show your thanks by donating to the project using [Square Cash](https://cash.me/ "Securely send and receive cash without fees using Square Cash")
 
-[![Donate](https://img.shields.io/badge/Donate-%245-orange.svg?longCache=true&style=plastic)](https://cash.me/$HelmRockSecurity/5 "Donate $5 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2410-red.svg?longCache=true&style=plastic)](https://cash.me/$HelmRockSecurity/10 "Donate $10 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2415-yellowg.svg?longCache=true&style=plastic)](https://cash.me/$HelmRockSecurity/15 "Donate $15 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2420-yellowgreen.svg?longCache=true&style=plastic)](https://cash.me/$HelmRockSecurity/20 "Donate $20 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2425-brightgreen.svg?longCache=true&style=plastic)](https://cash.me/$HelmRockSecurity/25 "Donate $25 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2450-ff69b4.svg?longCache=true&style=plastic)](https://cash.me/$HelmRockSecurity/50 "Donate $50 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%24100-blue.svg?longCache=true&style=plastic)](https://cash.me/$HelmRockSecurity/100 "Donate $100 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%245-orange.svg?style=plastic)](https://cash.me/$HelmRockSecurity/5 "Donate $5 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%2410-red.svg?style=plastic)](https://cash.me/$HelmRockSecurity/10 "Donate $10 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%2415-yellowg.svg?style=plastic)](https://cash.me/$HelmRockSecurity/15 "Donate $15 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%2420-yellowgreen.svg?style=plastic)](https://cash.me/$HelmRockSecurity/20 "Donate $20 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%2425-brightgreen.svg?style=plastic)](https://cash.me/$HelmRockSecurity/25 "Donate $25 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%2450-ff69b4.svg?style=plastic)](https://cash.me/$HelmRockSecurity/50 "Donate $50 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%24100-blue.svg?style=plastic)](https://cash.me/$HelmRockSecurity/100 "Donate $100 using Square Cash (free money transfer)")
 
 * We greatly appreciate any and all donations - Thank you!
 
