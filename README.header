@@ -13,6 +13,8 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 [![Donate](https://img.shields.io/badge/Donate-%2415-yellowg.svg?longCache=true&style=for-the-badge)](https://cash.me/$HelmRockSecurity/15 "Donate $15 using Square Cash (free money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-%2420-yellowgreen.svg?longCache=true&style=for-the-badge)](https://cash.me/$HelmRockSecurity/20 "Donate $20 using Square Cash (free money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-%2425-brightgreen.svg?longCache=true&style=for-the-badge)](https://cash.me/$HelmRockSecurity/25 "Donate $25 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%2450-ff69b4.svg?longCache=true&style=for-the-badge)](https://cash.me/$HelmRockSecurity/50 "Donate $50 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%24100-blue.svg?longCache=true&style=for-the-badge)](https://cash.me/$HelmRockSecurity/100 "Donate $100 using Square Cash (free money transfer)")
 
 * We greatly appreciate any and all donations - Thank you!
 
