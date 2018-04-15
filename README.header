@@ -1,8 +1,20 @@
 # **UBNT edgeos-dnsmasq-blacklist dnsmasq DNS Blacklisting and Redirection**
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt)[![Version](https://img.shields.io/badge/version-v1.1.6.1-green.svg)](https://github.com/britannic/blacklist)[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist)[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist)[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master)](https://coveralls.io/github/britannic/blacklist?branch=master)[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist)
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt "View the software license here")[![Version](https://img.shields.io/badge/version-v1.1.6.1-green.svg)](https://github.com/britannic/blacklist "Latest version")[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist  "Go documentation")[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist  "Build status for this version")[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master "")](https://coveralls.io/github/britannic/blacklist?branch=master "Test coverage status for this version")[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist "Quality of Go code for this version")
 
-Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/EdgeMAX/DNS-Adblocking-amp-Blacklisting-dnsmasq-Configuration/td-p/2215008/jump-to/first-unread-message)
+Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/EdgeRouter/DNS-Adblocking-amp-Blacklisting-dnsmasq-Configuration/td-p/2215008/jump-to/first-unread-message "Follow the conversation about this software in the EdgeRouter forum (https://community.ubnt.com/t5/EdgeRouter/)")
+
+## Donations and Sponsorship
+
+* Show your thanks by donating to the project using [Square Cash](https://cash.me/ "Securely send and receive cash without fees using Square Cash")
+
+[![Donate](https://img.shields.io/badge/Donate-%245-orange.svg?longCache=true&style=for-the-badge)](https://cash.me/$HelmRockSecurity/5 "Donate $5 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%2410-red.svg?longCache=true&style=for-the-badge)](https://cash.me/$HelmRockSecurity/10 "Donate $10 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%2415-yellowg.svg?longCache=true&style=for-the-badge)](https://cash.me/$HelmRockSecurity/15 "Donate $15 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%2420-yellowgreen.svg?longCache=true&style=for-the-badge)](https://cash.me/$HelmRockSecurity/20 "Donate $20 using Square Cash (free money transfer)")
+[![Donate](https://img.shields.io/badge/Donate-%2425-brightgreen.svg?longCache=true&style=for-the-badge)](https://cash.me/$HelmRockSecurity/25 "Donate $25 using Square Cash (free money transfer)")
+
+* We greatly appreciate any and all donations - Thank you!
 
 ## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti Networks®
 
@@ -38,13 +50,13 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 
 ## **Overview**
 
-EdgeMax dnsmasq DNS blacklisting and redirection is inspired by the users at [EdgeMAX Community](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX)
+EdgeMax dnsmasq DNS blacklisting and redirection is inspired by the users at [EdgeMAX Community](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX/)
 
 [[Top]](#contents)
 
 ## **Copyright**
 
-* Copyright © 2018 Helm Rock Consulting
+* Copyright © [2018 Helm Rock Consulting](https://www.helmrock.com/ "Visit Helm Rock Consulting at https://www.helmrock.com/")
 
 [[Top]](#contents)
 
@@ -78,7 +90,7 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Latest Version**
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.6.1-green.svg)](https://github.com/britannic/blacklist/releases/latest)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.6.1-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
 ### Release v1.1.6.1 (April 13, 2018)
 
