@@ -6,7 +6,7 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 
 ## Donations and Sponsorship
 
-* Please show your thanks by donating to the project using [Square Cash](https://cash.me/$HelmRockSecurity/ "Securely send and receive cash without fees using Square Cash") or [PayPal](https://www.paypal.me/helmrocksecurity/)
+Please show your thanks by donating to the project using [Square Cash](https://cash.me/$HelmRockSecurity/ "Securely send and receive cash without fees using Square Cash") or [PayPal](https://www.paypal.me/helmrocksecurity/)
 
 [![Donate](https://img.shields.io/badge/Donate-%245-orange.svg?style=plastic)](https://cash.me/$HelmRockSecurity/5 "Give $5 using Square Cash (free money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-%2410-red.svg?style=plastic)](https://cash.me/$HelmRockSecurity/10 "Give $10 using Square Cash (free money transfer)")
@@ -26,9 +26,7 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 [![Donate](https://img.shields.io/badge/Donate-%24100-blue.svg?style=plastic)](https://paypal.me/helmrocksecurity/100 "Give $100 using PayPal (PayPal money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-Custom%20Amount-4B0082.svg?style=plastic)](https://paypal.me/helmrocksecurity/ "Choose your own donation amount using PayPal (PayPal money transfer)")
 
-* We greatly appreciate any and all donations - Thank you!
-* Funds go to maintaining development servers and networks
-
+We greatly appreciate any and all donations - Thank you! Funds go to maintaining development servers and networks.
 ## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti Networks®
 
 ## **Contents**
