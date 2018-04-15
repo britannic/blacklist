@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"path/filepath"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -13,25 +14,33 @@ import (
 func TestConfigFile(t *testing.T) {
 	Convey("Testing ConfigFile()", t, func() {
 		var (
-			b   []byte
-			err error
-			f   = "../testdata/etc/dnsmasq.d/hosts.githubSteveBlack.blacklist.conf"
-			r   io.Reader
+			b     []byte
+			dir   = "../testdata/etc/dnsmasq.d/"
+			err   error
+			files []string
+			// f   = "hosts.githubSteveBlack.blacklist.conf"
+			r io.Reader
 		)
 
-		if r, err = ConfigFile(f); err != nil {
-			Printf("cannot open configuration file %s!", f)
-		}
+		Convey("Testing with a dnsmasq entries loaded from files", func() {
+			files, err = filepath.Glob(dir + "*.conf")
+			So(err, ShouldBeNil)
 
-		b, _ = ioutil.ReadAll(r)
+			for _, f := range files {
+				Convey("Parsing file: "+f, func() {
+					if r, err = ConfigFile(f); err != nil {
+						Printf("cannot open configuration file %s!", f)
+					}
 
-		Convey("Testing with a configuration loaded from a file", func() {
-			c := make(Conf)
-			ip := "0.0.0.0"
-			c.Parse(&Mapping{Contents: b})
-			for k, _ := range c {
-				act := c.Redirect(k, ip)
-				So(act, ShouldBeTrue)
+					b, _ = ioutil.ReadAll(r)
+					c := make(Conf)
+					ip := "0.0.0.0"
+					c.Parse(&Mapping{Contents: b})
+					for k, _ := range c {
+						act := c.Redirect(k, ip)
+						So(act, ShouldBeTrue)
+					}
+				})
 			}
 		})
 
