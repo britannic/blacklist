@@ -21,6 +21,7 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 ## **Contents**
 
 1. [Overview](#overview)
+1. [Donate](#donations-and-sponsorship)
 1. [Copyright](#copyright)
 1. [Licenses](#licenses)
 1. [Latest Version](#latest-version)
@@ -33,6 +34,7 @@ Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/Edg
 1. [Upgrade](#upgrade)
 1. [Removal](#removal)
 1. [Frequently Asked Questions](#frequently-asked-questions)
+   1. [Can I donate to project?](#donations-and-sponsorship)
    1. [Does the install backup my blacklist configuration before deleting it?](#does-the-install-backup-my-blacklist-configuration-before-deleting-it)
    1. [Does update-dnsmasq run automatically?](#does-update-dnsmasq-run-automatically)
    1. [How do I add or delete sources?](#how-do-i-add-or-delete-sources)
