@@ -51,7 +51,7 @@ func NewRegex() *OBJ {
 			DESC: regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
 			DSBL: regexp.MustCompile(`^(?:disabled)+\s([\S]+)$`),
 			FLIP: regexp.MustCompile(`^(?:address=[/][.]{0,1}.*[/])(.*)$`),
-			FQDN: regexp.MustCompile(`\b((?:(?:[^.-/]{0,1})[a-zA-Z0-9-_]{1,63}[-]{0,1}[.]{1})+(?:[a-zA-Z]{2,63}))\b`),
+			FQDN: regexp.MustCompile(`\b((?:(?:[^.-/]{0,1})[\p{L}\d-_]{1,63}[-]{0,1}[.]{1})+(?:[\p{L}]{2,63}))\b`),
 			HOST: regexp.MustCompile(`^(?:address=[/][.]{0,1})(.*)(?:[/].*)$`),
 			HTTP: regexp.MustCompile(`(?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)`),
 			IPBH: regexp.MustCompile(`^(?:dns-redirect-ip)+\s([\S]+)$`),

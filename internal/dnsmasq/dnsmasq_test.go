@@ -18,8 +18,7 @@ func TestConfigFile(t *testing.T) {
 			dir   = "../testdata/etc/dnsmasq.d/"
 			err   error
 			files []string
-			// f   = "hosts.githubSteveBlack.blacklist.conf"
-			r io.Reader
+			r     io.Reader
 		)
 
 		Convey("Testing with a dnsmasq entries loaded from files", func() {
@@ -35,20 +34,23 @@ func TestConfigFile(t *testing.T) {
 					b, _ = ioutil.ReadAll(r)
 					c := make(Conf)
 					ip := "0.0.0.0"
-					c.Parse(&Mapping{Contents: b})
+					So(c.Parse(&Mapping{Contents: b}), ShouldBeNil)
+
 					for k, _ := range c {
-						act := c.Redirect(k, ip)
-						So(act, ShouldBeTrue)
+						So(c.Redirect(k, ip), ShouldBeTrue)
 					}
 				})
 			}
 		})
 
-		// Convey("Testing with an empty configuration", func() {
-		// 	exp := errors.New("no blacklist configuration has been detected")
-		// 	act := NewConfig().ReadCfg(&CFGstatic{Cfg: ""})
-		// 	So(act, ShouldResemble, exp)
-		// })
+		Convey("Testing a misdirected dnsmasq address entry...", func() {
+			c := make(Conf)
+			ip := "0.0.0.0"
+			k := "address=/www.google.com/0.0.0.0"
+
+			So(c.Parse(&Mapping{Contents: []byte(k)}), ShouldBeNil)
+			So(c.Redirect(k, ip), ShouldBeFalse)
+		})
 		// Convey("Testing with a disabled configuration", func() {
 		// 	act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.DisabledCfg})
 		// 	So(act, ShouldBeEmpty)
