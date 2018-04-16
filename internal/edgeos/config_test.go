@@ -76,7 +76,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(0),
 					Objects: Objects{
 						Env: nil,
-						src:   nil,
+						src: nil,
 					},
 					prefix: "",
 					r:      nil,
@@ -131,7 +131,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(6),
 					Objects: Objects{
 						Env: nil,
-						src:   nil,
+						src: nil,
 					},
 					prefix: "",
 					r:      nil,
@@ -185,7 +185,7 @@ func TestAddInc(t *testing.T) {
 					nType:    ntype(7),
 					Objects: Objects{
 						Env: nil,
-						src:   nil,
+						src: nil,
 					},
 					prefix: "",
 					r:      nil,

@@ -36,7 +36,7 @@ func TestConfigFile(t *testing.T) {
 					ip := "0.0.0.0"
 					So(c.Parse(&Mapping{Contents: b}), ShouldBeNil)
 
-					for k, _ := range c {
+					for k := range c {
 						So(c.Redirect(k, ip), ShouldBeTrue)
 					}
 				})
