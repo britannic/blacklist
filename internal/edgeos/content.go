@@ -168,7 +168,7 @@ func (e *ExcDomnObjects) GetList() *Objects {
 		if o.nType == excDomn {
 			if o.exc != nil {
 				o.r = o.excludes()
-				o.Parms = e.Objects.Parms
+				o.Env = e.Objects.Env
 			}
 		}
 	}
@@ -181,7 +181,7 @@ func (e *ExcHostObjects) GetList() *Objects {
 		if o.nType == excHost {
 			if o.exc != nil {
 				o.r = o.excludes()
-				o.Parms = e.Objects.Parms
+				o.Env = e.Objects.Env
 			}
 		}
 	}
@@ -194,7 +194,7 @@ func (e *ExcRootObjects) GetList() *Objects {
 		if o.nType == excRoot {
 			if o.exc != nil {
 				o.r = o.excludes()
-				o.Parms = e.Objects.Parms
+				o.Env = e.Objects.Env
 			}
 		}
 	}
@@ -207,7 +207,7 @@ func (f *FIODataObjects) GetList() *Objects {
 	defer close(responses)
 
 	for _, o := range f.src {
-		o.Parms = f.Objects.Parms
+		o.Env = f.Objects.Env
 		go func(o *source) {
 			o.r, o.err = GetFile(o.file)
 			responses <- o
@@ -227,7 +227,7 @@ func (p *PreDomnObjects) GetList() *Objects {
 	for _, o := range p.src {
 		if o.ltype == PreDomns && o.inc != nil {
 			o.r = o.includes()
-			o.Parms = p.Objects.Parms
+			o.Env = p.Objects.Env
 		}
 	}
 	return p.Objects
@@ -238,7 +238,7 @@ func (p *PreHostObjects) GetList() *Objects {
 	for _, o := range p.src {
 		if o.ltype == PreHosts && o.inc != nil {
 			o.r = o.includes()
-			o.Parms = p.Objects.Parms
+			o.Env = p.Objects.Env
 		}
 	}
 	return p.Objects
@@ -251,7 +251,7 @@ func (u *URLDomnObjects) GetList() *Objects {
 	defer close(responses)
 
 	for _, o := range u.src {
-		o.Parms = u.Objects.Parms
+		o.Env = u.Objects.Env
 		go func(o *source) {
 			responses <- getHTTP(o)
 		}(o)
@@ -272,7 +272,7 @@ func (u *URLHostObjects) GetList() *Objects {
 	defer close(responses)
 
 	for _, o := range u.src {
-		o.Parms = u.Objects.Parms
+		o.Env = u.Objects.Env
 		go func(o *source) {
 			responses <- getHTTP(o)
 		}(o)

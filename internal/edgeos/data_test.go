@@ -64,7 +64,7 @@ func TestFormatData(t *testing.T) {
 
 				o = &source{
 					ip: c.tree[node].ip,
-					Parms: &Parms{
+					Env: &Env{
 						Pfx: dnsPfx{
 							domain: "address=",
 							host:   "server=",

@@ -175,7 +175,7 @@ func TestInitEnv(t *testing.T) {
 	Convey("Testing initEnv", t, func() {
 		initEnv := func() (*e.Config, error) {
 			return &e.Config{
-				Parms: &e.Parms{Arch: "MegaOS"},
+				Env: &e.Env{Arch: "MegaOS"},
 			}, nil
 		}
 		act, _ := initEnv()
@@ -377,11 +377,11 @@ func TestGetCFG(t *testing.T) {
 	})
 }
 
-func TestKillFiles(t *testing.T) {
-	Convey("Testing killFiles()", t, func() {
+func Testfiles(t *testing.T) {
+	Convey("Testing files()", t, func() {
 		exp := ""
 		env, _ := setUpEnv()
-		act := killFiles(env)
+		act := files(env)
 		So(fmt.Sprintf("%v", act), ShouldEqual, fmt.Sprintf("%v", exp))
 	})
 }
@@ -485,7 +485,7 @@ func TestInitEdgeOS(t *testing.T) {
 		"Name": "*"
 	}
 }`
-		So(fmt.Sprint(p.Parms), ShouldEqual, exp)
+		So(fmt.Sprint(p.Env), ShouldEqual, exp)
 	})
 }
 

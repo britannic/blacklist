@@ -21,7 +21,7 @@ func newLog() *logging.Logger {
 	return logging.MustGetLogger("blacklist")
 }
 
-func TestParmsLog(t *testing.T) {
+func TestEnvLog(t *testing.T) {
 	Convey("Testing log()", t, func() {
 		tests := []struct {
 			dbug bool
@@ -38,7 +38,7 @@ func TestParmsLog(t *testing.T) {
 		var (
 			scrFmt   = logging.MustStringFormatter(`%{message}`)
 			act      = &bytes.Buffer{}
-			p        = &Parms{Log: logging.MustGetLogger("TestParmsLog"), Verb: true}
+			p        = &Env{Log: logging.MustGetLogger("TestEnvLog"), Verb: true}
 			scr      = logging.NewLogBackend(act, "", 0)
 			scrFmttr = logging.NewBackendFormatter(scr, scrFmt)
 		)
@@ -82,7 +82,7 @@ func TestParmsLog(t *testing.T) {
 
 func TestOption(t *testing.T) {
 	Convey("Testing Option()", t, func() {
-		vanilla := Parms{ctr: make(ctr)}
+		vanilla := Env{ctr: make(ctr)}
 		exp := `{
 	"Log": null,
 	"API": "/bin/cli-shell-api",
@@ -109,7 +109,7 @@ func TestOption(t *testing.T) {
 	}
 }`
 
-		expRaw := Parms{
+		expRaw := Env{
 			ctr:      make(ctr),
 			API:      "/bin/cli-shell-api",
 			Arch:     "amd64",
@@ -136,7 +136,7 @@ func TestOption(t *testing.T) {
 		c := NewConfig()
 		vanilla.Dex = c.Dex
 		vanilla.Exc = c.Exc
-		So(c.Parms, ShouldResemble, &vanilla)
+		So(c.Env, ShouldResemble, &vanilla)
 
 		c = NewConfig(
 			Arch(runtime.GOARCH),
@@ -164,7 +164,7 @@ func TestOption(t *testing.T) {
 		expRaw.Dex.RWMutex = c.Dex.RWMutex
 		expRaw.Exc.RWMutex = c.Exc.RWMutex
 
-		So(*c.Parms, ShouldResemble, expRaw)
-		So(c.Parms.String(), ShouldEqual, exp)
+		So(*c.Env, ShouldResemble, expRaw)
+		So(c.Env.String(), ShouldEqual, exp)
 	})
 }

@@ -32,7 +32,7 @@ func TestAddInc(t *testing.T) {
 				name: "rootNode",
 				node: rootNode,
 				exp: &source{
-					Parms: &Parms{
+					Env: &Env{
 						Wildcard: Wildcard{
 							Node: "",
 							Name: "",
@@ -75,7 +75,7 @@ func TestAddInc(t *testing.T) {
 					name:     "",
 					nType:    ntype(0),
 					Objects: Objects{
-						Parms: nil,
+						Env: nil,
 						src:   nil,
 					},
 					prefix: "",
@@ -87,7 +87,7 @@ func TestAddInc(t *testing.T) {
 				name: "domains",
 				node: domains,
 				exp: &source{
-					Parms: &Parms{
+					Env: &Env{
 						Wildcard: Wildcard{
 							Node: "",
 							Name: "",
@@ -130,7 +130,7 @@ func TestAddInc(t *testing.T) {
 					name:     "blacklisted-subdomains",
 					nType:    ntype(6),
 					Objects: Objects{
-						Parms: nil,
+						Env: nil,
 						src:   nil,
 					},
 					prefix: "",
@@ -141,7 +141,7 @@ func TestAddInc(t *testing.T) {
 			{name: "hosts",
 				node: hosts,
 				exp: &source{
-					Parms: &Parms{
+					Env: &Env{
 						Wildcard: Wildcard{
 							Node: "",
 							Name: "",
@@ -184,7 +184,7 @@ func TestAddInc(t *testing.T) {
 					name:     "blacklisted-servers",
 					nType:    ntype(7),
 					Objects: Objects{
-						Parms: nil,
+						Env: nil,
 						src:   nil,
 					},
 					prefix: "",
@@ -479,8 +479,8 @@ func TestRemove(t *testing.T) {
 
 		c.GetAll().Files().Remove()
 
-		cf := &CFile{Parms: c.Parms}
-		pattern := fmt.Sprintf(c.FnFmt, c.Dir, "*s", "*", c.Parms.Ext)
+		cf := &CFile{Env: c.Env}
+		pattern := fmt.Sprintf(c.FnFmt, c.Dir, "*s", "*", c.Env.Ext)
 		act, err := cf.readDir(pattern)
 
 		So(err, ShouldBeNil)

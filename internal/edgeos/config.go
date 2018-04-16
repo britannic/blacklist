@@ -25,7 +25,7 @@ type ConfLoader interface {
 
 // Config is a struct of configuration fields
 type Config struct {
-	*Parms
+	*Env
 	tree
 }
 
@@ -94,10 +94,10 @@ func (c *Config) addExc(node string) *Objects {
 	}
 
 	return &Objects{
-		Parms: c.Parms,
+		Env: c.Env,
 		src: []*source{
 			{
-				Parms: c.Parms,
+				Env:   c.Env,
 				desc:  getLtypeDesc(ltype),
 				exc:   exc,
 				ip:    c.tree.getIP(node),
@@ -130,7 +130,7 @@ func (c *Config) addInc(node string) *source {
 	}
 
 	return &source{
-		Parms: c.Parms,
+		Env:   c.Env,
 		desc:  getLtypeDesc(ltype),
 		inc:   inc,
 		ip:    c.tree.getIP(node),
@@ -216,7 +216,7 @@ func (c *Config) excludes(nodes ...string) list {
 
 // Get returns an *Object for a given node
 func (c *Config) Get(node string) *Objects {
-	o := &Objects{Parms: c.Parms, src: []*source{}}
+	o := &Objects{Env: c.Env, src: []*source{}}
 	switch node {
 	case all:
 		for _, node := range c.sortKeys() {
@@ -233,7 +233,7 @@ func (c *Config) Get(node string) *Objects {
 
 // GetAll returns an array of Objects
 func (c *Config) GetAll(ltypes ...string) *Objects {
-	o := &Objects{Parms: c.Parms}
+	o := &Objects{Env: c.Env}
 
 	for _, node := range c.sortKeys() {
 		if node == rootNode {
@@ -319,7 +319,7 @@ func (c *Config) addSource(tnode string) {
 func (c *Config) disable(line []byte, tnode string, find *regx.OBJ) {
 	if isTnode(tnode) {
 		c.tree[tnode].disabled = strToBool(string(find.SubMatch(regx.DSBL, line)[1]))
-		c.Parms.Disabled = c.tree[tnode].disabled
+		c.Env.Disabled = c.tree[tnode].disabled
 	}
 }
 

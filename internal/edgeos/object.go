@@ -7,7 +7,7 @@ import (
 
 // Objects is a struct of []*source
 type Objects struct {
-	*Parms
+	*Env
 	src []*source
 }
 
@@ -18,11 +18,11 @@ func (o *Objects) addObj(c *Config, node string) {
 
 // Files returns a list of dnsmasq conf files from all srcs
 func (o *Objects) Files() *CFile {
-	var c = CFile{Parms: o.Parms}
+	var c = CFile{Env: o.Env}
 
 	if !o.Disabled {
 		for _, obj := range o.src {
-			f := obj.setFilePrefix(o.Parms.Dir + "/%v.%v." + o.Parms.Ext)
+			f := obj.setFilePrefix(o.Env.Dir + "/%v.%v." + o.Env.Ext)
 			c.Names = append(c.Names, f)
 			c.nType = obj.nType
 		}
@@ -33,7 +33,7 @@ func (o *Objects) Files() *CFile {
 
 // Filter returns a subset of Objects filtered by ltype
 func (o *Objects) Filter(ltype string) *Objects {
-	sources := Objects{Parms: o.Parms}
+	sources := Objects{Env: o.Env}
 
 	switch ltype {
 	case files:

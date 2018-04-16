@@ -10,7 +10,7 @@ import (
 
 // CFile holds an array of file names
 type CFile struct {
-	*Parms
+	*Env
 	Names []string
 	nType ntype
 }

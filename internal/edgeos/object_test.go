@@ -27,7 +27,7 @@ func TestObjectsAddObj(t *testing.T) {
 		So(o, ShouldResemble, exp)
 		// tests := []struct {
 		// 	name string
-		// 	rParms *Parms
+		// 	rEnv *Env
 		// 	rx     []*source
 		// 	c    *Config
 		// 	node string
@@ -36,7 +36,7 @@ func TestObjectsAddObj(t *testing.T) {
 		// }
 		// for _, tt := range tests {
 		// 	o := &Objects{
-		// 		Parms: tt.rParms,
+		// 		Env: tt.rEnv,
 		// 	src:     tt.rx,
 		// 	}
 		// 	o.addObj(tt.c, tt.node)

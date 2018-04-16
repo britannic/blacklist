@@ -19,7 +19,7 @@ import (
 )
 
 type dummyConfig struct {
-	*Parms
+	*Env
 	s []string
 	t *testing.T
 }
@@ -416,7 +416,7 @@ func TestNewContent(t *testing.T) {
 				case false:
 					So(err, ShouldBeNil)
 
-					d := &dummyConfig{Parms: c.Parms, t: t}
+					d := &dummyConfig{Env: c.Env, t: t}
 					d.ProcessContent(objs)
 
 					So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
@@ -489,7 +489,7 @@ func TestMultiObjNewContent(t *testing.T) {
 
 				switch tt.iFace {
 				case ExRtObj, ExDmObj, ExHtObj, PreDObj, PreHObj:
-					d := &dummyConfig{Parms: c.Parms, t: t}
+					d := &dummyConfig{Env: c.Env, t: t}
 					d.ProcessContent(ct)
 					So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
 				default:

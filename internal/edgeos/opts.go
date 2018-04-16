@@ -10,8 +10,8 @@ import (
 	logging "github.com/britannic/go-logging"
 )
 
-// Parms is struct of parameters
-type Parms struct {
+// Env is struct of parameters
+type Env struct {
 	ctr
 	ioWriter io.Writer
 	Log      *logging.Logger
@@ -54,13 +54,13 @@ type Wildcard struct {
 type Option func(c *Config) Option
 
 // Debug logs debug messages when the Dbug flag is true
-func (p *Parms) Debug(s ...interface{}) {
+func (p *Env) Debug(s ...interface{}) {
 	if p.Dbug {
 		p.Log.Debug(s...)
 	}
 }
 
-// SetOpt sets the specified options passed as Parms and returns an option to restore the last set of arg's previous values
+// SetOpt sets the specified options passed as Env and returns an option to restore the last set of arg's previous values
 func (c *Config) SetOpt(opts ...Option) Option {
 	// apply all the options, and replace each with its inverse
 	for i, opt := range opts {
@@ -216,7 +216,7 @@ func Method(method string) Option {
 func NewConfig(opts ...Option) *Config {
 	c := Config{
 		tree: make(tree),
-		Parms: &Parms{
+		Env: &Env{
 			ctr: make(ctr),
 			Dex: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 			Exc: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
@@ -239,7 +239,7 @@ func Prefix(d string, h string) Option {
 }
 
 // String method to implement fmt.Print interface
-func (p *Parms) String() string {
+func (p *Env) String() string {
 	out, _ := json.MarshalIndent(p, "", "\t")
 	return string(out)
 }

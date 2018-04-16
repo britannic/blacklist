@@ -57,34 +57,34 @@ var (
 
 func main() {
 	var (
-		env *e.Config
+		c   *e.Config
 		err error
 	)
 
-	if env, err = initEnvirons(); err != nil {
+	if c, err = initEnvirons(); err != nil {
 		logErrorf("%s shutting down.", err.Error())
 		exitCmd(0)
 	}
 
-	env.Debug(fmt.Sprintf("Dumping commandline args: %v", os.Args[1:]))
-	env.Debug(fmt.Sprintf("Dumping env variables: %v", env))
+	c.Debug(fmt.Sprintf("Dumping commandline args: %v", os.Args[1:]))
+	c.Debug(fmt.Sprintf("Dumping env variables: %v", c))
 	logNoticef("%v", "Starting blacklist update...")
 
 	logInfo("Removing stale blacklists...")
-	if err = removeStaleFiles(env); err != nil {
+	if err = removeStaleFiles(c); err != nil {
 		logFatalf("%v", err.Error())
 	}
 
 	// _, _ = context.WithTimeout(context.Background(), c.Timeout)
 
-	if !env.Disabled {
-		if err := processObjects(env, objex); err != nil {
+	if !c.Disabled {
+		if err := processObjects(c, objex); err != nil {
 			logErrorf("%v", err.Error())
 		}
 	}
 
-	env.GetTotalStats()
-	reloadDNS(env)
+	c.GetTotalStats()
+	reloadDNS(c)
 	logNoticef("%v", "Blacklist update completed......")
 }
 
@@ -108,24 +108,24 @@ func basename(s string) string {
 	return s
 }
 
-func initEnv() (env *e.Config, err error) {
-	if env, err = setUpEnv(); err != nil {
+// files returns an empty *e.CFile string array
+func files(c *e.Config) *e.CFile {
+	return &e.CFile{Names: []string{}, Env: c.Env}
+}
+
+func initEnv() (c *e.Config, err error) {
+	if c, err = setUpEnv(); err != nil {
 		fmt.Fprintf(os.Stderr, "Removing stale dnsmasq blaclist files, because %v\n", err.Error())
-		if err = killFiles(env).Remove(); err != nil {
+		if err = files(c).Remove(); err != nil {
 			fmt.Fprintf(os.Stderr, "%v", err.Error())
 		}
 		exitCmd(0)
 	}
-	return env, err
+	return c, err
 }
 
 func inTerminal() bool {
 	return terminal.IsTerminal(int(os.Stdin.Fd()))
-}
-
-// killFiles returns an empty *e.CFile string array
-func killFiles(env *e.Config) *e.CFile {
-	return &e.CFile{Names: []string{}, Parms: env.Parms}
 }
 
 // newLog returns a logging.Logger pointer

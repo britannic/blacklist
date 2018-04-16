@@ -11,7 +11,7 @@ import (
 
 // source struct for normalizing EdgeOS data.
 type source struct {
-	*Parms
+	*Env
 	desc     string
 	disabled bool
 	err      error
