@@ -377,7 +377,7 @@ func TestGetCFG(t *testing.T) {
 	})
 }
 
-func Testfiles(t *testing.T) {
+func TestFiles(t *testing.T) {
 	Convey("Testing files()", t, func() {
 		exp := ""
 		env, _ := setUpEnv()
