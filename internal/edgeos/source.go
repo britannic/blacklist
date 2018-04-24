@@ -28,15 +28,15 @@ type source struct {
 	url    string
 }
 
-func (o *source) addLeaf(srcName [][]byte, tnode string) {
+func (s *source) addLeaf(srcName [][]byte, node string) {
 	if bytes.Equal(srcName[1], []byte(src)) {
-		o.name = string(srcName[2])
-		o.nType = getType(tnode).(ntype)
+		s.name = string(srcName[2])
+		s.nType = getType(node).(ntype)
 	}
 }
 
-func (o *source) area() string {
-	switch getType(o.nType).(string) {
+func (s *source) area() string {
+	switch getType(s.nType).(string) {
 	case domains, PreDomns:
 		return domains
 	}
@@ -44,15 +44,27 @@ func (o *source) area() string {
 }
 
 // excludes returns an io.Reader of blacklist includes
-func (o *source) excludes() io.Reader {
-	sort.Strings(o.exc)
-	return strings.NewReader(strings.Join(o.exc, "\n"))
+func (s *source) excludes() io.Reader {
+	sort.Strings(s.exc)
+	return strings.NewReader(strings.Join(s.exc, "\n"))
+}
+
+func (s *source) filename(area string) string {
+	switch s.nType {
+	case excRoot, preRoot:
+		return fmt.Sprintf(s.FnFmt, s.Dir, roots, s.name, s.Ext)
+	case excDomn, preDomn:
+		return fmt.Sprintf(s.FnFmt, s.Dir, domains, s.name, s.Ext)
+	case excHost, preHost:
+		return fmt.Sprintf(s.FnFmt, s.Dir, hosts, s.name, s.Ext)
+	}
+	return fmt.Sprintf(s.FnFmt, s.Dir, area, s.name, s.Ext)
 }
 
 // includes returns an io.Reader of blacklist includes
-func (o *source) includes() io.Reader {
-	sort.Strings(o.inc)
-	return strings.NewReader(strings.Join(o.inc, "\n"))
+func (s *source) includes() io.Reader {
+	sort.Strings(s.inc)
+	return strings.NewReader(strings.Join(s.inc, "\n"))
 }
 
 func isntSource(nodes []string) bool {
@@ -70,27 +82,53 @@ func newSource() *source {
 	}
 }
 
-func (o *source) setFilePrefix(format string) string {
-	switch o.nType {
-	case excDomn, excRoot, preDomn:
-		return fmt.Sprintf(format, domains, o.name)
+func (s *source) setFilePrefix(format string) string {
+	switch s.nType {
+	case excDomn, preDomn:
+		return fmt.Sprintf(format, domains, s.name)
 	case excHost, preHost:
-		return fmt.Sprintf(format, hosts, o.name)
+		return fmt.Sprintf(format, hosts, s.name)
+	case excRoot, preRoot:
+		return fmt.Sprintf(format, roots, s.name)
 	}
-	return fmt.Sprintf(format, getType(o.nType), o.name)
+	return fmt.Sprintf(format, getType(s.nType), s.name)
 }
 
-// Stringer for Object
-func (o *source) String() string {
-	s := fmt.Sprintf("\nDesc:\t %q\n", o.desc)
-	s += fmt.Sprintf("Disabled: %v\n", o.disabled)
-	s += fmt.Sprintf("File:\t %q\n", o.file)
-	s += fmt.Sprintf("IP:\t %q\n", o.ip)
-	s += fmt.Sprintf("Ltype:\t %q\n", o.ltype)
-	s += fmt.Sprintf("Name:\t %q\n", o.name)
-	s += fmt.Sprintf("nType:\t %q\n", o.nType)
-	s += fmt.Sprintf("Prefix:\t %q\n", o.prefix)
-	s += fmt.Sprintf("Type:\t %q\n", getType(o.nType))
-	s += fmt.Sprintf("URL:\t %q\n", o.url)
+func printArray(a []string) (s string) {
+	if len(a) == 0 {
+		s = fmt.Sprintf("              %q\n", "**No entries found**")
+		return s
+	}
+	for _, e := range a {
+		s += fmt.Sprintf("              %q\n", e)
+	}
 	return s
+}
+
+func pad(s string) string {
+	return fmt.Sprintf("%s %-*s", s, 13-len(s), " ")
+}
+
+// Stringer for *source
+func (s *source) String() string {
+	a := func(s string) string {
+		if s == "" {
+			return "**Undefined**"
+		}
+		return s
+	}
+
+	str := fmt.Sprintf("\n%s%q\n", pad("Desc:"), a(s.desc))
+	str += fmt.Sprintf("%s\"%v\"\n", pad("Disabled:"), s.disabled)
+	str += fmt.Sprintf("%s%q\n", pad("File:"), a(s.file))
+	str += fmt.Sprintf("%s%q\n", pad("IP:"), a(s.ip))
+	str += fmt.Sprintf("%s%q\n", pad("Ltype:"), a(s.ltype))
+	str += fmt.Sprintf("%s%q\n", pad("Name:"), a(s.name))
+	str += fmt.Sprintf("%s%q\n", pad("nType:"), s.nType)
+	str += fmt.Sprintf("%s%q\n", pad("Prefix:"), a(s.prefix))
+	str += fmt.Sprintf("%s%q\n", pad("Type:"), getType(s.nType))
+	str += fmt.Sprintf("%s%q\n", pad("URL:"), a(s.url))
+	str += fmt.Sprintf("Whitelist:\n%s", printArray(s.exc))
+	str += fmt.Sprintf("Blacklist:\n%s", printArray(s.inc))
+	return str
 }

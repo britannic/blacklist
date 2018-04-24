@@ -30,10 +30,7 @@ const (
 
 // booltoStr converts a boolean ("true" or "false") to a string equivalent
 func booltoStr(b bool) string {
-	if b {
-		return True
-	}
-	return False
+	return fmt.Sprintf("%t", b)
 }
 
 // diffArray returns the delta of two arrays
@@ -76,14 +73,14 @@ func formatData(s string, l list) io.Reader {
 }
 
 // getDnsmasqPrefix returns the dnsmasq conf file delimiter
-func getDnsmasqPrefix(o *source) string {
-	switch o.nType {
+func getDnsmasqPrefix(s *source) string {
+	switch s.nType {
 	case domn, preDomn, preRoot, root:
-		return o.Pfx.domain + "/%v/" + o.ip
+		return s.Pfx.domain + "/%v/" + s.ip
 	case excDomn, excHost, excRoot:
-		return o.Pfx.host + "/%v/#"
+		return s.Pfx.host + "/%v/#"
 	}
-	return o.Pfx.domain + "/%v/" + o.ip
+	return s.Pfx.domain + "/%v/" + s.ip
 }
 
 // getType returns the converted "in" type
@@ -128,6 +125,8 @@ func typeInt(n ntype) string {
 		return PreDomns
 	case preHost:
 		return PreHosts
+	case preRoot:
+		return PreRoots
 	case root:
 		return rootNode
 	}
@@ -150,6 +149,8 @@ func typeStr(s string) ntype {
 		return preDomn
 	case PreHosts:
 		return preHost
+	case PreRoots:
+		return preRoot
 	case rootNode:
 		return root
 	}

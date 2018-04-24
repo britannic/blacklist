@@ -3,6 +3,7 @@ package edgeos
 import (
 	"fmt"
 	"sort"
+	"strings"
 )
 
 // Objects is a struct of []*source
@@ -19,7 +20,6 @@ func (o *Objects) addObj(c *Config, node string) {
 // Files returns a list of dnsmasq conf files from all srcs
 func (o *Objects) Files() *CFile {
 	var c = CFile{Env: o.Env}
-
 	if !o.Disabled {
 		for _, obj := range o.src {
 			f := obj.setFilePrefix(o.Env.Dir + "/%v.%v." + o.Env.Ext)
@@ -34,7 +34,6 @@ func (o *Objects) Files() *CFile {
 // Filter returns a subset of Objects filtered by ltype
 func (o *Objects) Filter(ltype string) *Objects {
 	sources := Objects{Env: o.Env}
-
 	switch ltype {
 	case files:
 		for _, obj := range o.src {
@@ -62,28 +61,19 @@ func (o *Objects) Find(elem string) int {
 	return -1
 }
 
-func getLtypeDesc(l string) string {
-	switch l {
-	case ExcDomns:
-		return preNoun + " whitelisted domains"
-	case ExcHosts:
-		return preNoun + " whitelisted hosts"
-	case ExcRoots:
-		return preNoun + " global whitelisted domains"
-	case PreDomns:
-		return preNoun + " blacklisted domains"
-	case PreHosts:
-		return preNoun + " blacklisted hosts"
+func getLtypeDesc(s string) string {
+	if s == "" {
+		s = "unknown ltype"
 	}
-	return "Unknown ltype"
+	return fmt.Sprintf("%s %s", preNoun, strings.Join(strings.Split(s, "-"), " "))
 }
 
-func (o *Objects) objects(c *Config, node string, ltypes ...string) {
+func (o *Objects) procltypes(c *Config, node string, ltypes ...string) {
 	var (
 		newDomns = true
 		newHosts = true
+		newRoots = true
 	)
-
 	switch ltypes {
 	case nil:
 		o.addObj(c, node)
@@ -100,6 +90,11 @@ func (o *Objects) objects(c *Config, node string, ltypes ...string) {
 					o.src = append(o.src, c.addInc(node))
 					newHosts = false
 				}
+			case PreRoots:
+				if newRoots && node == rootNode {
+					o.src = append(o.src, c.addInc(node))
+					newRoots = false
+				}
 			default:
 				obj := c.validate(node).src
 				for i := range obj {
@@ -109,6 +104,17 @@ func (o *Objects) objects(c *Config, node string, ltypes ...string) {
 				}
 			}
 		}
+	}
+}
+
+func (o *Objects) objects(c *Config, node string, ltypes ...string) {
+	switch node {
+	case domains:
+		o.procltypes(c, node, ltypes...)
+	case hosts:
+		o.procltypes(c, node, ltypes...)
+	case rootNode:
+		o.procltypes(c, node, ltypes...)
 	}
 }
 
@@ -122,8 +128,11 @@ func (o *Objects) Names() (s sort.StringSlice) {
 }
 
 // Stringer for Objects
-func (o *Objects) String() string {
-	return fmt.Sprint(o.src)
+func (o *Objects) String() (s string) {
+	for _, src := range o.src {
+		s += src.String()
+	}
+	return s
 }
 
 // Implement Sort Interface for Objects

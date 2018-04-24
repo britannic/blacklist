@@ -101,14 +101,14 @@ NewRegex returns a map of OBJ populated with a map of precompiled regex objects
 
 
 
-### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=1874:1903#L76)
+### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=1871:1900#L76)
 ``` go
 func (o *OBJ) String() string
 ```
 
 
 
-### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2108:2177#L86)
+### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2105:2174#L86)
 ``` go
 func (o *OBJ) StripPrefixAndSuffix(l []byte, p string) ([]byte, bool)
 ```
@@ -117,7 +117,7 @@ StripPrefixAndSuffix strips the prefix and suffix
 
 
 
-### <a name="OBJ.SubMatch">func</a> (\*OBJ) [SubMatch](/src/target/regx.go?s=1787:1836#L72)
+### <a name="OBJ.SubMatch">func</a> (\*OBJ) [SubMatch](/src/target/regx.go?s=1784:1833#L72)
 ``` go
 func (o *OBJ) SubMatch(t Leaf, b []byte) [][]byte
 ```

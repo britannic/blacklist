@@ -571,11 +571,7 @@ var (
         "xboxlive.com",
         "yimg.com",
         "ytimg.com"
-        ]
-    },
-    "domains": {
-      "disabled": "false",
-      "excludes": [],
+        ],
       "includes": [
         "adk2x.com",
         "adsrvr.org",
@@ -593,6 +589,12 @@ var (
         "traktrafficflow.com",
         "wwwpromoter.com"
         ],
+      "sources": [{}]
+    },
+    "domains": {
+      "disabled": "false",
+      "excludes": [],
+      "includes": [],
       "sources": [{
         "NoBitCoin": {
           "disabled": "false",

@@ -9,7 +9,7 @@ import (
 )
 
 // getHTTP creates http requests to download data
-func getHTTP(o *source) *source {
+func getHTTP(s *source) *source {
 	var (
 		body []byte
 		err  error
@@ -17,34 +17,34 @@ func getHTTP(o *source) *source {
 		req  *http.Request
 	)
 
-	if req, err = http.NewRequest(o.Method, o.url, nil); err != nil {
-		s := fmt.Sprintf("Unable to form request for %s. Error: %v", o.url, err)
-		o.Log.Warning(s)
-		o.r, o.err = strings.NewReader(s), err
-		return o
+	if req, err = http.NewRequest(s.Method, s.url, nil); err != nil {
+		str := fmt.Sprintf("Unable to form request for %s. Error: %v", s.url, err)
+		s.Log.Warning(str)
+		s.r, s.err = strings.NewReader(str), err
+		return s
 	}
 
-	o.Log.Info(fmt.Sprintf("Downloading %s source %s", o.area(), o.name))
+	s.Log.Info(fmt.Sprintf("Downloading %s source %s", s.area(), s.name))
 
 	req.Header.Set("User-Agent", agent)
 	if resp, err = (&http.Client{}).Do(req); err != nil {
-		s := fmt.Sprintf("Unable to get response for %s. Error: %v", o.url, err)
-		o.Log.Warning(s)
-		o.r, o.err = strings.NewReader(s), err
-		return o
+		str := fmt.Sprintf("Unable to get response for %s. Error: %v", s.url, err)
+		s.Log.Warning(str)
+		s.r, s.err = strings.NewReader(str), err
+		return s
 	}
 
 	defer resp.Body.Close()
 	body, err = ioutil.ReadAll(resp.Body)
 
 	if len(body) == 0 {
-		s := fmt.Sprintf("No data returned for %s.", o.url)
-		o.Log.Warning(s)
-		o.r, o.err = strings.NewReader(s), err
-		return o
+		str := fmt.Sprintf("No data returned for %s.", s.url)
+		s.Log.Warning(str)
+		s.r, s.err = strings.NewReader(str), err
+		return s
 	}
 
-	o.r, o.err = bytes.NewBuffer(body), err
+	s.r, s.err = bytes.NewBuffer(body), err
 
-	return o
+	return s
 }

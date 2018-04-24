@@ -27,6 +27,7 @@ Please show your thanks by donating to the project using [Square Cash](https://c
 [![Donate](https://img.shields.io/badge/Donate-Custom%20Amount-4B0082.svg?style=plastic)](https://paypal.me/helmrocksecurity/ "Choose your own donation amount using PayPal (PayPal money transfer)")
 
 We greatly appreciate any and all donations - Thank you! Funds go to maintaining development servers and networks.
+
 ## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti Networks®
 
 ## **Contents**
@@ -105,12 +106,14 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.6.1-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-### Release v1.1.6.1 (April 13, 2018)
+### Release v1.1.6.2 (April 24, 2018)
 
-* Suppress log messages for predefined includes (blacklists) and excludes (whitelists)
-* Changed Debian pre-remove and post-install script algorithm to detect an existing installation and reinstall a default configuration if none exists
-* Add build architecture and OS information to "-version" argument
-* Code refactor and parsing algorithm updates
+* Code refactor
+* Global whitelist and blacklist configuration files now have their own prefix: "roots" i.e.
+
+```bash
+roots.global-blacklisted-domains.blacklist.conf
+```
 
 [[Top]](#contents)
 

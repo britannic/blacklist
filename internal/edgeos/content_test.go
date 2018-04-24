@@ -133,7 +133,7 @@ func TestConfigProcessContent(t *testing.T) {
 				c:      newCfg(),
 				cfg:    testallCfg,
 				ct:     ExRtObj,
-				err:    fmt.Errorf("open /:~//domains.whitelisted-global.blacklist.conf: no such file or directory"),
+				err:    fmt.Errorf("open /:~//roots.global-whitelisted-domains.blacklist.conf: no such file or directory"),
 				expErr: true,
 				name:   "Global whitelist",
 			},
@@ -283,6 +283,15 @@ func TestNewContent(t *testing.T) {
 			},
 			{
 				i:     1,
+				exp:   "",
+				fail:  false,
+				ltype: PreRoots,
+				name:  "z" + PreRoots,
+				obj:   PreRObj,
+				pos:   -1,
+			},
+			{
+				i:     1,
 				exp:   "server=/adinfuse.com/#",
 				fail:  false,
 				ltype: ExcDomns,
@@ -315,6 +324,15 @@ func TestNewContent(t *testing.T) {
 				ltype: PreHosts,
 				name:  PreHosts,
 				obj:   PreHObj,
+				pos:   0,
+			},
+			{
+				i:     1,
+				exp:   "",
+				fail:  false,
+				ltype: PreRoots,
+				name:  PreRoots,
+				obj:   PreRObj,
 				pos:   0,
 			},
 			{
@@ -434,7 +452,7 @@ func TestNewContent(t *testing.T) {
 	})
 }
 
-func TestGetAllContent(t *testing.T) {
+func TestContenterString(t *testing.T) {
 	Convey("Testing GetAllContent()", t, func() {
 		c := NewConfig(
 			Dir("/tmp"),
@@ -445,8 +463,30 @@ func TestGetAllContent(t *testing.T) {
 		)
 
 		So(c.ReadCfg(&CFGstatic{Cfg: testallCfg}), ShouldBeNil)
-		So(fmt.Sprint(c.GetAll(PreDomns, PreHosts)), ShouldEqual, expPreGetAll)
-		So(fmt.Sprint(c.GetAll()), ShouldEqual, expAll)
+
+		tests := []struct {
+			iFace IFace
+			exp   string
+			name  string
+		}{
+			{name: "ExDmObj", iFace: ExDmObj, exp: "\nDesc:         \"pre-configured whitelisted subdomains\"\nDisabled:     \"false\"\nFile:         \"**Undefined**\"\nIP:           \"0.0.0.0\"\nLtype:        \"whitelisted-subdomains\"\nName:         \"whitelisted-subdomains\"\nnType:        \"excDomn\"\nPrefix:       \"**Undefined**\"\nType:         \"whitelisted-subdomains\"\nURL:          \"**Undefined**\"\nWhitelist:\n              \"**No entries found**\"\nBlacklist:\n              \"**No entries found**\"\n"},
+			{name: "ExHtObj", iFace: ExHtObj, exp: "\nDesc:         \"pre-configured whitelisted servers\"\nDisabled:     \"false\"\nFile:         \"**Undefined**\"\nIP:           \"192.168.168.1\"\nLtype:        \"whitelisted-servers\"\nName:         \"whitelisted-servers\"\nnType:        \"excHost\"\nPrefix:       \"**Undefined**\"\nType:         \"whitelisted-servers\"\nURL:          \"**Undefined**\"\nWhitelist:\n              \"**No entries found**\"\nBlacklist:\n              \"**No entries found**\"\n"},
+			{name: "ExRtObj", iFace: ExRtObj, exp: "\nDesc:         \"pre-configured global whitelisted domains\"\nDisabled:     \"false\"\nFile:         \"**Undefined**\"\nIP:           \"0.0.0.0\"\nLtype:        \"global-whitelisted-domains\"\nName:         \"global-whitelisted-domains\"\nnType:        \"excRoot\"\nPrefix:       \"**Undefined**\"\nType:         \"global-whitelisted-domains\"\nURL:          \"**Undefined**\"\nWhitelist:\n              \"122.2o7.net\"\n              \"1e100.net\"\n              \"adobedtm.com\"\n              \"akamai.net\"\n              \"amazon.com\"\n              \"amazonaws.com\"\n              \"apple.com\"\n              \"ask.com\"\n              \"avast.com\"\n              \"bitdefender.com\"\n              \"cdn.visiblemeasures.com\"\n              \"cloudfront.net\"\n              \"coremetrics.com\"\n              \"edgesuite.net\"\n              \"freedns.afraid.org\"\n              \"github.com\"\n              \"githubusercontent.com\"\n              \"google.com\"\n              \"googleadservices.com\"\n              \"googleapis.com\"\n              \"googleusercontent.com\"\n              \"gstatic.com\"\n              \"gvt1.com\"\n              \"gvt1.net\"\n              \"hb.disney.go.com\"\n              \"hp.com\"\n              \"hulu.com\"\n              \"images-amazon.com\"\n              \"msdn.com\"\n              \"paypal.com\"\n              \"rackcdn.com\"\n              \"schema.org\"\n              \"skype.com\"\n              \"smacargo.com\"\n              \"sourceforge.net\"\n              \"ssl-on9.com\"\n              \"ssl-on9.net\"\n              \"static.chartbeat.com\"\n              \"storage.googleapis.com\"\n              \"windows.net\"\n              \"yimg.com\"\n              \"ytimg.com\"\nBlacklist:\n              \"**No entries found**\"\n"},
+			{name: "FileObj", iFace: FileObj, exp: "\nDesc:         \"File source\"\nDisabled:     \"false\"\nFile:         \"../../internal/testdata/blist.hosts.src\"\nIP:           \"0.0.0.0\"\nLtype:        \"file\"\nName:         \"tasty\"\nnType:        \"host\"\nPrefix:       \"**Undefined**\"\nType:         \"hosts\"\nURL:          \"**Undefined**\"\nWhitelist:\n              \"**No entries found**\"\nBlacklist:\n              \"**No entries found**\"\n"},
+			{name: "PreDObj", iFace: PreDObj, exp: "\nDesc:         \"pre-configured blacklisted subdomains\"\nDisabled:     \"false\"\nFile:         \"**Undefined**\"\nIP:           \"0.0.0.0\"\nLtype:        \"blacklisted-subdomains\"\nName:         \"blacklisted-subdomains\"\nnType:        \"preDomn\"\nPrefix:       \"**Undefined**\"\nType:         \"blacklisted-subdomains\"\nURL:          \"**Undefined**\"\nWhitelist:\n              \"**No entries found**\"\nBlacklist:\n              \"adsrvr.org\"\n              \"adtechus.net\"\n              \"advertising.com\"\n              \"centade.com\"\n              \"doubleclick.net\"\n              \"free-counter.co.uk\"\n              \"intellitxt.com\"\n              \"kiosked.com\"\n"},
+			{name: "PreHObj", iFace: PreHObj, exp: "\nDesc:         \"pre-configured blacklisted servers\"\nDisabled:     \"false\"\nFile:         \"**Undefined**\"\nIP:           \"192.168.168.1\"\nLtype:        \"blacklisted-servers\"\nName:         \"blacklisted-servers\"\nnType:        \"preHost\"\nPrefix:       \"**Undefined**\"\nType:         \"blacklisted-servers\"\nURL:          \"**Undefined**\"\nWhitelist:\n              \"**No entries found**\"\nBlacklist:\n              \"beap.gemini.yahoo.com\"\n"},
+			{name: "PreRObj", iFace: PreRObj, exp: "\nDesc:         \"pre-configured global blacklisted domains\"\nDisabled:     \"false\"\nFile:         \"**Undefined**\"\nIP:           \"0.0.0.0\"\nLtype:        \"global-blacklisted-domains\"\nName:         \"global-blacklisted-domains\"\nnType:        \"preRoot\"\nPrefix:       \"**Undefined**\"\nType:         \"global-blacklisted-domains\"\nURL:          \"**Undefined**\"\nWhitelist:\n              \"**No entries found**\"\nBlacklist:\n              \"**No entries found**\"\n"},
+			{name: "URLdObj", iFace: URLdObj, exp: "\nDesc:         \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled:     \"false\"\nFile:         \"**Undefined**\"\nIP:           \"0.0.0.0\"\nLtype:        \"url\"\nName:         \"malc0de\"\nnType:        \"domn\"\nPrefix:       \"zone \"\nType:         \"domains\"\nURL:          \"http://127.0.0.1:8081/domains/domain.txt\"\nWhitelist:\n              \"**No entries found**\"\nBlacklist:\n              \"**No entries found**\"\n"},
+			{name: "URLhObj", iFace: URLhObj, exp: "\nDesc:         \"Blocking mobile ad providers and some analytics providers\"\nDisabled:     \"false\"\nFile:         \"**Undefined**\"\nIP:           \"192.168.168.1\"\nLtype:        \"url\"\nName:         \"adaway\"\nnType:        \"host\"\nPrefix:       \"127.0.0.1 \"\nType:         \"hosts\"\nURL:          \"http://127.0.0.1:8081/hosts/host.txt\"\nWhitelist:\n              \"**No entries found**\"\nBlacklist:\n              \"**No entries found**\"\n"},
+		}
+
+		for _, tt := range tests {
+			Convey("Testing "+tt.name+" Contenter.String()", func() {
+				ct, err := c.NewContent(tt.iFace)
+				So(err, ShouldBeNil)
+				So(ct.String(), ShouldEqual, tt.exp)
+			})
+		}
 	})
 }
 
@@ -475,11 +515,19 @@ func TestMultiObjNewContent(t *testing.T) {
 			{name: "ExRtObj", iFace: ExRtObj, exp: "server=/ytimg.com/#"},
 			{name: "ExDmObj", iFace: ExDmObj, exp: ""},
 			{name: "ExHtObj", iFace: ExHtObj, exp: ""},
-			{name: "PreDObj", iFace: PreDObj, exp: "address=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0"},
+			{name: "PreDObj", iFace: PreDObj, exp: `address=/awfuladvertising.com/0.0.0.0
+address=/badadsrvr.org/0.0.0.0
+address=/badintellitxt.com/0.0.0.0
+address=/disgusting.unkiosked.com/0.0.0.0
+address=/filthydoubleclick.net/0.0.0.0
+address=/iffyfree-counter.co.uk/0.0.0.0
+address=/nastycentade.com/0.0.0.0
+address=/worseadtechus.net/0.0.0.0`},
 			{name: "PreHObj", iFace: PreHObj, exp: "address=/beap.gemini.yahoo.com/192.168.168.1"},
-			{name: "FileObj", iFace: FileObj, exp: "[\nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n \nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"/tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n]"},
-			{name: "URLdObj", iFace: URLdObj, exp: "[\nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domn\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://malc0de.com/bl/ZONES\"\n]"},
-			{name: "URLhObj", iFace: URLhObj, exp: "[\nDesc:\t \"Blocking mobile ad providers and some analytics providers\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"url\"\nName:\t \"adaway\"\nnType:\t \"host\"\nPrefix:\t \"127.0.0.1 \"\nType:\t \"hosts\"\nURL:\t \"http://adaway.org/hosts.txt\"\n]"},
+			{name: "PreRObj", iFace: PreRObj, exp: "address=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0"},
+			{name: "FileObj", iFace: FileObj, exp: expFileObj},
+			{name: "URLdObj", iFace: URLdObj, exp: expURLdObj},
+			{name: "URLhObj", iFace: URLhObj, exp: expURLhOBJ},
 		}
 
 		for _, tt := range tests {
@@ -488,7 +536,7 @@ func TestMultiObjNewContent(t *testing.T) {
 				So(err, ShouldBeNil)
 
 				switch tt.iFace {
-				case ExRtObj, ExDmObj, ExHtObj, PreDObj, PreHObj:
+				case ExRtObj, ExDmObj, ExHtObj, PreDObj, PreHObj, PreRObj:
 					d := &dummyConfig{Env: c.Env, t: t}
 					d.ProcessContent(ct)
 					So(strings.Join(d.s, "\n"), ShouldEqual, tt.exp)
@@ -535,7 +583,22 @@ func TestProcessContent(t *testing.T) {
 					extracted: 1,
 					kept:      1,
 					err:       nil,
-					exp:       "[\nDesc:\t \"pre-configured global whitelisted domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"whitelisted-global\"\nName:\t \"whitelisted-global\"\nnType:\t \"excRoot\"\nPrefix:\t \"\"\nType:\t \"whitelisted-global\"\nURL:\t \"\"\n]",
+					exp: `
+Desc:         "pre-configured global whitelisted domains"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "global-whitelisted-domains"
+Name:         "global-whitelisted-domains"
+nType:        "excRoot"
+Prefix:       "**Undefined**"
+Type:         "global-whitelisted-domains"
+URL:          "**Undefined**"
+Whitelist:
+              "ytimg.com"
+Blacklist:
+              "**No entries found**"
+`,
 					expDexMap: list{entry: entry{"ytimg.com": 0}},
 					expExcMap: list{entry: entry{"ytimg.com": 0}},
 					obj:       ExRtObj,
@@ -546,7 +609,22 @@ func TestProcessContent(t *testing.T) {
 					extracted: 0,
 					kept:      0,
 					err:       nil,
-					exp:       "[\nDesc:\t \"pre-configured whitelisted domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"whitelisted-subdomains\"\nName:\t \"whitelisted-subdomains\"\nnType:\t \"excDomn\"\nPrefix:\t \"\"\nType:\t \"whitelisted-subdomains\"\nURL:\t \"\"\n]",
+					exp: `
+Desc:         "pre-configured whitelisted subdomains"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "whitelisted-subdomains"
+Name:         "whitelisted-subdomains"
+nType:        "excDomn"
+Prefix:       "**Undefined**"
+Type:         "whitelisted-subdomains"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+`,
 					expDexMap: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 					expExcMap: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 					obj:       ExDmObj,
@@ -557,7 +635,22 @@ func TestProcessContent(t *testing.T) {
 					extracted: 0,
 					kept:      0,
 					err:       nil,
-					exp:       "[\nDesc:\t \"pre-configured whitelisted hosts\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"whitelisted-servers\"\nName:\t \"whitelisted-servers\"\nnType:\t \"excHost\"\nPrefix:\t \"\"\nType:\t \"whitelisted-servers\"\nURL:\t \"\"\n]",
+					exp: `
+Desc:         "pre-configured whitelisted servers"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.168.1"
+Ltype:        "whitelisted-servers"
+Name:         "whitelisted-servers"
+nType:        "excHost"
+Prefix:       "**Undefined**"
+Type:         "whitelisted-servers"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+`,
 					expDexMap: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 					expExcMap: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 					obj:       ExHtObj,
@@ -568,7 +661,29 @@ func TestProcessContent(t *testing.T) {
 					extracted: 8,
 					kept:      8,
 					err:       nil,
-					exp:       "[\nDesc:\t \"pre-configured blacklisted domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"blacklisted-subdomains\"\nName:\t \"blacklisted-subdomains\"\nnType:\t \"preDomn\"\nPrefix:\t \"\"\nType:\t \"blacklisted-subdomains\"\nURL:\t \"\"\n]",
+					exp: `
+Desc:         "pre-configured blacklisted subdomains"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "blacklisted-subdomains"
+Name:         "blacklisted-subdomains"
+nType:        "preDomn"
+Prefix:       "**Undefined**"
+Type:         "blacklisted-subdomains"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "adsrvr.org"
+              "adtechus.net"
+              "advertising.com"
+              "centade.com"
+              "doubleclick.net"
+              "free-counter.co.uk"
+              "intellitxt.com"
+              "kiosked.com"
+`,
 					expDexMap: list{
 						entry: entry{
 							"adsrvr.org":         0,
@@ -583,8 +698,16 @@ func TestProcessContent(t *testing.T) {
 					},
 					expExcMap: list{entry: entry{"ytimg.com": 0}},
 					f:         dir + "/domains.blacklisted-subdomains.blacklist.conf",
-					fdata:     "address=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0\n",
-					obj:       PreDObj,
+					fdata: `address=/awfuladvertising.com/0.0.0.0
+address=/badadsrvr.org/0.0.0.0
+address=/badintellitxt.com/0.0.0.0
+address=/disgusting.unkiosked.com/0.0.0.0
+address=/filthydoubleclick.net/0.0.0.0
+address=/iffyfree-counter.co.uk/0.0.0.0
+address=/nastycentade.com/0.0.0.0
+address=/worseadtechus.net/0.0.0.0
+`,
+					obj: PreDObj,
 				},
 				{
 					name:      "PreHObj",
@@ -592,7 +715,22 @@ func TestProcessContent(t *testing.T) {
 					extracted: 1,
 					kept:      1,
 					err:       nil,
-					exp:       "[\nDesc:\t \"pre-configured blacklisted hosts\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"blacklisted-servers\"\nName:\t \"blacklisted-servers\"\nnType:\t \"preHost\"\nPrefix:\t \"\"\nType:\t \"blacklisted-servers\"\nURL:\t \"\"\n]",
+					exp: `
+Desc:         "pre-configured blacklisted servers"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.168.1"
+Ltype:        "blacklisted-servers"
+Name:         "blacklisted-servers"
+nType:        "preHost"
+Prefix:       "**Undefined**"
+Type:         "blacklisted-servers"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "beap.gemini.yahoo.com"
+`,
 					expDexMap: list{entry: entry{"ytimg.com": 0}},
 					expExcMap: list{entry: entry{"ytimg.com": 0}},
 					f:         dir + "/hosts.blacklisted-servers.blacklist.conf",
@@ -600,10 +738,54 @@ func TestProcessContent(t *testing.T) {
 					obj:       PreHObj,
 				},
 				{
+					name:      "PreRObj",
+					dropped:   0,
+					extracted: 8,
+					kept:      8,
+					err:       nil,
+					exp: `
+Desc:         "pre-configured global blacklisted domains"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "global-blacklisted-domains"
+Name:         "global-blacklisted-domains"
+nType:        "preRoot"
+Prefix:       "**Undefined**"
+Type:         "global-blacklisted-domains"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "adsrvr.org"
+              "adtechus.net"
+              "advertising.com"
+              "centade.com"
+              "doubleclick.net"
+              "free-counter.co.uk"
+              "intellitxt.com"
+              "kiosked.com"
+`,
+					expDexMap: list{entry: entry{}},
+					expExcMap: list{
+						entry: entry{
+							"adsrvr.org":         0,
+							"adtechus.net":       0,
+							"advertising.com":    0,
+							"centade.com":        0,
+							"doubleclick.net":    0,
+							"free-counter.co.uk": 0,
+							"intellitxt.com":     0,
+							"kiosked.com":        0,
+						},
+					},
+					obj: PreRObj,
+				},
+				{
 					name:      "FileObj",
-					dropped:   7,
-					extracted: 20,
-					kept:      13,
+					dropped:   2,
+					extracted: 23,
+					kept:      21,
 					err:       fmt.Errorf("open %v/hosts./tasty.blacklist.conf: no such file or directory", dir),
 					exp:       filesMin,
 					expDexMap: list{
@@ -614,8 +796,11 @@ func TestProcessContent(t *testing.T) {
 					},
 					expExcMap: list{entry: entry{"ytimg.com": 0}},
 					f:         dir + "/hosts.tasty.blacklist.conf",
-					fdata:     "address=/0.really.bad.phishing.site.ru/10.10.10.10\naddress=/cw.bad.ultraadverts.site.eu/10.10.10.10\naddress=/really.bad.phishing.site.ru/10.10.10.10\n",
-					obj:       FileObj,
+					fdata: `address=/0.really.bad.phishing.site.ru/10.10.10.10
+address=/cw.bad.ultraadverts.site.eu/10.10.10.10
+address=/really.bad.phishing.site.ru/10.10.10.10
+`,
+					obj: FileObj,
 				},
 			}
 
@@ -623,38 +808,29 @@ func TestProcessContent(t *testing.T) {
 
 			for _, tt := range tests {
 				Convey("Testing "+tt.name+" ProcessContent()", func() {
-					obj, err := c.NewContent(tt.obj)
-					So(err, ShouldBeNil)
+					var (
+						ct    Contenter
+						objex []IFace
+					)
 
-					if tt.f != "" {
-						So(fmt.Sprint(obj), ShouldEqual, tt.exp)
+					switch tt.obj {
+					case FileObj, URLdObj, URLhObj:
+						objex = []IFace{
+							PreRObj,
+							PreDObj,
+							PreHObj,
+							ExRtObj,
+							ExDmObj,
+							ExHtObj,
+							tt.obj,
+						}
+					default:
+						objex = []IFace{tt.obj}
 					}
 
-					if tt.name == "FileObj" {
-						Print("Checking FileObj...")
-					}
 					var g errgroup.Group
 					g.Go(
 						func() (err error) {
-							var (
-								ct    Contenter
-								objex []IFace
-							)
-
-							switch tt.obj {
-							case FileObj, URLdObj, URLhObj:
-								objex = []IFace{
-									PreDObj,
-									PreHObj,
-									ExRtObj,
-									ExDmObj,
-									ExHtObj,
-									tt.obj,
-								}
-							default:
-								objex = []IFace{tt.obj}
-							}
-
 							for _, o := range objex {
 								ct, _ = c.NewContent(o)
 								err = c.ProcessContent(ct)
@@ -694,8 +870,8 @@ func TestProcessContent(t *testing.T) {
 							So(c.Exc.entry, ShouldResemble, tt.expExcMap.entry)
 						})
 
-						Convey("Testing "+tt.name+" ProcessContent(): Obj should match expected", func() {
-							So(obj.String(), ShouldEqual, tt.exp)
+						Convey("Testing "+tt.name+" ProcessContent(): ct should match expected", func() {
+							So(ct.String(), ShouldEqual, tt.exp)
 						})
 					default:
 						reader, err := GetFile(tt.f)
@@ -859,14 +1035,14 @@ var (
 	disabled false
 	dns-redirect-ip 0.0.0.0
 	domains {
-			include adsrvr.org
-			include adtechus.net
-			include advertising.com
-			include centade.com
-			include doubleclick.net
-			include free-counter.co.uk
-			include intellitxt.com
-			include kiosked.com
+			include badadsrvr.org
+			include worseadtechus.net
+			include awfuladvertising.com
+			include nastycentade.com
+			include filthydoubleclick.net
+			include iffyfree-counter.co.uk
+			include badintellitxt.com
+			include disgusting.unkiosked.com
 			source malc0de {
 					description "List of zones serving malicious executables observed by malc0de.com/database/"
 					prefix "zone "
@@ -874,15 +1050,18 @@ var (
 			}
 	}
 	exclude ytimg.com
+	include adsrvr.org
+	include adtechus.net
+	include advertising.com
+	include centade.com
+	include doubleclick.net
+	include free-counter.co.uk
+	include intellitxt.com
+	include kiosked.com
 	hosts {
 			dns-redirect-ip 192.168.168.1
 			include beap.gemini.yahoo.com
 			source tasty {
-					description "File source"
-					dns-redirect-ip 10.10.10.10
-					file ../../internal/testdata/blist.hosts.src
-			}
-			source /tasty {
 					description "File source"
 					dns-redirect-ip 10.10.10.10
 					file ../../internal/testdata/blist.hosts.src
@@ -1127,13 +1306,60 @@ address=/wwww.adleads.com/192.168.168.1`
 
 	// domainsPreContent = "address=/adsrvr.org/192.1.1.1\naddress=/adtechus.net/192.1.1.1\naddress=/advertising.com/192.1.1.1\naddress=/centade.com/192.1.1.1\naddress=/doubleclick.net/192.1.1.1\naddress=/free-counter.co.uk/192.1.1.1\naddress=/intellitxt.com/192.1.1.1\naddress=/kiosked.com/192.1.1.1\n"
 
-	expPreGetAll = "[\nDesc:\t \"pre-configured blacklisted domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"blacklisted-subdomains\"\nName:\t \"blacklisted-subdomains\"\nnType:\t \"preDomn\"\nPrefix:\t \"\"\nType:\t \"blacklisted-subdomains\"\nURL:\t \"\"\n \nDesc:\t \"pre-configured blacklisted hosts\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"blacklisted-servers\"\nName:\t \"blacklisted-servers\"\nnType:\t \"preHost\"\nPrefix:\t \"\"\nType:\t \"blacklisted-servers\"\nURL:\t \"\"\n]"
+	// expPreGetAll = "[\nDesc:\t \"pre-configured blacklisted subdomains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"blacklisted-subdomains\"\nName:\t \"blacklisted-subdomains\"\nnType:\t \"preDomn\"\nPrefix:\t \"\"\nType:\t \"blacklisted-subdomains\"\nURL:\t \"\"\n \nDesc:\t \"pre-configured blacklisted servers\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"blacklisted-servers\"\nName:\t \"blacklisted-servers\"\nnType:\t \"preHost\"\nPrefix:\t \"\"\nType:\t \"blacklisted-servers\"\nURL:\t \"\"\n]"
 
-	expAll = "[\nDesc:\t \"pre-configured blacklisted domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"blacklisted-subdomains\"\nName:\t \"blacklisted-subdomains\"\nnType:\t \"preDomn\"\nPrefix:\t \"\"\nType:\t \"blacklisted-subdomains\"\nURL:\t \"\"\n \nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domn\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://127.0.0.1:8081/domains/domain.txt\"\n \nDesc:\t \"pre-configured blacklisted hosts\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"blacklisted-servers\"\nName:\t \"blacklisted-servers\"\nnType:\t \"preHost\"\nPrefix:\t \"\"\nType:\t \"blacklisted-servers\"\nURL:\t \"\"\n \nDesc:\t \"Blocking mobile ad providers and some analytics providers\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"url\"\nName:\t \"adaway\"\nnType:\t \"host\"\nPrefix:\t \"127.0.0.1 \"\nType:\t \"hosts\"\nURL:\t \"http://127.0.0.1:8081/hosts/host.txt\"\n \nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"file\"\nName:\t \"tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n]"
+	// expAll = "[\nDesc:\t \"pre-configured blacklisted subdomains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"blacklisted-subdomains\"\nName:\t \"blacklisted-subdomains\"\nnType:\t \"preDomn\"\nPrefix:\t \"\"\nType:\t \"blacklisted-subdomains\"\nURL:\t \"\"\n \nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domn\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://127.0.0.1:8081/domains/domain.txt\"\n \nDesc:\t \"pre-configured blacklisted servers\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"blacklisted-servers\"\nName:\t \"blacklisted-servers\"\nnType:\t \"preHost\"\nPrefix:\t \"\"\nType:\t \"blacklisted-servers\"\nURL:\t \"\"\n \nDesc:\t \"Blocking mobile ad providers and some analytics providers\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"url\"\nName:\t \"adaway\"\nnType:\t \"host\"\nPrefix:\t \"127.0.0.1 \"\nType:\t \"hosts\"\nURL:\t \"http://127.0.0.1:8081/hosts/host.txt\"\n \nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"file\"\nName:\t \"tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n]"
 
-	// domainhostContent = "address=/192-168-0-255.com/192.1.1.1\naddress=/asi-37.fr/192.1.1.1\naddress=/bagbackpack.com/192.1.1.1\naddress=/bitmeyenkartusistanbul.com/192.1.1.1\naddress=/byxon.com/192.1.1.1\naddress=/img001.com/192.1.1.1\naddress=/loadto.net/192.1.1.1\naddress=/roastfiles2017.com/192.1.1.1\naddress=/a.applovin.com/192.168.168.1\naddress=/a.glcdn.co/192.168.168.1\naddress=/a.vserv.mobi/192.168.168.1\naddress=/ad.leadboltapps.net/192.168.168.1\naddress=/ad.madvertise.de/192.168.168.1\naddress=/ad.where.com/192.168.168.1\naddress=/adcontent.saymedia.com/192.168.168.1\naddress=/admicro1.vcmedia.vn/192.168.168.1\naddress=/admicro2.vcmedia.vn/192.168.168.1\naddress=/admin.vserv.mobi/192.168.168.1\naddress=/ads.adiquity.com/192.168.168.1\naddress=/ads.admarvel.com/192.168.168.1\naddress=/ads.admoda.com/192.168.168.1\naddress=/ads.celtra.com/192.168.168.1\naddress=/ads.flurry.com/192.168.168.1\naddress=/ads.matomymobile.com/192.168.168.1\naddress=/ads.mobgold.com/192.168.168.1\naddress=/ads.mobilityware.com/192.168.168.1\naddress=/ads.mopub.com/192.168.168.1\naddress=/ads.n-ws.org/192.168.168.1\naddress=/ads.ookla.com/192.168.168.1\naddress=/ads.saymedia.com/192.168.168.1\naddress=/ads.smartdevicemedia.com/192.168.168.1\naddress=/ads.vserv.mobi/192.168.168.1\naddress=/ads.srcxad.net/192.168.168.1\naddress=/ads2.mediaarmor.com/192.168.168.1\naddress=/adserver.ubiyoo.com/192.168.168.1\naddress=/adultmoda.com/192.168.168.1\naddress=/android-sdk31.transpera.com/192.168.168.1\naddress=/android.bcfads.com/192.168.168.1\naddress=/api.airpush.com/192.168.168.1\naddress=/api.analytics.omgpop.com/192.168.168.1\naddress=/api.yp.com/192.168.168.1\naddress=/apps.buzzcity.net/192.168.168.1\naddress=/apps.mobilityware.com/192.168.168.1\naddress=/as.adfonic.net/192.168.168.1\naddress=/asotrack1.fluentmobile.com/192.168.168.1\naddress=/assets.cntdy.mobi/192.168.168.1\naddress=/atti.velti.com/192.168.168.1\naddress=/b.scorecardresearch.com/192.168.168.1\naddress=/banners.bigmobileads.com/192.168.168.1\naddress=/bigmobileads.com/192.168.168.1\naddress=/c.vrvm.com/192.168.168.1\naddress=/c.vserv.mobi/192.168.168.1\naddress=/cache-ssl.celtra.com/192.168.168.1\naddress=/cache.celtra.com/192.168.168.1\naddress=/cdn.celtra.com/192.168.168.1\naddress=/cdn.nearbyad.com/192.168.168.1\naddress=/cdn.trafficforce.com/192.168.168.1\naddress=/cdn.us.goldspotmedia.com/192.168.168.1\naddress=/cdn.vdopia.com/192.168.168.1\naddress=/cdn1.crispadvertising.com/192.168.168.1\naddress=/cdn1.inner-active.mobi/192.168.168.1\naddress=/cdn2.crispadvertising.com/192.168.168.1\naddress=/click.buzzcity.net/192.168.168.1\naddress=/creative1cdn.mobfox.com/192.168.168.1\naddress=/d.applovin.com/192.168.168.1\naddress=/edge.reporo.net/192.168.168.1\naddress=/ftpcontent.worldnow.com/192.168.168.1\naddress=/gemini.yahoo.com/192.168.168.1\naddress=/go.mobpartner.mobi/192.168.168.1\naddress=/go.vrvm.com/192.168.168.1\naddress=/gsmtop.net/192.168.168.1\naddress=/gts-ads.twistbox.com/192.168.168.1\naddress=/hhbeksrcw5d9e.pflexads.com/192.168.168.1\naddress=/hybl9bazbc35.pflexads.com/192.168.168.1\naddress=/i.tapit.com/192.168.168.1\naddress=/images.millennialmedia.com/192.168.168.1\naddress=/images.mpression.net/192.168.168.1\naddress=/img.ads.huntmad.com/192.168.168.1\naddress=/img.ads.mobilefuse.net/192.168.168.1\naddress=/img.ads.mocean.mobi/192.168.168.1\naddress=/img.ads.mojiva.com/192.168.168.1\naddress=/img.ads.taptapnetworks.com/192.168.168.1\naddress=/m.adsymptotic.com/192.168.168.1\naddress=/m2m1.inner-active.mobi/192.168.168.1\naddress=/media.mobpartner.mobi/192.168.168.1\naddress=/medrx.sensis.com.au/192.168.168.1\naddress=/mobile.banzai.it/192.168.168.1\naddress=/mobiledl.adboe.com/192.168.168.1\naddress=/mobpartner.mobi/192.168.168.1\naddress=/mwc.velti.com/192.168.168.1\naddress=/netdna.reporo.net/192.168.168.1\naddress=/oasc04012.247realmedia.com/192.168.168.1\naddress=/orencia.pflexads.com/192.168.168.1\naddress=/pdn.applovin.com/192.168.168.1\naddress=/r.edge.inmobicdn.net/192.168.168.1\naddress=/r.mobpartner.mobi/192.168.168.1\naddress=/req.appads.com/192.168.168.1\naddress=/rs-staticart.ybcdn.net/192.168.168.1\naddress=/ru.velti.com/192.168.168.1\naddress=/s0.2mdn.net/192.168.168.1\naddress=/s3.phluant.com/192.168.168.1\naddress=/sf.vserv.mobi/192.168.168.1\naddress=/show.buzzcity.net/192.168.168.1\naddress=/static.cdn.gtsmobi.com/192.168.168.1\naddress=/static.estebull.com/192.168.168.1\naddress=/stats.pflexads.com/192.168.168.1\naddress=/track.celtra.com/192.168.168.1\naddress=/tracking.klickthru.com/192.168.168.1\naddress=/www.eltrafiko.com/192.168.168.1\naddress=/www.mmnetwork.mobi/192.168.168.1\naddress=/www.pflexads.com/192.168.168.1\naddress=/wwww.adleads.com/192.168.168.1"
+	expFileObj = `
+Desc:         "File source"
+Disabled:     "false"
+File:         "../../internal/testdata/blist.hosts.src"
+IP:           "10.10.10.10"
+Ltype:        "file"
+Name:         "tasty"
+nType:        "host"
+Prefix:       "**Undefined**"
+Type:         "hosts"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+`
 
-	// domainMin = "address=/01lm.com/0.0.0.0\naddress=/2biking.com/0.0.0.0\naddress=/323trs.com/0.0.0.0\naddress=/51jetso.com/0.0.0.0\naddress=/52zsoft.com/0.0.0.0\naddress=/54nb.com/0.0.0.0\naddress=/9364.org/0.0.0.0\naddress=/antalyanalburiye.com/0.0.0.0\naddress=/bellefonte.net/0.0.0.0\naddress=/bow-spell-effect1.ru/0.0.0.0\naddress=/bplaced.net/0.0.0.0\naddress=/cloudme.com/0.0.0.0\naddress=/falcogames.com/0.0.0.0\naddress=/freegamer.info/0.0.0.0\naddress=/frizoupuzzles.org/0.0.0.0\naddress=/fssblangenlois.ac.at/0.0.0.0\naddress=/gamegogle.com/0.0.0.0\naddress=/gasparini.com.br/0.0.0.0\naddress=/getpics.net/0.0.0.0\naddress=/gezila.com/0.0.0.0\naddress=/glazeautocaremobile.com/0.0.0.0\naddress=/goldenlifewomen.com/0.0.0.0\naddress=/goosai.com/0.0.0.0\naddress=/holidaysinkeralam.com/0.0.0.0\naddress=/hotlaps.com.au/0.0.0.0\naddress=/i2cchip.com/0.0.0.0\naddress=/ibxdnl.com/0.0.0.0\naddress=/igetmyservice.com/0.0.0.0\naddress=/iprojhq.com/0.0.0.0\naddress=/izmirhavaalaniarackiralama.net/0.0.0.0\naddress=/jingshang.com.tw/0.0.0.0\naddress=/justgetitfaster.com/0.0.0.0\naddress=/kanberdemir.com/0.0.0.0\naddress=/kpzip.com/0.0.0.0\naddress=/kraonkelaere.com/0.0.0.0\naddress=/laptopb4you.com/0.0.0.0\naddress=/liftune.com/0.0.0.0\naddress=/m-games.huu.cz/0.0.0.0\naddress=/martiniracing.com.br/0.0.0.0\naddress=/mireene.com/0.0.0.0\naddress=/mixtrio.net/0.0.0.0\naddress=/mstdls.com/0.0.0.0\naddress=/mypcapp.com/0.0.0.0\naddress=/perso.sfr.fr/0.0.0.0\naddress=/pixelmon-world.com/0.0.0.0\naddress=/plexcera.com/0.0.0.0\naddress=/rd1994.com/0.0.0.0\naddress=/sf-addon.com/0.0.0.0\naddress=/skypedong.com/0.0.0.0\naddress=/spirlymo.com/0.0.0.0\naddress=/sportstherapy.net/0.0.0.0\naddress=/talka-studios.com/0.0.0.0\naddress=/thewitchez-cafe.co.uk/0.0.0.0\naddress=/tirekoypazari.com/0.0.0.0\naddress=/updatestar.net/0.0.0.0\naddress=/urban-garden.net/0.0.0.0\naddress=/utilbada.com/0.0.0.0\naddress=/utilcom.net/0.0.0.0\naddress=/utiljoy.com/0.0.0.0\naddress=/vim6.com/0.0.0.0\naddress=/windows.net/0.0.0.0\naddress=/xiazai4.net/0.0.0.0\naddress=/xunyou.com/0.0.0.0\n"
+	expURLdObj = `
+Desc:         "List of zones serving malicious executables observed by malc0de.com/database/"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "malc0de"
+nType:        "domn"
+Prefix:       "zone "
+Type:         "domains"
+URL:          "http://malc0de.com/bl/ZONES"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+`
+
+	expURLhOBJ = `
+Desc:         "Blocking mobile ad providers and some analytics providers"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.168.1"
+Ltype:        "url"
+Name:         "adaway"
+nType:        "host"
+Prefix:       "127.0.0.1 "
+Type:         "hosts"
+URL:          "http://adaway.org/hosts.txt"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+`
 
 	filesMin = "[\nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n \nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"/tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n]"
 

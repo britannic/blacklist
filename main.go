@@ -44,6 +44,7 @@ var (
 	progname     = basename(os.Args[0])
 	prefix       = fmt.Sprintf("%s: ", progname)
 	objex        = []e.IFace{
+		e.PreRObj,
 		e.PreDObj,
 		e.PreHObj,
 		e.ExRtObj,

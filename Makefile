@@ -48,7 +48,7 @@ LDFLAGS 		 = -X main.build=$(DATE) -X main.githash=$(GIT) -X main.version=$(VER)
 FLAGS 			 = -s -w
 
 PHONY: all clean deps amd64 mips coverage copyright docs readme pkgs
-amd64: amd64
+mac: amd64
 
 all: AllOfIt ; @ $(info making everything...) ## Build everything
 AllOfIt: clean deps amd64 mips coverage copyright docs readme pkgs 
@@ -104,7 +104,8 @@ clean: ; @ $(info cleaning directories…) ## Cleaning up directories
 	-o -name debug.test -type f \
 	-o -name "*.tgz" -type f \
 	| xargs rm
-	@rm -rf test/tests.* test/coverage.* 
+	@rm -rf test/tests.* test/coverage.*
+	@rm -rf /tmp/testBlacklist*
 
 .PHONY: copyright
 copyright: ; @ $(info updating copyright…) ## Update copyright

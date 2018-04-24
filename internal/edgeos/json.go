@@ -34,7 +34,7 @@ func getJSONArray(c *cfgJSON) (js string) {
 	eof := enter
 
 	switch {
-	case c.pk != rootNode && cnt == 0:
+	case cnt == 0:
 		js += "]," + enter
 		return js
 
@@ -56,10 +56,6 @@ func getJSONArray(c *cfgJSON) (js string) {
 		}
 
 		ø = comma
-		if c.pk == rootNode {
-			ø = null
-		}
-
 		js += fmt.Sprintf("%v]%v\n", tabs(ȹ), ø)
 	}
 
@@ -76,7 +72,7 @@ func is(ind int, js, title, s string) string {
 
 func getJSONsrcArray(c *cfgJSON) string {
 	var (
-		cnt = len(c.tree[c.pk].Objects.src)
+		cnt = len(c.tree[c.pk].src)
 		i   int
 		js  string
 		o   *source
@@ -91,7 +87,7 @@ func getJSONsrcArray(c *cfgJSON) string {
 
 	js += fmt.Sprintf("%v%q: [{%v", tabs(c.indent), "sources", enter)
 
-	for i, o = range c.tree[c.pk].Objects.src {
+	for i, o = range c.tree[c.pk].src {
 		ȹ = c.indent + 1
 
 		if i == cnt-1 {

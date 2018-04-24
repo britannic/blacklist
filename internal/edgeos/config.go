@@ -47,20 +47,23 @@ const (
 	hosts     = "hosts"
 	notknown  = "unknown"
 	preNoun   = "pre-configured"
+	roots     = "roots"
 	rootNode  = "blacklist"
 	src       = "source"
 	urls      = "url"
 
-	// ExcDomns labels domain exclusions
+	// ExcDomns is a string labels for domain exclusions
 	ExcDomns = "whitelisted-subdomains"
-	// ExcHosts labels host exclusions
+	// ExcHosts is a string labels for host exclusions
 	ExcHosts = "whitelisted-servers"
-	// ExcRoots labels global domain exclusions
-	ExcRoots = "whitelisted-global"
-	// PreDomns designates string label for preconfigured whitelisted domains
+	// ExcRoots is a string labels for preconfigured global domain exclusions
+	ExcRoots = "global-whitelisted-domains"
+	// PreDomns is a string label for preconfigured whitelisted domains
 	PreDomns = "blacklisted-subdomains"
-	// PreHosts designates string label for preconfigured blacklisted hosts
+	// PreHosts is a string label for preconfigured blacklisted hosts
 	PreHosts = "blacklisted-servers"
+	// PreRoots is a string label for preconfigured global blacklisted hosts
+	PreRoots = "global-blacklisted-domains"
 	// False is a string constant
 	False = "false"
 	// True is a string constant
@@ -117,7 +120,9 @@ func (c *Config) addInc(node string) *source {
 	)
 
 	if c.nodeExists(node) {
-		inc = c.tree[node].inc
+		if len(c.tree[node].inc) > 0 {
+			inc = c.tree[node].inc
+		}
 	}
 
 	switch node {
@@ -126,6 +131,9 @@ func (c *Config) addInc(node string) *source {
 		n = getType(ltype).(ntype)
 	case hosts:
 		ltype = getType(preHost).(string)
+		n = getType(ltype).(ntype)
+	case rootNode:
+		ltype = getType(preRoot).(string)
 		n = getType(ltype).(ntype)
 	}
 
@@ -143,7 +151,6 @@ func (c *Config) addInc(node string) *source {
 // GetTotalStats displays aggregate statistics for processed sources
 func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
 	var keys []string
-
 	for k := range c.ctr {
 		keys = append(keys, k)
 	}
@@ -167,7 +174,6 @@ func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
 // NewContent returns an interface of the requested IFace type
 func (c *Config) NewContent(iface IFace) (Contenter, error) {
 	var ltype = iface.String()
-
 	switch iface {
 	case ExDmObj:
 		return &ExcDomnObjects{Objects: c.addExc(domains)}, nil
@@ -179,6 +185,8 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 		return &FIODataObjects{Objects: c.GetAll(ltype)}, nil
 	case PreDObj:
 		return &PreDomnObjects{Objects: c.GetAll(ltype)}, nil
+	case PreRObj:
+		return &PreRootObjects{Objects: c.GetAll(ltype)}, nil
 	case PreHObj:
 		return &PreHostObjects{Objects: c.GetAll(ltype)}, nil
 	case URLdObj:
@@ -186,7 +194,6 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 	case URLhObj:
 		return &URLHostObjects{Objects: c.Get(hosts).Filter(urls)}, nil
 	}
-
 	return nil, errors.New("Invalid interface requested")
 }
 
@@ -220,9 +227,6 @@ func (c *Config) Get(node string) *Objects {
 	switch node {
 	case all:
 		for _, node := range c.sortKeys() {
-			if node == rootNode {
-				continue
-			}
 			o.addObj(c, node)
 		}
 	default:
@@ -234,11 +238,7 @@ func (c *Config) Get(node string) *Objects {
 // GetAll returns an array of Objects
 func (c *Config) GetAll(ltypes ...string) *Objects {
 	o := &Objects{Env: c.Env}
-
 	for _, node := range c.sortKeys() {
-		if node == rootNode {
-			continue
-		}
 		o.objects(c, node, ltypes...)
 	}
 	return o
@@ -247,6 +247,11 @@ func (c *Config) GetAll(ltypes ...string) *Objects {
 // InSession returns true if VyOS/EdgeOS configure is in session
 func (c *Config) InSession() bool {
 	return os.ExpandEnv("$_OFR_CONFIGURE") == "ok"
+}
+
+func (c tree) keyExists(k string) bool {
+	_, ok := c[k]
+	return ok
 }
 
 // load reads the config using the EdgeOS/VyOS cli-shell-api
@@ -282,10 +287,12 @@ func (c *Config) excinc(t [][]byte, tnode string) {
 	switch string(t[1]) {
 	case "exclude":
 		if isTnode(tnode) {
+			c.Debug("Whitelisting %s on node %s", string(t[2]), tnode)
 			c.tree[tnode].exc = append(c.tree[tnode].exc, string(t[2]))
 		}
 	case "include":
 		if isTnode(tnode) {
+			c.Debug("Blacklisting %s on node %s", string(t[2]), tnode)
 			c.tree[tnode].inc = append(c.tree[tnode].inc, string(t[2]))
 		}
 	}
@@ -300,19 +307,22 @@ func (c *Config) label(name [][]byte, o *source, tnode string) {
 	case files:
 		o.file = string(name[2])
 		o.ltype = string(name[1])
-		c.tree[tnode].Objects.src = append(c.tree[tnode].Objects.src, o)
+		c.tree[tnode].src = append(c.tree[tnode].src, o)
+
 	case "prefix":
 		o.prefix = string(name[2])
 	case urls:
 		o.ltype = string(name[1])
 		o.url = string(name[2])
-		c.tree[tnode].Objects.src = append(c.tree[tnode].Objects.src, o)
+		c.tree[tnode].src = append(c.tree[tnode].src, o)
 	}
 }
 
-func (c *Config) addSource(tnode string) {
+func (c *Config) addTnodeSource(tnode string) {
 	if isTnode(tnode) {
 		c.tree[tnode] = newSource()
+		c.tree[tnode].name = tnode
+		c.tree[tnode].nType = getType(tnode).(ntype)
 	}
 }
 
@@ -329,7 +339,7 @@ func (c *Config) redirect(line []byte, tnode string, find *regx.OBJ) {
 	}
 }
 
-func (c *Config) leafname(o *source, line []byte, tnode string, find *regx.OBJ) {
+func (c *Config) sourcename(o *source, line []byte, tnode string, find *regx.OBJ) {
 	if isTnode(tnode) {
 		name := find.SubMatch(regx.NAME, line)
 		if o != nil {
@@ -356,18 +366,18 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 			tally = &stats{dropped: a, kept: b}
 		)
 
-		for _, o := range ct.GetList().src {
+		for _, s := range ct.GetList().src {
 			getErrors = make(chan error)
 
-			if o.err != nil {
-				errs = append(errs, o.err.Error())
+			if s.err != nil {
+				errs = append(errs, s.err.Error())
 			}
 
-			go func(o *source) {
-				area = typeInt(o.nType)
+			go func(s *source) {
+				area = typeInt(s.nType)
 				c.ctr[area] = tally
-				getErrors <- o.process().writeFile()
-			}(o)
+				getErrors <- s.process().writeFile()
+			}(s)
 
 			for range cts {
 				if err := <-getErrors; err != nil {
@@ -405,31 +415,36 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 
 	for b.Scan() {
 		line := bytes.TrimSpace(b.Bytes())
-
+		c.Debug(fmt.Sprintf("%s\n", string(line)))
 		switch {
-		case find.RX[regx.MLTI].Match(line):
+		case find.RX[regx.MLTI].Match(line): // add include/exclude
+			c.Debug(fmt.Sprintf("Adding incExc to %s: %s\n", tnode, string(line)))
 			incExc := find.SubMatch(regx.MLTI, line)
 			c.excinc(incExc, tnode)
-		case find.RX[regx.NODE].Match(line):
+		case find.RX[regx.NODE].Match(line): // add node
 			node := find.SubMatch(regx.NODE, line)
 			tnode = string(node[1])
 			nodes = append(nodes, tnode)
-			c.addSource(tnode)
-		case find.RX[regx.LEAF].Match(line):
+			c.Debug(fmt.Sprintf("Adding %s node: %s\n", tnode, string(line)))
+			c.addTnodeSource(tnode)
+		case find.RX[regx.LEAF].Match(line): // add leaf node to root/domains/hosts
+			c.Debug(fmt.Sprintf("Adding leaf to %s: %s\n", tnode, string(line)))
 			srcName := find.SubMatch(regx.LEAF, line)
 			nodes = append(nodes, string(srcName[1]))
 			o = newSource()
 			o.addLeaf(srcName, tnode)
-		case find.RX[regx.DSBL].Match(line):
+		case find.RX[regx.DSBL].Match(line): // add disable blacklist flag
+			c.Debug(fmt.Sprintf("Adding disable flag to %s: %s\n", tnode, string(line)))
 			c.disable(line, tnode, find)
-		case find.RX[regx.IPBH].Match(line) && isntSource(nodes):
+		case find.RX[regx.IPBH].Match(line) && isntSource(nodes): // add blackhole IP
+			c.Debug(fmt.Sprintf("Adding blackhole IP to %s: %s\n", tnode, string(line)))
 			c.redirect(line, tnode, find)
-		case find.RX[regx.NAME].Match(line):
-			c.leafname(o, line, tnode, find)
-		// case find.RX[regx.DESC].Match(line), find.RX[regx.CMNT].Match(line), find.RX[regx.MISC].Match(line):
-		// 	continue
+		case find.RX[regx.NAME].Match(line): // add source name
+			c.Debug(fmt.Sprintf("Adding source to %s: %s\n", tnode, string(line)))
+			c.sourcename(o, line, tnode, find)
 		case find.RX[regx.RBRC].Match(line):
 			if len(nodes) > 1 {
+				c.Debug(fmt.Sprintf("Matching closing bracket: %s\n", string(line)))
 				nodes = nodes[:len(nodes)-1] // pop last node
 				tnode = nodes[len(nodes)-1]
 			}
@@ -441,6 +456,7 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 	}
 
 	c.Debug(fmt.Sprintf("Using router configuration %v", c.String()))
+
 	return nil
 }
 
@@ -479,15 +495,11 @@ func (c *Config) String() (s string) {
 		s += fmt.Sprintf("%v%q: {\n", tabs(indent), pkey)
 		indent++
 
-		s += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled,
-			booltoStr(c.tree[pkey].disabled))
+		s += fmt.Sprintf("%v%q: %q,\n", tabs(indent), disabled, booltoStr(c.tree[pkey].disabled))
 		s = is(indent, s, "ip", c.tree[pkey].ip)
 		s += getJSONArray(&cfgJSON{array: c.tree[pkey].exc, pk: pkey, leaf: "excludes", indent: indent})
-
-		if pkey != rootNode {
-			s += getJSONArray(&cfgJSON{array: c.tree[pkey].inc, pk: pkey, leaf: "includes", indent: indent})
-			s += getJSONsrcArray(&cfgJSON{Config: c, pk: pkey, indent: indent})
-		}
+		s += getJSONArray(&cfgJSON{array: c.tree[pkey].inc, pk: pkey, leaf: "includes", indent: indent})
+		s += getJSONsrcArray(&cfgJSON{Config: c, pk: pkey, indent: indent})
 
 		indent--
 		s += fmt.Sprintf("%v}%v\n", tabs(indent), ø)
@@ -498,26 +510,26 @@ func (c *Config) String() (s string) {
 	return s
 }
 
-func (b tree) getIP(node string) string {
-	if _, ok := b[node]; ok {
-		if b[node].ip != "" {
-			return b[node].ip
+func (c tree) getIP(node string) string {
+	if c.keyExists(node) {
+		if c[node].ip != "" {
+			return c[node].ip
 		}
-		if _, ok := b[rootNode]; ok {
-			return b[rootNode].ip
+		if c.keyExists(rootNode) {
+			return c[rootNode].ip
 		}
 	}
 	return "0.0.0.0"
 }
 
-func (b tree) validate(node string) *Objects {
-	if _, ok := b[node]; ok {
-		for _, o := range b[node].Objects.src {
+func (c tree) validate(node string) *Objects {
+	if c.keyExists(node) {
+		for _, o := range c[node].src {
 			if o.ip == "" {
-				o.ip = b.getIP(node)
+				o.ip = c.getIP(node)
 			}
 		}
-		return &b[node].Objects
+		return &c[node].Objects
 	}
 	return &Objects{}
 }

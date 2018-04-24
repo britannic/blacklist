@@ -64,16 +64,16 @@ func TestAddInc(t *testing.T) {
 						Test:     false,
 						Timeout:  time.Duration(0),
 						Verb:     false},
-					desc:     "Unknown ltype",
+					desc:     "pre-configured global blacklisted domains",
 					disabled: false,
 					err:      nil,
 					exc:      nil,
 					file:     "",
 					inc:      []string{},
 					ip:       "0.0.0.0",
-					ltype:    "",
-					name:     "",
-					nType:    ntype(0),
+					ltype:    "global-blacklisted-domains",
+					name:     "global-blacklisted-domains",
+					nType:    ntype(8),
 					Objects: Objects{
 						Env: nil,
 						src: nil,
@@ -119,7 +119,7 @@ func TestAddInc(t *testing.T) {
 						Test:     false,
 						Timeout:  time.Duration(0),
 						Verb:     false},
-					desc:     "pre-configured blacklisted domains",
+					desc:     "pre-configured blacklisted subdomains",
 					disabled: false,
 					err:      nil,
 					exc:      nil,
@@ -173,7 +173,7 @@ func TestAddInc(t *testing.T) {
 						Test:     false,
 						Timeout:  time.Duration(0),
 						Verb:     false},
-					desc:     "pre-configured blacklisted hosts",
+					desc:     "pre-configured blacklisted servers",
 					disabled: false,
 					err:      nil,
 					exc:      nil,
@@ -341,7 +341,8 @@ func TestFiles(t *testing.T) {
 /tmp/hosts.sysctl.org.blacklist.conf
 /tmp/hosts.tasty.blacklist.conf
 /tmp/hosts.volkerschatz.blacklist.conf
-/tmp/hosts.yoyo.blacklist.conf`
+/tmp/hosts.yoyo.blacklist.conf
+/tmp/roots.global-blacklisted-domains.blacklist.conf`
 
 		act := c.GetAll().Files().String()
 		So(act, ShouldEqual, exp)
@@ -442,17 +443,14 @@ func TestRemove(t *testing.T) {
 		dir, _ := ioutil.TempDir("/tmp", "testBlacklist")
 		defer os.RemoveAll(dir)
 
-		var (
-			c = NewConfig(
-				Dir(dir),
-				Ext("blacklist.conf"),
-				FileNameFmt("%v/%v.%v.%v"),
-				WCard(Wildcard{Node: "*s", Name: "*"}),
-			)
-			exp []string
+		c := NewConfig(
+			Dir(dir),
+			Ext("blacklist.conf"),
+			FileNameFmt("%v/%v.%v.%v"),
+			WCard(Wildcard{Node: "*s", Name: "*"}),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+		So(c.ReadCfg(&CFGstatic{Cfg: tdata.CfgMimimal}), ShouldBeNil)
 
 		Convey("Creating special case file", func() {
 			f, err := os.Create(fmt.Sprintf("%v/hosts.raw.github.com.blacklist.conf", dir))
@@ -469,6 +467,7 @@ func TestRemove(t *testing.T) {
 			}
 		}
 
+		exp := []string{}
 		exp = append(exp, c.GetAll().Files().Strings()...)
 
 		for _, fname := range exp {
@@ -517,32 +516,34 @@ func TestGetAll(t *testing.T) {
 		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
 		tests := []struct {
-			name  string
-			ltype string
 			exp   string
+			ltype string
+			name  string
 		}{
-			{name: "GetAll().src", ltype: "", exp: expGetAll},
-			{name: "GetAll(url).src", ltype: urls, exp: expURLS},
-			{name: "GetAll(files).src", ltype: files, exp: expFiles},
-			{name: "GetAll(PreDomns, PreHosts).src", ltype: PreDomns, exp: expPre},
-			{name: "GetAll().String()", ltype: all, exp: c.Get(all).String()},
-			{name: "c.Get(hosts).String()", ltype: hosts, exp: expHostObj},
+			{name: "GetAll()", ltype: "", exp: expGetAll},
+			{name: "GetAll(url)", ltype: urls, exp: expURLS},
+			{name: "GetAll(files)", ltype: files, exp: expFiles},
+			{name: "GetAll(PreDomns, PreHosts)", ltype: PreDomns, exp: expPre},
+			{name: "Get(all).String()", ltype: all, exp: c.Get(all).String()},
+			{name: "c.Get(hosts)", ltype: hosts, exp: expHostObj},
+			{name: "c.Get(domains)", ltype: domains, exp: expDomainObj},
 		}
 
 		for _, tt := range tests {
 			Convey("Testing "+tt.name, func() {
 				switch tt.ltype {
 				case "":
-					So(fmt.Sprint(c.GetAll().src), ShouldEqual, tt.exp)
+					So(c.GetAll().String(), ShouldEqual, tt.exp)
 				case all:
 					So(c.GetAll().String(), ShouldEqual, tt.exp)
+				case domains:
+					So(c.Get(domains).String(), ShouldEqual, tt.exp)
 				case hosts:
 					So(c.Get(hosts).String(), ShouldEqual, tt.exp)
 				case PreDomns:
-					act := c.GetAll(PreDomns, PreHosts).src
-					So(fmt.Sprint(act), ShouldEqual, tt.exp)
+					So(c.GetAll(PreDomns, PreHosts).String(), ShouldEqual, tt.exp)
 				default:
-					So(fmt.Sprint(c.GetAll(tt.ltype).src), ShouldResemble, tt.exp)
+					So(c.GetAll(tt.ltype).String(), ShouldEqual, tt.exp)
 				}
 			})
 		}
@@ -552,14 +553,599 @@ func TestGetAll(t *testing.T) {
 func TestValidate(t *testing.T) {
 	Convey("Testing validate() sources", t, func() {
 		b := make(tree)
-		So(b.validate("borked").String(), ShouldEqual, "[]")
+		So(b.validate("borked").String(), ShouldEqual, "")
 	})
 }
 
 var (
-	expFiles   = "[\nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n]"
-	expGetAll  = "[\nDesc:\t \"pre-configured blacklisted domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.100.1\"\nLtype:\t \"blacklisted-subdomains\"\nName:\t \"blacklisted-subdomains\"\nnType:\t \"preDomn\"\nPrefix:\t \"\"\nType:\t \"blacklisted-subdomains\"\nURL:\t \"\"\n \nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domn\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://malc0de.com/bl/ZONES\"\n \nDesc:\t \"Just domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"10.0.0.1\"\nLtype:\t \"url\"\nName:\t \"malwaredomains.com\"\nnType:\t \"domn\"\nPrefix:\t \"\"\nType:\t \"domains\"\nURL:\t \"http://mirror1.malwaredomains.com/files/justdomains\"\n \nDesc:\t \"Basic tracking list by Disconnect\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.100.1\"\nLtype:\t \"url\"\nName:\t \"simple_tracking\"\nnType:\t \"domn\"\nPrefix:\t \"\"\nType:\t \"domains\"\nURL:\t \"https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt\"\n \nDesc:\t \"abuse.ch ZeuS domain blocklist\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.100.1\"\nLtype:\t \"url\"\nName:\t \"zeus\"\nnType:\t \"domn\"\nPrefix:\t \"\"\nType:\t \"domains\"\nURL:\t \"https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist\"\n \nDesc:\t \"pre-configured blacklisted hosts\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"blacklisted-servers\"\nName:\t \"blacklisted-servers\"\nnType:\t \"preHost\"\nPrefix:\t \"\"\nType:\t \"blacklisted-servers\"\nURL:\t \"\"\n \nDesc:\t \"OpenPhish automatic phishing detection\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"openphish\"\nnType:\t \"host\"\nPrefix:\t \"http\"\nType:\t \"hosts\"\nURL:\t \"https://openphish.com/feed.txt\"\n \nDesc:\t \"This hosts file is a merged collection of hosts from reputable sources\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"raw.github.com\"\nnType:\t \"host\"\nPrefix:\t \"0.0.0.0 \"\nType:\t \"hosts\"\nURL:\t \"https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts\"\n \nDesc:\t \"This hosts file is a merged collection of hosts from cameleon\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"172.16.16.1\"\nLtype:\t \"url\"\nName:\t \"sysctl.org\"\nnType:\t \"host\"\nPrefix:\t \"127.0.0.1\\t \"\nType:\t \"hosts\"\nURL:\t \"http://sysctl.org/cameleon/hosts\"\n \nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n \nDesc:\t \"Ad server blacklists\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"volkerschatz\"\nnType:\t \"host\"\nPrefix:\t \"http\"\nType:\t \"hosts\"\nURL:\t \"http://www.volkerschatz.com/net/adpaths\"\n \nDesc:\t \"Fully Qualified Domain Names only - no prefix to strip\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"yoyo\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"https://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext\"\n]"
-	expHostObj = "[\nDesc:\t \"pre-configured blacklisted hosts\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"blacklisted-servers\"\nName:\t \"blacklisted-servers\"\nnType:\t \"preHost\"\nPrefix:\t \"\"\nType:\t \"blacklisted-servers\"\nURL:\t \"\"\n \nDesc:\t \"OpenPhish automatic phishing detection\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"openphish\"\nnType:\t \"host\"\nPrefix:\t \"http\"\nType:\t \"hosts\"\nURL:\t \"https://openphish.com/feed.txt\"\n \nDesc:\t \"This hosts file is a merged collection of hosts from reputable sources\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"raw.github.com\"\nnType:\t \"host\"\nPrefix:\t \"0.0.0.0 \"\nType:\t \"hosts\"\nURL:\t \"https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts\"\n \nDesc:\t \"This hosts file is a merged collection of hosts from cameleon\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"172.16.16.1\"\nLtype:\t \"url\"\nName:\t \"sysctl.org\"\nnType:\t \"host\"\nPrefix:\t \"127.0.0.1\\t \"\nType:\t \"hosts\"\nURL:\t \"http://sysctl.org/cameleon/hosts\"\n \nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n \nDesc:\t \"Ad server blacklists\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"volkerschatz\"\nnType:\t \"host\"\nPrefix:\t \"http\"\nType:\t \"hosts\"\nURL:\t \"http://www.volkerschatz.com/net/adpaths\"\n \nDesc:\t \"Fully Qualified Domain Names only - no prefix to strip\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"yoyo\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"https://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext\"\n]"
-	expPre     = "[\nDesc:\t \"pre-configured blacklisted domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.100.1\"\nLtype:\t \"blacklisted-subdomains\"\nName:\t \"blacklisted-subdomains\"\nnType:\t \"preDomn\"\nPrefix:\t \"\"\nType:\t \"blacklisted-subdomains\"\nURL:\t \"\"\n \nDesc:\t \"pre-configured blacklisted hosts\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"blacklisted-servers\"\nName:\t \"blacklisted-servers\"\nnType:\t \"preHost\"\nPrefix:\t \"\"\nType:\t \"blacklisted-servers\"\nURL:\t \"\"\n]"
-	expURLS    = "[\nDesc:\t \"List of zones serving malicious executables observed by malc0de.com/database/\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.168.1\"\nLtype:\t \"url\"\nName:\t \"malc0de\"\nnType:\t \"domn\"\nPrefix:\t \"zone \"\nType:\t \"domains\"\nURL:\t \"http://malc0de.com/bl/ZONES\"\n \nDesc:\t \"Just domains\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"10.0.0.1\"\nLtype:\t \"url\"\nName:\t \"malwaredomains.com\"\nnType:\t \"domn\"\nPrefix:\t \"\"\nType:\t \"domains\"\nURL:\t \"http://mirror1.malwaredomains.com/files/justdomains\"\n \nDesc:\t \"Basic tracking list by Disconnect\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.100.1\"\nLtype:\t \"url\"\nName:\t \"simple_tracking\"\nnType:\t \"domn\"\nPrefix:\t \"\"\nType:\t \"domains\"\nURL:\t \"https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt\"\n \nDesc:\t \"abuse.ch ZeuS domain blocklist\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"192.168.100.1\"\nLtype:\t \"url\"\nName:\t \"zeus\"\nnType:\t \"domn\"\nPrefix:\t \"\"\nType:\t \"domains\"\nURL:\t \"https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist\"\n \nDesc:\t \"OpenPhish automatic phishing detection\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"openphish\"\nnType:\t \"host\"\nPrefix:\t \"http\"\nType:\t \"hosts\"\nURL:\t \"https://openphish.com/feed.txt\"\n \nDesc:\t \"This hosts file is a merged collection of hosts from reputable sources\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"raw.github.com\"\nnType:\t \"host\"\nPrefix:\t \"0.0.0.0 \"\nType:\t \"hosts\"\nURL:\t \"https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts\"\n \nDesc:\t \"This hosts file is a merged collection of hosts from cameleon\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"172.16.16.1\"\nLtype:\t \"url\"\nName:\t \"sysctl.org\"\nnType:\t \"host\"\nPrefix:\t \"127.0.0.1\\t \"\nType:\t \"hosts\"\nURL:\t \"http://sysctl.org/cameleon/hosts\"\n \nDesc:\t \"Ad server blacklists\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"volkerschatz\"\nnType:\t \"host\"\nPrefix:\t \"http\"\nType:\t \"hosts\"\nURL:\t \"http://www.volkerschatz.com/net/adpaths\"\n \nDesc:\t \"Fully Qualified Domain Names only - no prefix to strip\"\nDisabled: false\nFile:\t \"\"\nIP:\t \"0.0.0.0\"\nLtype:\t \"url\"\nName:\t \"yoyo\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"https://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext\"\n]"
+	expDomainObj = `
+Desc:         "pre-configured blacklisted subdomains"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.100.1"
+Ltype:        "blacklisted-subdomains"
+Name:         "blacklisted-subdomains"
+nType:        "preDomn"
+Prefix:       "**Undefined**"
+Type:         "blacklisted-subdomains"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "adsrvr.org"
+              "adtechus.net"
+              "advertising.com"
+              "centade.com"
+              "doubleclick.net"
+              "free-counter.co.uk"
+              "intellitxt.com"
+              "kiosked.com"
+              "patoghee.in"
+
+Desc:         "List of zones serving malicious executables observed by malc0de.com/database/"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.168.1"
+Ltype:        "url"
+Name:         "malc0de"
+nType:        "domn"
+Prefix:       "zone "
+Type:         "domains"
+URL:          "http://malc0de.com/bl/ZONES"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Just domains"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "10.0.0.1"
+Ltype:        "url"
+Name:         "malwaredomains.com"
+nType:        "domn"
+Prefix:       "**Undefined**"
+Type:         "domains"
+URL:          "http://mirror1.malwaredomains.com/files/justdomains"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Basic tracking list by Disconnect"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.100.1"
+Ltype:        "url"
+Name:         "simple_tracking"
+nType:        "domn"
+Prefix:       "**Undefined**"
+Type:         "domains"
+URL:          "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "abuse.ch ZeuS domain blocklist"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.100.1"
+Ltype:        "url"
+Name:         "zeus"
+nType:        "domn"
+Prefix:       "**Undefined**"
+Type:         "domains"
+URL:          "https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+`
+
+	expFiles = `
+Desc:         "File source"
+Disabled:     "false"
+File:         "../internal/testdata/blist.hosts.src"
+IP:           "10.10.10.10"
+Ltype:        "file"
+Name:         "tasty"
+nType:        "host"
+Prefix:       "**Undefined**"
+Type:         "hosts"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+`
+
+	expGetAll = `
+Desc:         "pre-configured global blacklisted domains"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "global-blacklisted-domains"
+Name:         "global-blacklisted-domains"
+nType:        "preRoot"
+Prefix:       "**Undefined**"
+Type:         "global-blacklisted-domains"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "pre-configured blacklisted subdomains"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.100.1"
+Ltype:        "blacklisted-subdomains"
+Name:         "blacklisted-subdomains"
+nType:        "preDomn"
+Prefix:       "**Undefined**"
+Type:         "blacklisted-subdomains"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "adsrvr.org"
+              "adtechus.net"
+              "advertising.com"
+              "centade.com"
+              "doubleclick.net"
+              "free-counter.co.uk"
+              "intellitxt.com"
+              "kiosked.com"
+              "patoghee.in"
+
+Desc:         "List of zones serving malicious executables observed by malc0de.com/database/"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.168.1"
+Ltype:        "url"
+Name:         "malc0de"
+nType:        "domn"
+Prefix:       "zone "
+Type:         "domains"
+URL:          "http://malc0de.com/bl/ZONES"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Just domains"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "10.0.0.1"
+Ltype:        "url"
+Name:         "malwaredomains.com"
+nType:        "domn"
+Prefix:       "**Undefined**"
+Type:         "domains"
+URL:          "http://mirror1.malwaredomains.com/files/justdomains"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Basic tracking list by Disconnect"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.100.1"
+Ltype:        "url"
+Name:         "simple_tracking"
+nType:        "domn"
+Prefix:       "**Undefined**"
+Type:         "domains"
+URL:          "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "abuse.ch ZeuS domain blocklist"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.100.1"
+Ltype:        "url"
+Name:         "zeus"
+nType:        "domn"
+Prefix:       "**Undefined**"
+Type:         "domains"
+URL:          "https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "pre-configured blacklisted servers"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "blacklisted-servers"
+Name:         "blacklisted-servers"
+nType:        "preHost"
+Prefix:       "**Undefined**"
+Type:         "blacklisted-servers"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "beap.gemini.yahoo.com"
+
+Desc:         "OpenPhish automatic phishing detection"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "openphish"
+nType:        "host"
+Prefix:       "http"
+Type:         "hosts"
+URL:          "https://openphish.com/feed.txt"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "This hosts file is a merged collection of hosts from reputable sources"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "raw.github.com"
+nType:        "host"
+Prefix:       "0.0.0.0 "
+Type:         "hosts"
+URL:          "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "This hosts file is a merged collection of hosts from cameleon"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "172.16.16.1"
+Ltype:        "url"
+Name:         "sysctl.org"
+nType:        "host"
+Prefix:       "127.0.0.1\t "
+Type:         "hosts"
+URL:          "http://sysctl.org/cameleon/hosts"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "File source"
+Disabled:     "false"
+File:         "../internal/testdata/blist.hosts.src"
+IP:           "10.10.10.10"
+Ltype:        "file"
+Name:         "tasty"
+nType:        "host"
+Prefix:       "**Undefined**"
+Type:         "hosts"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Ad server blacklists"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "volkerschatz"
+nType:        "host"
+Prefix:       "http"
+Type:         "hosts"
+URL:          "http://www.volkerschatz.com/net/adpaths"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Fully Qualified Domain Names only - no prefix to strip"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "yoyo"
+nType:        "host"
+Prefix:       "**Undefined**"
+Type:         "hosts"
+URL:          "https://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+`
+
+	expHostObj = `
+Desc:         "pre-configured blacklisted servers"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "blacklisted-servers"
+Name:         "blacklisted-servers"
+nType:        "preHost"
+Prefix:       "**Undefined**"
+Type:         "blacklisted-servers"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "beap.gemini.yahoo.com"
+
+Desc:         "OpenPhish automatic phishing detection"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "openphish"
+nType:        "host"
+Prefix:       "http"
+Type:         "hosts"
+URL:          "https://openphish.com/feed.txt"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "This hosts file is a merged collection of hosts from reputable sources"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "raw.github.com"
+nType:        "host"
+Prefix:       "0.0.0.0 "
+Type:         "hosts"
+URL:          "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "This hosts file is a merged collection of hosts from cameleon"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "172.16.16.1"
+Ltype:        "url"
+Name:         "sysctl.org"
+nType:        "host"
+Prefix:       "127.0.0.1\t "
+Type:         "hosts"
+URL:          "http://sysctl.org/cameleon/hosts"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "File source"
+Disabled:     "false"
+File:         "../internal/testdata/blist.hosts.src"
+IP:           "10.10.10.10"
+Ltype:        "file"
+Name:         "tasty"
+nType:        "host"
+Prefix:       "**Undefined**"
+Type:         "hosts"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Ad server blacklists"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "volkerschatz"
+nType:        "host"
+Prefix:       "http"
+Type:         "hosts"
+URL:          "http://www.volkerschatz.com/net/adpaths"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Fully Qualified Domain Names only - no prefix to strip"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "yoyo"
+nType:        "host"
+Prefix:       "**Undefined**"
+Type:         "hosts"
+URL:          "https://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+`
+
+	expPre = `
+Desc:         "pre-configured blacklisted subdomains"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.100.1"
+Ltype:        "blacklisted-subdomains"
+Name:         "blacklisted-subdomains"
+nType:        "preDomn"
+Prefix:       "**Undefined**"
+Type:         "blacklisted-subdomains"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "adsrvr.org"
+              "adtechus.net"
+              "advertising.com"
+              "centade.com"
+              "doubleclick.net"
+              "free-counter.co.uk"
+              "intellitxt.com"
+              "kiosked.com"
+              "patoghee.in"
+
+Desc:         "pre-configured blacklisted servers"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "blacklisted-servers"
+Name:         "blacklisted-servers"
+nType:        "preHost"
+Prefix:       "**Undefined**"
+Type:         "blacklisted-servers"
+URL:          "**Undefined**"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "beap.gemini.yahoo.com"
+`
+
+	expURLS = `
+Desc:         "List of zones serving malicious executables observed by malc0de.com/database/"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.168.1"
+Ltype:        "url"
+Name:         "malc0de"
+nType:        "domn"
+Prefix:       "zone "
+Type:         "domains"
+URL:          "http://malc0de.com/bl/ZONES"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Just domains"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "10.0.0.1"
+Ltype:        "url"
+Name:         "malwaredomains.com"
+nType:        "domn"
+Prefix:       "**Undefined**"
+Type:         "domains"
+URL:          "http://mirror1.malwaredomains.com/files/justdomains"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Basic tracking list by Disconnect"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.100.1"
+Ltype:        "url"
+Name:         "simple_tracking"
+nType:        "domn"
+Prefix:       "**Undefined**"
+Type:         "domains"
+URL:          "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "abuse.ch ZeuS domain blocklist"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "192.168.100.1"
+Ltype:        "url"
+Name:         "zeus"
+nType:        "domn"
+Prefix:       "**Undefined**"
+Type:         "domains"
+URL:          "https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "OpenPhish automatic phishing detection"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "openphish"
+nType:        "host"
+Prefix:       "http"
+Type:         "hosts"
+URL:          "https://openphish.com/feed.txt"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "This hosts file is a merged collection of hosts from reputable sources"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "raw.github.com"
+nType:        "host"
+Prefix:       "0.0.0.0 "
+Type:         "hosts"
+URL:          "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "This hosts file is a merged collection of hosts from cameleon"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "172.16.16.1"
+Ltype:        "url"
+Name:         "sysctl.org"
+nType:        "host"
+Prefix:       "127.0.0.1\t "
+Type:         "hosts"
+URL:          "http://sysctl.org/cameleon/hosts"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Ad server blacklists"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "volkerschatz"
+nType:        "host"
+Prefix:       "http"
+Type:         "hosts"
+URL:          "http://www.volkerschatz.com/net/adpaths"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+
+Desc:         "Fully Qualified Domain Names only - no prefix to strip"
+Disabled:     "false"
+File:         "**Undefined**"
+IP:           "0.0.0.0"
+Ltype:        "url"
+Name:         "yoyo"
+nType:        "host"
+Prefix:       "**Undefined**"
+Type:         "hosts"
+URL:          "https://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext"
+Whitelist:
+              "**No entries found**"
+Blacklist:
+              "**No entries found**"
+`
 )
