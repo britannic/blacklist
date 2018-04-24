@@ -3,7 +3,6 @@ package edgeos
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
 	"sync"
 	"sync/atomic"
@@ -23,6 +22,7 @@ const (
 	FileObj
 	PreDObj
 	PreHObj
+	PreRObj
 	URLdObj
 	URLhObj
 )
@@ -72,6 +72,11 @@ type PreHostObjects struct {
 	*Objects
 }
 
+// PreRootObjects struct of *Objects for pre-configured hosts content
+type PreRootObjects struct {
+	*Objects
+}
+
 // URLDomnObjects struct of *Objects for domain URLs
 type URLDomnObjects struct {
 	*Objects
@@ -83,7 +88,9 @@ type URLHostObjects struct {
 }
 
 // Find returns the int position of an Objects' element
+func (e *ExcDomnObjects) Find(s string) int {
 	for i, o := range e.src {
+		if o.name == s {
 			return i
 		}
 	}
@@ -91,7 +98,9 @@ type URLHostObjects struct {
 }
 
 // Find returns the int position of an Objects' element
+func (e *ExcHostObjects) Find(s string) int {
 	for i, o := range e.src {
+		if o.name == s {
 			return i
 		}
 	}
@@ -99,7 +108,9 @@ type URLHostObjects struct {
 }
 
 // Find returns the int position of an Objects' element
+func (e *ExcRootObjects) Find(s string) int {
 	for i, o := range e.src {
+		if o.name == s {
 			return i
 		}
 	}
@@ -107,7 +118,9 @@ type URLHostObjects struct {
 }
 
 // Find returns the int position of an Objects' element
+func (f *FIODataObjects) Find(s string) int {
 	for i, o := range f.src {
+		if o.name == s {
 			return i
 		}
 	}
@@ -115,7 +128,9 @@ type URLHostObjects struct {
 }
 
 // Find returns the int position of an Objects' element
+func (p *PreDomnObjects) Find(s string) int {
 	for i, o := range p.src {
+		if o.name == s {
 			return i
 		}
 	}
@@ -123,7 +138,9 @@ type URLHostObjects struct {
 }
 
 // Find returns the int position of an Objects' element
+func (p *PreHostObjects) Find(s string) int {
 	for i, o := range p.src {
+		if o.name == s {
 			return i
 		}
 	}
@@ -131,7 +148,9 @@ type URLHostObjects struct {
 }
 
 // Find returns the int position of an Objects' element
-	for i, o := range u.src {
+func (p *PreRootObjects) Find(s string) int {
+	for i, o := range p.src {
+		if o.name == s {
 			return i
 		}
 	}
@@ -139,7 +158,19 @@ type URLHostObjects struct {
 }
 
 // Find returns the int position of an Objects' element
+func (u *URLHostObjects) Find(s string) int {
 	for i, o := range u.src {
+		if o.name == s {
+			return i
+		}
+	}
+	return -1
+}
+
+// Find returns the int position of an Objects' element
+func (u *URLDomnObjects) Find(s string) int {
+	for i, o := range u.src {
+		if o.name == s {
 			return i
 		}
 	}
@@ -152,6 +183,7 @@ func (e *ExcDomnObjects) GetList() *Objects {
 		if o.nType == excDomn {
 			if o.exc != nil {
 				o.r = o.excludes()
+				o.Env = e.Env
 			}
 		}
 	}
@@ -164,6 +196,7 @@ func (e *ExcHostObjects) GetList() *Objects {
 		if o.nType == excHost {
 			if o.exc != nil {
 				o.r = o.excludes()
+				o.Env = e.Env
 			}
 		}
 	}
@@ -176,6 +209,7 @@ func (e *ExcRootObjects) GetList() *Objects {
 		if o.nType == excRoot {
 			if o.exc != nil {
 				o.r = o.excludes()
+				o.Env = e.Env
 			}
 		}
 	}
@@ -187,11 +221,12 @@ func (f *FIODataObjects) GetList() *Objects {
 	var responses = make(chan *source, len(f.src))
 	defer close(responses)
 
-	for _, o := range f.src {
-		go func(o *source) {
-			o.r, o.err = GetFile(o.file)
-			responses <- o
-		}(o)
+	for _, s := range f.src {
+		s.Env = f.Env
+		go func(s *source) {
+			s.r, s.err = GetFile(s.file)
+			responses <- s
+		}(s)
 	}
 
 	for range f.src {
@@ -207,6 +242,7 @@ func (p *PreDomnObjects) GetList() *Objects {
 	for _, o := range p.src {
 		if o.ltype == PreDomns && o.inc != nil {
 			o.r = o.includes()
+			o.Env = p.Env
 		}
 	}
 	return p.Objects
@@ -217,6 +253,18 @@ func (p *PreHostObjects) GetList() *Objects {
 	for _, o := range p.src {
 		if o.ltype == PreHosts && o.inc != nil {
 			o.r = o.includes()
+			o.Env = p.Env
+		}
+	}
+	return p.Objects
+}
+
+// GetList implements the Contenter interface for PreRootObjects
+func (p *PreRootObjects) GetList() *Objects {
+	for _, o := range p.src {
+		if o.ltype == PreRoots && o.inc != nil {
+			o.r = o.includes()
+			o.Env = p.Env
 		}
 	}
 	return p.Objects
@@ -228,10 +276,11 @@ func (u *URLDomnObjects) GetList() *Objects {
 
 	defer close(responses)
 
-	for _, o := range u.src {
-		go func(o *source) {
-			responses <- getHTTP(o)
-		}(o)
+	for _, s := range u.src {
+		s.Env = u.Env
+		go func(s *source) {
+			responses <- getHTTP(s)
+		}(s)
 	}
 
 	for range u.src {
@@ -247,10 +296,11 @@ func (u *URLHostObjects) GetList() *Objects {
 	var responses = make(chan *source, len(u.src))
 	defer close(responses)
 
-	for _, o := range u.src {
-		go func(o *source) {
-			responses <- getHTTP(o)
-		}(o)
+	for _, s := range u.src {
+		s.Env = u.Env
+		go func(s *source) {
+			responses <- getHTTP(s)
+		}(s)
 	}
 
 	for range u.src {
@@ -262,27 +312,38 @@ func (u *URLHostObjects) GetList() *Objects {
 }
 
 // Len returns how many sources there are
+func (e *ExcDomnObjects) Len() int { return len(e.src) }
 
 // Len returns how many sources there are
+func (e *ExcHostObjects) Len() int { return len(e.src) }
 
 // Len returns how many sources there are
+func (e *ExcRootObjects) Len() int { return len(e.src) }
 
 // Len returns how many sources there are
+func (f *FIODataObjects) Len() int { return len(f.src) }
 
 // Len returns how many sources there are
+func (p *PreDomnObjects) Len() int { return len(p.src) }
 
 // Len returns how many sources there are
+func (p *PreHostObjects) Len() int { return len(p.src) }
 
 // Len returns how many sources there are
+func (p *PreRootObjects) Len() int { return len(p.src) }
 
 // Len returns how many sources there are
+func (u *URLDomnObjects) Len() int { return len(u.src) }
+
+// Len returns how many sources there are
+func (u *URLHostObjects) Len() int { return len(u.src) }
 
 // Process extracts hosts/domains from downloaded raw content
-func (o *source) process() *bList {
+func (s *source) process() *bList {
 	var (
 		add                   = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
-		area                  = typeInt(o.nType)
-		b                     = bufio.NewScanner(o.r)
+		area                  = typeInt(s.nType)
+		b                     = bufio.NewScanner(s.r)
 		drop, extracted, kept int
 		find                  = regx.NewRegex()
 		ok                    bool
@@ -294,19 +355,17 @@ func (o *source) process() *bList {
 		switch {
 		case bytes.HasPrefix(line, []byte("#")), bytes.HasPrefix(line, []byte("//")), bytes.HasPrefix(line, []byte("<")):
 			continue
-		case bytes.HasPrefix(line, []byte(o.prefix)):
-			if line, ok = find.StripPrefixAndSuffix(line, o.prefix); ok {
-				fqdns := find.RX[regx.FQDN].FindAll(line, -1)
-
-				for _, fqdn := range fqdns {
+		case bytes.HasPrefix(line, []byte(s.prefix)):
+			if line, ok = find.StripPrefixAndSuffix(line, s.prefix); ok {
+				for _, fqdn := range find.RX[regx.FQDN].FindAll(line, -1) {
 					extracted++
-					if o.Dex.subKeyExists(fqdn) {
+					if s.Dex.subKeyExists(fqdn) {
 						drop++
 						continue
 					}
-					if !o.Exc.keyExists(fqdn) {
+					if !s.Exc.keyExists(fqdn) {
 						kept++
-						o.Exc.set(fqdn, 0)
+						s.Exc.set(fqdn, 0)
 						add.set(fqdn, 0)
 						continue
 					}
@@ -316,36 +375,27 @@ func (o *source) process() *bList {
 		}
 	}
 
-	switch o.nType {
+	switch s.nType {
 	case domn, excDomn, excRoot:
-		o.Dex = mergeList(o.Dex, add)
+		s.Dex = mergeList(s.Dex, add)
 	}
 
 	// Let's do some accounting
-	atomic.AddInt32(&o.ctr[area].dropped, int32(drop))
-	atomic.AddInt32(&o.ctr[area].extracted, int32(extracted))
-	atomic.AddInt32(&o.ctr[area].kept, int32(kept))
+	atomic.AddInt32(&s.ctr[area].dropped, int32(drop))
+	atomic.AddInt32(&s.ctr[area].extracted, int32(extracted))
+	atomic.AddInt32(&s.ctr[area].kept, int32(kept))
 
 	if kept != 0 && area != rootNode {
-		o.Log.Infof("%s: downloaded: %d", o.name, extracted)
-		o.Log.Infof("%s: extracted: %d", o.name, kept)
-		o.Log.Infof("%s: dropped: %d", o.name, drop)
+		s.Log.Infof("%s: downloaded: %d", s.name, extracted)
+		s.Log.Infof("%s: extracted: %d", s.name, kept)
+		s.Log.Infof("%s: dropped: %d", s.name, drop)
 	}
 
 	return &bList{
-		file: o.filename(area),
-		r:    formatData(getDnsmasqPrefix(o), add),
+		file: s.filename(area),
+		r:    formatData(getDnsmasqPrefix(s), add),
 		size: kept,
 	}
-}
-
-func (o *source) filename(area string) string {
-	switch o.nType {
-		return fmt.Sprintf(o.FnFmt, o.Dir, domains, o.name, o.Ext)
-	case excHost, preHost:
-		return fmt.Sprintf(o.FnFmt, o.Dir, hosts, o.name, o.Ext)
-	}
-	return fmt.Sprintf(o.FnFmt, o.Dir, area, o.name, o.Ext)
 }
 
 // SetURL sets the Object's url field value
@@ -403,6 +453,15 @@ func (p *PreHostObjects) SetURL(name, url string) {
 }
 
 // SetURL sets the Object's url field value
+func (p *PreRootObjects) SetURL(name, url string) {
+	for _, o := range p.src {
+		if o.name == name {
+			o.url = url
+		}
+	}
+}
+
+// SetURL sets the Object's url field value
 func (u *URLDomnObjects) SetURL(name, url string) {
 	for _, o := range u.src {
 		if o.name == name {
@@ -426,6 +485,7 @@ func (e *ExcRootObjects) String() string { return e.Objects.String() }
 func (f *FIODataObjects) String() string { return f.Objects.String() }
 func (p *PreDomnObjects) String() string { return p.Objects.String() }
 func (p *PreHostObjects) String() string { return p.Objects.String() }
+func (p *PreRootObjects) String() string { return p.Objects.String() }
 func (u *URLDomnObjects) String() string { return u.Objects.String() }
 func (u *URLHostObjects) String() string { return u.Objects.String() }
 
@@ -443,6 +503,8 @@ func (i IFace) String() string {
 		return PreDomns
 	case PreHObj:
 		return PreHosts
+	case PreRObj:
+		return PreRoots
 	case URLhObj, URLdObj:
 		return urls
 	}
