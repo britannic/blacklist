@@ -5,7 +5,7 @@
 ### Release v1.1.6.2 (April 24, 2018)
 
 * Code refactor
-* Global whitelist and blacklist configuration files now have their own prefix: "roots" i.e. 
+* Global whitelist and blacklist configuration files now have their own prefix: "roots" i.e.
 
 ```bash
 roots.global-blacklisted-domains.blacklist.conf
