@@ -164,7 +164,7 @@ pkg-mipsel: deps mipsle coverage copyright docs readme ; @ $(info building MIPSL
 .PHONY: readme 
 readme: version ; @ $(info building READMEs…) ## Build README
 	cat $(READMEHDR) > $(README)
-	$(GODOC2MD) $(BASE) >> $(README)
+	# $(GODOC2MD) $(BASE) >> $(README)
 
 .PHONY: simplify
 simplify: ; @ $(info simplifying code…) ## Simplify codebase

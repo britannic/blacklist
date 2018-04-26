@@ -1,9 +1,19 @@
 language: go
+
 os:
 - osx
+
 go:
 - "1.10.x"
+- "master"
+
+matrix:
+  allow_failures:
+    go: master
+    fast_finish: true
+
 sudo: false
+
 before_install:
 # Setup dependency management tool
 - mkdir $GOPATH/bin/
@@ -12,12 +22,16 @@ before_install:
 - go get github.com/mattn/goveralls
 - go get golang.org/x/tools/cmd/cover
 - go get golang.org/x/sync/errgroup
+
 before_script:
 - go vet ./...
+
 install:
 - dep ensure
+
 script:
 - $HOME/gopath/src/github.com/britannic/blacklist/testcoverage
+
 env:
   global:
   - secure: zeZc7PFXbQKr7//s+okU15Ybfe/eZKUhBWOWgUkOmgh7YKHFsMl2yxOf6MDtwkgSNg0jVk5qWEemb8GNdRfCLNowDPBJhNhWikFP7OMq0BZ6ZjYPjL3pPwn9YtLiTVCXhmE0pv9GnJ2hND0MQS2JJytc57KpXDyk6Ntq3K7ZjI9qIC5uwWZlbrYyVEDv6uua3iF22/6eVj45bMjmQ8scBSu+bzyVQruxOQfj+LagI/esvb6yQWtIkjUa2MJHgVbX4KQ+PG/ISv6sCoM23GDsURFPHq+tIkyYjlGzvJRRDkzJTOldEnrLqyGkbGt73D0SYNks4zOCeL0XgvfQ3F7BJdsWTugF9KBLEkBRMK+YnARhTWAw3SCbu905OCBaZBgIZekNgJ6yZnTuT9alH71Qqu2CjIxIHTBSl89mRabvGfvx0REMD7qotz86nGF3MRmbVNrt9K/3BwplYTYIHpe33oRZ9JpBgiQXtdGn9yuhnNB729/XTDig78e4hcfAI5p+R83afPNFvoXu+BB4+2WpHUBpOoo/2EtSPAVB6SriHMfQGk+IbeHtKPRj64e1+OGpFm2Vx2lXr7VViZxfjPRsHfjggWiK7e+Wz1rSnbg42wPO7ipXJMXRLgrQ3rlp4nnR2X7E/sIdCFWaM86uJo0TGyfDLaXkS+v06Ubno9iQZIo=

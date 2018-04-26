@@ -155,26 +155,23 @@
       }
     }
   },
-  "system": {
-    "package": {
+  "package": {
       "repository": {
-        "wheezy": {
+        "blacklist": {
           "components": "main",
+          "description": "Britannic blacklist debian wheezy repository",
           "distribution": "wheezy",
-          "url": "http://http.us.debian.org/debian/"
-        }
-      }
-    },
-    "task-scheduler": {
-      "task": {
-        "update_blacklists": {
-          "executable": {
-            "arguments": "10800",
-            "path": "/config/scripts/blacklist-cronjob.sh"
-          },
-          "interval": "1d"
+          "password": "",
+          "url": "https://raw.githubusercontent.com/britannic/debian-repo/master/blacklist/",
+          "username": ""
+        },
+        "wheezy": {
+          "components": "main contrib non-free",
+          "distribution": "wheezy",
+          "password": "",
+          "url": "http://http.us.debian.org/debian/",
+          "username": ""
         }
       }
     }
-  }
 }

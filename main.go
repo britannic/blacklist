@@ -7,7 +7,6 @@ import (
 
 	e "github.com/britannic/blacklist/internal/edgeos"
 	logging "github.com/britannic/go-logging"
-	"github.com/britannic/mflag"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -57,12 +56,8 @@ var (
 )
 
 func main() {
-	var (
-		c   *e.Config
-		err error
-	)
-
-	if c, err = initEnvirons(); err != nil {
+	c, err := initEnvirons()
+	if err != nil {
 		logErrorf("%s shutting down.", err.Error())
 		exitCmd(0)
 	}
@@ -185,7 +180,7 @@ func reloadDNS(c *e.Config) {
 // removeStaleFiles deletes redundant files
 func removeStaleFiles(c *e.Config) error {
 	if err := c.GetAll().Files().Remove(); err != nil {
-		return fmt.Errorf("c.GetAll().Files().Remove() error: %v", err.Error())
+		return fmt.Errorf("problem removing stale files: %v", err.Error())
 	}
 	return nil
 }
@@ -230,7 +225,6 @@ func newScreenLogBackend(colors []string, prefix string) *logging.LogBackend {
 
 func setUpEnv() (c *e.Config, err error) {
 	o := getOpts()
-	o.Init("blacklist", mflag.ExitOnError)
 	o.setArgs()
 	c = o.initEdgeOS()
 	err = c.ReadCfg(o.getCFG(c))

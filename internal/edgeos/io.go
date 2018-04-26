@@ -144,7 +144,8 @@ func (b *bList) writeFile() error {
 		return err
 	}
 
-	defer w.Close()
+	// defer w.Close()
 	_, err = io.Copy(w, b.r)
+	w.Close()
 	return err
 }

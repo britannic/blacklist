@@ -34,17 +34,18 @@ func getHTTP(s *source) *source {
 		return s
 	}
 
-	defer resp.Body.Close()
+	// defer resp.Body.Close()
 	body, err = ioutil.ReadAll(resp.Body)
 
 	if len(body) == 0 {
 		str := fmt.Sprintf("No data returned for %s.", s.url)
 		s.Log.Warning(str)
 		s.r, s.err = strings.NewReader(str), err
+		resp.Body.Close()
 		return s
 	}
 
 	s.r, s.err = bytes.NewBuffer(body), err
-
+	resp.Body.Close()
 	return s
 }

@@ -127,40 +127,38 @@ func (o *opts) setArgs() {
 		exitCmd(0)
 	}
 
-	for _, arg := range os.Args[1:] {
-		switch arg {
-		case "-debug":
-			screenLog("")
-			e.Dbug(*o.Dbug)
-		case "-h":
-			o.Usage()
-			exitCmd(0)
-		case "-t":
-			fmt.Println("Test activated!")
-			exitCmd(0)
-		case "-v":
-			screenLog("")
-		case "-version":
-			fmt.Printf(
-				" Build Information:\n"+
-					"   Version:\t\t\t%s\n"+
-					"   Date:\t\t\t%s\n"+
-					"   CPU:\t\t\t\t%v\n"+
-					"   OS:\t\t\t\t%v\n"+
-					"   Git hash:\t\t\t%v\n\n"+
-					" This software comes with ABSOLUTELY NO WARRANTY.\n"+
-					" %s is free software, and you are\n"+
-					" welcome to redistribute it under the terms of\n"+
-					" the Simplified BSD License.\n",
-				version,
-				build,
-				architecture,
-				hostOS,
-				githash,
-				progname,
-			)
-			exitCmd(0)
-		}
+	switch {
+	case *o.Dbug:
+		screenLog("")
+		e.Dbug(*o.Dbug)
+	case *o.Help:
+		o.Usage()
+		exitCmd(0)
+	case *o.Test:
+		fmt.Println("Test activated!")
+		exitCmd(0)
+	case *o.Verb:
+		screenLog("")
+	case *o.Version:
+		fmt.Printf(
+			" Build Information:\n"+
+				"   Version:\t\t\t%s\n"+
+				"   Date:\t\t\t%s\n"+
+				"   CPU:\t\t\t\t%v\n"+
+				"   OS:\t\t\t\t%v\n"+
+				"   Git hash:\t\t\t%v\n\n"+
+				" This software comes with ABSOLUTELY NO WARRANTY.\n"+
+				" %s is free software, and you are\n"+
+				" welcome to redistribute it under the terms of\n"+
+				" the Simplified BSD License.\n",
+			version,
+			build,
+			architecture,
+			hostOS,
+			githash,
+			progname,
+		)
+		exitCmd(0)
 	}
 }
 
