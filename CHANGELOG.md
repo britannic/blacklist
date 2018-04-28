@@ -2,6 +2,20 @@
 
 ## Releases
 
+### Release v1.1.7 (April 30, 2018)
+
+* Added log message for sources that have no records extracted
+
+```bash
+[Source]: no records processed - check source and/or configuration
+```
+
+* Any source without records extracted, will still have a file written, but it will contain a message
+
+```bash
+# NO DATA WRITTEN - CHECK WHITELIST EXCLUSIONS
+```
+
 ### Release v1.1.6.2 (April 24, 2018)
 
 * Code refactor

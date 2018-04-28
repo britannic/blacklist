@@ -133,10 +133,10 @@ func (c *CFGstatic) read() io.Reader {
 	return strings.NewReader(c.Cfg)
 }
 
-// writeFile saves hosts/domains data to disk
+// writeFile saves domains/hosts/roots data to disk
 func (b *bList) writeFile() error {
 	if b.size == 0 {
-		return nil
+		b.r = strings.NewReader(`# NO DATA WRITTEN - CHECK WHITELIST EXCLUSIONS`)
 	}
 
 	w, err := os.Create(b.file)
@@ -144,7 +144,6 @@ func (b *bList) writeFile() error {
 		return err
 	}
 
-	// defer w.Close()
 	_, err = io.Copy(w, b.r)
 	w.Close()
 	return err

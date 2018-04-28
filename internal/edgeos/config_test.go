@@ -270,7 +270,6 @@ func TestExcludes(t *testing.T) {
 		tests := []struct {
 			get  list
 			list list
-			// raw  []string
 			name string
 			node string
 		}{
@@ -467,10 +466,7 @@ func TestRemove(t *testing.T) {
 			}
 		}
 
-		exp := []string{}
-		exp = append(exp, c.GetAll().Files().Strings()...)
-
-		for _, fname := range exp {
+		for _, fname := range c.GetAll().Files().Strings() {
 			f, err := os.Create(fname)
 			So(err, ShouldBeNil)
 			f.Close()
@@ -483,7 +479,7 @@ func TestRemove(t *testing.T) {
 		act, err := cf.readDir(pattern)
 
 		So(err, ShouldBeNil)
-		So(act, ShouldResemble, exp)
+		So(act, ShouldResemble, c.GetAll().Files().Strings())
 
 		prev := c.SetOpt(WCard(Wildcard{Node: "[]a]", Name: "]"}))
 

@@ -50,15 +50,15 @@ type Wildcard struct {
 	Name string `json:"Name,omitempty"`
 }
 
-// Option is a recursive function
-type Option func(c *Config) Option
-
 // Debug logs debug messages when the Dbug flag is true
-func (p *Env) Debug(s ...interface{}) {
-	if p.Dbug {
-		p.Log.Debug(s...)
+func (e *Env) Debug(s ...interface{}) {
+	if e.Dbug {
+		e.Log.Debug(s...)
 	}
 }
+
+// Option is a recursive function
+type Option func(c *Config) Option
 
 // SetOpt sets the specified options passed as Env and returns an option to restore the last set of arg's previous values
 func (c *Config) SetOpt(opts ...Option) Option {
@@ -77,10 +77,10 @@ func (c *Config) SetOpt(opts ...Option) Option {
 }
 
 // Arch sets target CPU architecture
-func Arch(arch string) Option {
+func Arch(s string) Option {
 	return func(c *Config) Option {
 		previous := c.Arch
-		c.Arch = arch
+		c.Arch = s
 		return Arch(previous)
 	}
 }
@@ -95,10 +95,10 @@ func API(s string) Option {
 }
 
 // Bash sets the shell processor
-func Bash(cmd string) Option {
+func Bash(s string) Option {
 	return func(c *Config) Option {
 		previous := c.Bash
-		c.Bash = cmd
+		c.Bash = s
 		return Bash(previous)
 	}
 }
@@ -132,55 +132,55 @@ func Dbug(b bool) Option {
 }
 
 // Dir sets directory location
-func Dir(d string) Option {
+func Dir(s string) Option {
 	return func(c *Config) Option {
 		previous := c.Dir
-		c.Dir = d
+		c.Dir = s
 		return Dir(previous)
 	}
 }
 
 // DNSsvc sets dnsmasq restart command
-func DNSsvc(d string) Option {
+func DNSsvc(s string) Option {
 	return func(c *Config) Option {
 		previous := c.DNSsvc
-		c.DNSsvc = d
+		c.DNSsvc = s
 		return DNSsvc(previous)
 	}
 }
 
 // Ext sets the blacklist file n extension
-func Ext(e string) Option {
+func Ext(s string) Option {
 	return func(c *Config) Option {
 		previous := c.Ext
-		c.Ext = e
+		c.Ext = s
 		return Ext(previous)
 	}
 }
 
 // File sets the EdgeOS configuration file
-func File(f string) Option {
+func File(s string) Option {
 	return func(c *Config) Option {
 		previous := c.File
-		c.File = f
+		c.File = s
 		return File(previous)
 	}
 }
 
 // FileNameFmt sets the EdgeOS configuration file name format
-func FileNameFmt(f string) Option {
+func FileNameFmt(s string) Option {
 	return func(c *Config) Option {
 		previous := c.FnFmt
-		c.FnFmt = f
+		c.FnFmt = s
 		return FileNameFmt(previous)
 	}
 }
 
 // InCLI sets the CLI inSession command
-func InCLI(in string) Option {
+func InCLI(s string) Option {
 	return func(c *Config) Option {
 		previous := c.InCLI
-		c.InCLI = in
+		c.InCLI = s
 		return InCLI(previous)
 	}
 }
@@ -204,10 +204,10 @@ func Logger(l *logging.Logger) Option {
 }
 
 // Method sets the HTTP method
-func Method(method string) Option {
+func Method(s string) Option {
 	return func(c *Config) Option {
 		previous := c.Method
-		c.Method = method
+		c.Method = s
 		return Method(previous)
 	}
 }
@@ -238,9 +238,9 @@ func Prefix(d string, h string) Option {
 	}
 }
 
-// String method to implement fmt.Print interface
-func (p *Env) String() string {
-	out, _ := json.MarshalIndent(p, "", "\t")
+// Env Stringer interface
+func (e *Env) String() string {
+	out, _ := json.MarshalIndent(e, "", "\t")
 	return string(out)
 }
 

@@ -18,7 +18,7 @@ func getHTTP(s *source) *source {
 	)
 
 	if req, err = http.NewRequest(s.Method, s.url, nil); err != nil {
-		str := fmt.Sprintf("Unable to form request for %s. Error: %v", s.url, err)
+		str := fmt.Sprintf("Unable to form request for %s", s.url)
 		s.Log.Warning(str)
 		s.r, s.err = strings.NewReader(str), err
 		return s
@@ -28,17 +28,16 @@ func getHTTP(s *source) *source {
 
 	req.Header.Set("User-Agent", agent)
 	if resp, err = (&http.Client{}).Do(req); err != nil {
-		str := fmt.Sprintf("Unable to get response for %s. Error: %v", s.url, err)
+		str := fmt.Sprintf("Unable to get response for %s", s.url)
 		s.Log.Warning(str)
 		s.r, s.err = strings.NewReader(str), err
 		return s
 	}
 
-	// defer resp.Body.Close()
 	body, err = ioutil.ReadAll(resp.Body)
 
-	if len(body) == 0 {
-		str := fmt.Sprintf("No data returned for %s.", s.url)
+	if len(body) < 1 {
+		str := fmt.Sprintf("No data returned for %s", s.url)
 		s.Log.Warning(str)
 		s.r, s.err = strings.NewReader(str), err
 		resp.Body.Close()

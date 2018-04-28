@@ -169,12 +169,11 @@ func processObjects(c *e.Config, objects []e.IFace) error {
 
 // reloadDNS reloads the latest processed dnsmasq configuration files
 func reloadDNS(c *e.Config) {
-	b, err := c.ReloadDNS()
-	if err != nil {
+	if b, err := c.ReloadDNS(); err != nil {
 		logErrorf("ReloadDNS(): %v\n error: %v\n", string(b), err.Error())
 		exitCmd(1)
 	}
-	logPrintf("ReloadDNS(): %v\n", string(b))
+	logPrintf("%s", "Successfully restarted dnsmasq")
 }
 
 // removeStaleFiles deletes redundant files

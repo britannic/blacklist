@@ -203,9 +203,9 @@ func (c *Config) excludes(nodes ...string) list {
 	switch nodes {
 	case nil:
 		for _, k := range c.sortKeys() {
-			if len(c.tree[k].exc) != 0 {
-				exc = append(exc, c.tree[k].exc...)
-			}
+			// if len(c.tree[k].exc) != 0 {
+			exc = append(exc, c.tree[k].exc...)
+			// }
 		}
 	default:
 		for _, node := range nodes {
@@ -356,7 +356,7 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 	)
 
 	if len(cts) < 1 {
-		return errors.New("Empty Contenter interface{} passed to ProcessContent()")
+		return errors.New("empty Contenter interface{} passed to ProcessContent()")
 	}
 
 	for _, ct := range cts {
@@ -397,7 +397,7 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 	}
 
 	if errs != nil {
-		return fmt.Errorf(strings.Join(errs, "\n"))
+		return errors.New(strings.Join(errs, "\n"))
 	}
 
 	return nil

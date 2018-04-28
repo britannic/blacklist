@@ -70,8 +70,8 @@ func TestSubKeyExists(t *testing.T) {
 	})
 }
 
-func TestMergeList(t *testing.T) {
-	Convey("Testing MergeList()", t, func() {
+func TestMerge(t *testing.T) {
+	Convey("Testing merge()", t, func() {
 		testList1 := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		testList2 := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		exp := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
@@ -85,8 +85,9 @@ func TestMergeList(t *testing.T) {
 				testList2.entry[string(i)] = 1
 			}
 		}
+		testList1.merge(testList2)
 
-		So(mergeList(testList1, testList2), ShouldResemble, exp)
+		So(testList1, ShouldResemble, exp)
 	})
 }
 

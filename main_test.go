@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -132,7 +133,7 @@ func TestMain(t *testing.T) {
 
 			initEnvirons = func() (env *e.Config, err error) {
 				env, _ = setUpEnv()
-				err = fmt.Errorf("initEnvirons failed")
+				err = errors.New("initEnvirons failed")
 				return env, err
 			}
 
@@ -148,12 +149,12 @@ func TestMain(t *testing.T) {
 }
 
 func TestScreenLog(t *testing.T) {
-	Convey("Testing ScreenLog(prefix)", t, func() {
+	Convey("Testing ScreenLog()", t, func() {
 		haveTerm = func() bool {
 			return true
 		}
 
-		So(screenLog("prefix"), ShouldNotBeNil)
+		So(screenLog(""), ShouldNotBeNil)
 	})
 }
 
@@ -214,7 +215,7 @@ func TestProcessObjects(t *testing.T) {
 			So(
 				processObjects(c, []e.IFace{e.FileObj}),
 				ShouldResemble,
-				fmt.Errorf("%v", badFileError),
+				errors.New(badFileError),
 			)
 		})
 	})
@@ -390,12 +391,12 @@ func TestReloadDNS(t *testing.T) {
 	Convey("Testing ReloadDNS()", t, func() {
 		var (
 			act string
-			exp = "ReloadDNS(): [/bin/bash: line 1: /etc/init.d/dnsmasq: No such file or directory\n]\n"
+			exp = "[Successfully restarted dnsmasq]"
 		)
 
-		if IsDrone() {
-			exp = "ReloadDNS(): [dnsmasq: unrecognized service\n]\n"
-		}
+		// if IsDrone() {
+		// 	exp = "ReloadDNS(): [dnsmasq: unrecognized service\n]\n"
+		// }
 
 		c, _ := setUpEnv()
 		exitCmd = func(int) {}

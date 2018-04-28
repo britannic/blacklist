@@ -12,6 +12,7 @@ import (
 // source struct for normalizing EdgeOS data.
 type source struct {
 	*Env
+	Objects
 	desc     string
 	disabled bool
 	err      error
@@ -22,10 +23,9 @@ type source struct {
 	ltype    string
 	name     string
 	nType    ntype
-	Objects
-	prefix string
-	r      io.Reader
-	url    string
+	prefix   string
+	r        io.Reader
+	url      string
 }
 
 func (s *source) addLeaf(srcName [][]byte, node string) {
@@ -68,7 +68,7 @@ func (s *source) includes() io.Reader {
 }
 
 func isntSource(nodes []string) bool {
-	if len(nodes) == 0 {
+	if len(nodes) < 1 {
 		return true
 	}
 	return nodes[len(nodes)-1] != src
@@ -95,7 +95,7 @@ func (s *source) setFilePrefix(format string) string {
 }
 
 func printArray(a []string) (s string) {
-	if len(a) == 0 {
+	if len(a) < 1 {
 		s = fmt.Sprintf("              %q\n", "**No entries found**")
 		return s
 	}
@@ -118,17 +118,23 @@ func (s *source) String() string {
 		return s
 	}
 
-	str := fmt.Sprintf("\n%s%q\n", pad("Desc:"), a(s.desc))
-	str += fmt.Sprintf("%s\"%v\"\n", pad("Disabled:"), s.disabled)
-	str += fmt.Sprintf("%s%q\n", pad("File:"), a(s.file))
-	str += fmt.Sprintf("%s%q\n", pad("IP:"), a(s.ip))
-	str += fmt.Sprintf("%s%q\n", pad("Ltype:"), a(s.ltype))
-	str += fmt.Sprintf("%s%q\n", pad("Name:"), a(s.name))
-	str += fmt.Sprintf("%s%q\n", pad("nType:"), s.nType)
-	str += fmt.Sprintf("%s%q\n", pad("Prefix:"), a(s.prefix))
-	str += fmt.Sprintf("%s%q\n", pad("Type:"), getType(s.nType))
-	str += fmt.Sprintf("%s%q\n", pad("URL:"), a(s.url))
-	str += fmt.Sprintf("Whitelist:\n%s", printArray(s.exc))
-	str += fmt.Sprintf("Blacklist:\n%s", printArray(s.inc))
-	return str
+	return strings.Join(
+		append(
+			[]string{},
+			"\n",
+			fmt.Sprintf("%s%q\n", pad("Desc:"), a(s.desc)),
+			fmt.Sprintf("%s%q\n", pad("Disabled:"), booltoStr(s.disabled)),
+			fmt.Sprintf("%s%q\n", pad("File:"), a(s.file)),
+			fmt.Sprintf("%s%q\n", pad("IP:"), a(s.ip)),
+			fmt.Sprintf("%s%q\n", pad("Ltype:"), a(s.ltype)),
+			fmt.Sprintf("%s%q\n", pad("Name:"), a(s.name)),
+			fmt.Sprintf("%s%q\n", pad("nType:"), s.nType),
+			fmt.Sprintf("%s%q\n", pad("Prefix:"), a(s.prefix)),
+			fmt.Sprintf("%s%q\n", pad("Type:"), getType(s.nType)),
+			fmt.Sprintf("%s%q\n", pad("URL:"), a(s.url)),
+			fmt.Sprintf("Whitelist:\n%s", printArray(s.exc)),
+			fmt.Sprintf("Blacklist:\n%s", printArray(s.inc)),
+		),
+		"",
+	)
 }

@@ -219,7 +219,6 @@ func (e *ExcRootObjects) GetList() *Objects {
 // GetList implements the Contenter interface for FIODataObjects
 func (f *FIODataObjects) GetList() *Objects {
 	var responses = make(chan *source, len(f.src))
-	// defer close(responses)
 
 	for _, s := range f.src {
 		s.Env = f.Env
@@ -274,8 +273,6 @@ func (p *PreRootObjects) GetList() *Objects {
 func (u *URLDomnObjects) GetList() *Objects {
 	var responses = make(chan *source, len(u.src))
 
-	// defer close(responses)
-
 	for _, s := range u.src {
 		s.Env = u.Env
 		go func(s *source) {
@@ -294,7 +291,6 @@ func (u *URLDomnObjects) GetList() *Objects {
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLHostObjects) GetList() *Objects {
 	var responses = make(chan *source, len(u.src))
-	// defer close(responses)
 
 	for _, s := range u.src {
 		s.Env = u.Env
@@ -378,7 +374,7 @@ func (s *source) process() *bList {
 
 	switch s.nType {
 	case domn, excDomn, excRoot:
-		s.Dex = mergeList(s.Dex, add)
+		s.Dex.merge(add)
 	}
 
 	// Let's do some accounting
@@ -386,10 +382,13 @@ func (s *source) process() *bList {
 	atomic.AddInt32(&s.ctr[area].extracted, int32(extracted))
 	atomic.AddInt32(&s.ctr[area].kept, int32(kept))
 
-	if kept != 0 && area != rootNode {
+	switch {
+	case kept > 0:
 		s.Log.Infof("%s: downloaded: %d", s.name, extracted)
 		s.Log.Infof("%s: extracted: %d", s.name, kept)
 		s.Log.Infof("%s: dropped: %d", s.name, drop)
+	case extracted > 0 && drop == extracted:
+		s.Log.Warningf("%s: 0 records processed - check source and/or configuration", s.name)
 	}
 
 	return &bList{

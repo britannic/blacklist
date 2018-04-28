@@ -24,18 +24,18 @@ func (l list) keyExists(k []byte) bool {
 	return ok
 }
 
-// keyExists returns true if the list key exists
-func mergeList(a, b list) list {
+// merge returns a merge of two lists
+func (l list) merge(a list) {
 	a.Lock()
-	b.Lock()
+	l.Lock()
 
-	for k, v := range b.entry {
-		a.entry[k] = v
+	for k, v := range a.entry {
+		l.entry[k] = v
 	}
 
 	a.Unlock()
-	b.Unlock()
-	return a
+	l.Unlock()
+	// return a
 }
 
 // set adds a list entry map member

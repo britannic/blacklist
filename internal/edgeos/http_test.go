@@ -10,7 +10,6 @@ import (
 	"sync"
 	"testing"
 
-	. "github.com/britannic/testutils"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -43,9 +42,9 @@ func TestGetHTTP(t *testing.T) {
 			exp    string
 		}{
 			{ok: true, err: nil, method: method, URL: page, exp: want},
-			{ok: false, err: fmt.Errorf("%v", `Get bad%20url: unsupported protocol scheme ""`), method: method, URL: "bad url", exp: `Unable to get response for bad url. Error: Get bad%20url: unsupported protocol scheme ""`},
-			{ok: false, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: page, exp: `Unable to form request for /domains.txt. Error: net/http: invalid method "bad method"`},
-			{ok: false, err: errors.New("Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connect: connection refused"), method: method, URL: "http://127.0.0.1:808/", exp: `Unable to get response for http://127.0.0.1:808/. Error: Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connect: connection refused`},
+			{ok: false, err: fmt.Errorf("%v", `Get bad%20url: unsupported protocol scheme ""`), method: method, URL: "bad url", exp: `Unable to get response for bad url`},
+			{ok: false, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: page, exp: `Unable to form request for /domains.txt`},
+			{ok: false, err: errors.New("Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connect: connection refused"), method: method, URL: "http://127.0.0.1:808/", exp: `Unable to get response for http://127.0.0.1:808/`},
 			{ok: true, err: nil, method: method, URL: page, exp: ""},
 			{ok: true, err: nil, method: method, URL: "/biccies.txt", exp: "404 page not found\n"},
 			{ok: true, err: fmt.Errorf("%v", `net/http: invalid method "bad method"`), method: "bad method", URL: page, exp: "Unable to form request for "},
@@ -62,22 +61,22 @@ func TestGetHTTP(t *testing.T) {
 			if tt.ok {
 				tt.URL = URL + tt.URL
 				if tt.method == "bad method" {
-					tt.exp += tt.URL + `. Error: net/http: invalid method "bad method"`
+					tt.exp += tt.URL
 				}
 			}
 
-			if IsDrone() {
-				switch i {
-				case 2:
-					tt.err = fmt.Errorf("%v", `Unable to get response for bad url. Error: Get bad%20url: unsupported protocol scheme ""`)
-					tt.exp = `Unable to form request for /domains.txt. Error: net/http: invalid method "bad method"`
-				case 3:
-					tt.err = fmt.Errorf("%v", `Unable to get response for http://127.0.0.1:808/. Error: Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connect: connection refused`)
-					tt.exp = "Unable to get response for http://127.0.0.1:808/..."
-				case 6:
-					tt.exp = "No data returned for " + tt.URL
-				}
-			}
+			// if IsDrone() {
+			// 	switch i {
+			// 	case 2:
+			// 		tt.err = errors.New(`Unable to get response for bad url. Error: Get bad%20url: unsupported protocol scheme ""`)
+			// 		tt.exp = `Unable to form request for /domains.txt. Error: net/http: invalid method "bad method"`
+			// 	case 3:
+			// 		tt.err = errors.New(`Unable to get response for http://127.0.0.1:808/. Error: Get http://127.0.0.1:808/: dial tcp 127.0.0.1:808: connect: connection refused`)
+			// 		tt.exp = "Unable to get response for http://127.0.0.1:808/..."
+			// 	case 6:
+			// 		tt.exp = "No data returned for " + tt.URL
+			// 	}
+			// }
 
 			o := getHTTP(&source{Env: &Env{Log: newLog(), Method: tt.method}, url: tt.URL})
 
@@ -92,7 +91,7 @@ func TestGetHTTP(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			if tt.exp == "" {
-				tt.exp = "No data returned for " + tt.URL + "."
+				tt.exp = "No data returned for " + tt.URL
 			}
 			So(string(act), ShouldEqual, tt.exp)
 		}

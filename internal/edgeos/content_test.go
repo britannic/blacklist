@@ -51,7 +51,7 @@ func TestConfigProcessContent(t *testing.T) {
 				Arch(runtime.GOARCH),
 				Bash("/bin/bash"),
 				Cores(runtime.NumCPU()),
-				Dir("/:~/"),
+				Dir("/tmp"),
 				DNSsvc("service dnsmasq restart"),
 				Ext("blacklist.conf"),
 				FileNameFmt("%v/%v.%v.%v"),
@@ -77,23 +77,23 @@ func TestConfigProcessContent(t *testing.T) {
 				c:      newCfg(),
 				cfg:    testallCfg,
 				ct:     URLhObj,
-				err:    fmt.Errorf("Get http://127.0.0.1:8081/hosts/host.txt: dial tcp 127.0.0.1:8081: connect: connection refused"),
+				err:    errors.New("Get http://127.0.0.1:8081/hosts/host.txt: dial tcp 127.0.0.1:8081: connect: connection refused"),
 				expErr: true,
-				name:   "Domain hosts source",
+				name:   "Hosts blacklist source",
 			},
 			{
 				c:      newCfg(),
 				cfg:    testallCfg,
 				ct:     URLdObj,
-				err:    fmt.Errorf("Get http://127.0.0.1:8081/domains/domain.txt: dial tcp 127.0.0.1:8081: connect: connection refused"),
+				err:    errors.New("Get http://127.0.0.1:8081/domains/domain.txt: dial tcp 127.0.0.1:8081: connect: connection refused"),
 				expErr: true,
-				name:   "Domain blacklist source",
+				name:   "Domains blacklist source",
 			},
 			{
 				c:      newCfg(),
 				cfg:    testallCfg,
 				ct:     FileObj,
-				err:    fmt.Errorf("open /:~//hosts.tasty.blacklist.conf: no such file or directory"),
+				err:    errors.New("open /:~//hosts.tasty.blacklist.conf: no such file or directory"),
 				expErr: true,
 				name:   "File source",
 			},
@@ -101,7 +101,7 @@ func TestConfigProcessContent(t *testing.T) {
 				c:      newCfg(),
 				cfg:    testallCfg,
 				ct:     ExHtObj,
-				err:    fmt.Errorf("Update with correct error"),
+				err:    errors.New("open /:~//hosts.whitelisted-servers.blacklist.conf: no such file or directory"),
 				expErr: true,
 				name:   "Whitelisted hosts",
 			},
@@ -109,7 +109,7 @@ func TestConfigProcessContent(t *testing.T) {
 				c:      newCfg(),
 				cfg:    testallCfg,
 				ct:     ExDmObj,
-				err:    fmt.Errorf("Update with correct error"),
+				err:    errors.New("open /:~//domains.whitelisted-subdomains.blacklist.conf: no such file or directory"),
 				expErr: true,
 				name:   "Whitelisted domains",
 			},
@@ -117,7 +117,7 @@ func TestConfigProcessContent(t *testing.T) {
 				c:      newCfg(),
 				cfg:    testallCfg,
 				ct:     PreHObj,
-				err:    fmt.Errorf("open /:~//hosts.blacklisted-servers.blacklist.conf: no such file or directory"),
+				err:    errors.New("open /:~//hosts.blacklisted-servers.blacklist.conf: no such file or directory"),
 				expErr: true,
 				name:   "Blacklisted hosts",
 			},
@@ -125,7 +125,7 @@ func TestConfigProcessContent(t *testing.T) {
 				c:      newCfg(),
 				cfg:    testallCfg,
 				ct:     PreDObj,
-				err:    fmt.Errorf("open /:~//domains.blacklisted-subdomains.blacklist.conf: no such file or directory"),
+				err:    errors.New("open /:~//domains.blacklisted-subdomains.blacklist.conf: no such file or directory"),
 				expErr: true,
 				name:   "Blacklisted domains",
 			},
@@ -133,7 +133,7 @@ func TestConfigProcessContent(t *testing.T) {
 				c:      newCfg(),
 				cfg:    testallCfg,
 				ct:     ExRtObj,
-				err:    fmt.Errorf("open /:~//roots.global-whitelisted-domains.blacklist.conf: no such file or directory"),
+				err:    errors.New("open /:~//roots.global-whitelisted-domains.blacklist.conf: no such file or directory"),
 				expErr: true,
 				name:   "Global whitelist",
 			},
@@ -148,12 +148,15 @@ func TestConfigProcessContent(t *testing.T) {
 		}
 		for _, tt := range tests {
 			Convey("current test: "+tt.name, func() {
+				if tt.name == "" {
+					tt.c.Dir = "/:~/"
+				}
 				So(tt.c.ReadCfg(&CFGstatic{Cfg: tt.cfg}), ShouldBeNil)
-				var g errgroup.Group
+
 				obj, err := tt.c.NewContent(tt.ct)
 				So(err, ShouldBeNil)
-				g.Go(func() error { return tt.c.ProcessContent(obj) })
-				err = g.Wait()
+
+				err = tt.c.ProcessContent(obj)
 				if (err != nil) == tt.expErr {
 					So(err.Error(), ShouldEqual, tt.err.Error())
 				}
@@ -161,10 +164,10 @@ func TestConfigProcessContent(t *testing.T) {
 		}
 
 		Convey("Testing ProcessContent() if no arguments ", func() {
-			var g errgroup.Group
-			g.Go(func() error { return newCfg().ProcessContent() })
-			err := g.Wait()
-			So(err, ShouldNotBeNil)
+			// var g errgroup.Group
+			// g.Go(func() error { return newCfg().ProcessContent() })
+			// err := g.Wait()
+			So(newCfg().ProcessContent(), ShouldNotBeNil)
 		})
 	})
 }
@@ -404,7 +407,7 @@ func TestNewContent(t *testing.T) {
 
 		So(c.ReadCfg(&CFGstatic{Cfg: Cfg}), ShouldBeNil)
 
-		c.Dex = mergeList(c.Dex, list{RWMutex: &sync.RWMutex{}, entry: entry{"amazon-de.com": 0}})
+		c.Dex.merge(list{RWMutex: &sync.RWMutex{}, entry: entry{"amazon-de.com": 0}})
 		So(c.Dex.String(), ShouldEqual, `"amazon-de.com":0,
 `)
 
@@ -515,14 +518,7 @@ func TestMultiObjNewContent(t *testing.T) {
 			{name: "ExRtObj", iFace: ExRtObj, exp: "server=/ytimg.com/#"},
 			{name: "ExDmObj", iFace: ExDmObj, exp: ""},
 			{name: "ExHtObj", iFace: ExHtObj, exp: ""},
-			{name: "PreDObj", iFace: PreDObj, exp: `address=/awfuladvertising.com/0.0.0.0
-address=/badadsrvr.org/0.0.0.0
-address=/badintellitxt.com/0.0.0.0
-address=/disgusting.unkiosked.com/0.0.0.0
-address=/filthydoubleclick.net/0.0.0.0
-address=/iffyfree-counter.co.uk/0.0.0.0
-address=/nastycentade.com/0.0.0.0
-address=/worseadtechus.net/0.0.0.0`},
+			{name: "PreDObj", iFace: PreDObj, exp: "address=/awfuladvertising.com/0.0.0.0\naddress=/badadsrvr.org/0.0.0.0\naddress=/badintellitxt.com/0.0.0.0\naddress=/disgusting.unkiosked.com/0.0.0.0\naddress=/filthydoubleclick.net/0.0.0.0\naddress=/iffyfree-counter.co.uk/0.0.0.0\naddress=/nastycentade.com/0.0.0.0\naddress=/worseadtechus.net/0.0.0.0"},
 			{name: "PreHObj", iFace: PreHObj, exp: "address=/beap.gemini.yahoo.com/192.168.168.1"},
 			{name: "PreRObj", iFace: PreRObj, exp: "address=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0"},
 			{name: "FileObj", iFace: FileObj, exp: expFileObj},
@@ -890,6 +886,72 @@ address=/really.bad.phishing.site.ru/10.10.10.10
 	})
 }
 
+func TestProcessZeroContent(t *testing.T) {
+	Convey("Testing ProcessZeroContent()", t, func() {
+		dir, err := ioutil.TempDir("/tmp", "testBlacklist")
+		So(err, ShouldBeNil)
+		defer os.RemoveAll(dir)
+		c := NewConfig(
+			Dir(dir),
+			Ext("blacklist.conf"),
+			FileNameFmt("%v/%v.%v.%v"),
+			Logger(newLog()),
+			Method("GET"),
+			Prefix("address=", "server="),
+		)
+
+		err = c.ReadCfg(&CFGstatic{Cfg: cfgRedundant})
+		So(err, ShouldBeNil)
+
+		for _, o := range []IFace{ExRtObj, FileObj} {
+			ct, err := c.NewContent(o)
+			So(err, ShouldBeNil)
+
+			err = c.ProcessContent(ct)
+			So(err, ShouldBeNil)
+		}
+
+		dropped, extracted, kept := c.GetTotalStats()
+
+		Convey("Dropped entries should match", func() {
+			So(dropped, ShouldEqual, 1)
+		})
+
+		Convey("Extracted entries should match", func() {
+			So(extracted, ShouldEqual, 2)
+		})
+
+		Convey("Kept entries should match", func() {
+			So(kept, ShouldEqual, 1)
+		})
+	})
+}
+
+func TestProcessBadFile(t *testing.T) {
+	Convey("Testing ProcessBadFile()", t, func() {
+		dir, err := ioutil.TempDir("/tmp", "testBlacklist")
+		So(err, ShouldBeNil)
+		defer os.RemoveAll(dir)
+		c := NewConfig(
+			Dir("/:~/"),
+			Ext("blacklist.conf"),
+			FileNameFmt("%v/%v.%v.%v"),
+			Logger(newLog()),
+			Method("GET"),
+			Prefix("address=", "server="),
+		)
+
+		err = c.ReadCfg(&CFGstatic{Cfg: CfgMimimal})
+		So(err, ShouldBeNil)
+
+		ct, err := c.NewContent(FileObj)
+		So(err, ShouldBeNil)
+
+		err = c.ProcessContent(ct)
+		So(err.Error(), ShouldEqual, "open /:~//hosts.tasty.blacklist.conf: no such file or directory")
+	})
+}
+
 func TestWriteFile(t *testing.T) {
 	Convey("Testing WriteFile()", t, func() {
 		tests := []struct {
@@ -954,7 +1016,7 @@ var (
     dns-redirect-ip 0.0.0.0
     domains {
         dns-redirect-ip 192.1.1.1
-				exclude adinfuse.com
+		exclude adinfuse.com
         include adsrvr.org
         include adtechus.net
         include advertising.com
@@ -997,7 +1059,7 @@ var (
     exclude hp.com
     exclude hulu.com
     exclude images-amazon.com
-		exclude jumptap.com
+	exclude jumptap.com
     exclude msdn.com
     exclude paypal.com
     exclude rackcdn.com
@@ -1009,16 +1071,16 @@ var (
     exclude ssl-on9.net
     exclude static.chartbeat.com
     exclude storage.googleapis.com
-		exclude usemaxserver.de
+	exclude usemaxserver.de
     exclude windows.net
     exclude yimg.com
     exclude ytimg.com
     hosts {
-		    exclude wv.inner-active.mobi
+		exclude wv.inner-active.mobi
         include beap.gemini.yahoo.com
         source adaway {
             description "Blocking mobile ad providers and some analytics providers"
-				    dns-redirect-ip 192.168.168.1
+			dns-redirect-ip 192.168.168.1
             prefix "127.0.0.1 "
             url http://adaway.org/hosts.txt
         }
@@ -1030,6 +1092,18 @@ var (
     }
 }`
 
+	cfgRedundant = `blacklist {
+	disabled false
+	dns-redirect-ip 0.0.0.0
+	domains {
+		source tasty {
+			description "File source"
+			dns-redirect-ip 10.10.10.10
+			file ../../internal/testdata/blist.nohosts.src
+	}
+	}
+	exclude ytimg.com
+}`
 	// CfgMimimal contains a valid minimal EdgeOS blacklist configuration
 	CfgMimimal = `blacklist {
 	disabled false
