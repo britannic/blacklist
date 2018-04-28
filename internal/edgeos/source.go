@@ -39,6 +39,8 @@ func (s *source) area() string {
 	switch getType(s.nType).(string) {
 	case domains, PreDomns:
 		return domains
+	case rootNode:
+		return roots
 	}
 	return hosts
 }

@@ -99,25 +99,6 @@ func TestFormatData(t *testing.T) {
 	})
 }
 
-// func TestGetSubdomains(t *testing.T) {
-// 	Convey("Testing GetSubdomains()", t, func() {
-// 		l := getSubdomains(
-// 			[]byte("top.one.two.three.four.five.six.intellitxt.com"),
-// 		)
-// 		exp := entry{
-// 			"five.six.intellitxt.com":                        0,
-// 			"four.five.six.intellitxt.com":                   0,
-// 			"intellitxt.com":                                 0,
-// 			"one.two.three.four.five.six.intellitxt.com":     0,
-// 			"six.intellitxt.com":                             0,
-// 			"three.four.five.six.intellitxt.com":             0,
-// 			"top.one.two.three.four.five.six.intellitxt.com": 0,
-// 			"two.three.four.five.six.intellitxt.com":         0,
-// 		}
-// 		So(l.entry, ShouldResemble, exp)
-// 	})
-// }
-
 func TestGetType(t *testing.T) {
 	Convey("Testing GetType()", t, func() {
 		tests := []struct {
