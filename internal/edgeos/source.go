@@ -102,7 +102,7 @@ func printArray(a []string) (s string) {
 		return s
 	}
 	for _, e := range a {
-		s += fmt.Sprintf("              %q\n", e)
+		s = fmt.Sprintf("%s              %q\n", s, e)
 	}
 	return s
 }

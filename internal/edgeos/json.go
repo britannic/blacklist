@@ -30,13 +30,12 @@ func getJSONArray(c *cfgJSON) (js string) {
 	ø := comma
 	cnt := len(c.array)
 	ȹ := c.indent
-	js += fmt.Sprintf("%v%q: [", tabs(ȹ), c.leaf)
+	js = fmt.Sprintf("%s%s%q: [", js, tabs(ȹ), c.leaf)
 	eof := enter
 
 	switch {
 	case cnt == 0:
-		js += "]," + enter
-		return js
+		return fmt.Sprintf("%s],%s", js, enter)
 
 	case cnt == 1:
 		eof = null
@@ -52,11 +51,11 @@ func getJSONArray(c *cfgJSON) (js string) {
 			if i == cnt-1 {
 				ø = null
 			}
-			js += fmt.Sprintf("%v%q%v%v", tabs(ȹ), s, ø, eof)
+			js = fmt.Sprintf("%s%s%q%s%s", js, tabs(ȹ), s, ø, eof)
 		}
 
 		ø = comma
-		js += fmt.Sprintf("%v]%v\n", tabs(ȹ), ø)
+		js = fmt.Sprintf("%s%s]%s\n", js, tabs(ȹ), ø)
 	}
 
 	return js
@@ -64,8 +63,7 @@ func getJSONArray(c *cfgJSON) (js string) {
 
 func is(ind int, js, title, s string) string {
 	if s != "" {
-		js += fmt.Sprintf("%v%q: %q,\n", tabs(ind), title, s)
-		return js
+		return fmt.Sprintf("%s%s%q: %q,\n", js, tabs(ind), title, s)
 	}
 	return js
 }
@@ -81,11 +79,10 @@ func getJSONsrcArray(c *cfgJSON) string {
 	)
 
 	if cnt == 0 {
-		js += fmt.Sprintf("%v%q: [{}]\n", tabs(c.indent), "sources")
-		return js
+		return fmt.Sprintf("%s%s%q: [{}]\n", js, tabs(c.indent), "sources")
 	}
 
-	js += fmt.Sprintf("%v%q: [{%v", tabs(c.indent), "sources", enter)
+	js = fmt.Sprintf("%s%s%q: [{%s", js, tabs(c.indent), "sources", enter)
 
 	for i, o = range c.tree[c.pk].src {
 		ȹ = c.indent + 1
@@ -94,19 +91,18 @@ func getJSONsrcArray(c *cfgJSON) string {
 			ø = null
 		}
 
-		js += fmt.Sprintf("%v%q: {\n", tabs(ȹ), o.name)
+		js = fmt.Sprintf("%s%s%q: {\n", js, tabs(ȹ), o.name)
 		ȹ++
-		js += fmt.Sprintf("%v%q: %q,\n", tabs(ȹ), disabled, booltoStr(o.disabled))
+		js = fmt.Sprintf("%s%s%q: %q,\n", js, tabs(ȹ), disabled, booltoStr(o.disabled))
 		js = is(ȹ, js, "description", o.desc)
 		js = is(ȹ, js, "ip", o.ip)
 		js = is(ȹ, js, "prefix", o.prefix)
 		js = is(ȹ, js, files, o.file)
 		js = is(ȹ, js, urls, o.url)
 		ȹ--
-		js += fmt.Sprintf("%v}%v%v", tabs(ȹ), ø, enter)
+		js = fmt.Sprintf("%s%s}%s%s", js, tabs(ȹ), ø, enter)
 	}
 
 	ȹ -= 2
-	js += fmt.Sprintf("%v}]%v", tabs(ȹ), enter)
-	return js
+	return fmt.Sprintf("%s%s}]%s", js, tabs(ȹ), enter)
 }

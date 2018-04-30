@@ -97,6 +97,6 @@ func (o *OBJ) StripPrefixAndSuffix(l []byte, p string) ([]byte, bool) {
 
 	l = o.RX[SUFX].ReplaceAll(l, []byte{})
 	l = bytes.Replace(l, []byte(`"`), []byte{}, -1)
-	l = bytes.TrimSpace(l)
-	return l, true
+
+	return bytes.TrimSpace(l), true
 }

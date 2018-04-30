@@ -3,6 +3,7 @@ package dnsmasq
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"path/filepath"
@@ -51,21 +52,6 @@ func TestConfigFile(t *testing.T) {
 			So(c.Parse(&Mapping{Contents: []byte(k)}), ShouldBeNil)
 			So(c.Redirect(k, ip), ShouldBeFalse)
 		})
-		// Convey("Testing with a disabled configuration", func() {
-		// 	act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.DisabledCfg})
-		// 	So(act, ShouldBeEmpty)
-		// })
-
-		// Convey("Testing with a single source configuration", func() {
-		// 	act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.SingleSource})
-		// 	So(act, ShouldBeEmpty)
-		// })
-
-		// Convey("Testing with an active configuration", func() {
-		// 	c := NewConfig()
-		// 	So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
-		// 	So(c.Nodes(), ShouldResemble, []string{"blacklist", "domains", "hosts"})
-		// })
 	})
 }
 
@@ -114,7 +100,7 @@ func TestFetchHost(t *testing.T) {
 			ip:   "::1",
 			key:  "localhost",
 			conf: Conf{"localhost": Host{IP: "127.0.0.1", Server: false}},
-			exp:  false,
+			exp:  true,
 			name: "localhost IPv6",
 		},
 	}
@@ -126,6 +112,28 @@ func TestFetchHost(t *testing.T) {
 				So(tt.conf.Redirect(tt.key, tt.ip), ShouldEqual, tt.exp)
 			})
 		}
+	})
+}
+
+func TestMatchIP(t *testing.T) {
+	tests := []struct {
+		exp  bool
+		ip   string
+		ips  []string
+		name string
+	}{
+		{name: "Normal", exp: true, ip: "0.0.0.0", ips: []string{"0.0.0.0", "0.0.0.0", "0.0.0.0"}},
+		{name: "Loopback and Unspecified", exp: false, ip: "0.0.0.0", ips: []string{"0.0.0.0", "127.0.0.1", "0.0.0.0"}},
+		{name: "Fail with IPv6", exp: false, ip: "0.0.0.0", ips: []string{"0.0.0.0", "0.0.0.0", "fe80::7a8a:20ff:fe44:390d"}},
+	}
+	Convey("Testing matchIP() with:", t, func() {
+		for _, tt := range tests {
+			Convey(tt.name, func() {
+				fmt.Println(matchIP(tt.ip, tt.ips))
+				So(matchIP(tt.ip, tt.ips), ShouldEqual, tt.exp)
+			})
+		}
+
 	})
 }
 

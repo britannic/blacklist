@@ -338,16 +338,16 @@ func (u *URLHostObjects) Len() int { return len(u.src) }
 // Process extracts hosts/domains from downloaded raw content
 func (s *source) process() *bList {
 	var (
-		add                   = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
-		area                  = typeInt(s.nType)
-		b                     = bufio.NewScanner(s.r)
-		drop, extracted, kept int
-		find                  = regx.NewRegex()
-		ok                    bool
+		add                      = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+		area                     = typeInt(s.nType)
+		b                        = bufio.NewScanner(s.r)
+		dropped, extracted, kept int
+		find                     = regx.NewRegex()
+		ok                       bool
 	)
 
 	for b.Scan() {
-		line := bytes.TrimSpace(bytes.ToLower(b.Bytes()))
+		line := bytes.ToLower(bytes.TrimSpace(b.Bytes()))
 
 		switch {
 		case bytes.HasPrefix(line, []byte("#")), bytes.HasPrefix(line, []byte("//")), bytes.HasPrefix(line, []byte("<")):
@@ -357,7 +357,7 @@ func (s *source) process() *bList {
 				for _, fqdn := range find.RX[regx.FQDN].FindAll(line, -1) {
 					extracted++
 					if s.Dex.subKeyExists(fqdn) {
-						drop++
+						dropped++
 						continue
 					}
 					if !s.Exc.keyExists(fqdn) {
@@ -366,7 +366,7 @@ func (s *source) process() *bList {
 						add.set(fqdn, 0)
 						continue
 					}
-					drop++
+					dropped++
 				}
 			}
 		}
@@ -378,7 +378,7 @@ func (s *source) process() *bList {
 	}
 
 	// Let's do some accounting
-	atomic.AddInt32(&s.ctr[area].dropped, int32(drop))
+	atomic.AddInt32(&s.ctr[area].dropped, int32(dropped))
 	atomic.AddInt32(&s.ctr[area].extracted, int32(extracted))
 	atomic.AddInt32(&s.ctr[area].kept, int32(kept))
 
@@ -386,8 +386,8 @@ func (s *source) process() *bList {
 	case kept > 0:
 		s.Log.Infof("%s: downloaded: %d", s.name, extracted)
 		s.Log.Infof("%s: extracted: %d", s.name, kept)
-		s.Log.Infof("%s: dropped: %d", s.name, drop)
-	case extracted > 0 && drop == extracted:
+		s.Log.Infof("%s: dropped: %d", s.name, dropped)
+	case extracted > 0 && dropped == extracted:
 		s.Log.Warningf("%s: 0 records processed - check source and/or configuration", s.name)
 	}
 

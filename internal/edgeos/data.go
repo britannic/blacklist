@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -35,20 +36,20 @@ func booltoStr(b bool) string {
 
 // diffArray returns the delta of two arrays
 func diffArray(a, b []string) (diff sort.StringSlice) {
-	var largest, smallest []string
+	var most, least []string
 	switch {
 	case len(a) > len(b), len(a) == len(b):
-		largest, smallest = a, b
+		most, least = a, b
 	case len(a) < len(b):
-		largest, smallest = b, a
+		most, least = b, a
 	}
 
 	d := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
-	for _, k := range smallest {
+	for _, k := range least {
 		d.set([]byte(k), 0)
 	}
 
-	for _, k := range largest {
+	for _, k := range most {
 		if !d.keyExists([]byte(k)) {
 			diff = append(diff, k)
 		}
@@ -106,7 +107,8 @@ func NewWriter() io.Writer {
 
 // strToBool converts a string ("true" or "false") to boolean
 func strToBool(s string) bool {
-	return strings.ToLower(s) == True
+	b, _ := strconv.ParseBool(s)
+	return b
 }
 
 func typeInt(n ntype) string {

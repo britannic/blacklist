@@ -3,11 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"runtime"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
-	logging "github.com/britannic/go-logging"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
 var (
@@ -19,29 +16,10 @@ var (
 	version      = "UNKNOWN"
 	// ----------------------------
 
-	boldcolors = []string{
-		logging.CRITICAL: logging.ColorSeqBold(logging.ColorMagenta),
-		logging.ERROR:    logging.ColorSeqBold(logging.ColorRed),
-		logging.INFO:     logging.ColorSeqBold(logging.ColorGreen),
-		logging.WARNING:  logging.ColorSeqBold(logging.ColorYellow),
-		logging.NOTICE:   logging.ColorSeqBold(logging.ColorCyan),
-		logging.DEBUG:    logging.ColorSeqBold(logging.ColorBlue),
-	}
 	exitCmd      = os.Exit
-	fdFmttr      logging.Backend
-	haveTerm     = inTerminal
 	initEnvirons = initEnv
-	log          = newLog(prefix)
-	logCritf     = log.Criticalf
-	logErrorf    = func(f string, args ...interface{}) { log.Errorf(f, args...) }
-	logFatalf    = func(f string, args ...interface{}) { logCritf(f, args...); exitCmd(1) }
-	logFile      = fmt.Sprintf("/var/log/%s.log", progname)
-	logInfo      = log.Info
-	logInfof     = log.Infof
-	logNoticef   = log.Noticef
-	logPrintf    = logInfof
-	progname     = basename(os.Args[0])
-	prefix       = fmt.Sprintf("%s: ", progname)
+	prog         = basename(os.Args[0])
+	prefix       = fmt.Sprintf("%s: ", prog)
 	objex        = []e.IFace{
 		e.PreRObj,
 		e.PreDObj,
@@ -110,7 +88,10 @@ func files(c *e.Config) *e.CFile {
 }
 
 func initEnv() (c *e.Config, err error) {
-	if c, err = setUpEnv(); err != nil {
+	o := getOpts()
+	o.setArgs()
+	c = o.initEdgeOS()
+	if err = c.ReadCfg(o.getCFG(c)); err != nil {
 		fmt.Fprintf(os.Stderr, "Removing stale dnsmasq blaclist files, because %v\n", err.Error())
 		if err = files(c).Remove(); err != nil {
 			fmt.Fprintf(os.Stderr, "%v", err.Error())
@@ -118,37 +99,6 @@ func initEnv() (c *e.Config, err error) {
 		exitCmd(0)
 	}
 	return c, err
-}
-
-func inTerminal() bool {
-	return terminal.IsTerminal(int(os.Stdin.Fd()))
-}
-
-// newLog returns a logging.Logger pointer
-func newLog(prefix string) *logging.Logger {
-	if runtime.GOOS == "darwin" {
-		logFile = fmt.Sprintf("/tmp/%s.log", progname)
-	}
-	fdFmt := logging.MustStringFormatter(
-		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000}: %{message}`,
-	)
-
-	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
-	}
-
-	fdlog := logging.NewLogBackend(fd, "", 0)
-	fdFmttr = logging.NewBackendFormatter(fdlog, fdFmt)
-
-	sysFmttr, err := logging.NewSyslogBackend(progname + ": ")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
-	}
-
-	logging.SetBackend(fdFmttr, sysFmttr)
-
-	return logging.MustGetLogger(progname)
 }
 
 // processObjects processes local sources, downloads Internet sources and creates
@@ -182,50 +132,4 @@ func removeStaleFiles(c *e.Config) error {
 		return fmt.Errorf("problem removing stale files: %v", err.Error())
 	}
 	return nil
-}
-
-// screenLog adds stderr logging output to the screen
-func screenLog(prefix string) logging.LeveledBackend {
-	if haveTerm() {
-		var (
-			err      error
-			scrFmt   = `%{color:bold}%{level:.4s}%{color:reset}[%{id:03x}]%{time:15:04:05.000}: %{message}`
-			sysFmttr *logging.SyslogBackend
-		)
-
-		if runtime.GOOS == "darwin" {
-			logFile = fmt.Sprintf("/tmp/%s.log", progname)
-		}
-
-		if sysFmttr, err = logging.NewSyslogBackend(prefix); err != nil {
-			fmt.Println(err.Error())
-		}
-
-		return logging.SetBackend(
-			logging.NewBackendFormatter(
-				newScreenLogBackend(boldcolors, prefix),
-				logging.MustStringFormatter(scrFmt),
-			),
-			fdFmttr,
-			sysFmttr,
-		)
-	}
-	return nil
-}
-
-func newScreenLogBackend(colors []string, prefix string) *logging.LogBackend {
-	scr := logging.NewLogBackend(os.Stderr, prefix, 0)
-	if len(colors) > 0 {
-		scr.ColorConfig = boldcolors
-		scr.Color = true
-	}
-	return scr
-}
-
-func setUpEnv() (c *e.Config, err error) {
-	o := getOpts()
-	o.setArgs()
-	c = o.initEdgeOS()
-	err = c.ReadCfg(o.getCFG(c))
-	return c, err
 }

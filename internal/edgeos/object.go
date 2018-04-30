@@ -22,8 +22,7 @@ func (o *Objects) Files() *CFile {
 	var c = CFile{Env: o.Env}
 	if !o.Disabled {
 		for _, obj := range o.src {
-			f := obj.setFilePrefix(o.Env.Dir + "/%v.%v." + o.Env.Ext)
-			c.Names = append(c.Names, f)
+			c.Names = append(c.Names, obj.setFilePrefix(o.Env.Dir+"/%v.%v."+o.Env.Ext))
 			c.nType = obj.nType
 		}
 		sort.Strings(c.Names)

@@ -39,34 +39,40 @@ func ConfigFile(f string) (io.Reader, error) {
 	return os.Open(f)
 }
 
-func fetchHost(k, ip string) bool {
-	ips, err := net.LookupHost(k)
+func fetchHost(dns, ip string) bool {
+	ips, err := net.LookupHost(dns)
 	if err != nil {
 		return false
 	}
 	return matchIP(ip, ips)
 }
 
-func ipv4(ip string) bool {
-	return net.IP([]byte(ip)).To4() == nil
+func ipOK(i, x string) bool {
+	ip := net.ParseIP(i)
+	dns := net.ParseIP(x)
+	switch {
+	case ip.IsLoopback() && dns.IsLoopback():
+		return true
+	case ip.IsUnspecified() && dns.IsUnspecified():
+		return true
+	}
+	return ip.Equal(dns)
 }
 
 func matchIP(ip string, ips []string) bool {
-	var b bool
 	for _, dns := range ips {
-		b = ip == dns && ipv4(dns)
+		if !ipOK(ip, dns) {
+			return false
+		}
 	}
-	return b
+	return true
 }
 
 // Parse extracts host to IP mappings from a dnsmasq configuration file
 func (c Conf) Parse(r confLoader) error {
 	b := bufio.NewScanner(r.read())
-
 	for b.Scan() {
-		l := bytes.TrimSpace(b.Bytes())
-		d := bytes.Split(l, []byte("/"))
-
+		d := bytes.Split(bytes.TrimSpace(b.Bytes()), []byte("/"))
 		switch {
 		case len(d) < 3:
 			return errors.New("no dnsmasq configuration mapping entries found")

@@ -89,7 +89,7 @@ func getOpts() *opts {
 			Version: flags.Bool("version", false, "Show version", true),
 		}
 	)
-	flags.Init(progname, mflag.ExitOnError)
+	flags.Init(prog, mflag.ExitOnError)
 	flags.Usage = o.PrintDefaults
 
 	return o
@@ -156,7 +156,7 @@ func (o *opts) setArgs() {
 			architecture,
 			hostOS,
 			githash,
-			progname,
+			prog,
 		)
 		exitCmd(0)
 	}

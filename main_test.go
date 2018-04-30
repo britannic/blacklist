@@ -132,7 +132,7 @@ func TestMain(t *testing.T) {
 			)
 
 			initEnvirons = func() (env *e.Config, err error) {
-				env, _ = setUpEnv()
+				env, _ = initEnv()
 				err = errors.New("initEnvirons failed")
 				return env, err
 			}
@@ -186,7 +186,7 @@ func TestInitEnv(t *testing.T) {
 }
 
 func TestProcessObjects(t *testing.T) {
-	c, _ := setUpEnv()
+	c, _ := initEnv()
 	badFileError := `open EinenSieAugenBlick/domains.tasty.blacklist.conf: no such file or directory`
 	Convey("Testing processObjects", t, func() {
 		Convey("Testing that the config is correctly loaded ", func() {
@@ -381,7 +381,7 @@ func TestGetCFG(t *testing.T) {
 func TestFiles(t *testing.T) {
 	Convey("Testing files()", t, func() {
 		exp := ""
-		env, _ := setUpEnv()
+		env, _ := initEnv()
 		act := files(env)
 		So(fmt.Sprintf("%v", act), ShouldEqual, fmt.Sprintf("%v", exp))
 	})
@@ -398,7 +398,7 @@ func TestReloadDNS(t *testing.T) {
 		// 	exp = "ReloadDNS(): [dnsmasq: unrecognized service\n]\n"
 		// }
 
-		c, _ := setUpEnv()
+		c, _ := initEnv()
 		exitCmd = func(int) {}
 		logPrintf = func(s string, v ...interface{}) {
 			act = fmt.Sprintf(s, v)
@@ -411,7 +411,7 @@ func TestReloadDNS(t *testing.T) {
 
 func TestRemoveStaleFiles(t *testing.T) {
 	Convey("Testing removeStaleFiles()", t, func() {
-		c, _ := setUpEnv()
+		c, _ := initEnv()
 		So(removeStaleFiles(c), ShouldBeNil)
 		_ = c.SetOpt(e.Dir("EinenSieAugenBlick"), e.Ext("[]a]"), e.FileNameFmt("[]a]"), e.WCard(e.Wildcard{Node: "[]a]", Name: "]"}))
 		So(removeStaleFiles(c), ShouldNotBeNil)
@@ -454,6 +454,27 @@ func TestSetArch(t *testing.T) {
 			So(o.setDir(test.arch), ShouldEqual, test.exp)
 		}
 	})
+}
+
+func TestSetLogFile(t *testing.T) {
+	oldprog := prog
+	prog = "update-dnsmasq"
+	tests := []struct {
+		os  string
+		exp string
+	}{
+		{os: "darwin", exp: fmt.Sprintf("/tmp/%s.log", prog)},
+		{os: "linux", exp: fmt.Sprintf("/var/log/%s.log", prog)},
+	}
+
+	Convey("Testing setLogFile", t, func() {
+		for _, tt := range tests {
+			Convey("with OS: "+tt.os, func() {
+				So(setLogFile(tt.os), ShouldEqual, tt.exp)
+			})
+		}
+	})
+	prog = oldprog
 }
 
 func TestInitEdgeOS(t *testing.T) {

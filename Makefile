@@ -5,13 +5,14 @@ SHELL		= /bin/bash
 # Go parameters
 BASE			 = $(CURDIR)/
 BIN 			 = /usr/local/go/bin
+GO				 = go
 GOBUILD			 = $(GO) build
 GOCLEAN			 = $(GO) clean -cache
 GODOC			 = godoc
 GOFMT			 = gofmt
-GO				 = go
 GOGEN			 = $(GO) generate
 GOGET			 = $(GO) get
+GOSHADOW		 = $(GO) tool vet -shadow
 GOTEST			 = $(GO) test
 PKGS	 		 = $(or $(PKG),$(shell cd $(BASE) && env GOPATH=$(GOPATH) $(GO) list ./...))
 SRC				 = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
@@ -29,7 +30,7 @@ GSED			 = $(shell which gsed || which sed) -i.bak -e
 AWS				 = aws
 COPYRIGHT		 = s/Copyright © 20../Copyright © $(shell date +"%Y")/g
 COVERALLS_TOKEN	\
-					= W6VHc8ZFpwbfTzT3xoluEWbKkrsKT1w25
+				 = W6VHc8ZFpwbfTzT3xoluEWbKkrsKT1w25
 # DATE=$(shell date -u '+%Y-%m-%d_%I:%M:%S%p')
 DATE			 = $(shell date +'%FT%H%M%S')
 GIT				 = $(shell git rev-parse --short HEAD)
@@ -266,4 +267,10 @@ lint: vendor | $(BASE) $(GOLINT) ; $(info $(M) running golint…)  @ ## Run goli
 fmt: ; $(info $(M) running gofmt…) @  ## Run gofmt on all source files
 	@ret=0 && for d in $$($(GO) list -f '{{.Dir}}' ./...); do \
 		$(GOFMT) -l -w $$d/*.go || ret=$$? ; \
+	done ; exit $$ret
+
+.PHONY: shadow
+shadow: ; $(info $(M) running go var shadow checker…)  @ ## Run go shadow 
+	@ret=0 && for d in $$($(GO) list -f '{{.Dir}}' ./...); do \
+		$(GOSHADOW) $$d/*.go || ret=$$? ; \
 	done ; exit $$ret

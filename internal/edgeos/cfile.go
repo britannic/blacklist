@@ -35,8 +35,7 @@ func (c *CFile) Remove() error {
 
 // String implements string method
 func (c *CFile) String() string {
-	sort.Strings(c.Names)
-	return strings.Join(c.Names, "\n")
+	return strings.Join(c.Strings(), "\n")
 }
 
 // Strings returns a sorted array of strings.

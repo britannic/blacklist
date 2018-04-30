@@ -71,10 +71,8 @@ const (
 )
 
 func (c *Config) nodeExists(node string) bool {
-	if _, ok := c.tree[node]; ok {
-		return ok
-	}
-	return false
+	_, ok := c.tree[node]
+	return ok
 }
 
 func (c *Config) addExc(node string) *Objects {
@@ -119,10 +117,8 @@ func (c *Config) addInc(node string) *source {
 		n     ntype
 	)
 
-	if c.nodeExists(node) {
-		if len(c.tree[node].inc) > 0 {
-			inc = c.tree[node].inc
-		}
+	if c.nodeExists(node) && len(c.tree[node].inc) > 0 {
+		inc = c.tree[node].inc
 	}
 
 	switch node {
@@ -203,9 +199,7 @@ func (c *Config) excludes(nodes ...string) list {
 	switch nodes {
 	case nil:
 		for _, k := range c.sortKeys() {
-			// if len(c.tree[k].exc) != 0 {
 			exc = append(exc, c.tree[k].exc...)
-			// }
 		}
 	default:
 		for _, node := range nodes {
@@ -511,13 +505,11 @@ func (c *Config) String() (s string) {
 }
 
 func (c tree) getIP(node string) string {
-	if c.keyExists(node) {
-		if c[node].ip != "" {
-			return c[node].ip
-		}
-		if c.keyExists(rootNode) {
-			return c[rootNode].ip
-		}
+	if c.keyExists(node) && c[node].ip != "" {
+		return c[node].ip
+	}
+	if c.keyExists(rootNode) {
+		return c[rootNode].ip
 	}
 	return "0.0.0.0"
 }
