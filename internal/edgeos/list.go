@@ -41,9 +41,13 @@ func (l list) set(k []byte, v int) {
 }
 
 func (l list) String() string {
-	var ls sort.StringSlice
+	var (
+		i  int64
+		ls = make(sort.StringSlice, len(l.entry))
+	)
 	for k, v := range l.entry {
-		ls = append(ls, fmt.Sprintf("%q:%v,\n", string(k), v))
+		ls[i] = fmt.Sprintf("%q:%v,\n", string(k), v)
+		i++
 	}
 	ls.Sort()
 	return strings.Join(ls, "")

@@ -146,12 +146,7 @@ func (c *Config) addInc(node string) *source {
 
 // GetTotalStats displays aggregate statistics for processed sources
 func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
-	var keys []string
 	for k := range c.ctr {
-		keys = append(keys, k)
-	}
-
-	for _, k := range keys {
 		if c.ctr[k].kept+c.ctr[k].dropped != 0 {
 			dropped += c.ctr[k].dropped
 			extracted += c.ctr[k].extracted

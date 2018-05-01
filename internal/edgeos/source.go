@@ -121,8 +121,7 @@ func (s *source) String() string {
 	}
 
 	return strings.Join(
-		append(
-			[]string{},
+		[]string{
 			"\n",
 			fmt.Sprintf("%s%q\n", pad("Desc:"), a(s.desc)),
 			fmt.Sprintf("%s%q\n", pad("Disabled:"), booltoStr(s.disabled)),
@@ -136,7 +135,7 @@ func (s *source) String() string {
 			fmt.Sprintf("%s%q\n", pad("URL:"), a(s.url)),
 			fmt.Sprintf("Whitelist:\n%s", printArray(s.exc)),
 			fmt.Sprintf("Blacklist:\n%s", printArray(s.inc)),
-		),
+		},
 		"",
 	)
 }
