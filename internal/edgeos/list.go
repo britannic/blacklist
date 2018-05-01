@@ -26,16 +26,11 @@ func (l list) keyExists(k []byte) bool {
 
 // merge returns a merge of two lists
 func (l list) merge(a list) {
-	a.Lock()
 	l.Lock()
-
 	for k, v := range a.entry {
 		l.entry[k] = v
 	}
-
-	a.Unlock()
 	l.Unlock()
-	// return a
 }
 
 // set adds a list entry map member
@@ -54,7 +49,7 @@ func (l list) String() string {
 	return strings.Join(ls, "")
 }
 
-// subKeyExists returns true if part of all of the key matches
+// subKeyExists returns true if part or all of the key matches
 func (l list) subKeyExists(b []byte) bool {
 	d := bytes.Split(b, []byte("."))
 	for i := range Iter(len(d) - 1) {
@@ -65,7 +60,7 @@ func (l list) subKeyExists(b []byte) bool {
 	return l.keyExists(b)
 }
 
-// updateEntry converts []string to map of List
+// updateEntry converts [][]byte to map of List
 func updateEntry(d [][]byte) (l list) {
 	l.entry = make(entry)
 	for _, k := range d {

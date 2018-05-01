@@ -276,7 +276,7 @@ func (u *URLDomnObjects) GetList() *Objects {
 	for _, s := range u.src {
 		s.Env = u.Env
 		go func(s *source) {
-			responses <- getHTTP(s)
+			responses <- download(s)
 		}(s)
 	}
 
@@ -295,7 +295,7 @@ func (u *URLHostObjects) GetList() *Objects {
 	for _, s := range u.src {
 		s.Env = u.Env
 		go func(s *source) {
-			responses <- getHTTP(s)
+			responses <- download(s)
 		}(s)
 	}
 

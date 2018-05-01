@@ -122,9 +122,11 @@ func TestMatchIP(t *testing.T) {
 		ips  []string
 		name string
 	}{
-		{name: "Normal", exp: true, ip: "0.0.0.0", ips: []string{"0.0.0.0", "0.0.0.0", "0.0.0.0"}},
-		{name: "Loopback and Unspecified", exp: false, ip: "0.0.0.0", ips: []string{"0.0.0.0", "127.0.0.1", "0.0.0.0"}},
+		{name: "Fail with IPv4", exp: false, ip: "0.0.0.0", ips: []string{"192.150.200.1", "72.65.23.17", "204.78.13.40"}},
 		{name: "Fail with IPv6", exp: false, ip: "0.0.0.0", ips: []string{"0.0.0.0", "0.0.0.0", "fe80::7a8a:20ff:fe44:390d"}},
+		{name: "Loopback and unspecified", exp: false, ip: "0.0.0.0", ips: []string{"0.0.0.0", "127.0.0.1", "0.0.0.0"}},
+		{name: "Normal specified", exp: true, ip: "192.167.2.2", ips: []string{"192.167.2.2", "192.167.2.2", "192.167.2.2"}},
+		{name: "Normal unspecified", exp: true, ip: "0.0.0.0", ips: []string{"0.0.0.0", "0.0.0.0", "0.0.0.0"}},
 	}
 	Convey("Testing matchIP() with:", t, func() {
 		for _, tt := range tests {

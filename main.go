@@ -109,7 +109,6 @@ func processObjects(c *e.Config, objects []e.IFace) error {
 		if err != nil {
 			return err
 		}
-
 		if err = c.ProcessContent(ct); err != nil {
 			return err
 		}

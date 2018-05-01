@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-// getHTTP creates http requests to download data
-func getHTTP(s *source) *source {
+// download creates http requests to download data
+func download(s *source) *source {
 	var (
 		body []byte
 		err  error

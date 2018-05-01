@@ -78,7 +78,7 @@ func TestGetHTTP(t *testing.T) {
 			// 	}
 			// }
 
-			o := getHTTP(&source{Env: &Env{Log: newLog(), Method: tt.method}, url: tt.URL})
+			o := download(&source{Env: &Env{Log: newLog(), Method: tt.method}, url: tt.URL})
 
 			switch {
 			case o.err != nil && tt.err != nil:
