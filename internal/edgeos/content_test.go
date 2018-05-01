@@ -493,6 +493,35 @@ func TestContenterString(t *testing.T) {
 	})
 }
 
+func TestIFaceString(t *testing.T) {
+	tests := []struct {
+		iface IFace
+		name  string
+		exp   string
+	}{
+		{name: "ExDmObj", iface: ExDmObj, exp: ExcDomns},
+		{name: "ExHtObj", iface: ExHtObj, exp: ExcHosts},
+		{name: "ExRtObj", iface: ExRtObj, exp: ExcRoots},
+		{name: "FileObj", iface: FileObj, exp: files},
+		{name: "Invalid", iface: Invalid, exp: notknown},
+		{name: "PreDObj", iface: PreDObj, exp: PreDomns},
+		{name: "PreHObj", iface: PreHObj, exp: PreHosts},
+		{name: "PreRObj", iface: PreRObj, exp: PreRoots},
+		{name: "URLdObj", iface: URLdObj, exp: urls},
+		{name: "URLhObj", iface: URLhObj, exp: urls},
+	}
+
+	Convey("Testing IFace.String()", t, func() {
+		for _, tt := range tests {
+			Convey("with "+tt.name, func() {
+				s := tt.iface.String()
+				fmt.Println(s)
+				So(tt.iface.String(), ShouldEqual, tt.exp)
+			})
+		}
+	})
+}
+
 func TestMultiObjNewContent(t *testing.T) {
 	Convey("Testing Multi Object NewContent()", t, func() {
 		dir, err := ioutil.TempDir("/tmp", "testBlacklist")
