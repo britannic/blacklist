@@ -83,6 +83,10 @@ GO2XUNIT 		 = $(BIN)/go2xunit
 $(BIN)/go2xunit: ; @ $(info $(M) building go2xunit…)
 	$Q $(GO) get github.com/tebeka/go2xunit
 
+GOREPORTER		 = $(BIN)/goreporter
+$(BIN)/goreporter: ; @ $(info $(M) building goreporter…)
+	$Q $(GO) get github.com/360EntSecGroup-Skylar/goreporter
+
 amd64: generate ; @ $(info building Mac OS binary…) ## Build Mac OS binary
 	$(eval LDFLAGS += -X main.architecture=amd64 -X main.hostOS=darwin)
 	GOOS=darwin GOARCH=amd64 \
@@ -274,3 +278,17 @@ shadow: ; $(info $(M) running go var shadow checker…)  @ ## Run go shadow
 	@ret=0 && for d in $$($(GO) list -f '{{.Dir}}' ./...); do \
 		$(GOSHADOW) $$d/*.go || ret=$$? ; \
 	done ; exit $$ret
+
+.PHONY: report
+report: ; $(info $(M) running goreporter…)  @ ## Run go goreporter
+	$(GOREPORTER) -p ../blacklist/ -f html \
+	-e "vendor/github.com/britannic/gologging,\
+	vendor/github.com/britannic/mflag,\
+	vendor/github.com/britannic/testutils,\
+	vendor/github.com/gopherjs,\
+	vendor/github.com/jtolds,\
+	vendor/github.com/smartystreets,\
+	vendor/golang.org/x/crypto,\
+	vendor/golang.org/x/net,\
+	vendor/golang.org/x/sync,\
+	vendor/golang.org/x/sys"

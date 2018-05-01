@@ -62,17 +62,18 @@ func diffArray(a, b []string) (diff sort.StringSlice) {
 // formatData returns an io.Reader loaded with dnsmasq formatted data
 func formatData(s string, l list) io.Reader {
 	var (
-		i  int64
-		ls = make(sort.StringSlice, len(l.entry))
+		i int64
+		a = make(sort.StringSlice, len(l.entry))
 	)
+	s += "\n"
 	l.RLock()
 	for k := range l.entry {
-		ls[i] = fmt.Sprintf(s+"\n", k)
+		a[i] = fmt.Sprintf(s, k)
 		i++
 	}
-	ls.Sort()
 	l.RUnlock()
-	return strings.NewReader(strings.Join(ls, ""))
+	a.Sort()
+	return strings.NewReader(strings.Join(a, ""))
 }
 
 // getDnsmasqPrefix returns the dnsmasq conf file delimiter

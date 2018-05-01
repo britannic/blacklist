@@ -7,6 +7,7 @@ import (
 	"io"
 	"sort"
 	"strings"
+	"sync/atomic"
 )
 
 // source struct for normalizing EdgeOS data.
@@ -138,4 +139,20 @@ func (s *source) String() string {
 		},
 		"",
 	)
+}
+
+func (s *source) sum(area string, dropped, extracted, kept int) {
+	// Let's do some accounting
+	atomic.AddInt32(&s.ctr[area].dropped, int32(dropped))
+	atomic.AddInt32(&s.ctr[area].extracted, int32(extracted))
+	atomic.AddInt32(&s.ctr[area].kept, int32(kept))
+
+	switch {
+	case kept > 0:
+		s.Log.Infof("%s: downloaded: %d", s.name, extracted)
+		s.Log.Infof("%s: extracted: %d", s.name, kept)
+		s.Log.Infof("%s: dropped: %d", s.name, dropped)
+	case extracted > 0 && dropped == extracted:
+		s.Log.Warningf("%s: 0 records processed - check source and/or configuration", s.name)
+	}
 }

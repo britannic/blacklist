@@ -136,7 +136,7 @@ func (c *CFGstatic) read() io.Reader {
 // writeFile saves domains/hosts/roots data to disk
 func (b *bList) writeFile() error {
 	if b.size == 0 {
-		b.r = strings.NewReader(`# NO DATA WRITTEN - CHECK WHITELIST EXCLUSIONS`)
+		return nil
 	}
 
 	w, err := os.Create(b.file)

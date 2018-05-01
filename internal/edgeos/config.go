@@ -164,7 +164,6 @@ func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
 
 // NewContent returns an interface of the requested IFace type
 func (c *Config) NewContent(iface IFace) (Contenter, error) {
-	var ltype = iface.String()
 	switch iface {
 	case ExDmObj:
 		return &ExcDomnObjects{Objects: c.addExc(domains)}, nil
@@ -173,13 +172,13 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 	case ExRtObj:
 		return &ExcRootObjects{Objects: c.addExc(rootNode)}, nil
 	case FileObj:
-		return &FIODataObjects{Objects: c.GetAll(ltype)}, nil
+		return &FIODataObjects{Objects: c.GetAll(iface.String())}, nil
 	case PreDObj:
-		return &PreDomnObjects{Objects: c.GetAll(ltype)}, nil
+		return &PreDomnObjects{Objects: c.GetAll(iface.String())}, nil
 	case PreRObj:
-		return &PreRootObjects{Objects: c.GetAll(ltype)}, nil
+		return &PreRootObjects{Objects: c.GetAll(iface.String())}, nil
 	case PreHObj:
-		return &PreHostObjects{Objects: c.GetAll(ltype)}, nil
+		return &PreHostObjects{Objects: c.GetAll(iface.String())}, nil
 	case URLdObj:
 		return &URLDomnObjects{Objects: c.Get(domains).Filter(urls)}, nil
 	case URLhObj:
