@@ -55,6 +55,12 @@ func TestConfigFile(t *testing.T) {
 	})
 }
 
+func BenchmarkFetchHost(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		fetchHost("www.microsoft.com", "0.0.0.0")
+	}
+}
+
 func TestFetchHost(t *testing.T) {
 	tests := []struct {
 		conf Conf
