@@ -271,7 +271,7 @@ Strings returns a sorted array of strings.
 
 
 
-## <a name="ConfLoader">type</a> [ConfLoader](/src/target/config.go?s=399:446#L22)
+## <a name="ConfLoader">type</a> [ConfLoader](/src/target/config.go?s=407:454#L23)
 ``` go
 type ConfLoader interface {
     // contains filtered or unexported methods
@@ -288,7 +288,7 @@ ConfLoader interface handles multiple configuration load methods
 
 
 
-## <a name="Config">type</a> [Config](/src/target/config.go?s=494:528#L27)
+## <a name="Config">type</a> [Config](/src/target/config.go?s=502:536#L28)
 ``` go
 type Config struct {
     *Env
@@ -313,7 +313,7 @@ NewConfig returns a new *Config initialized with the parameter options passed to
 
 
 
-### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4739:4781#L212)
+### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4845:4887#L219)
 ``` go
 func (c *Config) Get(node string) *Objects
 ```
@@ -322,7 +322,7 @@ Get returns an *Object for a given node
 
 
 
-### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=5002:5052#L226)
+### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=5108:5158#L233)
 ``` go
 func (c *Config) GetAll(ltypes ...string) *Objects
 ```
@@ -331,7 +331,7 @@ GetAll returns an array of Objects
 
 
 
-### <a name="Config.GetTotalStats">func</a> (\*Config) [GetTotalStats](/src/target/config.go?s=2925:2990#L148)
+### <a name="Config.GetTotalStats">func</a> (\*Config) [GetTotalStats](/src/target/config.go?s=3024:3089#L154)
 ``` go
 func (c *Config) GetTotalStats() (dropped, extracted, kept int32)
 ```
@@ -340,7 +340,7 @@ GetTotalStats displays aggregate statistics for processed sources
 
 
 
-### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=5232:5265#L235)
+### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=5338:5371#L242)
 ``` go
 func (c *Config) InSession() bool
 ```
@@ -349,7 +349,7 @@ InSession returns true if VyOS/EdgeOS configure is in session
 
 
 
-### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=3444:3503#L166)
+### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=3550:3609#L173)
 ``` go
 func (c *Config) NewContent(iface IFace) (Contenter, error)
 ```
@@ -358,7 +358,7 @@ NewContent returns an interface of the requested IFace type
 
 
 
-### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5790:5831#L256)
+### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5896:5937#L263)
 ``` go
 func (c *Config) Nodes() (nodes []string)
 ```
@@ -367,7 +367,7 @@ Nodes returns an array of configured nodes
 
 
 
-### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/config.go?s=7808:7863#L339)
+### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/config.go?s=7914:7969#L346)
 ``` go
 func (c *Config) ProcessContent(cts ...Contenter) error
 ```
@@ -376,7 +376,7 @@ ProcessContent processes the Contents array
 
 
 
-### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=8966:9010#L394)
+### <a name="Config.ReadCfg">func</a> (\*Config) [ReadCfg](/src/target/config.go?s=9072:9116#L402)
 ``` go
 func (c *Config) ReadCfg(r ConfLoader) error
 ```
@@ -385,7 +385,7 @@ ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
 
 
 
-### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=10985:11029#L451)
+### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=11091:11135#L459)
 ``` go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
@@ -403,7 +403,7 @@ SetOpt sets the specified options passed as Env and returns an option to restore
 
 
 
-### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=11447:11483#L470)
+### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=11553:11589#L478)
 ``` go
 func (c *Config) String() (s string)
 ```
@@ -481,7 +481,7 @@ Debug logs debug messages when the Dbug flag is true
 
 
 
-### <a name="Env.String">func</a> (\*Env) [String](/src/target/opts.go?s=5391:5420#L242)
+### <a name="Env.String">func</a> (\*Env) [String](/src/target/opts.go?s=5429:5458#L242)
 ``` go
 func (e *Env) String() string
 ```
@@ -972,42 +972,42 @@ func Method(s string) Option
 Method sets the HTTP method
 
 
-### <a name="Prefix">func</a> [Prefix](/src/target/opts.go?s=5184:5222#L232)
+### <a name="Prefix">func</a> [Prefix](/src/target/opts.go?s=5222:5260#L232)
 ``` go
 func Prefix(d string, h string) Option
 ```
 Prefix sets the dnsmasq configuration address line prefix
 
 
-### <a name="Test">func</a> [Test](/src/target/opts.go?s=5528:5552#L248)
+### <a name="Test">func</a> [Test](/src/target/opts.go?s=5566:5590#L248)
 ``` go
 func Test(b bool) Option
 ```
 Test toggles testing mode on or off
 
 
-### <a name="Timeout">func</a> [Timeout](/src/target/opts.go?s=5721:5757#L257)
+### <a name="Timeout">func</a> [Timeout](/src/target/opts.go?s=5759:5795#L257)
 ``` go
 func Timeout(t time.Duration) Option
 ```
 Timeout sets how long before an unresponsive goroutine is aborted
 
 
-### <a name="Verb">func</a> [Verb](/src/target/opts.go?s=5904:5928#L266)
+### <a name="Verb">func</a> [Verb](/src/target/opts.go?s=5942:5966#L266)
 ``` go
 func Verb(b bool) Option
 ```
 Verb sets the verbosity level to v
 
 
-### <a name="WCard">func</a> [WCard](/src/target/opts.go?s=6072:6101#L275)
+### <a name="WCard">func</a> [WCard](/src/target/opts.go?s=6110:6139#L275)
 ``` go
 func WCard(w Wildcard) Option
 ```
 WCard sets file globbing wildcard values
 
 
-### <a name="Writer">func</a> [Writer](/src/target/opts.go?s=6276:6307#L284)
+### <a name="Writer">func</a> [Writer](/src/target/opts.go?s=6314:6345#L284)
 ``` go
 func Writer(w io.Writer) Option
 ```

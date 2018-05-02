@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"runtime"
+	"sync"
 	"testing"
 	"time"
 
@@ -82,7 +83,7 @@ func TestEnvLog(t *testing.T) {
 
 func TestOption(t *testing.T) {
 	Convey("Testing Option()", t, func() {
-		vanilla := Env{ctr: make(ctr)}
+		vanilla := Env{ctr: ctr{RWMutex: &sync.RWMutex{}, stat: make(stat)}}
 		exp := `{
 	"Log": null,
 	"API": "/bin/cli-shell-api",
@@ -110,7 +111,7 @@ func TestOption(t *testing.T) {
 }`
 
 		expRaw := Env{
-			ctr:      make(ctr),
+			ctr:      ctr{RWMutex: &sync.RWMutex{}, stat: make(stat)},
 			API:      "/bin/cli-shell-api",
 			Arch:     "amd64",
 			Bash:     "/bin/bash",

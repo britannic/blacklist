@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/britannic/blacklist/internal/regx"
 )
@@ -29,7 +30,12 @@ type Config struct {
 	tree
 }
 
-type ctr map[string]*stats
+// list is a struct map of entry with a RW Mutex
+type ctr struct {
+	*sync.RWMutex
+	stat
+}
+type stat map[string]*stats
 
 type stats struct {
 	dropped   int32
@@ -146,11 +152,12 @@ func (c *Config) addInc(node string) *source {
 
 // GetTotalStats displays aggregate statistics for processed sources
 func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
-	for k := range c.ctr {
-		if c.ctr[k].kept+c.ctr[k].dropped != 0 {
-			dropped += c.ctr[k].dropped
-			extracted += c.ctr[k].extracted
-			kept += c.ctr[k].kept
+	ctr := c.ctr.stat
+	for k := range ctr {
+		if ctr[k].kept+ctr[k].dropped != 0 {
+			dropped += ctr[k].dropped
+			extracted += ctr[k].extracted
+			kept += ctr[k].kept
 		}
 	}
 
@@ -338,8 +345,8 @@ func (c *Config) sourcename(o *source, line []byte, tnode string, find *regx.OBJ
 // ProcessContent processes the Contents array
 func (c *Config) ProcessContent(cts ...Contenter) error {
 	var (
-		errs      []string
-		getErrors chan error
+		errs []string
+		wg   sync.WaitGroup
 	)
 
 	if len(cts) < 1 {
@@ -354,34 +361,35 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 		)
 
 		for _, s := range ct.GetList().src {
-			getErrors = make(chan error)
-
 			if s.err != nil {
 				errs = append(errs, s.err.Error())
 			}
+			wg.Add(1)
 
 			go func(s *source) {
+				defer wg.Done()
 				area = typeInt(s.nType)
-				c.ctr[area] = tally
-				getErrors <- s.process().writeFile()
-			}(s)
+				c.ctr.Lock()
+				c.ctr.stat[area] = tally
+				c.ctr.Unlock()
 
-			for range cts {
-				if err := <-getErrors; err != nil {
+				if err := s.process().writeFile(); err != nil {
 					errs = append(errs, err.Error())
 				}
-				close(getErrors)
-			}
-		}
 
-		if area != "" {
-			if c.ctr[area].kept+c.ctr[area].dropped != 0 {
-				c.Log.Noticef("Total %s found: %d", area, c.ctr[area].extracted)
-				c.Log.Noticef("Total %s extracted %d", area, c.ctr[area].kept)
-				c.Log.Noticef("Total %s dropped %d", area, c.ctr[area].dropped)
-			}
+				if area != "" {
+					ctr := c.ctr.stat
+					if ctr[area].kept+ctr[area].dropped != 0 {
+						c.Log.Noticef("Total %s found: %d", area, ctr[area].extracted)
+						c.Log.Noticef("Total %s extracted %d", area, ctr[area].kept)
+						c.Log.Noticef("Total %s dropped %d", area, ctr[area].dropped)
+					}
+				}
+			}(s)
 		}
 	}
+
+	wg.Wait()
 
 	if errs != nil {
 		return errors.New(strings.Join(errs, "\n"))

@@ -143,9 +143,10 @@ func (s *source) String() string {
 
 func (s *source) sum(area string, dropped, extracted, kept int) {
 	// Let's do some accounting
-	atomic.AddInt32(&s.ctr[area].dropped, int32(dropped))
-	atomic.AddInt32(&s.ctr[area].extracted, int32(extracted))
-	atomic.AddInt32(&s.ctr[area].kept, int32(kept))
+	ctr := s.ctr.stat
+	atomic.AddInt32(&ctr[area].dropped, int32(dropped))
+	atomic.AddInt32(&ctr[area].extracted, int32(extracted))
+	atomic.AddInt32(&ctr[area].kept, int32(kept))
 
 	switch {
 	case kept > 0:

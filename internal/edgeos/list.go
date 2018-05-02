@@ -10,7 +10,7 @@ import (
 
 type entry map[string]int
 
-// list is a struct map of int
+// list is a struct map of entry with a RW Mutex
 type list struct {
 	*sync.RWMutex
 	entry
