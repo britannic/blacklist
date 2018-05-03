@@ -231,10 +231,8 @@ func NewConfig(opts ...Option) *Config {
 // Prefix sets the dnsmasq configuration address line prefix
 func Prefix(d string, h string) Option {
 	return func(c *Config) Option {
-		pd := c.Pfx.domain
-		ph := c.Pfx.host
 		c.Pfx = dnsPfx{domain: d, host: h}
-		return Prefix(pd, ph)
+		return Prefix(c.Pfx.domain, c.Pfx.host)
 	}
 }
 

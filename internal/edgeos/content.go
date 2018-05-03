@@ -338,7 +338,7 @@ func (u *URLHostObjects) Len() int { return len(u.src) }
 // Process extracts hosts/domains from downloaded raw content
 func (s *source) process() *bList {
 	var (
-		add                      = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+		l                        = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		area                     = typeInt(s.nType)
 		b                        = bufio.NewScanner(s.r)
 		dropped, extracted, kept int
@@ -363,7 +363,7 @@ func (s *source) process() *bList {
 					if !s.Exc.keyExists(fqdn) {
 						kept++
 						s.Exc.set(fqdn, 0)
-						add.set(fqdn, 0)
+						l.set(fqdn, 0)
 						continue
 					}
 					dropped++
@@ -374,14 +374,14 @@ func (s *source) process() *bList {
 
 	switch s.nType {
 	case domn, excDomn, excRoot:
-		s.Dex.merge(add)
+		s.Dex.merge(l)
 	}
 
 	s.sum(area, dropped, extracted, kept)
 
 	return &bList{
 		file: s.filename(area),
-		r:    formatData(getDnsmasqPrefix(s), add),
+		r:    formatData(getDnsmasqPrefix(s), l),
 		size: kept,
 	}
 }

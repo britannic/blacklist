@@ -76,18 +76,18 @@ const (
 	True = "true"
 )
 
-func (c *Config) nodeExists(node string) bool {
-	_, ok := c.tree[node]
+func (c *Config) nodeExists(n string) bool {
+	_, ok := c.tree[n]
 	return ok
 }
 
-func (c *Config) addExc(node string) *Objects {
+func (c *Config) addExc(n string) *Objects {
 	var (
 		exc   = []string{}
 		ltype string
 	)
 
-	switch node {
+	switch n {
 	case domains:
 		ltype = ExcDomns
 	case hosts:
@@ -96,8 +96,8 @@ func (c *Config) addExc(node string) *Objects {
 		ltype = ExcRoots
 	}
 
-	if c.nodeExists(node) {
-		exc = c.tree[node].exc
+	if c.nodeExists(n) {
+		exc = c.tree[n].exc
 	}
 
 	return &Objects{
@@ -107,7 +107,7 @@ func (c *Config) addExc(node string) *Objects {
 				Env:   c.Env,
 				desc:  getLtypeDesc(ltype),
 				exc:   exc,
-				ip:    c.tree.getIP(node),
+				ip:    c.tree.getIP(n),
 				ltype: ltype,
 				nType: getType(ltype).(ntype),
 				name:  ltype,
@@ -116,36 +116,36 @@ func (c *Config) addExc(node string) *Objects {
 	}
 }
 
-func (c *Config) addInc(node string) *source {
+func (c *Config) addInc(n string) *source {
 	var (
 		inc   = []string{}
 		ltype string
-		n     ntype
+		nt    ntype
 	)
 
-	if c.nodeExists(node) && len(c.tree[node].inc) > 0 {
-		inc = c.tree[node].inc
+	if c.nodeExists(n) && len(c.tree[n].inc) > 0 {
+		inc = c.tree[n].inc
 	}
 
-	switch node {
+	switch n {
 	case domains:
 		ltype = getType(preDomn).(string)
-		n = getType(ltype).(ntype)
+		nt = getType(ltype).(ntype)
 	case hosts:
 		ltype = getType(preHost).(string)
-		n = getType(ltype).(ntype)
+		nt = getType(ltype).(ntype)
 	case rootNode:
 		ltype = getType(preRoot).(string)
-		n = getType(ltype).(ntype)
+		nt = getType(ltype).(ntype)
 	}
 
 	return &source{
 		Env:   c.Env,
 		desc:  getLtypeDesc(ltype),
 		inc:   inc,
-		ip:    c.tree.getIP(node),
+		ip:    c.tree.getIP(n),
 		ltype: ltype,
-		nType: n,
+		nType: nt,
 		name:  ltype,
 	}
 }
@@ -191,7 +191,7 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 	case URLhObj:
 		return &URLHostObjects{Objects: c.Get(hosts).Filter(urls)}, nil
 	}
-	return nil, errors.New("Invalid interface requested")
+	return nil, errors.New("invalid interface requested")
 }
 
 // excludes returns a string array of excludes
@@ -206,8 +206,8 @@ func (c *Config) excludes(nodes ...string) list {
 
 		}
 	default:
-		for _, node := range nodes {
-			for _, v := range c.tree[node].exc {
+		for _, n := range nodes {
+			for _, v := range c.tree[n].exc {
 				exc = append(exc, []byte(v))
 			}
 		}
@@ -216,15 +216,15 @@ func (c *Config) excludes(nodes ...string) list {
 }
 
 // Get returns an *Object for a given node
-func (c *Config) Get(node string) *Objects {
+func (c *Config) Get(nodes string) *Objects {
 	o := &Objects{Env: c.Env, src: []*source{}}
-	switch node {
+	switch nodes {
 	case all:
-		for _, node := range c.sortKeys() {
-			o.addObj(c, node)
+		for _, n := range c.sortKeys() {
+			o.addObj(c, n)
 		}
 	default:
-		o.addObj(c, node)
+		o.addObj(c, nodes)
 	}
 	return o
 }
@@ -232,8 +232,8 @@ func (c *Config) Get(node string) *Objects {
 // GetAll returns an array of Objects
 func (c *Config) GetAll(ltypes ...string) *Objects {
 	o := &Objects{Env: c.Env}
-	for _, node := range c.sortKeys() {
-		o.objects(c, node, ltypes...)
+	for _, n := range c.sortKeys() {
+		o.objects(c, n, ltypes...)
 	}
 	return o
 }
@@ -260,39 +260,39 @@ func (c *Config) load(act, lvl string) ([]byte, error) {
 }
 
 // Nodes returns an array of configured nodes
-func (c *Config) Nodes() (nodes []string) {
+func (c *Config) Nodes() (n []string) {
 	for k := range c.tree {
-		nodes = append(nodes, k)
+		n = append(n, k)
 	}
-	sort.Strings(nodes)
-	return nodes
+	sort.Strings(n)
+	return n
 }
 
-// isTnode returns true if tnode is part of the blacklist configuration
-func isTnode(tnode string) bool {
-	switch tnode {
+// isTnode returns true if node is a root or top node in the blacklist configuration
+func isTnode(n string) bool {
+	switch n {
 	case rootNode, domains, hosts:
 		return true
 	}
 	return false
 }
 
-func (c *Config) excinc(t [][]byte, tnode string) {
+func (c *Config) excinc(t [][]byte, n string) {
 	switch string(t[1]) {
 	case "exclude":
-		if isTnode(tnode) {
-			c.Debug("Whitelisting %s on node %s", string(t[2]), tnode)
-			c.tree[tnode].exc = append(c.tree[tnode].exc, string(t[2]))
+		if isTnode(n) {
+			c.Debug("Whitelisting %s on node %s", string(t[2]), n)
+			c.tree[n].exc = append(c.tree[n].exc, string(t[2]))
 		}
 	case "include":
-		if isTnode(tnode) {
-			c.Debug("Blacklisting %s on node %s", string(t[2]), tnode)
-			c.tree[tnode].inc = append(c.tree[tnode].inc, string(t[2]))
+		if isTnode(n) {
+			c.Debug("Blacklisting %s on node %s", string(t[2]), n)
+			c.tree[n].inc = append(c.tree[n].inc, string(t[2]))
 		}
 	}
 }
 
-func (c *Config) label(name [][]byte, o *source, tnode string) {
+func (c *Config) label(name [][]byte, o *source, n string) {
 	switch string(name[1]) {
 	case "description":
 		o.desc = string(name[2])
@@ -301,43 +301,43 @@ func (c *Config) label(name [][]byte, o *source, tnode string) {
 	case files:
 		o.file = string(name[2])
 		o.ltype = string(name[1])
-		c.tree[tnode].src = append(c.tree[tnode].src, o)
+		c.tree[n].src = append(c.tree[n].src, o)
 
 	case "prefix":
 		o.prefix = string(name[2])
 	case urls:
 		o.ltype = string(name[1])
 		o.url = string(name[2])
-		c.tree[tnode].src = append(c.tree[tnode].src, o)
+		c.tree[n].src = append(c.tree[n].src, o)
 	}
 }
 
-func (c *Config) addTnodeSource(tnode string) {
-	if isTnode(tnode) {
-		c.tree[tnode] = newSource()
-		c.tree[tnode].name = tnode
-		c.tree[tnode].nType = getType(tnode).(ntype)
+func (c *Config) addTnodeSource(n string) {
+	if isTnode(n) {
+		c.tree[n] = newSource()
+		c.tree[n].name = n
+		c.tree[n].nType = getType(n).(ntype)
 	}
 }
 
-func (c *Config) disable(line []byte, tnode string, find *regx.OBJ) {
-	if isTnode(tnode) {
-		c.tree[tnode].disabled = strToBool(string(find.SubMatch(regx.DSBL, line)[1]))
-		c.Env.Disabled = c.tree[tnode].disabled
+func (c *Config) disable(line []byte, n string, find *regx.OBJ) {
+	if isTnode(n) {
+		c.tree[n].disabled = strToBool(string(find.SubMatch(regx.DSBL, line)[1]))
+		c.Env.Disabled = c.tree[n].disabled
 	}
 }
 
-func (c *Config) redirect(line []byte, tnode string, find *regx.OBJ) {
-	if isTnode(tnode) {
-		c.tree[tnode].ip = string(find.SubMatch(regx.IPBH, line)[1])
+func (c *Config) redirect(line []byte, n string, find *regx.OBJ) {
+	if isTnode(n) {
+		c.tree[n].ip = string(find.SubMatch(regx.IPBH, line)[1])
 	}
 }
 
-func (c *Config) sourcename(o *source, line []byte, tnode string, find *regx.OBJ) {
-	if isTnode(tnode) {
+func (c *Config) sourcename(o *source, line []byte, n string, find *regx.OBJ) {
+	if isTnode(n) {
 		name := find.SubMatch(regx.NAME, line)
 		if o != nil {
-			c.label(name, o, tnode)
+			c.label(name, o, n)
 		}
 	}
 }

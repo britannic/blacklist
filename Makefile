@@ -48,6 +48,22 @@ TAG 			 = "v$(VER)"
 LDFLAGS 		 = -X main.build=$(DATE) -X main.githash=$(GIT) -X main.version=$(VER)
 FLAGS 			 = -s -w
 
+ifeq ("$(origin V)", "command line")
+  KBUILD_VERBOSE = $(V)
+endif
+ifndef KBUILD_VERBOSE
+  KBUILD_VERBOSE = 0
+endif
+
+ifeq ($(KBUILD_VERBOSE),1)
+  quiet =
+  Q =
+else
+  quiet=quiet_
+  Q = @
+endif
+export quiet Q KBUILD_VERBOSE
+
 PHONY: all clean deps amd64 mips coverage copyright docs readme pkgs
 mac: amd64
 
@@ -57,35 +73,35 @@ AllOfIt: clean deps amd64 mips coverage copyright docs readme pkgs
 # Tools
 DEP				 = $(BIN)/dep
 $(BIN)/dep: ; @ $(info $(M) building dep…) 
-	$Q $(GO) get github.com/golang/dep/cmd/dep
+	$(Q) $(GO) get github.com/golang/dep/cmd/dep
 
 GODOC2MD 		 = $(BIN)/godoc2md
 $(BIN)/godoc2md: ; @ $(info $(M) building godoc2md…)
-	$Q $(GO) get github.com/davecheney/godoc2md
+	$(Q) $(GO) get github.com/davecheney/godoc2md
 
 GOLINT 			 = $(BIN)/golint
 $(BIN)/golint: ; @ $(info $(M) building golint…)
-	$Q $(GO) get github.com/golang/lint/golint
+	$(Q) $(GO) get github.com/golang/lint/golint
 
 GOCOVMERGE 		 = $(BIN)/gocovmerge
 $(BIN)/gocovmerge: ; @ $(info $(M) building gocovmerge…)
-	$Q $(GO) get github.com/wadey/gocovmerge
+	$(Q) $(GO) get github.com/wadey/gocovmerge
 
 GOCOV 			 = $(BIN)/gocov
 $(BIN)/gocov: ; @ $(info $(M) building gocov…)
-	$Q $(GO) get github.com/axw/gocov/...
+	$(Q) $(GO) get github.com/axw/gocov/...
 
 GOCOVXML 		 = $(BIN)/gocov-xml
 $(BIN)/gocov-xml: ; @ $(info $(M) building gocov-xml…)
-	$Q $(GO) get github.com/AlekSi/gocov-xml
+	$(Q) $(GO) get github.com/AlekSi/gocov-xml
 
 GO2XUNIT 		 = $(BIN)/go2xunit
 $(BIN)/go2xunit: ; @ $(info $(M) building go2xunit…)
-	$Q $(GO) get github.com/tebeka/go2xunit
+	$(Q) $(GO) get github.com/tebeka/go2xunit
 
 GOREPORTER		 = $(BIN)/goreporter
 $(BIN)/goreporter: ; @ $(info $(M) building goreporter…)
-	$Q $(GO) get github.com/360EntSecGroup-Skylar/goreporter
+	$(Q) $(GO) get github.com/360EntSecGroup-Skylar/goreporter
 
 amd64: generate ; @ $(info building Mac OS binary…) ## Build Mac OS binary
 	$(eval LDFLAGS += -X main.architecture=amd64 -X main.hostOS=darwin)
@@ -232,10 +248,10 @@ $(TEST_TARGETS): NAME=$(MAKECMDGOALS:test-%=%)
 $(TEST_TARGETS): test
 
 check tests: fmt lint vendor | $(BASE) ; $(info $(M) running $(NAME:%=% )tests…) @ ## Run tests
-	$Q cd $(BASE) && $(GO) test -timeout $(TIMEOUT)s $(ARGS) $(TESTPKGS)
+	$(Q) cd $(BASE) && $(GO) test -timeout $(TIMEOUT)s $(ARGS) $(TESTPKGS)
 
 test-xml: fmt lint vendor | $(BASE) $(GO2XUNIT) ; $(info $(M) running $(NAME:%=% )tests…) @  ## Run tests with xUnit output
-	$Q cd $(BASE) && 2>&1 $(GO) test -timeout $(TIMEOUT)s -v $(TESTPKGS) | tee test/tests.output
+	$(Q) cd $(BASE) && 2>&1 $(GO) test -timeout $(TIMEOUT)s -v $(TESTPKGS) | tee test/tests.output
 	$(GO2XUNIT) -fail -input test/tests.output -output test/tests.xml
 
 COVERAGE_MODE    = atomic
@@ -248,8 +264,8 @@ coverage: test-coverage ; $(info $(M) running coverage tests…) @  ## Alias for
 test-coverage-tools: | $(GOCOVMERGE) $(GOCOV) $(GOCOVXML)
 test-coverage: COVERAGE_DIR := $(CURDIR)/test/coverage.$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 test-coverage: fmt lint vendor test-coverage-tools | $(BASE) ; $(info $(M) running coverage tests…) @  ## Run coverage tests
-	$Q mkdir -p $(COVERAGE_DIR)/coverage
-	$Q cd $(BASE) && for pkg in $(TESTPKGS); do \
+	$(Q) mkdir -p $(COVERAGE_DIR)/coverage
+	$(Q) cd $(BASE) && for pkg in $(TESTPKGS); do \
 		$(GO) test \
 			-coverpkg=$$($(GO) list -f '{{ join .Deps "\n" }}' $$pkg | \
 					grep '^$(PACKAGE)/' | grep -v '^$(PACKAGE)/vendor/' | \
@@ -257,13 +273,13 @@ test-coverage: fmt lint vendor test-coverage-tools | $(BASE) ; $(info $(M) runni
 			-covermode=$(COVERAGE_MODE) \
 			-coverprofile="$(COVERAGE_DIR)/coverage/`echo $$pkg | tr "/" "-"`.cover" $$pkg ;\
 	 done
-	$Q $(GOCOVMERGE) $(COVERAGE_DIR)/coverage/*.cover > $(COVERAGE_PROFILE)
-	$Q $(GO) tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
-	$Q $(GOCOV) convert $(COVERAGE_PROFILE) | $(GOCOVXML) > $(COVERAGE_XML)
+	$(Q) $(GOCOVMERGE) $(COVERAGE_DIR)/coverage/*.cover > $(COVERAGE_PROFILE)
+	$(Q) $(GO) tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
+	$(Q) $(GOCOV) convert $(COVERAGE_PROFILE) | $(GOCOVXML) > $(COVERAGE_XML)
 
 .PHONY: lint
 lint: vendor | $(BASE) $(GOLINT) ; $(info $(M) running golint…)  @ ## Run golint
-	$Q cd $(BASE) && ret=0 && for pkg in $(PKGS); do \
+	$(Q) cd $(BASE) && ret=0 && for pkg in $(PKGS); do \
 		test -z "$$($(GOLINT) $$pkg | tee /dev/stderr)" || ret=1 ; \
 	 done ; exit $$ret
 
@@ -279,7 +295,7 @@ shadow: ; $(info $(M) running go var shadow checker…)  @ ## Run go shadow
 		$(GOSHADOW) $$d/*.go || ret=$$? ; \
 	done ; exit $$ret
 
-.PHONY: report
+.PHONY: report goreporter
 report: ; $(info $(M) running goreporter…)  @ ## Run go goreporter
 	$(GOREPORTER) -p ../blacklist/ -f html \
 	-e "vendor/github.com/britannic/gologging,\

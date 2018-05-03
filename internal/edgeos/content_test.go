@@ -381,7 +381,7 @@ func TestNewContent(t *testing.T) {
 			},
 			{
 				i:    0,
-				err:  errors.New("Invalid interface requested"),
+				err:  errors.New("invalid interface requested"),
 				fail: true,
 				obj:  Invalid,
 				pos:  -1,

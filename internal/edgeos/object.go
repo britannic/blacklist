@@ -32,22 +32,22 @@ func (o *Objects) Files() *CFile {
 
 // Filter returns a subset of Objects filtered by ltype
 func (o *Objects) Filter(ltype string) *Objects {
-	sources := Objects{Env: o.Env}
+	objx := Objects{Env: o.Env}
 	switch ltype {
 	case files:
 		for _, obj := range o.src {
 			if obj.ltype == files && obj.file != "" {
-				sources.src = append(sources.src, obj)
+				objx.src = append(objx.src, obj)
 			}
 		}
 	case urls:
 		for _, obj := range o.src {
 			if obj.ltype == urls && obj.url != "" {
-				sources.src = append(sources.src, obj)
+				objx.src = append(objx.src, obj)
 			}
 		}
 	}
-	return &sources
+	return &objx
 }
 
 // Find returns the int position of an Objects' element

@@ -17,9 +17,9 @@ type CFile struct {
 
 // readDir returns a listing of dnsmasq blacklist configuration files
 func (c *CFile) readDir(pattern string) ([]string, error) {
-	files, err := filepath.Glob(pattern)
-	c.Debug(fmt.Sprintf("Files: %v\n: %v", pattern, files))
-	return files, err
+	f, err := filepath.Glob(pattern)
+	c.Debug(fmt.Sprintf("Files: %v\n: %v", pattern, f))
+	return f, err
 }
 
 // Remove deletes a CFile array of file names
@@ -28,9 +28,9 @@ func (c *CFile) Remove() error {
 	if err != nil {
 		return err
 	}
-	files := diffArray(c.Names, d)
-	c.Debug(fmt.Sprintf("Removing: %v", files))
-	return purgeFiles(files)
+	f := diffArray(c.Names, d)
+	c.Debug(fmt.Sprintf("Removing: %v", f))
+	return purgeFiles(f)
 }
 
 // String implements string method
