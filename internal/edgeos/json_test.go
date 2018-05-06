@@ -15,7 +15,7 @@ func TestConfigString(t *testing.T) {
 			Method("GET"),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 		So(c.String(), ShouldEqual, tdata.JSONcfg)
 
 		c = NewConfig(
@@ -24,7 +24,10 @@ func TestConfigString(t *testing.T) {
 			Method("GET"),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: tdata.ZeroHostSourcesCfg}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: tdata.ZeroHostSourcesCfg}), ShouldBeNil)
 		So(c.String(), ShouldEqual, tdata.JSONcfgZeroHostSources)
+
+		// So(c.ReadCfg(&CFGstatic{Cfg: tdata.SingleSource}), ShouldBeNil)
+		// So(c.String(), ShouldEqual, "")
 	})
 }

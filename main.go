@@ -20,7 +20,10 @@ var (
 	initEnvirons = initEnv
 	prog         = basename(os.Args[0])
 	prefix       = fmt.Sprintf("%s: ", prog)
-	objex        = []e.IFace{
+)
+
+func main() {
+	objex := []e.IFace{
 		e.PreRObj,
 		e.PreDObj,
 		e.PreHObj,
@@ -31,9 +34,7 @@ var (
 		e.URLdObj,
 		e.URLhObj,
 	}
-)
 
-func main() {
 	c, err := initEnvirons()
 	if err != nil {
 		logErrorf("%s shutting down.", err.Error())
@@ -91,7 +92,7 @@ func initEnv() (c *e.Config, err error) {
 	o := getOpts()
 	o.setArgs()
 	c = o.initEdgeOS()
-	if err = c.ReadCfg(o.getCFG(c)); err != nil {
+	if err = c.Blacklist(o.getCFG(c)); err != nil {
 		fmt.Fprintf(os.Stderr, "Removing stale dnsmasq blaclist files, because %v\n", err.Error())
 		if err = files(c).Remove(); err != nil {
 			fmt.Fprintf(os.Stderr, "%v", err.Error())

@@ -12,7 +12,6 @@ import (
 type CFile struct {
 	*Env
 	Names []string
-	nType ntype
 }
 
 // readDir returns a listing of dnsmasq blacklist configuration files

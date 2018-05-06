@@ -153,7 +153,7 @@ func TestConfigProcessContent(t *testing.T) {
 				if tt.name == "" {
 					tt.c.Dir = "/:~/"
 				}
-				So(tt.c.ReadCfg(&CFGstatic{Cfg: tt.cfg}), ShouldBeNil)
+				So(tt.c.Blacklist(&CFGstatic{Cfg: tt.cfg}), ShouldBeNil)
 
 				obj, err := tt.c.NewContent(tt.ct)
 				So(err, ShouldBeNil)
@@ -407,7 +407,7 @@ func TestNewContent(t *testing.T) {
 			WCard(Wildcard{Node: "*s", Name: "*"}),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: Cfg}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: Cfg}), ShouldBeNil)
 
 		c.Dex.merge(list{RWMutex: &sync.RWMutex{}, entry: entry{"amazon-de.com": 0}})
 		So(c.Dex.String(), ShouldEqual, `"amazon-de.com":0,
@@ -467,7 +467,7 @@ func TestContenterString(t *testing.T) {
 			Prefix("address=", "server="),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: testallCfg}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: testallCfg}), ShouldBeNil)
 
 		tests := []struct {
 			iFace IFace
@@ -539,7 +539,7 @@ func TestMultiObjNewContent(t *testing.T) {
 			Prefix("address=", "server="),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: CfgMimimal}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: CfgMimimal}), ShouldBeNil)
 
 		tests := []struct {
 			iFace IFace
@@ -831,7 +831,7 @@ address=/really.bad.phishing.site.ru/10.10.10.10
 				},
 			}
 
-			So(c.ReadCfg(&CFGstatic{Cfg: CfgMimimal}), ShouldBeNil)
+			So(c.Blacklist(&CFGstatic{Cfg: CfgMimimal}), ShouldBeNil)
 
 			for _, tt := range tests {
 				Convey("Testing "+tt.name+" ProcessContent()", func() {
@@ -931,7 +931,7 @@ func TestProcessZeroContent(t *testing.T) {
 			Prefix("address=", "server="),
 		)
 
-		err = c.ReadCfg(&CFGstatic{Cfg: cfgRedundant})
+		err = c.Blacklist(&CFGstatic{Cfg: cfgRedundant})
 		So(err, ShouldBeNil)
 
 		for _, o := range []IFace{ExRtObj, FileObj} {
@@ -972,7 +972,7 @@ func TestProcessBadFile(t *testing.T) {
 			Prefix("address=", "server="),
 		)
 
-		err = c.ReadCfg(&CFGstatic{Cfg: CfgMimimal})
+		err = c.Blacklist(&CFGstatic{Cfg: CfgMimimal})
 		So(err, ShouldBeNil)
 
 		ct, err := c.NewContent(FileObj)

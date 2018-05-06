@@ -15,7 +15,7 @@ func TestObjectsAddObj(t *testing.T) {
 			Ext("blacklist.conf"),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
 		o, err := c.NewContent(FileObj)
 		So(err, ShouldBeNil)
@@ -51,7 +51,7 @@ func TestObjectString(t *testing.T) {
 			Ext("blacklist.conf"),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
 		act := c.GetAll()
 		So(act.Find("sysctl.org"), ShouldEqual, 9)
@@ -102,7 +102,7 @@ func TestFilter(t *testing.T) {
 			Ext("blacklist.conf"),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
 		for _, tt := range tests {
 			Convey("Testing "+tt.ltype, func() {

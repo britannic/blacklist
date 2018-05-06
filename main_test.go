@@ -368,12 +368,12 @@ func TestGetCFG(t *testing.T) {
 		o := getOpts()
 		c := o.initEdgeOS()
 
-		c.ReadCfg(o.getCFG(c))
+		c.Blacklist(o.getCFG(c))
 		So(c.String(), ShouldEqual, mainGetConfig)
 
 		*o.MIPS64 = "amd64"
 		c = o.initEdgeOS()
-		c.ReadCfg(o.getCFG(c))
+		c.Blacklist(o.getCFG(c))
 		So(c.String(), ShouldEqual, "{\n  \"nodes\": [{\n  }]\n}")
 	})
 }

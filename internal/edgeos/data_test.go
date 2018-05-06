@@ -55,7 +55,7 @@ func TestFormatData(t *testing.T) {
 			Prefix("address=", "server="),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
 		for _, node := range c.sortKeys() {
 			var (

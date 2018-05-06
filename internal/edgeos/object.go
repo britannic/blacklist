@@ -9,7 +9,8 @@ import (
 // Objects is a struct of []*source
 type Objects struct {
 	*Env
-	src []*source
+	iface IFace
+	src   []*source
 }
 
 func (o *Objects) addObj(c *Config, node string) {
@@ -23,7 +24,6 @@ func (o *Objects) Files() *CFile {
 	if !o.Disabled {
 		for _, obj := range o.src {
 			c.Names = append(c.Names, obj.setFilePrefix(o.Env.Dir+"/%v.%v."+o.Env.Ext))
-			c.nType = obj.nType
 		}
 		sort.Strings(c.Names)
 	}
@@ -57,7 +57,7 @@ func (o *Objects) Find(elem string) int {
 			return i
 		}
 	}
-	return -1
+	return notfound
 }
 
 func getLtypeDesc(s string) string {

@@ -16,7 +16,7 @@ import (
 	"github.com/britannic/blacklist/internal/regx"
 )
 
-// tree is a map of top nodes
+// tree is a map of top node Objects
 type tree map[string]*source
 
 // ConfLoader interface handles multiple configuration load methods
@@ -84,16 +84,20 @@ func (c *Config) nodeExists(n string) bool {
 func (c *Config) addExc(n string) *Objects {
 	var (
 		exc   = []string{}
+		iface IFace
 		ltype string
 	)
 
 	switch n {
 	case domains:
 		ltype = ExcDomns
+		iface = ExDmObj
 	case hosts:
 		ltype = ExcHosts
+		iface = ExHtObj
 	case rootNode:
 		ltype = ExcRoots
+		iface = ExRtObj
 	}
 
 	if c.nodeExists(n) {
@@ -101,11 +105,12 @@ func (c *Config) addExc(n string) *Objects {
 	}
 
 	return &Objects{
-		Env: c.Env,
+		Env:   c.Env,
+		iface: iface,
 		src: []*source{
 			{
 				Env:   c.Env,
-				desc:  getLtypeDesc(ltype),
+				desc:  getLtypeDesc(iface.String()),
 				exc:   exc,
 				ip:    c.tree.getIP(n),
 				ltype: ltype,
@@ -118,8 +123,9 @@ func (c *Config) addExc(n string) *Objects {
 
 func (c *Config) addInc(n string) *source {
 	var (
+		iface IFace
 		inc   = []string{}
-		ltype string
+		lt    string
 		nt    ntype
 	)
 
@@ -129,24 +135,28 @@ func (c *Config) addInc(n string) *source {
 
 	switch n {
 	case domains:
-		ltype = getType(preDomn).(string)
-		nt = getType(ltype).(ntype)
+		lt = getType(preDomn).(string)
+		nt = getType(lt).(ntype)
+		iface = PreDObj
 	case hosts:
-		ltype = getType(preHost).(string)
-		nt = getType(ltype).(ntype)
+		lt = getType(preHost).(string)
+		nt = getType(lt).(ntype)
+		iface = PreHObj
 	case rootNode:
-		ltype = getType(preRoot).(string)
-		nt = getType(ltype).(ntype)
+		lt = getType(preRoot).(string)
+		nt = getType(lt).(ntype)
+		iface = PreRObj
 	}
 
 	return &source{
 		Env:   c.Env,
-		desc:  getLtypeDesc(ltype),
+		desc:  getLtypeDesc(lt),
 		inc:   inc,
+		iface: iface,
 		ip:    c.tree.getIP(n),
-		ltype: ltype,
+		ltype: lt,
 		nType: nt,
-		name:  ltype,
+		name:  lt,
 	}
 }
 
@@ -169,7 +179,7 @@ func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
 	return dropped, extracted, kept
 }
 
-// NewContent returns an interface of the requested IFace type
+// NewContent returns a Contenter interface of the requested IFace type
 func (c *Config) NewContent(iface IFace) (Contenter, error) {
 	switch iface {
 	case ExDmObj:
@@ -195,9 +205,9 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 }
 
 // excludes returns a string array of excludes
-func (c *Config) excludes(nodes ...string) list {
+func (c *Config) excludes(nx ...string) list {
 	var exc [][]byte
-	switch nodes {
+	switch nx {
 	case nil:
 		for _, k := range c.sortKeys() {
 			for _, v := range c.tree[k].exc {
@@ -206,7 +216,7 @@ func (c *Config) excludes(nodes ...string) list {
 
 		}
 	default:
-		for _, n := range nodes {
+		for _, n := range nx {
 			for _, v := range c.tree[n].exc {
 				exc = append(exc, []byte(v))
 			}
@@ -216,20 +226,20 @@ func (c *Config) excludes(nodes ...string) list {
 }
 
 // Get returns an *Object for a given node
-func (c *Config) Get(nodes string) *Objects {
+func (c *Config) Get(nx string) *Objects {
 	o := &Objects{Env: c.Env, src: []*source{}}
-	switch nodes {
+	switch nx {
 	case all:
 		for _, n := range c.sortKeys() {
 			o.addObj(c, n)
 		}
 	default:
-		o.addObj(c, nodes)
+		o.addObj(c, nx)
 	}
 	return o
 }
 
-// GetAll returns an array of Objects
+// GetAll returns a pointer to an Objects struct
 func (c *Config) GetAll(ltypes ...string) *Objects {
 	o := &Objects{Env: c.Env}
 	for _, n := range c.sortKeys() {
@@ -302,7 +312,6 @@ func (c *Config) label(name [][]byte, o *source, n string) {
 		o.file = string(name[2])
 		o.ltype = string(name[1])
 		c.tree[n].src = append(c.tree[n].src, o)
-
 	case "prefix":
 		o.prefix = string(name[2])
 	case urls:
@@ -398,8 +407,8 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 	return nil
 }
 
-// ReadCfg extracts nodes from a EdgeOS/VyOS configuration structure
-func (c *Config) ReadCfg(r ConfLoader) error {
+// Blacklist extracts blacklist nodes from a EdgeOS/VyOS configuration structure
+func (c *Config) Blacklist(r ConfLoader) error {
 	var (
 		b     = bufio.NewScanner(r.read())
 		nodes []string
@@ -414,20 +423,18 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 		switch {
 		case find.RX[regx.MLTI].Match(line): // add include/exclude
 			c.Debug(fmt.Sprintf("Adding incExc to %s: %s\n", tnode, string(line)))
-			incExc := find.SubMatch(regx.MLTI, line)
-			c.excinc(incExc, tnode)
-		case find.RX[regx.NODE].Match(line): // add node
-			node := find.SubMatch(regx.NODE, line)
-			tnode = string(node[1])
+			c.excinc(find.SubMatch(regx.MLTI, line), tnode)
+		case find.RX[regx.NODE].Match(line): // add tnode
+			tnode = string(find.SubMatch(regx.NODE, line)[1])
 			nodes = append(nodes, tnode)
 			c.Debug(fmt.Sprintf("Adding %s node: %s\n", tnode, string(line)))
 			c.addTnodeSource(tnode)
-		case find.RX[regx.LEAF].Match(line): // add leaf node to root/domains/hosts
+		case find.RX[regx.LEAF].Match(line): // add source to root/domains/hosts
 			c.Debug(fmt.Sprintf("Adding leaf to %s: %s\n", tnode, string(line)))
 			srcName := find.SubMatch(regx.LEAF, line)
 			nodes = append(nodes, string(srcName[1]))
 			o = newSource()
-			o.addLeaf(srcName, tnode)
+			o.addSource(srcName, tnode)
 		case find.RX[regx.DSBL].Match(line): // add disable blacklist flag
 			c.Debug(fmt.Sprintf("Adding disable flag to %s: %s\n", tnode, string(line)))
 			c.disable(line, tnode, find)
@@ -437,11 +444,11 @@ func (c *Config) ReadCfg(r ConfLoader) error {
 		case find.RX[regx.NAME].Match(line): // add source name
 			c.Debug(fmt.Sprintf("Adding source to %s: %s\n", tnode, string(line)))
 			c.sourcename(o, line, tnode, find)
-		case find.RX[regx.RBRC].Match(line):
+		case find.RX[regx.RBRC].Match(line): // found closing bracket
 			if len(nodes) > 1 {
 				c.Debug(fmt.Sprintf("Matching closing bracket: %s\n", string(line)))
 				nodes = nodes[:len(nodes)-1] // pop last node
-				tnode = nodes[len(nodes)-1]
+				tnode = nodes[len(nodes)-1]  // capture top node
 			}
 		}
 	}

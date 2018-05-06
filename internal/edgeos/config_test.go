@@ -18,7 +18,7 @@ func TestAddInc(t *testing.T) {
 	Convey("Testing addInc()", t, func() {
 		var (
 			c   = NewConfig()
-			err = c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg})
+			err = c.Blacklist(&CFGstatic{Cfg: tdata.Cfg})
 		)
 
 		So(err, ShouldBeNil)
@@ -70,6 +70,7 @@ func TestAddInc(t *testing.T) {
 					exc:      nil,
 					file:     "",
 					inc:      []string{},
+					iface:    PreRObj,
 					ip:       "0.0.0.0",
 					ltype:    "global-blacklisted-domains",
 					name:     "global-blacklisted-domains",
@@ -125,6 +126,7 @@ func TestAddInc(t *testing.T) {
 					exc:      nil,
 					file:     "",
 					inc:      []string{"adsrvr.org", "adtechus.net", "advertising.com", "centade.com", "doubleclick.net", "free-counter.co.uk", "intellitxt.com", "kiosked.com", "patoghee.in"},
+					iface:    PreDObj,
 					ip:       "192.168.100.1",
 					ltype:    "blacklisted-subdomains",
 					name:     "blacklisted-subdomains",
@@ -178,6 +180,7 @@ func TestAddInc(t *testing.T) {
 					err:      nil,
 					exc:      nil,
 					file:     "",
+					iface:    PreHObj,
 					inc:      []string{"beap.gemini.yahoo.com"},
 					ip:       "0.0.0.0",
 					ltype:    "blacklisted-servers",
@@ -211,7 +214,7 @@ func TestExcludes(t *testing.T) {
 			Ext("blacklist.conf"),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
 		excludes := list{
 			entry: entry{
@@ -327,7 +330,7 @@ func TestFiles(t *testing.T) {
 			Ext("blacklist.conf"),
 		)
 
-		So(c.ReadCfg(r), ShouldBeNil)
+		So(c.Blacklist(r), ShouldBeNil)
 
 		exp := `/tmp/domains.blacklisted-subdomains.blacklist.conf
 /tmp/domains.malc0de.blacklist.conf
@@ -371,7 +374,7 @@ func TestNodeExists(t *testing.T) {
 	Convey("Testing TestNodeExists()", t, func() {
 		var (
 			c   = NewConfig()
-			err = c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg})
+			err = c.Blacklist(&CFGstatic{Cfg: tdata.Cfg})
 		)
 		So(err, ShouldBeNil)
 		So(c.nodeExists("broken"), ShouldBeFalse)
@@ -394,28 +397,28 @@ func TestReadCfg(t *testing.T) {
 		b, _ = ioutil.ReadAll(r)
 
 		Convey("Testing with a configuration loaded from a file", func() {
-			act := NewConfig().ReadCfg(&CFGstatic{Cfg: string(b)})
+			act := NewConfig().Blacklist(&CFGstatic{Cfg: string(b)})
 			So(act, ShouldBeEmpty)
 		})
 
 		Convey("Testing with an empty configuration", func() {
 			exp := errors.New("no blacklist configuration has been detected")
-			act := NewConfig().ReadCfg(&CFGstatic{Cfg: ""})
+			act := NewConfig().Blacklist(&CFGstatic{Cfg: ""})
 			So(act, ShouldResemble, exp)
 		})
 		Convey("Testing with a disabled configuration", func() {
-			act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.DisabledCfg})
+			act := NewConfig().Blacklist(&CFGstatic{Cfg: tdata.DisabledCfg})
 			So(act, ShouldBeEmpty)
 		})
 
 		Convey("Testing with a single source configuration", func() {
-			act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.SingleSource})
+			act := NewConfig().Blacklist(&CFGstatic{Cfg: tdata.SingleSource})
 			So(act, ShouldBeEmpty)
 		})
 
 		Convey("Testing with an active configuration", func() {
 			c := NewConfig()
-			So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+			So(c.Blacklist(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 			So(c.Nodes(), ShouldResemble, []string{"blacklist", "domains", "hosts"})
 		})
 	})
@@ -424,7 +427,7 @@ func TestReadCfg(t *testing.T) {
 func TestReadUnconfiguredCfg(t *testing.T) {
 	Convey("Testing ReadCfg()", t, func() {
 		exp := errors.New("no blacklist configuration has been detected")
-		act := NewConfig().ReadCfg(&CFGstatic{Cfg: tdata.NoBlacklist})
+		act := NewConfig().Blacklist(&CFGstatic{Cfg: tdata.NoBlacklist})
 		So(act, ShouldResemble, exp)
 	})
 }
@@ -449,7 +452,7 @@ func TestRemove(t *testing.T) {
 			WCard(Wildcard{Node: "*s", Name: "*"}),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: tdata.CfgMimimal}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: tdata.CfgMimimal}), ShouldBeNil)
 
 		Convey("Creating special case file", func() {
 			f, err := os.Create(fmt.Sprintf("%v/hosts.raw.github.com.blacklist.conf", dir))
@@ -509,7 +512,7 @@ func TestGetAll(t *testing.T) {
 			Ext(".blacklist.conf"),
 		)
 
-		So(c.ReadCfg(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+		So(c.Blacklist(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
 		tests := []struct {
 			exp   string

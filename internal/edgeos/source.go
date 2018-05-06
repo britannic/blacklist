@@ -21,18 +21,19 @@ type source struct {
 	file     string
 	inc      []string
 	ip       string
+	iface    IFace
 	ltype    string
-	name     string
 	nType    ntype
+	name     string
 	prefix   string
 	r        io.Reader
 	url      string
 }
 
-func (s *source) addLeaf(srcName [][]byte, node string) {
+func (s *source) addSource(srcName [][]byte, n string) {
 	if bytes.Equal(srcName[1], []byte(src)) {
 		s.name = string(srcName[2])
-		s.nType = getType(node).(ntype)
+		s.nType = getType(n).(ntype)
 	}
 }
 
@@ -70,11 +71,11 @@ func (s *source) includes() io.Reader {
 	return strings.NewReader(strings.Join(s.inc, "\n"))
 }
 
-func isntSource(nodes []string) bool {
-	if len(nodes) < 1 {
+func isntSource(nx []string) bool {
+	if len(nx) < 1 {
 		return true
 	}
-	return nodes[len(nodes)-1] != src
+	return nx[len(nx)-1] != src
 }
 
 func newSource() *source {

@@ -1,0 +1,146 @@
+{
+  "nodes": [{
+    "blacklist": {
+      "disabled": "false",
+      "ip": "0.0.0.0",
+      "excludes": [
+        "1e100.net",
+        "2o7.net",
+        "adobedtm.com",
+        "akamai.net",
+        "akamaihd.net",
+        "amazon.com",
+        "amazonaws.com",
+        "apple.com",
+        "ask.com",
+        "avast.com",
+        "bitdefender.com",
+        "cdn.visiblemeasures.com",
+        "cloudfront.net",
+        "coremetrics.com",
+        "edgesuite.net",
+        "freedns.afraid.org",
+        "github.com",
+        "githubusercontent.com",
+        "google.com",
+        "googleadservices.com",
+        "googleapis.com",
+        "googletagmanager.com",
+        "googleusercontent.com",
+        "gstatic.com",
+        "gvt1.com",
+        "gvt1.net",
+        "hb.disney.go.com",
+        "hp.com",
+        "hulu.com",
+        "images-amazon.com",
+        "live.com",
+        "microsoft.com",
+        "msdn.com",
+        "msecnd.net",
+        "paypal.com",
+        "rackcdn.com",
+        "schema.org",
+        "shopify.com",
+        "skype.com",
+        "smacargo.com",
+        "sourceforge.net",
+        "ssl-on9.com",
+        "ssl-on9.net",
+        "sstatic.net",
+        "static.chartbeat.com",
+        "storage.googleapis.com",
+        "windows.net",
+        "xboxlive.com",
+        "yimg.com",
+        "ytimg.com"
+        ],
+      "includes": [],
+      "sources": [{}]
+    },
+    "domains": {
+      "disabled": "false",
+      "ip": "192.168.100.1",
+      "excludes": [],
+      "includes": [
+        "adsrvr.org",
+        "adtechus.net",
+        "advertising.com",
+        "centade.com",
+        "doubleclick.net",
+        "free-counter.co.uk",
+        "intellitxt.com",
+        "kiosked.com",
+        "patoghee.in"
+        ],
+      "sources": [{
+        "malc0de": {
+          "disabled": "false",
+          "description": "List of zones serving malicious executables observed by malc0de.com/database/",
+          "ip": "192.168.168.1",
+          "prefix": "zone ",
+          "url": "http://malc0de.com/bl/ZONES",
+        },
+        "malwaredomains.com": {
+          "disabled": "false",
+          "description": "Just domains",
+          "ip": "10.0.0.1",
+          "url": "http://mirror1.malwaredomains.com/files/justdomains",
+        },
+        "simple_tracking": {
+          "disabled": "false",
+          "description": "Basic tracking list by Disconnect",
+          "url": "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt",
+        },
+        "zeus": {
+          "disabled": "false",
+          "description": "abuse.ch ZeuS domain blocklist",
+          "url": "https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist",
+        }
+    }]
+    },
+    "hosts": {
+      "disabled": "false",
+      "excludes": [],
+      "includes": ["beap.gemini.yahoo.com"],
+      "sources": [{
+        "openphish": {
+          "disabled": "false",
+          "description": "OpenPhish automatic phishing detection",
+          "prefix": "http",
+          "url": "https://openphish.com/feed.txt",
+        },
+        "raw.github.com": {
+          "disabled": "false",
+          "description": "This hosts file is a merged collection of hosts from reputable sources",
+          "prefix": "0.0.0.0 ",
+          "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
+        },
+        "sysctl.org": {
+          "disabled": "false",
+          "description": "This hosts file is a merged collection of hosts from cameleon",
+          "ip": "172.16.16.1",
+          "prefix": "127.0.0.1\t ",
+          "url": "http://sysctl.org/cameleon/hosts",
+        },
+        "tasty": {
+          "disabled": "false",
+          "description": "File source",
+          "ip": "10.10.10.10",
+          "file": "../internal/testdata/blist.hosts.src",
+        },
+        "volkerschatz": {
+          "disabled": "false",
+          "description": "Ad server blacklists",
+          "prefix": "http",
+          "url": "http://www.volkerschatz.com/net/adpaths",
+        },
+        "yoyo": {
+          "disabled": "false",
+          "description": "Fully Qualified Domain Names only - no prefix to strip",
+          "url": "https://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext",
+        }
+    }]
+    }
+  }]
+}
