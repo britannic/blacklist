@@ -331,8 +331,9 @@ admicro1.vcmedia.vn
 ### **How do can keep my USG configuration after an upgrade, provision or reboot?**
 
 * Follow these [instructions](https://britannic.github.io/install-edgeos-packages/) on how to automatically install edgeos-dnsmasq-blacklist
-* Create a config.gateway.json file following these [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
+* Generate and download a config.gateway.json file from your USG following these [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
 * Here's a sample [config.gateway.json](https://raw.githubusercontent.com/britannic/blacklist/master/config.gateway.json)
+* Once the config.gateway.json has been generated, it will need to be uploaded to your UniFi controller per the [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
 
 [[Top]](#contents)
 
