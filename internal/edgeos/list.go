@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-type entry map[string]int
+type entry map[string]struct{}
 
 // list is a struct map of entry with a RW Mutex
 type list struct {
@@ -34,9 +34,9 @@ func (l list) merge(a list) {
 }
 
 // set adds a list entry map member
-func (l list) set(k []byte, v int) {
+func (l list) set(k []byte) {
 	l.Lock()
-	l.entry[string(k)] = v
+	l.entry[string(k)] = struct{}{}
 	l.Unlock()
 }
 
@@ -68,7 +68,7 @@ func (l list) subKeyExists(b []byte) bool {
 func updateEntry(d [][]byte) (l list) {
 	l.entry = make(entry)
 	for _, k := range d {
-		l.entry[string(k)] = 0
+		l.entry[string(k)] = struct{}{}
 	}
 	return l
 }

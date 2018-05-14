@@ -30,14 +30,14 @@ func TestKeys(t *testing.T) {
 func TestKeyExists(t *testing.T) {
 	exp := list{
 		RWMutex: &sync.RWMutex{},
-		entry: entry{"five.six.intellitxt.com": 0,
-			"four.five.six.intellitxt.com":                   0,
-			"intellitxt.com":                                 0,
-			"one.two.three.four.five.six.intellitxt.com":     0,
-			"six.intellitxt.com":                             0,
-			"three.four.five.six.intellitxt.com":             0,
-			"top.one.two.three.four.five.six.intellitxt.com": 0,
-			"two.three.four.five.six.intellitxt.com":         0,
+		entry: entry{"five.six.intellitxt.com": struct{}{},
+			"four.five.six.intellitxt.com":                   struct{}{},
+			"intellitxt.com":                                 struct{}{},
+			"one.two.three.four.five.six.intellitxt.com":     struct{}{},
+			"six.intellitxt.com":                             struct{}{},
+			"three.four.five.six.intellitxt.com":             struct{}{},
+			"top.one.two.three.four.five.six.intellitxt.com": struct{}{},
+			"two.three.four.five.six.intellitxt.com":         struct{}{},
 		},
 	}
 	Convey("Testing KeyExists()", t, func() {
@@ -51,14 +51,14 @@ func TestKeyExists(t *testing.T) {
 func TestSubKeyExists(t *testing.T) {
 	exp := list{
 		RWMutex: &sync.RWMutex{},
-		entry: entry{"five.six.intellitxt.com": 0,
-			"four.five.six.intellitxt.com":                   0,
-			"intellitxt.com":                                 0,
-			"one.two.three.four.five.six.intellitxt.com":     0,
-			"six.intellitxt.com":                             0,
-			"three.four.five.six.intellitxt.com":             0,
-			"top.one.two.three.four.five.six.intellitxt.com": 0,
-			"two.three.four.five.six.intellitxt.com":         0,
+		entry: entry{"five.six.intellitxt.com": struct{}{},
+			"four.five.six.intellitxt.com":                   struct{}{},
+			"intellitxt.com":                                 struct{}{},
+			"one.two.three.four.five.six.intellitxt.com":     struct{}{},
+			"six.intellitxt.com":                             struct{}{},
+			"three.four.five.six.intellitxt.com":             struct{}{},
+			"top.one.two.three.four.five.six.intellitxt.com": struct{}{},
+			"two.three.four.five.six.intellitxt.com":         struct{}{},
 		},
 	}
 	Convey("Testing KeyExists()", t, func() {
@@ -77,12 +77,12 @@ func TestMerge(t *testing.T) {
 		exp := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 
 		for i := range Iter(20) {
-			exp.entry[string(i)] = 1
+			exp.entry[string(i)] = struct{}{}
 			switch {
 			case i%2 == 0:
-				testList1.entry[string(i)] = 1
+				testList1.entry[string(i)] = struct{}{}
 			case i%2 != 0:
-				testList2.entry[string(i)] = 1
+				testList2.entry[string(i)] = struct{}{}
 			}
 		}
 		testList1.merge(testList2)
@@ -93,28 +93,28 @@ func TestMerge(t *testing.T) {
 
 func TestString(t *testing.T) {
 	Convey("Testing String()", t, func() {
-		exp := `"a.applovin.com":0,
-"a.glcdn.co":0,
-"a.vserv.mobi":0,
-"ad.leadboltapps.net":0,
-"ad.madvertise.de":0,
-"ad.where.com":0,
-"ad1.adinfuse.com":0,
-"ad2.adinfuse.com":0,
-"adcontent.saymedia.com":0,
-"adinfuse.com":0,
-"admicro1.vcmedia.vn":0,
-"admicro2.vcmedia.vn":0,
-"admin.vserv.mobi":0,
-"ads.adiquity.com":0,
-"ads.admarvel.com":0,
-"ads.admoda.com":0,
-"ads.celtra.com":0,
-"ads.flurry.com":0,
-"ads.matomymobile.com":0,
-"ads.mobgold.com":0,
-"ads.mobilityware.com":0,
-"ads.mopub.com":0,
+		exp := `"a.applovin.com":{},
+"a.glcdn.co":{},
+"a.vserv.mobi":{},
+"ad.leadboltapps.net":{},
+"ad.madvertise.de":{},
+"ad.where.com":{},
+"ad1.adinfuse.com":{},
+"ad2.adinfuse.com":{},
+"adcontent.saymedia.com":{},
+"adinfuse.com":{},
+"admicro1.vcmedia.vn":{},
+"admicro2.vcmedia.vn":{},
+"admin.vserv.mobi":{},
+"ads.adiquity.com":{},
+"ads.admarvel.com":{},
+"ads.admoda.com":{},
+"ads.celtra.com":{},
+"ads.flurry.com":{},
+"ads.matomymobile.com":{},
+"ads.mobgold.com":{},
+"ads.mobilityware.com":{},
+"ads.mopub.com":{},
 `
 		So(act.String(), ShouldEqual, exp)
 	})
@@ -123,28 +123,28 @@ func TestString(t *testing.T) {
 var (
 	act = list{
 		entry: entry{
-			"a.applovin.com":         0,
-			"a.glcdn.co":             0,
-			"a.vserv.mobi":           0,
-			"ad.leadboltapps.net":    0,
-			"ad.madvertise.de":       0,
-			"ad.where.com":           0,
-			"ad1.adinfuse.com":       0,
-			"ad2.adinfuse.com":       0,
-			"adcontent.saymedia.com": 0,
-			"adinfuse.com":           0,
-			"admicro1.vcmedia.vn":    0,
-			"admicro2.vcmedia.vn":    0,
-			"admin.vserv.mobi":       0,
-			"ads.adiquity.com":       0,
-			"ads.admarvel.com":       0,
-			"ads.admoda.com":         0,
-			"ads.celtra.com":         0,
-			"ads.flurry.com":         0,
-			"ads.matomymobile.com":   0,
-			"ads.mobgold.com":        0,
-			"ads.mobilityware.com":   0,
-			"ads.mopub.com":          0,
+			"a.applovin.com":         struct{}{},
+			"a.glcdn.co":             struct{}{},
+			"a.vserv.mobi":           struct{}{},
+			"ad.leadboltapps.net":    struct{}{},
+			"ad.madvertise.de":       struct{}{},
+			"ad.where.com":           struct{}{},
+			"ad1.adinfuse.com":       struct{}{},
+			"ad2.adinfuse.com":       struct{}{},
+			"adcontent.saymedia.com": struct{}{},
+			"adinfuse.com":           struct{}{},
+			"admicro1.vcmedia.vn":    struct{}{},
+			"admicro2.vcmedia.vn":    struct{}{},
+			"admin.vserv.mobi":       struct{}{},
+			"ads.adiquity.com":       struct{}{},
+			"ads.admarvel.com":       struct{}{},
+			"ads.admoda.com":         struct{}{},
+			"ads.celtra.com":         struct{}{},
+			"ads.flurry.com":         struct{}{},
+			"ads.matomymobile.com":   struct{}{},
+			"ads.mobgold.com":        struct{}{},
+			"ads.mobilityware.com":   struct{}{},
+			"ads.mopub.com":          struct{}{},
 		},
 	}
 	keyArray = [][]byte{

@@ -46,7 +46,7 @@ func diffArray(a, b []string) (diff sort.StringSlice) {
 
 	d := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 	for _, k := range least {
-		d.set([]byte(k), 0)
+		d.set([]byte(k))
 	}
 
 	for _, k := range most {

@@ -86,7 +86,7 @@ func TestFormatData(t *testing.T) {
 			for b.Scan() {
 				k := b.Text()
 				lines = append(lines, fmt.Sprintf(fmttr, k)+"\n")
-				actList.set([]byte(k), 0)
+				actList.set([]byte(k))
 			}
 
 			sort.Strings(lines)

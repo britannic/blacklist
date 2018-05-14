@@ -409,8 +409,8 @@ func TestNewContent(t *testing.T) {
 
 		So(c.Blacklist(&CFGstatic{Cfg: Cfg}), ShouldBeNil)
 
-		c.Dex.merge(list{RWMutex: &sync.RWMutex{}, entry: entry{"amazon-de.com": 0}})
-		So(c.Dex.String(), ShouldEqual, `"amazon-de.com":0,
+		c.Dex.merge(list{RWMutex: &sync.RWMutex{}, entry: entry{"amazon-de.com": struct{}{}}})
+		So(c.Dex.String(), ShouldEqual, `"amazon-de.com":{},
 `)
 
 		for _, tt := range tests {
@@ -626,8 +626,8 @@ Whitelist:
 Blacklist:
               "**No entries found**"
 `,
-					expDexMap: list{entry: entry{"ytimg.com": 0}},
-					expExcMap: list{entry: entry{"ytimg.com": 0}},
+					expDexMap: list{entry: entry{"ytimg.com": struct{}{}}},
+					expExcMap: list{entry: entry{"ytimg.com": struct{}{}}},
 					obj:       ExRtObj,
 				},
 				{
@@ -713,17 +713,17 @@ Blacklist:
 `,
 					expDexMap: list{
 						entry: entry{
-							"adsrvr.org":         0,
-							"adtechus.net":       0,
-							"advertising.com":    0,
-							"centade.com":        0,
-							"doubleclick.net":    0,
-							"free-counter.co.uk": 0,
-							"intellitxt.com":     0,
-							"kiosked.com":        0,
+							"adsrvr.org":         struct{}{},
+							"adtechus.net":       struct{}{},
+							"advertising.com":    struct{}{},
+							"centade.com":        struct{}{},
+							"doubleclick.net":    struct{}{},
+							"free-counter.co.uk": struct{}{},
+							"intellitxt.com":     struct{}{},
+							"kiosked.com":        struct{}{},
 						},
 					},
-					expExcMap: list{entry: entry{"ytimg.com": 0}},
+					expExcMap: list{entry: entry{"ytimg.com": struct{}{}}},
 					f:         dir + "/domains.blacklisted-subdomains.blacklist.conf",
 					fdata: `address=/awfuladvertising.com/0.0.0.0
 address=/badadsrvr.org/0.0.0.0
@@ -758,8 +758,8 @@ Whitelist:
 Blacklist:
               "beap.gemini.yahoo.com"
 `,
-					expDexMap: list{entry: entry{"ytimg.com": 0}},
-					expExcMap: list{entry: entry{"ytimg.com": 0}},
+					expDexMap: list{entry: entry{"ytimg.com": struct{}{}}},
+					expExcMap: list{entry: entry{"ytimg.com": struct{}{}}},
 					f:         dir + "/hosts.blacklisted-servers.blacklist.conf",
 					fdata:     "address=/beap.gemini.yahoo.com/192.168.168.1\n",
 					obj:       PreHObj,
@@ -796,14 +796,14 @@ Blacklist:
 					expDexMap: list{entry: entry{}},
 					expExcMap: list{
 						entry: entry{
-							"adsrvr.org":         0,
-							"adtechus.net":       0,
-							"advertising.com":    0,
-							"centade.com":        0,
-							"doubleclick.net":    0,
-							"free-counter.co.uk": 0,
-							"intellitxt.com":     0,
-							"kiosked.com":        0,
+							"adsrvr.org":         struct{}{},
+							"adtechus.net":       struct{}{},
+							"advertising.com":    struct{}{},
+							"centade.com":        struct{}{},
+							"doubleclick.net":    struct{}{},
+							"free-counter.co.uk": struct{}{},
+							"intellitxt.com":     struct{}{},
+							"kiosked.com":        struct{}{},
 						},
 					},
 					obj: PreRObj,
@@ -817,11 +817,11 @@ Blacklist:
 					exp:       filesMin,
 					expDexMap: list{
 						entry: entry{
-							"cw.bad.ultraadverts.site.eu": 1,
-							"really.bad.phishing.site.ru": 1,
+							"cw.bad.ultraadverts.site.eu": struct{}{},
+							"really.bad.phishing.site.ru": struct{}{},
 						},
 					},
-					expExcMap: list{entry: entry{"ytimg.com": 0}},
+					expExcMap: list{entry: entry{"ytimg.com": struct{}{}}},
 					f:         dir + "/hosts.tasty.blacklist.conf",
 					fdata: `address=/0.really.bad.phishing.site.ru/10.10.10.10
 address=/cw.bad.ultraadverts.site.eu/10.10.10.10

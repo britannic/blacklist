@@ -440,8 +440,8 @@ func (s *source) process() *bList {
 					}
 					if !s.Exc.keyExists(fqdn) {
 						kept++
-						s.Exc.set(fqdn, 0)
-						l.set(fqdn, 0)
+						s.Exc.set(fqdn)
+						l.set(fqdn)
 						continue
 					}
 					dropped++
