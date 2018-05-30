@@ -123,23 +123,30 @@ func (o *opts) initEdgeOS() *e.Config {
 // setArgs retrieves arguments entered on the command line
 func (o *opts) setArgs() {
 	if o.Parse(cleanArgs((os.Args[1:]))) != nil {
+		// o.Usage()
+		exitCmd(0)
+	}
+
+	if *o.Dbug {
+		screenLog("")
+		e.Dbug(*o.Dbug)
+	}
+
+	if *o.Help {
 		o.Usage()
 		exitCmd(0)
 	}
 
-	switch {
-	case *o.Dbug:
-		screenLog("")
-		e.Dbug(*o.Dbug)
-	case *o.Help:
-		o.Usage()
-		exitCmd(0)
-	case *o.Test:
+	if *o.Test {
 		fmt.Println("Test activated!")
 		exitCmd(0)
-	case *o.Verb:
+	}
+
+	if *o.Verb {
 		screenLog("")
-	case *o.Version:
+	}
+
+	if *o.Version {
 		fmt.Printf(
 			" Build Information:\n"+
 				"   Version:\t\t\t%s\n"+

@@ -3,9 +3,12 @@ package main
 import (
 	"bytes"
 	"errors"
+	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"testing"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
@@ -26,6 +29,25 @@ func init() {
 	*/
 
 	SetDefaultFailureMode(FailureContinues)
+}
+
+var update = flag.Bool("update", false, "update .golden files")
+
+func readGolden(t *testing.T, name string) []byte {
+	path := filepath.Join("testdata", name+".golden") // relative path
+	bytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return bytes
+}
+
+func writeGolden(t *testing.T, actual []byte, name string) error {
+	golden := filepath.Join("testdata", name+".golden")
+	if *update {
+		return ioutil.WriteFile(golden, actual, 0644)
+	}
+	return nil
 }
 
 func (o *opts) String() string {
@@ -221,91 +243,74 @@ func TestProcessObjects(t *testing.T) {
 	})
 }
 
-func TestGetOpts(t *testing.T) {
+func TestSetArgs(t *testing.T) {
+	var (
+		origArgs = os.Args
+		prog     = path.Base(os.Args[0])
+	)
+
 	exitCmd = func(int) {}
-	origArgs := os.Args
 	defer func() { os.Args = origArgs }()
 
-	Convey("Testing commandline output", t, func() {
-		act := new(bytes.Buffer)
-		exp := vanillaArgs
-		prog := path.Base(os.Args[0])
-		os.Args = []string{prog, "-convey-json", "-h"}
+	tests := []struct {
+		name string
+		args []string
+		exp  interface{}
+	}{
+		{
+			name: "h",
+			args: []string{prog, "-convey-json", "-h"},
+			exp:  true,
+		},
+		{
+			name: "debug",
+			args: []string{prog, "-debug"},
+			exp:  true,
+		},
+		{
+			name: "version",
+			args: []string{prog, "-version"},
+			exp:  true,
+		},
+		{
+			name: "v",
+			args: []string{prog, "-v"},
+			exp:  true,
+		},
+		{
+			name: "invalid flag",
+			args: []string{prog, "-z"},
+			exp:  readGolden(t, "testInvalidArgs"),
+			// exp: "",
+		},
+	}
 
-		Convey("Testing getOpts() with public arguments", func() {
-			o := getOpts()
-			o.Init("blacklist", mflag.ContinueOnError)
-			o.SetOutput(act)
-			o.setArgs()
-			if IsDrone() {
-				exp = vanillaArgsOnDrone
-			}
-			So(act.String(), ShouldEqual, exp)
+	for _, tt := range tests {
+		os.Args = nil
+		if tt.args != nil {
+			os.Args = tt.args
+		}
+
+		env := getOpts()
+		env.Init(prog, mflag.ContinueOnError)
+
+		Convey("Testing commandline output", t, func() {
+			Convey("Testing setArgs() with "+tt.name+"\n", func() {
+				switch {
+				case tt.name == "invalid flag":
+					act := new(bytes.Buffer)
+					env.SetOutput(act)
+					env.setArgs()
+					// *update = true
+					writeGolden(t, act.Bytes(), "testInvalidArgs")
+					So(act.Bytes(), ShouldResemble, tt.exp.([]byte))
+				default:
+					env.setArgs()
+					So(fmt.Sprint(env.Lookup(tt.name).Value.String()), ShouldEqual, fmt.Sprint(tt.exp))
+				}
+			})
 		})
-
-		Convey("Testing getOpts() with all arguments", func() {
-			o := getOpts()
-			o.Init("blacklist", mflag.ContinueOnError)
-			o.SetOutput(act)
-			o.setArgs()
-			exp = allArgs
-			So(o.String(), ShouldEqual, exp)
-		})
-
-		Convey("Testing getOpts() with -debug", func() {
-			os.Args = []string{prog, "-debug"}
-
-			o := getOpts()
-			o.Init("blacklist", mflag.ContinueOnError)
-			o.SetOutput(act)
-			o.setArgs()
-
-			So(act.String(), ShouldEqual, "")
-		})
-
-		Convey("Testing getOpts() with -t", func() {
-			os.Args = []string{prog, "-t"}
-			o := getOpts()
-			o.Init("blacklist", mflag.ContinueOnError)
-			o.SetOutput(act)
-			o.setArgs()
-
-			So(act.String(), ShouldEqual, "")
-		})
-
-		Convey("Testing getOpts() with -version", func() {
-			os.Args = []string{prog, "-version"}
-
-			o := getOpts()
-			o.Init("blacklist", mflag.ContinueOnError)
-			o.SetOutput(act)
-			o.setArgs()
-
-			So(act.String(), ShouldEqual, "")
-		})
-
-		Convey("Testing getOpts() with -v", func() {
-			os.Args = []string{prog, "-v"}
-
-			o := getOpts()
-			o.Init("blacklist", mflag.ContinueOnError)
-			o.SetOutput(act)
-			o.setArgs()
-
-			So(act.String(), ShouldEqual, "")
-		})
-
-		Convey("Now lets test with an invalid flag", func() {
-			os.Args = []string{prog, "-z"}
-			o := getOpts()
-			o.Init("pixelserv", mflag.ContinueOnError)
-			o.SetOutput(act)
-			o.setArgs()
-
-			exp = "flag provided but not defined: -z\n" + exp + exp
-			So(fmt.Sprint(act), ShouldEqual, exp)
-		})
-	})
+	}
 }
 
 func TestBasename(t *testing.T) {

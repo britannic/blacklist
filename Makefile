@@ -21,7 +21,7 @@ TIMEOUT			 = 135
 
 # Executable and package variables
 EXE				 = update-dnsmasq
-TARGET			 = edgeos-dnsmasq-blacklist
+TARGET			 = edgeos-dnsmasq-$(PACKAGE)
 
 # Executables
 GSED			 = $(shell which gsed || which sed) -i.bak -e

@@ -4,8 +4,7 @@
 declare -i DEC
 API=/bin/cli-shell-api
 CFGRUN=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
-# source /opt/vyatta/etc/functions/script-template
-shopt -s expand_aliases
+dshopt -s expand_aliases
 
 alias begin='${CFGRUN} begin'
 alias cleanup='${CFGRUN} cleanup'
@@ -83,9 +82,11 @@ echo_logger() {
 	echo "post-install: ${MSG}" | fold -sw ${COLUMNS}
 }
 
-# Fix the group so that the admin user will be able to commit configs
+# Set the group so that the admin user will be able to commit configs
 set_vyattacfg_grp() {
-	try chgrp -R vyattacfg /opt/vyatta/config
+if [[ 'vyattacfg' != $(id -ng) ]]; then
+  exec sg vyattacfg -c "$0 $@"
+fi
 }
 
 # Function to output command status of success or failure to screen and log
@@ -126,7 +127,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist domains include wwwpromoter.com
 	try set service dns forwarding blacklist domains source NoBitCoin description '"Blocking Web Browser Bitcoin Mining"'
 	try set service dns forwarding blacklist domains source NoBitCoin prefix '0.0.0.0'
-	try set service dns forwarding blacklist domains source NoBitCoin url 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'	
+	try set service dns forwarding blacklist domains source NoBitCoin url 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'
 	try set service dns forwarding blacklist domains source malc0de description '"List of zones serving malicious executables observed by malc0de.com/database/"'
 	try set service dns forwarding blacklist domains source malc0de prefix 'zone '
 	try set service dns forwarding blacklist domains source malc0de url 'http://malc0de.com/bl/ZONES'
@@ -143,7 +144,9 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude akamaihd.net
 	try set service dns forwarding blacklist exclude amazon.com
 	try set service dns forwarding blacklist exclude amazonaws.com
+	try set service dns forwarding blacklist exclude android.clients.google.com
 	try set service dns forwarding blacklist exclude apple.com
+	try set service dns forwarding blacklist exclude apresolve.spotify.com
 	try set service dns forwarding blacklist exclude ask.com
 	try set service dns forwarding blacklist exclude avast.com
 	try set service dns forwarding blacklist exclude avira-update.com
@@ -151,10 +154,16 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude bing.com
 	try set service dns forwarding blacklist exclude bit.ly
 	try set service dns forwarding blacklist exclude bitdefender.com
+	try set service dns forwarding blacklist exclude bonsaimirai.us9.list-manage.com
+	try set service dns forwarding blacklist exclude c.s-microsoft.com
 	try set service dns forwarding blacklist exclude cdn.ravenjs.com
 	try set service dns forwarding blacklist exclude cdn.visiblemeasures.com
+	try set service dns forwarding blacklist exclude clientconfig.passport.net
+	try set service dns forwarding blacklist exclude clients2.google.com
+	try set service dns forwarding blacklist exclude clients4.google.com
 	try set service dns forwarding blacklist exclude cloudfront.net
 	try set service dns forwarding blacklist exclude coremetrics.com
+	try set service dns forwarding blacklist exclude dl.dropboxusercontent.com
 	try set service dns forwarding blacklist exclude dropbox.com
 	try set service dns forwarding blacklist exclude ebay.com
 	try set service dns forwarding blacklist exclude edgesuite.net
@@ -178,8 +187,10 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude herokuapp.com
 	try set service dns forwarding blacklist exclude hp.com
 	try set service dns forwarding blacklist exclude hulu.com
+	try set service dns forwarding blacklist exclude i.s-microsoft.com
 	try set service dns forwarding blacklist exclude images-amazon.com
 	try set service dns forwarding blacklist exclude live.com
+	try set service dns forwarding blacklist exclude m.weeklyad.target.com
 	try set service dns forwarding blacklist exclude magnetmail1.net
 	try set service dns forwarding blacklist exclude microsoft.com
 	try set service dns forwarding blacklist exclude microsoftonline.com
@@ -188,16 +199,20 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude msftncsi.com
 	try set service dns forwarding blacklist exclude mywot.com
 	try set service dns forwarding blacklist exclude nsatc.net
+	try set service dns forwarding blacklist exclude outlook.office365.com
 	try set service dns forwarding blacklist exclude paypal.com
 	try set service dns forwarding blacklist exclude pop.h-cdn.co
+	try set service dns forwarding blacklist exclude products.office.com
 	try set service dns forwarding blacklist exclude quora.com
 	try set service dns forwarding blacklist exclude rackcdn.com
 	try set service dns forwarding blacklist exclude rarlab.com
+	try set service dns forwarding blacklist exclude s.youtube.com
 	try set service dns forwarding blacklist exclude schema.org
 	try set service dns forwarding blacklist exclude shopify.com
 	try set service dns forwarding blacklist exclude skype.com
 	try set service dns forwarding blacklist exclude smacargo.com
 	try set service dns forwarding blacklist exclude sourceforge.net
+	try set service dns forwarding blacklist exclude spclient.wg.spotify.com
 	try set service dns forwarding blacklist exclude spotify.com
 	try set service dns forwarding blacklist exclude spotify.edgekey.net
 	try set service dns forwarding blacklist exclude spotilocal.com
@@ -207,11 +222,16 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude static.chartbeat.com
 	try set service dns forwarding blacklist exclude storage.googleapis.com
 	try set service dns forwarding blacklist exclude twimg.com
+	try set service dns forwarding blacklist exclude video-stats.l.google.com
 	try set service dns forwarding blacklist exclude viewpoint.com
+	try set service dns forwarding blacklist exclude weeklyad.target.com
+	try set service dns forwarding blacklist exclude weeklyad.target.com.edgesuite.net
 	try set service dns forwarding blacklist exclude windows.net
+	try set service dns forwarding blacklist exclude www.msftncsi.com
 	try set service dns forwarding blacklist exclude xboxlive.com
 	try set service dns forwarding blacklist exclude yimg.com
 	try set service dns forwarding blacklist exclude ytimg.com
+	try set service dns forwarding blacklist hosts exclude cfvod.kaltura.com
 	try set service dns forwarding blacklist hosts include ads.feedly.com
 	try set service dns forwarding blacklist hosts include beap.gemini.yahoo.com
 	try set service dns forwarding blacklist hosts source githubSteveBlack description '"Blacklists adware and malware websites"'
@@ -226,8 +246,8 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
-	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq-cronjob.sh
 	try set system task-scheduler task update_blacklists executable arguments 10800
+	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq-cronjob.sh
 	try set system task-scheduler task update_blacklists interval 1d
 	try commit
 	try save
@@ -235,6 +255,8 @@ update_dns_config() {
 }
 
 # echo "$@"
+# Set group to vyattacfg
+set_vyattacfg_grp
 
 # Set UPGRADE flag
 UPGRADE=0
@@ -247,6 +269,3 @@ if [[ ${UPGRADE} == 1 ]] ; then
 	echo "Installing blacklist configuration settings..."
 	update_dns_config
 fi
-
-# Reset group ownership to vyattacfg for /opt/vyatta/config
-set_vyattacfg_grp

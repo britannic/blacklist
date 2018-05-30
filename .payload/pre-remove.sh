@@ -86,9 +86,11 @@ echo_logger() {
 	echo "pre-remove: ${MSG}" | fold -sw ${COLUMNS}
 }
 
-# Fix the group so that the admin user will be able to commit configs
+# Set the group so that the admin user will be able to commit configs
 set_vyattacfg_grp() {
-	try chgrp -R vyattacfg /opt/vyatta/config/active
+if [[ 'vyattacfg' != $(id -ng) ]]; then
+  exec sg vyattacfg -c "$0 $@"
+fi
 }
 
 # Function to output command status of success or failure to screen and log

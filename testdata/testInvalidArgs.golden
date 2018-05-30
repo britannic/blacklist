@@ -1,0 +1,9 @@
+flag provided but not defined: -z
+  -dir string
+    	Override dnsmasq directory (default "/etc/dnsmasq.d")
+  -f <file>
+    	<file> # Load a config.boot file
+  -h	Display help
+  -v	Verbose display
+  -version
+    	Show version

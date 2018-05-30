@@ -2,12 +2,16 @@
 package edgeos
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"io"
 	"sort"
 	"strings"
+	"sync"
 	"sync/atomic"
+
+	"github.com/britannic/blacklist/internal/regx"
 )
 
 // source struct for normalizing EdgeOS data.
@@ -111,6 +115,57 @@ func printArray(a []string) (s string) {
 
 func pad(s string) string {
 	return fmt.Sprintf("%s %-*s", s, 13-len(s), " ")
+}
+
+// Process extracts hosts/domains from downloaded raw content
+func (s *source) process() *bList {
+	var (
+		l                        = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+		area                     = typeInt(s.nType)
+		b                        = bufio.NewScanner(s.r)
+		dropped, extracted, kept int
+		find                     = regx.NewRegex()
+		ok                       bool
+	)
+
+	for b.Scan() {
+		line := bytes.ToLower(bytes.TrimSpace(b.Bytes()))
+
+		switch {
+		case bytes.HasPrefix(line, []byte("#")), bytes.HasPrefix(line, []byte("//")), bytes.HasPrefix(line, []byte("<")):
+			continue
+		case bytes.HasPrefix(line, []byte(s.prefix)):
+			if line, ok = find.StripPrefixAndSuffix(line, s.prefix); ok {
+				for _, fqdn := range find.RX[regx.FQDN].FindAll(line, -1) {
+					extracted++
+					if s.Dex.subKeyExists(fqdn) {
+						dropped++
+						continue
+					}
+					if !s.Exc.keyExists(fqdn) {
+						kept++
+						s.Exc.set(fqdn)
+						l.set(fqdn)
+						continue
+					}
+					dropped++
+				}
+			}
+		}
+	}
+
+	switch s.nType {
+	case domn, excDomn, excRoot:
+		s.Dex.merge(l)
+	}
+
+	s.sum(area, dropped, extracted, kept)
+
+	return &bList{
+		file: s.filename(area),
+		r:    formatData(getDnsmasqPrefix(s), l),
+		size: kept,
+	}
 }
 
 // Stringer for *source

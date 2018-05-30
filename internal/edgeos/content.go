@@ -1,12 +1,7 @@
 package edgeos
 
 import (
-	"bufio"
-	"bytes"
 	"io"
-	"sync"
-
-	"github.com/britannic/blacklist/internal/regx"
 )
 
 // IFace type for labeling interface types
@@ -413,57 +408,6 @@ func (u *URLDomnObjects) Len() int { return len(u.src) }
 // Len returns how many sources there are
 func (u *URLHostObjects) Len() int { return len(u.src) }
 
-// Process extracts hosts/domains from downloaded raw content
-func (s *source) process() *bList {
-	var (
-		l                        = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
-		area                     = typeInt(s.nType)
-		b                        = bufio.NewScanner(s.r)
-		dropped, extracted, kept int
-		find                     = regx.NewRegex()
-		ok                       bool
-	)
-
-	for b.Scan() {
-		line := bytes.ToLower(bytes.TrimSpace(b.Bytes()))
-
-		switch {
-		case bytes.HasPrefix(line, []byte("#")), bytes.HasPrefix(line, []byte("//")), bytes.HasPrefix(line, []byte("<")):
-			continue
-		case bytes.HasPrefix(line, []byte(s.prefix)):
-			if line, ok = find.StripPrefixAndSuffix(line, s.prefix); ok {
-				for _, fqdn := range find.RX[regx.FQDN].FindAll(line, -1) {
-					extracted++
-					if s.Dex.subKeyExists(fqdn) {
-						dropped++
-						continue
-					}
-					if !s.Exc.keyExists(fqdn) {
-						kept++
-						s.Exc.set(fqdn)
-						l.set(fqdn)
-						continue
-					}
-					dropped++
-				}
-			}
-		}
-	}
-
-	switch s.nType {
-	case domn, excDomn, excRoot:
-		s.Dex.merge(l)
-	}
-
-	s.sum(area, dropped, extracted, kept)
-
-	return &bList{
-		file: s.filename(area),
-		r:    formatData(getDnsmasqPrefix(s), l),
-		size: kept,
-	}
-}
-
 // SetURL sets the Object's url field value
 func (e *ExcDomnObjects) SetURL(name, url string) {
 	for _, o := range e.src {
@@ -567,14 +511,14 @@ func (e *ExcDomnObjects) String() string { return e.Objects.String() }
 func (e *ExcHostObjects) String() string { return e.Objects.String() }
 func (e *ExcRootObjects) String() string { return e.Objects.String() }
 func (f *FIODataObjects) String() string { return f.Objects.String() }
-
-// func (f *FIODomnObjects) String() string { return f.Objects.String() }
-// func (f *FIOHostObjects) String() string { return f.Objects.String() }
 func (p *PreDomnObjects) String() string { return p.Objects.String() }
 func (p *PreHostObjects) String() string { return p.Objects.String() }
 func (p *PreRootObjects) String() string { return p.Objects.String() }
 func (u *URLDomnObjects) String() string { return u.Objects.String() }
 func (u *URLHostObjects) String() string { return u.Objects.String() }
+
+// func (f *FIODomnObjects) String() string { return f.Objects.String() }
+// func (f *FIOHostObjects) String() string { return f.Objects.String() }
 
 func (i IFace) String() string {
 	switch i {

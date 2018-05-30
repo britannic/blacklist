@@ -363,12 +363,6 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 	}
 
 	for _, ct := range cts {
-		var (
-			a, b  int32
-			area  string
-			tally = &stats{dropped: a, kept: b}
-		)
-
 		for _, s := range ct.GetList().src {
 			if s.err != nil {
 				errs = append(errs, s.err.Error())
@@ -376,24 +370,14 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 			wg.Add(1)
 
 			go func(s *source) {
-				defer wg.Done()
-				area = typeInt(s.nType)
-				c.ctr.Lock()
-				c.ctr.stat[area] = tally
-				c.ctr.Unlock()
+				s.ctr.Lock()
+				s.ctr.stat[typeInt(s.nType)] = &stats{}
+				s.ctr.Unlock()
 
 				if err := s.process().writeFile(); err != nil {
 					errs = append(errs, err.Error())
 				}
-
-				if area != "" {
-					ctr := c.ctr.stat
-					if ctr[area].kept+ctr[area].dropped != 0 {
-						c.Log.Noticef("Total %s found: %d", area, ctr[area].extracted)
-						c.Log.Noticef("Total %s extracted %d", area, ctr[area].kept)
-						c.Log.Noticef("Total %s dropped %d", area, ctr[area].dropped)
-					}
-				}
+				wg.Done()
 			}(s)
 		}
 	}
