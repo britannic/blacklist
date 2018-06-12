@@ -4,7 +4,7 @@
 declare -i DEC
 API=/bin/cli-shell-api
 CFGRUN=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
-dshopt -s expand_aliases
+shopt -s expand_aliases
 
 alias begin='${CFGRUN} begin'
 alias cleanup='${CFGRUN} cleanup'
@@ -128,9 +128,6 @@ update_dns_config() {
 	try set service dns forwarding blacklist domains source NoBitCoin description '"Blocking Web Browser Bitcoin Mining"'
 	try set service dns forwarding blacklist domains source NoBitCoin prefix '0.0.0.0'
 	try set service dns forwarding blacklist domains source NoBitCoin url 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'
-	try set service dns forwarding blacklist domains source malc0de description '"List of zones serving malicious executables observed by malc0de.com/database/"'
-	try set service dns forwarding blacklist domains source malc0de prefix 'zone '
-	try set service dns forwarding blacklist domains source malc0de url 'http://malc0de.com/bl/ZONES'
 	try set service dns forwarding blacklist domains source malwaredomains.com description '"Just Domains"'
 	try set service dns forwarding blacklist domains source malwaredomains.com url 'http://mirror1.malwaredomains.com/files/justdomains'
 	try set service dns forwarding blacklist domains source simple_tracking description '"Basic tracking list by Disconnect"'
@@ -144,6 +141,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude akamaihd.net
 	try set service dns forwarding blacklist exclude amazon.com
 	try set service dns forwarding blacklist exclude amazonaws.com
+	try set service dns forwarding blacklist exclude ampproject.org
 	try set service dns forwarding blacklist exclude android.clients.google.com
 	try set service dns forwarding blacklist exclude apple.com
 	try set service dns forwarding blacklist exclude apresolve.spotify.com

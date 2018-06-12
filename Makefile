@@ -79,9 +79,10 @@ GODOC2MD 		 = $(BIN)/godoc2md
 $(BIN)/godoc2md: ; @ $(info $(M) building godoc2md…)
 	$(Q) $(GO) get github.com/davecheney/godoc2md
 
-GOLINT 			 = $(BIN)/golint
-$(BIN)/golint: ; @ $(info $(M) building golint…)
-	$(Q) $(GO) get github.com/golang/lint/golint
+GOLINT 			 = $(BIN)/gometalinter
+$(BIN)/gometalinter: ; @ $(info $(M) building gometalinter…)
+	$(Q) $(GO) get -u github.com/alecthomas/gometalinter
+	$(BIN)/gometalinter --install &> /dev/null
 
 GOCOVMERGE 		 = $(BIN)/gocovmerge
 $(BIN)/gocovmerge: ; @ $(info $(M) building gocovmerge…)
@@ -154,35 +155,35 @@ generate: ; @ $(info $(M) generating go boilerplate code…) ## Generate go boil
 		cd $$d ; $(GOGEN) || ret=$$? ; \
 	done ; exit $$ret
 
-.PHONY: mips ; @ $(info building MIPS/MIPSLE binaries…) ## Build MIPS/MIPSLE binaries
-mips: mips64 mipsle
 
-.PHONY: mips64
+mips: mips64 mipsle ; @ $(info building MIPS/MIPSLE binaries…) ## Build MIPS/MIPSLE binaries
+
+# .PHONY: mips64
 mips64: generate ; @ $(info building MIPS binary…) ## Build MIPS binary
 	$(eval LDFLAGS += -X main.architecture=mips64 -X main.hostOS=linux)
 	GOOS=linux GOARCH=mips64 $(GOBUILD) -o $(EXE).mips \
 	-ldflags "$(LDFLAGS) $(FLAGS)" -v
 
-.PHONY: mipsle
+# .PHONY: mipsle
 mipsle: generate ; @ $(info building MIPSLE binary…) ## Build MIPSLE binary
 	$(eval LDFLAGS += -X main.architecture=mipsle -X main.hostOS=linux)
 	GOOS=linux GOARCH=mipsle $(GOBUILD) -o $(EXE).mipsel \
 	-ldflags "$(LDFLAGS) $(FLAGS)" -v
 
-.PHONY: pkgs
+# .PHONY: pkgs
 pkgs: pkg-mips pkg-mipsel ; @ $(info building Debian packages…) ## Build Debian packages
 
-.PHONY: pkg-mips
+# .PHONY: pkg-mips
 pkg-mips: deps mips coverage copyright docs readme ; @ $(info building MIPS Debian package…) ## Build MIPS Debian packages
 	cp $(EXE).mips $(PAYLOAD)$(SCRIPTS)/$(EXE) \
 	&& ./make_deb $(EXE) mips
 
-.PHONY: pkg-mipsel
+# .PHONY: pkg-mipsel
 pkg-mipsel: deps mipsle coverage copyright docs readme ; @ $(info building MIPSLE Debian packages…) ## Build MIPSLE Debian packages
 	cp $(EXE).mipsel $(PAYLOAD)$(SCRIPTS)/$(EXE) \
 	&& ./make_deb $(EXE) mipsel
 
-.PHONY: readme 
+# .PHONY: readme 
 readme: version ; @ $(info building READMEs…) ## Build README
 	cat $(READMEHDR) > $(README)
 	# $(GODOC2MD) $(BASE) >> $(README)
@@ -227,7 +228,7 @@ push: ; $(info $(M) pushing release tags $(TAG) to master…) @  ## Push release
 .PHONY: repo
 repo: ; $(info $(M) updating debian repository with version $(TAG)…) @  ## Update the debian repository
 	# @echo Pushing repository $(TAG) to aws
-	scp $(TARGET)_$(VER)_*.deb aws:/tmp
+	scp $(TARGET)_$(VER)_*.deb $(VER):/tmp
 	./aws.sh $(AWS) $(TARGET)_$(VER)_ $(TAG)
 
 .PHONY: upload
@@ -278,7 +279,7 @@ test-coverage: fmt lint vendor test-coverage-tools | $(BASE) ; $(info $(M) runni
 	$(Q) $(GOCOV) convert $(COVERAGE_PROFILE) | $(GOCOVXML) > $(COVERAGE_XML)
 
 .PHONY: lint
-lint: vendor | $(BASE) $(GOLINT) ; $(info $(M) running golint…)  @ ## Run golint
+lint: vendor | $(BASE) $(GOLINT) ; $(info $(M) running gometalinter…)  @ ## Run gometalinter
 	$(Q) cd $(BASE) && ret=0 && for pkg in $(PKGS); do \
 		test -z "$$($(GOLINT) $$pkg | tee /dev/stderr)" || ret=1 ; \
 	 done ; exit $$ret

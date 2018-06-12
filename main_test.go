@@ -698,43 +698,6 @@ var (
   }]
 }`
 
-	// 	vanillaArgs = `  -dir string
-	//     	Override dnsmasq directory (default "/etc/dnsmasq.d")
-	//   -f <file>
-	//     	<file> # Load a config.boot file
-	//   -h	Display help
-	//   -v	Verbose display
-	//   -version
-	//     	Show version
-	// `
-	// 	allArgs = `  -arch string
-	//     	Set EdgeOS CPU architecture (default "amd64")
-	//   -debug
-	//     	Enable Debug mode
-	//   -dir string
-	//     	Override dnsmasq directory (default "/etc/dnsmasq.d")
-	//   -f <file>
-	//     	<file> # Load a config.boot file
-	//   -h
-	//     	Display help
-	//   -mips64 string
-	//     	Override target EdgeOS CPU architecture (default "mips64")
-	//   -mipsle string
-	//     	Override target EdgeOS CPU architecture (default "mipsle")
-	//   -os string
-	//     	Override native EdgeOS OS (default "darwin")
-	//   -t
-	//     	Run config and data validation tests
-	//   -tmp string
-	//     	Override dnsmasq temporary directory (default "/tmp")
-	//   -v
-	//     	Verbose display
-	//   -version
-	//     	Show version
-	// `
-
-	// vanillaArgsOnDrone = "  -dir=\"/etc/dnsmasq.d\": Override dnsmasq directory\n  -h=false: Display help\n  -v=false: Verbose display\n  -version=false: Show version\n"
-
 	expMap = `"1e100.net":{},
 "2o7.net":{},
 "adobedtm.com":{},
