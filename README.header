@@ -106,14 +106,10 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.6.3-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-### Release v1.1.6.2 (April 24, 2018)
+### Release v1.1.6.3 (June 11, 2018)
 
-* Code refactor
-* Global whitelist and blacklist configuration files now have their own prefix: "roots" i.e.
-
-```bash
-roots.global-blacklisted-domains.blacklist.conf
-```
+* Removed domain source Malc0de as it is posting false positives with no means to notify the maintainer
+* Added log message for sources that have no records extracted
 
 [[Top]](#contents)
 

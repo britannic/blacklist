@@ -2,8 +2,9 @@
 
 ## Releases
 
-### Release v1.1.7 (April 30, 2018)
+### Release v1.1.6.3 (June 11, 2018)
 
+* Removed domain source Malc0de as it is posting false positives with no means to notify the maintainer
 * Added log message for sources that have no records extracted
 
 ```bash
