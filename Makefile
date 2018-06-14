@@ -228,7 +228,7 @@ push: ; $(info $(M) pushing release tags $(TAG) to master…) @  ## Push release
 .PHONY: repo
 repo: ; $(info $(M) updating debian repository with version $(TAG)…) @  ## Update the debian repository
 	# @echo Pushing repository $(TAG) to aws
-	scp $(TARGET)_$(VER)_*.deb $(VER):/tmp
+	scp $(TARGET)_$(VER)_*.deb $(AWS):/tmp
 	./aws.sh $(AWS) $(TARGET)_$(VER)_ $(TAG)
 
 .PHONY: upload

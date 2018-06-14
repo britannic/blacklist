@@ -112,10 +112,12 @@ isblacklist() {
 # Back up [service dns forwarding blacklist]
 backup_dns_config() {
 	if isblacklist; then
-		echo_logger I "Backing up blacklist configuration to: /config/user-data/blacklist.${DATE}.cmds"
+		file="/config/user-data/blacklist.${DATE}.cmds"
+		echo_logger I "Backing up blacklist configuration to: ${file}"
+		echo "edit service dns forwarding" > ${file} 
 		${API} showConfig service dns forwarding blacklist \
 		--show-commands --show-active-only | \
-		grep blacklist >/config/user-data/blacklist.${DATE}.cmds || \
+		grep blacklist >> ${file} || \
 		echo_logger E 'Blacklist configuration backup failed!'
 	fi
 }

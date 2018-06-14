@@ -149,6 +149,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude avast.com
 	try set service dns forwarding blacklist exclude avira-update.com
 	try set service dns forwarding blacklist exclude bannerbank.com
+	try set service dns forwarding blacklist exclude bazaarvoice.com
 	try set service dns forwarding blacklist exclude bing.com
 	try set service dns forwarding blacklist exclude bit.ly
 	try set service dns forwarding blacklist exclude bitdefender.com
@@ -161,6 +162,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude clients4.google.com
 	try set service dns forwarding blacklist exclude cloudfront.net
 	try set service dns forwarding blacklist exclude coremetrics.com
+	try set service dns forwarding blacklist exclude dickssportinggoods.com
 	try set service dns forwarding blacklist exclude dl.dropboxusercontent.com
 	try set service dns forwarding blacklist exclude dropbox.com
 	try set service dns forwarding blacklist exclude ebay.com
