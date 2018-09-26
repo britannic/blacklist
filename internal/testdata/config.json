@@ -79,23 +79,23 @@
           "description": "List of zones serving malicious executables observed by malc0de.com/database/",
           "ip": "192.168.168.1",
           "prefix": "zone ",
-          "url": "http://malc0de.com/bl/ZONES",
+          "url": "http://malc0de.com/bl/ZONES"
         },
         "malwaredomains.com": {
           "disabled": "false",
           "description": "Just domains",
           "ip": "10.0.0.1",
-          "url": "http://mirror1.malwaredomains.com/files/justdomains",
+          "url": "http://mirror1.malwaredomains.com/files/justdomains"
         },
         "simple_tracking": {
           "disabled": "false",
           "description": "Basic tracking list by Disconnect",
-          "url": "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt",
+          "url": "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt"
         },
         "zeus": {
           "disabled": "false",
           "description": "abuse.ch ZeuS domain blocklist",
-          "url": "https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist",
+          "url": "https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist"
         }
     }]
     },
@@ -108,13 +108,13 @@
           "disabled": "false",
           "description": "OpenPhish automatic phishing detection",
           "prefix": "http",
-          "url": "https://openphish.com/feed.txt",
+          "url": "https://openphish.com/feed.txt"
         },
         "raw.github.com": {
           "disabled": "false",
           "description": "This hosts file is a merged collection of hosts from reputable sources",
           "prefix": "0.0.0.0 ",
-          "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts",
+          "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
         },
         "sysctl.org": {
           "disabled": "false",

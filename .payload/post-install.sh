@@ -125,11 +125,11 @@ update_dns_config() {
 	try set service dns forwarding blacklist domains include themillionaireinpjs.com
 	try set service dns forwarding blacklist domains include traktrafficflow.com
 	try set service dns forwarding blacklist domains include wwwpromoter.com
+	try set service dns forwarding blacklist domains source malwaredomains.com description '"Just Domains"'
+	try set service dns forwarding blacklist domains source malwaredomains.com url 'http://mirror1.malwaredomains.com/files/justdomains'
 	try set service dns forwarding blacklist domains source NoBitCoin description '"Blocking Web Browser Bitcoin Mining"'
 	try set service dns forwarding blacklist domains source NoBitCoin prefix '0.0.0.0'
 	try set service dns forwarding blacklist domains source NoBitCoin url 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'
-	try set service dns forwarding blacklist domains source malwaredomains.com description '"Just Domains"'
-	try set service dns forwarding blacklist domains source malwaredomains.com url 'http://mirror1.malwaredomains.com/files/justdomains'
 	try set service dns forwarding blacklist domains source simple_tracking description '"Basic tracking list by Disconnect"'
 	try set service dns forwarding blacklist domains source simple_tracking url 'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt'
 	try set service dns forwarding blacklist domains source zeus description '"abuse.ch ZeuS domain blocklist"'
@@ -190,6 +190,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist exclude i.s-microsoft.com
 	try set service dns forwarding blacklist exclude images-amazon.com
 	try set service dns forwarding blacklist exclude live.com
+	try set service dns forwarding blacklist exclude logmein.com
 	try set service dns forwarding blacklist exclude m.weeklyad.target.com
 	try set service dns forwarding blacklist exclude magnetmail1.net
 	try set service dns forwarding blacklist exclude microsoft.com
@@ -246,6 +247,12 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
+	try set service dns forwarding blacklist hosts source YoutubeAdBlockList description "Anudeeps Youtube Ad Blocking list"
+	try set service dns forwarding blacklist hosts source YoutubeAdBlockList prefix ''
+	try set service dns forwarding blacklist hosts source YoutubeAdBlockList url 'https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt'
+	try set service dns forwarding blacklist hosts source YoutubeBlockList "Youtube Ad-Block-List for PiHole by HenningVanRäumle"
+	try set service dns forwarding blacklist hosts source YoutubeBlockList prefix '0.0.0.0 '
+	try set service dns forwarding blacklist hosts source YoutubeBlockList url 'https://raw.githubusercontent.com/HenningVanRaumle/pihole-ytadblock/master/ytadblock.txt'
 	try set system task-scheduler task update_blacklists executable arguments 10800
 	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq-cronjob.sh
 	try set system task-scheduler task update_blacklists interval 1d

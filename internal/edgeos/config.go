@@ -262,7 +262,7 @@ func (c tree) keyExists(k string) bool {
 func (c *Config) load(act, lvl string) ([]byte, error) {
 	cmd := exec.Command(c.Bash)
 	s := fmt.Sprintf(
-		"%v %v %v --show-working-only", c.API, apiCMD(act, c.InSession()), lvl,
+		"%v %v %v --show-active-only", c.API, apiCMD(act, c.InSession()), lvl,
 	)
 	cmd.Stdin = strings.NewReader(s)
 	c.Debug(fmt.Sprintf("Running shell command: %v", s))
