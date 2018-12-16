@@ -71,9 +71,9 @@ all: AllOfIt ; @ $(info making everything...) ## Build everything
 AllOfIt: clean deps amd64 mips coverage copyright docs readme pkgs 
 
 # Tools
-DEP				 = $(BIN)/dep
-$(BIN)/dep: ; @ $(info $(M) building dep…) 
-	$(Q) $(GO) get github.com/golang/dep/cmd/dep
+# DEP				 = $(BIN)/dep
+# $(BIN)/dep: ; @ $(info $(M) building dep…) 
+# 	$(Q) $(GO) get github.com/golang/dep/cmd/dep
 
 GODOC2MD 		 = $(BIN)/godoc2md
 $(BIN)/godoc2md: ; @ $(info $(M) building godoc2md…)
@@ -114,8 +114,8 @@ amd64: generate ; @ $(info building Mac OS binary…) ## Build Mac OS binary
 build: clean amd64 mips copyright docs readme ; @ $(info building binaries…) ## Build binaries
 
 .PHONY: cdeps 
-cdeps: ; @ $(info building dependency viewer…) ## Build dependency viewer 
-	dep status -dot | dot -T png | open -f -a /Applications/Preview.app
+# cdeps: ; @ $(info building dependency viewer…) ## Build dependency viewer 
+# 	dep status -dot | dot -T png | open -f -a /Applications/Preview.app
 
 .PHONY: clean
 clean: ; @ $(info cleaning directories…) ## Cleaning up directories
@@ -138,12 +138,13 @@ copyright: ; @ $(info updating copyright…) ## Update copyright
 	cp $(LIC) internal/tdata/
 
 .PHONY: dep-stat 
-dep-stat: ; @ $(info showing dependency status…) ## Show dependency status
-	dep status
+# dep-stat: ; @ $(info showing dependency status…) ## Show dependency status
+# 	dep status
 
 .PHONY: deps
 deps: 
-	dep ensure -update -v
+#	dep ensure -update -v
+	$(GO) mod tidy
 
 .PHONY: docs
 docs: version readme | $(GODOC2MD) ; @ $(info $(M) building docs…) ## Build docs

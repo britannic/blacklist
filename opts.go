@@ -57,7 +57,9 @@ func (o *opts) getCFG(c *e.Config) e.ConfLoader {
 			logFatalf("cannot open configuration file %s!", *o.File)
 		}
 
-		f, _ = ioutil.ReadAll(r)
+		if f, err = ioutil.ReadAll(r); err != nil {
+			logFatalf("cannot read configuration file %s!", *o.File)
+		}
 		return &e.CFGstatic{Config: c, Cfg: string(f)}
 	}
 	switch *o.ARCH {

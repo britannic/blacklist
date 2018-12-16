@@ -142,7 +142,7 @@ func TestMain(t *testing.T) {
 			}
 
 			main()
-			So(s, ShouldEqual, "cannot open configuration file internal/testdata/config.bad.boot!")
+			So(s, ShouldEqual, "cannot read configuration file internal/testdata/config.bad.boot!")
 			os.Args = origArgs
 		})
 
