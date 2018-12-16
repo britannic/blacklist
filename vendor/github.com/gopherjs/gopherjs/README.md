@@ -1,6 +1,7 @@
 GopherJS - A compiler from Go to JavaScript
 -------------------------------------------
 
+[![GoDoc](https://godoc.org/github.com/gopherjs/gopherjs/js?status.svg)](https://godoc.org/github.com/gopherjs/gopherjs/js)
 [![Sourcegraph](https://sourcegraph.com/github.com/gopherjs/gopherjs/-/badge.svg)](https://sourcegraph.com/github.com/gopherjs/gopherjs?badge)
 [![Circle CI](https://circleci.com/gh/gopherjs/gopherjs.svg?style=svg)](https://circleci.com/gh/gopherjs/gopherjs)
 
@@ -27,7 +28,7 @@ Now you can use `gopherjs build [package]`, `gopherjs build [files]` or `gopherj
 
 #### gopherjs run, gopherjs test
 
-If you want to use `gopherjs run` or `gopherjs test` to run the generated code locally, install Node.js 4.x (or newer), and the `source-map-support` module:
+If you want to use `gopherjs run` or `gopherjs test` to run the generated code locally, install Node.js 10.0.0 (or newer), and the `source-map-support` module:
 
 ```
 npm install --global source-map-support
