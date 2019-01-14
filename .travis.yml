@@ -5,7 +5,7 @@ os:
 
 go:
 - "1.11.4"
-- "master"
+# - "master"
 
 matrix:
   allow_failures:
