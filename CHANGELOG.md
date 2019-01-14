@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.6.7 (January 13, 2018)
+
+* Removed hostfile.org as it is too agressive and causes a lot of false positive entries
+
 ### Release v1.1.6.3 (June 11, 2018)
 
 * Removed domain source Malc0de as it is posting false positives with no means to notify the maintainer
