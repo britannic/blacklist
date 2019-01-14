@@ -32,21 +32,21 @@ COPYRIGHT		 = s/Copyright © 20../Copyright © $(shell date +"%Y")/g
 COVERALLS_TOKEN	\
 				 = W6VHc8ZFpwbfTzT3xoluEWbKkrsKT1w25
 # DATE=$(shell date -u '+%Y-%m-%d_%I:%M:%S%p')
+BADGE 			 = s/version-v$(OLDVER)-green.svg/version-v$(VER)-green.svg/g
 DATE			 = $(shell date +'%FT%H%M%S')
+FLAGS 			 = -s -w
 GIT				 = $(shell git rev-parse --short HEAD)
+LDFLAGS 		 = -X main.build=$(DATE) -X main.githash=$(GIT) -X main.version=$(VER)
 LIC			 	 = license
+OLDVER 			 = $(shell cat ./OLDVERSION)
 PAYLOAD 		 = ./.payload
 README 			 = README.md
 READMEHDR 		 = README.header
+RELEASE 		 = s/Release-v$(OLDVER)-green.svg/Release-v$(VER)-green.svg/g
 SCRIPTS 		 = /config/scripts
-OLDVER 			 = $(shell cat ./OLDVERSION)
+TAG 			 = "v$(VER)"
 VER 			 = $(shell cat ./VERSION)
 VERSIONS 		 = s/$(TARGET)_$(OLDVER)_/$(TARGET)_$(VER)_/g
-BADGE 			 = s/version-v$(OLDVER)-green.svg/version-v$(VER)-green.svg/g
-RELEASE 		 = s/Release-v$(OLDVER)-green.svg/Release-v$(VER)-green.svg/g
-TAG 			 = "v$(VER)"
-LDFLAGS 		 = -X main.build=$(DATE) -X main.githash=$(GIT) -X main.version=$(VER)
-FLAGS 			 = -s -w
 
 ifeq ("$(origin V)", "command line")
   KBUILD_VERBOSE = $(V)
@@ -77,7 +77,7 @@ AllOfIt: clean deps amd64 mips coverage copyright docs readme pkgs
 
 GODOC2MD 		 = $(BIN)/godoc2md
 $(BIN)/godoc2md: ; @ $(info $(M) building godoc2md…)
-	$(Q) $(GO) get github.com/davecheney/godoc2md
+	$(Q) $(GO) get -u github.com/davecheney/godoc2md
 
 GOLINT 			 = $(BIN)/gometalinter
 $(BIN)/gometalinter: ; @ $(info $(M) building gometalinter…)
@@ -86,23 +86,23 @@ $(BIN)/gometalinter: ; @ $(info $(M) building gometalinter…)
 
 GOCOVMERGE 		 = $(BIN)/gocovmerge
 $(BIN)/gocovmerge: ; @ $(info $(M) building gocovmerge…)
-	$(Q) $(GO) get github.com/wadey/gocovmerge
+	$(Q) $(GO) get -u github.com/wadey/gocovmerge
 
 GOCOV 			 = $(BIN)/gocov
 $(BIN)/gocov: ; @ $(info $(M) building gocov…)
-	$(Q) $(GO) get github.com/axw/gocov/...
+	$(Q) $(GO) get -u github.com/axw/gocov/...
 
 GOCOVXML 		 = $(BIN)/gocov-xml
 $(BIN)/gocov-xml: ; @ $(info $(M) building gocov-xml…)
-	$(Q) $(GO) get github.com/AlekSi/gocov-xml
+	$(Q) $(GO) get -u github.com/AlekSi/gocov-xml
 
 GO2XUNIT 		 = $(BIN)/go2xunit
 $(BIN)/go2xunit: ; @ $(info $(M) building go2xunit…)
-	$(Q) $(GO) get github.com/tebeka/go2xunit
+	$(Q) $(GO) get -u github.com/tebeka/go2xunit
 
 GOREPORTER		 = $(BIN)/goreporter
 $(BIN)/goreporter: ; @ $(info $(M) building goreporter…)
-	$(Q) $(GO) get github.com/360EntSecGroup-Skylar/goreporter
+	$(Q) $(GO) get -u github.com/360EntSecGroup-Skylar/goreporter
 
 amd64: generate ; @ $(info building Mac OS binary…) ## Build Mac OS binary
 	$(eval LDFLAGS += -X main.architecture=amd64 -X main.hostOS=darwin)

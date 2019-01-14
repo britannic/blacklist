@@ -49,7 +49,7 @@ func newLog(prefix string) *logging.Logger {
 	fdFmt := logging.MustStringFormatter(
 		`%{level:.4s}[%{id:03x}]%{time:2006-01-02 15:04:05.000}: %{message}`,
 	)
-
+	// nolint
 	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, err.Error())

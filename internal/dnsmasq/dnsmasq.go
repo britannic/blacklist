@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -36,6 +37,7 @@ type Mapping struct {
 
 // ConfigFile reads a file and returns an io.Reader
 func ConfigFile(f string) (io.Reader, error) {
+	// nolint
 	return os.Open(f)
 }
 
@@ -101,6 +103,7 @@ func (c Conf) Redirect(k, ip string) bool {
 }
 
 func (c Conf) String() string {
-	j, _ := json.Marshal(c)
+	j, err := json.Marshal(c)
+	fmt.Println(err)
 	return string(j)
 }

@@ -82,6 +82,7 @@ func (i Leaf) String() string
 type OBJ struct {
     RX regexMap
 }
+
 ```
 OBJ is a struct of regex precompiled objects
 

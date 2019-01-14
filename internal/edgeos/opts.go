@@ -2,6 +2,7 @@ package edgeos
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"runtime"
 	"sync"
@@ -239,7 +240,11 @@ func Prefix(d string, h string) Option {
 
 // Env Stringer interface
 func (e *Env) String() string {
-	out, _ := json.MarshalIndent(e, "", "\t")
+	out, err := json.MarshalIndent(e, "", "\t")
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	return string(out)
 }
 

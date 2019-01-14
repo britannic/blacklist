@@ -91,6 +91,7 @@ func deleteFile(f string) bool {
 
 // GetFile reads a file and returns an io.Reader
 func GetFile(f string) (io.Reader, error) {
+	// nolint
 	return os.Open(f)
 }
 
@@ -135,16 +136,23 @@ func (c *CFGstatic) read() io.Reader {
 
 // writeFile saves domains/hosts/roots data to disk
 func (b *bList) writeFile() error {
+	var (
+		err error
+		w   *os.File
+	)
+
 	if b.size == 0 {
 		return nil
 	}
 
-	w, err := os.Create(b.file)
-	if err != nil {
+	if w, err = os.Create(b.file); err != nil {
 		return err
 	}
 
 	_, err = io.Copy(w, b.r)
-	w.Close()
+	if err = w.Close(); err != nil {
+		return err
+	}
+
 	return err
 }

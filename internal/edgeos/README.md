@@ -197,6 +197,7 @@ type CFGcli struct {
     *Config
     Cfg string
 }
+
 ```
 CFGcli loads configurations using the EdgeOS CFGcli
 
@@ -215,6 +216,7 @@ type CFGstatic struct {
     *Config
     Cfg string
 }
+
 ```
 CFGstatic loads static configurations for testing
 
@@ -233,6 +235,7 @@ type CFile struct {
     *Env
     Names []string
 }
+
 ```
 CFile holds an array of file names
 
@@ -295,6 +298,7 @@ type Config struct {
     *Env
     // contains filtered or unexported fields
 }
+
 ```
 Config is a struct of configuration fields
 
@@ -304,7 +308,7 @@ Config is a struct of configuration fields
 
 
 
-### <a name="NewConfig">func</a> [NewConfig](/src/target/opts.go?s=4833:4871#L216)
+### <a name="NewConfig">func</a> [NewConfig](/src/target/opts.go?s=4840:4878#L217)
 ``` go
 func NewConfig(opts ...Option) *Config
 ```
@@ -314,7 +318,7 @@ NewConfig returns a new *Config initialized with the parameter options passed to
 
 
 
-### <a name="Config.Blacklist">func</a> (\*Config) [Blacklist](/src/target/config.go?s=8643:8689#L395)
+### <a name="Config.Blacklist">func</a> (\*Config) [Blacklist](/src/target/config.go?s=8654:8700#L396)
 ``` go
 func (c *Config) Blacklist(r ConfLoader) error
 ```
@@ -368,7 +372,7 @@ NewContent returns a Contenter interface of the requested IFace type
 
 
 
-### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=6006:6043#L273)
+### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=6017:6054#L274)
 ``` go
 func (c *Config) Nodes() (n []string)
 ```
@@ -377,7 +381,7 @@ Nodes returns an array of configured nodes
 
 
 
-### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/config.go?s=7884:7939#L355)
+### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/config.go?s=7895:7950#L356)
 ``` go
 func (c *Config) ProcessContent(cts ...Contenter) error
 ```
@@ -386,7 +390,7 @@ ProcessContent processes the Contents array
 
 
 
-### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=10674:10718#L450)
+### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=10685:10729#L451)
 ``` go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
@@ -395,7 +399,7 @@ ReloadDNS reloads the dnsmasq configuration
 
 
 
-### <a name="Config.SetOpt">func</a> (\*Config) [SetOpt](/src/target/opts.go?s=1885:1931#L64)
+### <a name="Config.SetOpt">func</a> (\*Config) [SetOpt](/src/target/opts.go?s=1892:1938#L65)
 ``` go
 func (c *Config) SetOpt(opts ...Option) Option
 ```
@@ -404,7 +408,7 @@ SetOpt sets the specified options passed as Env and returns an option to restore
 
 
 
-### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=11136:11172#L469)
+### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=11158:11194#L471)
 ``` go
 func (c *Config) String() (s string)
 ```
@@ -434,7 +438,7 @@ Contenter is an interface for handling the different file/http data sources
 
 
 
-## <a name="Env">type</a> [Env](/src/target/opts.go?s=153:1266#L14)
+## <a name="Env">type</a> [Env](/src/target/opts.go?s=160:1273#L15)
 ``` go
 type Env struct {
     Log      *logging.Logger
@@ -461,6 +465,7 @@ type Env struct {
     Wildcard `json:"Wildcard,omitempty"`
     // contains filtered or unexported fields
 }
+
 ```
 Env is struct of parameters
 
@@ -473,7 +478,7 @@ Env is struct of parameters
 
 
 
-### <a name="Env.Debug">func</a> (\*Env) [Debug](/src/target/opts.go?s=1614:1651#L54)
+### <a name="Env.Debug">func</a> (\*Env) [Debug](/src/target/opts.go?s=1621:1658#L55)
 ``` go
 func (e *Env) Debug(s ...interface{})
 ```
@@ -482,7 +487,7 @@ Debug logs debug messages when the Dbug flag is true
 
 
 
-### <a name="Env.String">func</a> (\*Env) [String](/src/target/opts.go?s=5441:5470#L241)
+### <a name="Env.String">func</a> (\*Env) [String](/src/target/opts.go?s=5448:5477#L242)
 ``` go
 func (e *Env) String() string
 ```
@@ -496,6 +501,7 @@ Env Stringer interface
 type ExcDomnObjects struct {
     *Objects
 }
+
 ```
 ExcDomnObjects struct of *Objects for domain exclusions
 
@@ -556,6 +562,7 @@ func (e *ExcDomnObjects) String() string
 type ExcHostObjects struct {
     *Objects
 }
+
 ```
 ExcHostObjects struct of *Objects for host exclusions
 
@@ -616,6 +623,7 @@ func (e *ExcHostObjects) String() string
 type ExcRootObjects struct {
     *Objects
 }
+
 ```
 ExcRootObjects struct of *Objects for global domain exclusions
 
@@ -676,6 +684,7 @@ func (e *ExcRootObjects) String() string
 type FIODataObjects struct {
     *Objects
 }
+
 ```
 FIODataObjects struct of *Objects for files
 
@@ -736,6 +745,7 @@ func (f *FIODataObjects) String() string
 type FIODomnObjects struct {
     *Objects
 }
+
 ```
 FIODomnObjects struct of *Objects for files
 
@@ -753,6 +763,7 @@ FIODomnObjects struct of *Objects for files
 type FIOHostObjects struct {
     *Objects
 }
+
 ```
 FIOHostObjects struct of *Objects for files
 
@@ -812,6 +823,7 @@ type Objects struct {
     *Env
     // contains filtered or unexported fields
 }
+
 ```
 Objects is a struct of []*source
 
@@ -892,7 +904,7 @@ func (o *Objects) Swap(i, j int)
 
 
 
-## <a name="Option">type</a> [Option](/src/target/opts.go?s=1727:1761#L61)
+## <a name="Option">type</a> [Option](/src/target/opts.go?s=1734:1768#L62)
 ``` go
 type Option func(c *Config) Option
 ```
@@ -904,147 +916,147 @@ Option is a recursive function
 
 
 
-### <a name="API">func</a> [API](/src/target/opts.go?s=2411:2436#L89)
+### <a name="API">func</a> [API](/src/target/opts.go?s=2418:2443#L90)
 ``` go
 func API(s string) Option
 ```
 API sets the EdgeOS CLI API command
 
 
-### <a name="Arch">func</a> [Arch](/src/target/opts.go?s=2246:2272#L80)
+### <a name="Arch">func</a> [Arch](/src/target/opts.go?s=2253:2279#L81)
 ``` go
 func Arch(s string) Option
 ```
 Arch sets target CPU architecture
 
 
-### <a name="Bash">func</a> [Bash](/src/target/opts.go?s=2566:2592#L98)
+### <a name="Bash">func</a> [Bash](/src/target/opts.go?s=2573:2599#L99)
 ``` go
 func Bash(s string) Option
 ```
 Bash sets the shell processor
 
 
-### <a name="Cores">func</a> [Cores](/src/target/opts.go?s=2720:2744#L107)
+### <a name="Cores">func</a> [Cores](/src/target/opts.go?s=2727:2751#L108)
 ``` go
 func Cores(i int) Option
 ```
 Cores sets max CPU cores
 
 
-### <a name="DNSsvc">func</a> [DNSsvc](/src/target/opts.go?s=3394:3422#L144)
+### <a name="DNSsvc">func</a> [DNSsvc](/src/target/opts.go?s=3401:3429#L145)
 ``` go
 func DNSsvc(s string) Option
 ```
 DNSsvc sets dnsmasq restart command
 
 
-### <a name="Dbug">func</a> [Dbug](/src/target/opts.go?s=3078:3102#L126)
+### <a name="Dbug">func</a> [Dbug](/src/target/opts.go?s=3085:3109#L127)
 ``` go
 func Dbug(b bool) Option
 ```
 Dbug toggles Debug level on or off
 
 
-### <a name="Dir">func</a> [Dir](/src/target/opts.go?s=3233:3258#L135)
+### <a name="Dir">func</a> [Dir](/src/target/opts.go?s=3240:3265#L136)
 ``` go
 func Dir(s string) Option
 ```
 Dir sets directory location
 
 
-### <a name="Disabled">func</a> [Disabled](/src/target/opts.go?s=2900:2928#L117)
+### <a name="Disabled">func</a> [Disabled](/src/target/opts.go?s=2907:2935#L118)
 ``` go
 func Disabled(b bool) Option
 ```
 Disabled toggles Disabled
 
 
-### <a name="Ext">func</a> [Ext](/src/target/opts.go?s=3571:3596#L153)
+### <a name="Ext">func</a> [Ext](/src/target/opts.go?s=3578:3603#L154)
 ``` go
 func Ext(s string) Option
 ```
 Ext sets the blacklist file n extension
 
 
-### <a name="File">func</a> [File](/src/target/opts.go?s=3736:3762#L162)
+### <a name="File">func</a> [File](/src/target/opts.go?s=3743:3769#L163)
 ``` go
 func File(s string) Option
 ```
 File sets the EdgeOS configuration file
 
 
-### <a name="FileNameFmt">func</a> [FileNameFmt](/src/target/opts.go?s=3924:3957#L171)
+### <a name="FileNameFmt">func</a> [FileNameFmt](/src/target/opts.go?s=3931:3964#L172)
 ``` go
 func FileNameFmt(s string) Option
 ```
 FileNameFmt sets the EdgeOS configuration file name format
 
 
-### <a name="InCLI">func</a> [InCLI](/src/target/opts.go?s=4106:4133#L180)
+### <a name="InCLI">func</a> [InCLI](/src/target/opts.go?s=4113:4140#L181)
 ``` go
 func InCLI(s string) Option
 ```
 InCLI sets the CLI inSession command
 
 
-### <a name="Level">func</a> [Level](/src/target/opts.go?s=4275:4302#L189)
+### <a name="Level">func</a> [Level](/src/target/opts.go?s=4282:4309#L190)
 ``` go
 func Level(s string) Option
 ```
 Level sets the EdgeOS API CLI level
 
 
-### <a name="Logger">func</a> [Logger](/src/target/opts.go?s=4444:4481#L198)
+### <a name="Logger">func</a> [Logger](/src/target/opts.go?s=4451:4488#L199)
 ``` go
 func Logger(l *logging.Logger) Option
 ```
 Logger sets a pointer to the logger
 
 
-### <a name="Method">func</a> [Method](/src/target/opts.go?s=4612:4640#L207)
+### <a name="Method">func</a> [Method](/src/target/opts.go?s=4619:4647#L208)
 ``` go
 func Method(s string) Option
 ```
 Method sets the HTTP method
 
 
-### <a name="Prefix">func</a> [Prefix](/src/target/opts.go?s=5256:5294#L233)
+### <a name="Prefix">func</a> [Prefix](/src/target/opts.go?s=5263:5301#L234)
 ``` go
 func Prefix(d string, h string) Option
 ```
 Prefix sets the dnsmasq configuration address line prefix
 
 
-### <a name="Test">func</a> [Test](/src/target/opts.go?s=5578:5602#L247)
+### <a name="Test">func</a> [Test](/src/target/opts.go?s=5627:5651#L252)
 ``` go
 func Test(b bool) Option
 ```
 Test toggles testing mode on or off
 
 
-### <a name="Timeout">func</a> [Timeout](/src/target/opts.go?s=5771:5807#L256)
+### <a name="Timeout">func</a> [Timeout](/src/target/opts.go?s=5820:5856#L261)
 ``` go
 func Timeout(t time.Duration) Option
 ```
 Timeout sets how long before an unresponsive goroutine is aborted
 
 
-### <a name="Verb">func</a> [Verb](/src/target/opts.go?s=5954:5978#L265)
+### <a name="Verb">func</a> [Verb](/src/target/opts.go?s=6003:6027#L270)
 ``` go
 func Verb(b bool) Option
 ```
 Verb sets the verbosity level to v
 
 
-### <a name="WCard">func</a> [WCard](/src/target/opts.go?s=6122:6151#L274)
+### <a name="WCard">func</a> [WCard](/src/target/opts.go?s=6171:6200#L279)
 ``` go
 func WCard(w Wildcard) Option
 ```
 WCard sets file globbing wildcard values
 
 
-### <a name="Writer">func</a> [Writer](/src/target/opts.go?s=6326:6357#L283)
+### <a name="Writer">func</a> [Writer](/src/target/opts.go?s=6375:6406#L288)
 ``` go
 func Writer(w io.Writer) Option
 ```
@@ -1059,6 +1071,7 @@ Writer provides an address for anything that can use io.Writer
 type PreDomnObjects struct {
     *Objects
 }
+
 ```
 PreDomnObjects struct of *Objects for pre-configured domains content
 
@@ -1119,6 +1132,7 @@ func (p *PreDomnObjects) String() string
 type PreHostObjects struct {
     *Objects
 }
+
 ```
 PreHostObjects struct of *Objects for pre-configured hosts content
 
@@ -1179,6 +1193,7 @@ func (p *PreHostObjects) String() string
 type PreRootObjects struct {
     *Objects
 }
+
 ```
 PreRootObjects struct of *Objects for pre-configured hosts content
 
@@ -1239,6 +1254,7 @@ func (p *PreRootObjects) String() string
 type URLDomnObjects struct {
     *Objects
 }
+
 ```
 URLDomnObjects struct of *Objects for domain URLs
 
@@ -1299,6 +1315,7 @@ func (u *URLDomnObjects) String() string
 type URLHostObjects struct {
     *Objects
 }
+
 ```
 URLHostObjects struct of *Objects for host URLs
 
@@ -1354,12 +1371,13 @@ func (u *URLHostObjects) String() string
 
 
 
-## <a name="Wildcard">type</a> [Wildcard](/src/target/opts.go?s=1458:1556#L48)
+## <a name="Wildcard">type</a> [Wildcard](/src/target/opts.go?s=1465:1563#L49)
 ``` go
 type Wildcard struct {
     Node string `json:"Node,omitempty"`
     Name string `json:"Name,omitempty"`
 }
+
 ```
 Wildcard struct sets globbing wildcards for filename searches
 

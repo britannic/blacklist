@@ -40,11 +40,16 @@ func download(s *source) *source {
 		str := fmt.Sprintf("No data returned for %s", s.url)
 		s.Log.Warning(str)
 		s.r, s.err = strings.NewReader(str), err
-		resp.Body.Close()
+
+		if err := resp.Body.Close(); err != nil {
+			s.Log.Warning(err.Error)
+		}
 		return s
 	}
 
 	s.r, s.err = bytes.NewBuffer(body), err
-	resp.Body.Close()
+	if err := resp.Body.Close(); err != nil {
+		s.Log.Warning(err.Error)
+	}
 	return s
 }
