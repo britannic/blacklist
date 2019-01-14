@@ -4,7 +4,7 @@ os:
 - osx
 
 go:
-- "1.14.x"
+- "1.11.4"
 - "master"
 
 matrix:
