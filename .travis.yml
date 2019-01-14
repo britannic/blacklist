@@ -26,7 +26,7 @@ before_script:
 - go vet ./...
 
 install:
-- dep ensure
+- env GO111MODULE=on go mod tidy
 
 script:
 - $HOME/gopath/src/github.com/britannic/blacklist/testcoverage
