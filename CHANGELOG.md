@@ -2,7 +2,7 @@
 
 ## Releases
 
-### Release v1.1.6.7 (January 13, 2018)
+### Release v1.1.6.7 (January 13, 2019)
 
 * Removed hostfile.org as it is too agressive and causes a lot of false positive entries
 
