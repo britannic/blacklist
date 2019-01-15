@@ -98,7 +98,7 @@
 //
 // Copyright
 //
-// • Copyright © Visit Helm Rock Consulting at https://www.helmrock.com/2018 Helm Rock Consulting (https://www.helmrock.com/)
+// • Copyright © Visit Helm Rock Consulting at https://www.helmrock.com/2019 Helm Rock Consulting (https://www.helmrock.com/)
 //
 // [Top] (#contents)
 //
