@@ -108,7 +108,7 @@ noblacklist() {
 # Load the [service dns forwarding blacklist] configuration
 update_dns_config() {
 	try begin
-	try set service dns forwarding blacklist disabled false
+	# try set service dns forwarding blacklist disabled false
 	try set service dns forwarding blacklist dns-redirect-ip 0.0.0.0
 	try set service dns forwarding blacklist domains include adk2x.com
 	try set service dns forwarding blacklist domains include adsrvr.org
@@ -247,10 +247,10 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
-	try set service dns forwarding blacklist hosts source YoutubeAdBlockList description "Anudeeps Youtube Ad Blocking list"
+	try set service dns forwarding blacklist hosts source YoutubeAdBlockList description '"Anudeeps Youtube Ad Blocking list"'
 	try set service dns forwarding blacklist hosts source YoutubeAdBlockList prefix ''
 	try set service dns forwarding blacklist hosts source YoutubeAdBlockList url 'https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt'
-	try set service dns forwarding blacklist hosts source YoutubeBlockList "Youtube Ad-Block-List for PiHole by HenningVanRäumle"
+	try set service dns forwarding blacklist hosts source YoutubeBlockList '"Youtube Ad-Block-List for PiHole by HenningVanRäumle"'
 	try set service dns forwarding blacklist hosts source YoutubeBlockList prefix '0.0.0.0 '
 	try set service dns forwarding blacklist hosts source YoutubeBlockList url 'https://raw.githubusercontent.com/HenningVanRaumle/pihole-ytadblock/master/ytadblock.txt'
 	try set system task-scheduler task update_blacklists executable arguments 10800

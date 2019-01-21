@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.6.8 (January 20, 2019)
+
+* Removed "set service dns forwarding blacklist disabled false" as it is broken in EdgeOS 2.0.0
+
 ### Release v1.1.6.7 (January 13, 2019)
 
 * Removed hostfile.org as it is too agressive and causes a lot of false positive entries
