@@ -136,6 +136,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist domains source zeus url 'https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist'
 	try set service dns forwarding blacklist exclude 1e100.net
 	try set service dns forwarding blacklist exclude 2o7.net
+	try set service dns forwarding blacklist exclude adjust.com
 	try set service dns forwarding blacklist exclude adobedtm.com
 	try set service dns forwarding blacklist exclude akamai.net
 	try set service dns forwarding blacklist exclude akamaihd.net
