@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.6.9 (January 27, 2019)
+
+* Added adjust.com to domain exclusions as this domain is being used by Microsoft for guiding users through a two-factor authentication setup process.
+
 ### Release v1.1.6.8 (January 20, 2019)
 
 * Removed "set service dns forwarding blacklist disabled false" as it is broken in EdgeOS 2.0.0
