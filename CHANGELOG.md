@@ -2,6 +2,11 @@
 
 ## Releases
 
+### Release v1.1.6.10 (February 3,2019)
+
+* Removed "try set service dns forwarding blacklist disabled false" from the installation setup to prevent false positive issue in EdgeOS 2.0
+* Forced update_dnsmasq to run after installation, to resolve non-detection of a new configuration in EdgeOS 2.0
+
 ### Release v1.1.6.9 (January 27, 2019)
 
 * Added adjust.com to domain exclusions as this domain is being used by Microsoft for guiding users through a two-factor authentication setup process.

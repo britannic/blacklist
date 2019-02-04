@@ -396,9 +396,9 @@ func (c *Config) ProcessContent(cts ...Contenter) error {
 func (c *Config) Blacklist(r ConfLoader) error {
 	var (
 		b     = bufio.NewScanner(r.read())
+		find  = regx.NewRegex()
 		nodes []string
 		o     *source
-		find  = regx.NewRegex()
 		tnode string
 	)
 

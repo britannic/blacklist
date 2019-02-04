@@ -249,7 +249,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
 	try set service dns forwarding blacklist hosts source YoutubeAdBlockList description '"Anudeeps Youtube Ad Blocking list"'
-	try set service dns forwarding blacklist hosts source YoutubeAdBlockList prefix ''
+	try set service dns forwarding blacklist hosts source YoutubeAdBlockList prefix '""'
 	try set service dns forwarding blacklist hosts source YoutubeAdBlockList url 'https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt'
 	try set service dns forwarding blacklist hosts source YoutubeBlockList '"Youtube Ad-Block-List for PiHole by HenningVanRäumle"'
 	try set service dns forwarding blacklist hosts source YoutubeBlockList prefix '0.0.0.0 '
@@ -276,4 +276,5 @@ noblacklist && UPGRADE=1
 if [[ ${UPGRADE} == 1 ]] ; then
 	echo "Installing blacklist configuration settings..."
 	update_dns_config
+	/config/scripts/update-dnsmasq -v
 fi
