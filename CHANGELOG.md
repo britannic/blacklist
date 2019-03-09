@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.6.11 (March 9,2019)
+
+* Fix for issue #8, /etc/dnsmasq.d/*blacklist.con files aren't deleted after uninstallation
+
 ### Release v1.1.6.10 (February 3,2019)
 
 * Removed "try set service dns forwarding blacklist disabled false" from the installation setup to prevent false positive issue in EdgeOS 2.0

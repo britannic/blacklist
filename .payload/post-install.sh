@@ -248,7 +248,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source YoutubeAdBlockList description '"Anudeeps Youtube Ad Blocking list"'
 	try set service dns forwarding blacklist hosts source YoutubeAdBlockList prefix '""'
 	try set service dns forwarding blacklist hosts source YoutubeAdBlockList url 'https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt'
-	try set service dns forwarding blacklist hosts source YoutubeBlockList '"Youtube Ad-Block-List for PiHole by HenningVanRäumle"'
+	try set service dns forwarding blacklist hosts source YoutubeBlockList '"Youtube Ad-Block-List for PiHole by HenningVanRaeumle"'
 	try set service dns forwarding blacklist hosts source YoutubeBlockList prefix '0.0.0.0 '
 	try set service dns forwarding blacklist hosts source YoutubeBlockList url 'https://raw.githubusercontent.com/HenningVanRaumle/pihole-ytadblock/master/ytadblock.txt'
 	try set system task-scheduler task update_blacklists executable arguments 10800

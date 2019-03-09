@@ -132,6 +132,11 @@ delete_dns_config() {
 	try end
 }
 
+# Remove dnsmasq configuration files
+delete_dnsmasq_config() {
+	rm -f /etc/dnsmasq.d/*blacklist.conf
+}
+
 restart_dnsmasq() {
 	/etc/init.d/dnsmasq restart
 }
@@ -145,6 +150,7 @@ backup_dns_config
 if [[ "${1}" == "remove" ]] ; then
 	echo "Deleting blacklist configuration settings..."
 	delete_dns_config
+	delete_dnsmasq_config
 fi
 
 set_vyattacfg_grp
