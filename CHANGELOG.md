@@ -4,7 +4,7 @@
 
 ### Release v1.1.6.11 (March 9,2019)
 
-* Fix for issue #8, /etc/dnsmasq.d/*blacklist.con files aren't deleted after uninstallation
+* Fix for issue #8, /etc/dnsmasq.d/*blacklist.conf files aren't deleted after uninstallation
 
 ### Release v1.1.6.10 (February 3,2019)
 
