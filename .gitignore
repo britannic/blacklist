@@ -36,3 +36,5 @@
 blacklist.*
 vendor/
 
+!blacklist.cfg
+
