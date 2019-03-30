@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.7.0 (March 30,2019)
+
+* Addedd support to use systemctl to restart dnsmasq under EdgeOS 2.0.1
+
 ### Release v1.1.6.11 (March 9,2019)
 
 * Fix for issue #8, /etc/dnsmasq.d/*blacklist.conf files aren't deleted after uninstallation
