@@ -159,7 +159,7 @@ func TestOption(t *testing.T) {
 			Timeout(30*time.Second),
 			Verb(false),
 			WCard(Wildcard{Node: "*s", Name: "*"}),
-			Writer(nil),
+			// Writer(nil),
 		)
 
 		expRaw.Dex.RWMutex = c.Dex.RWMutex

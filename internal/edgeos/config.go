@@ -205,25 +205,25 @@ func (c *Config) NewContent(iface IFace) (Contenter, error) {
 }
 
 // excludes returns a string array of excludes
-func (c *Config) excludes(nx ...string) list {
-	var exc [][]byte
-	switch nx {
-	case nil:
-		for _, k := range c.sortKeys() {
-			for _, v := range c.tree[k].exc {
-				exc = append(exc, []byte(v))
-			}
+// func (c *Config) excludes(nx ...string) list {
+// 	var exc [][]byte
+// 	switch nx {
+// 	case nil:
+// 		for _, k := range c.sortKeys() {
+// 			for _, v := range c.tree[k].exc {
+// 				exc = append(exc, []byte(v))
+// 			}
 
-		}
-	default:
-		for _, n := range nx {
-			for _, v := range c.tree[n].exc {
-				exc = append(exc, []byte(v))
-			}
-		}
-	}
-	return updateEntry(exc)
-}
+// 		}
+// 	default:
+// 		for _, n := range nx {
+// 			for _, v := range c.tree[n].exc {
+// 				exc = append(exc, []byte(v))
+// 			}
+// 		}
+// 	}
+// 	return updateEntry(exc)
+// }
 
 // Get returns an *Object for a given node
 func (c *Config) Get(nx string) *Objects {

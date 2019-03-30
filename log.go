@@ -52,7 +52,7 @@ func newLog(prefix string) *logging.Logger {
 	// nolint
 	fd, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
+		fmt.Fprint(os.Stderr, err.Error())
 	}
 
 	fdlog := logging.NewLogBackend(fd, "", 0)
@@ -60,7 +60,7 @@ func newLog(prefix string) *logging.Logger {
 
 	sysFmttr, err := logging.NewSyslogBackend(prog + ": ")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, err.Error())
+		fmt.Fprint(os.Stderr, err.Error())
 	}
 
 	logging.SetBackend(fdFmttr, sysFmttr)

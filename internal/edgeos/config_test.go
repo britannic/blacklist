@@ -53,17 +53,17 @@ func TestAddInc(t *testing.T) {
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
 						},
-						Ext:      "",
-						File:     "",
-						FnFmt:    "",
-						InCLI:    "",
-						ioWriter: nil,
-						Level:    "",
-						Method:   "",
-						Pfx:      dnsPfx{domain: "", host: ""},
-						Test:     false,
-						Timeout:  time.Duration(0),
-						Verb:     false},
+						Ext:   "",
+						File:  "",
+						FnFmt: "",
+						InCLI: "",
+						// ioWriter: nil,
+						Level:   "",
+						Method:  "",
+						Pfx:     dnsPfx{domain: "", host: ""},
+						Test:    false,
+						Timeout: time.Duration(0),
+						Verb:    false},
 					desc:     "pre-configured global blacklisted domains",
 					disabled: false,
 					err:      nil,
@@ -109,17 +109,17 @@ func TestAddInc(t *testing.T) {
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
 						},
-						Ext:      "",
-						File:     "",
-						FnFmt:    "",
-						InCLI:    "",
-						ioWriter: nil,
-						Level:    "",
-						Method:   "",
-						Pfx:      dnsPfx{domain: "", host: ""},
-						Test:     false,
-						Timeout:  time.Duration(0),
-						Verb:     false},
+						Ext:   "",
+						File:  "",
+						FnFmt: "",
+						InCLI: "",
+						// ioWriter: nil,
+						Level:   "",
+						Method:  "",
+						Pfx:     dnsPfx{domain: "", host: ""},
+						Test:    false,
+						Timeout: time.Duration(0),
+						Verb:    false},
 					desc:     "pre-configured blacklisted subdomains",
 					disabled: false,
 					err:      nil,
@@ -164,17 +164,17 @@ func TestAddInc(t *testing.T) {
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
 						},
-						Ext:      "",
-						File:     "",
-						FnFmt:    "",
-						InCLI:    "",
-						ioWriter: nil,
-						Level:    "",
-						Method:   "",
-						Pfx:      dnsPfx{domain: "", host: ""},
-						Test:     false,
-						Timeout:  time.Duration(0),
-						Verb:     false},
+						Ext:   "",
+						File:  "",
+						FnFmt: "",
+						InCLI: "",
+						// ioWriter: nil,
+						Level:   "",
+						Method:  "",
+						Pfx:     dnsPfx{domain: "", host: ""},
+						Test:    false,
+						Timeout: time.Duration(0),
+						Verb:    false},
 					desc:     "pre-configured blacklisted servers",
 					disabled: false,
 					err:      nil,
@@ -207,93 +207,93 @@ func TestAddInc(t *testing.T) {
 	})
 }
 
-func TestExcludes(t *testing.T) {
-	Convey("Testing excludes()", t, func() {
-		c := NewConfig(
-			Dir("/tmp"),
-			Ext("blacklist.conf"),
-		)
+// func TestExcludes(t *testing.T) {
+// 	Convey("Testing excludes()", t, func() {
+// 		c := NewConfig(
+// 			Dir("/tmp"),
+// 			Ext("blacklist.conf"),
+// 		)
 
-		So(c.Blacklist(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
+// 		So(c.Blacklist(&CFGstatic{Cfg: tdata.Cfg}), ShouldBeNil)
 
-		excludes := list{
-			entry: entry{
-				"sstatic.net":             struct{}{},
-				"yimg.com":                struct{}{},
-				"ytimg.com":               struct{}{},
-				"google.com":              struct{}{},
-				"images-amazon.com":       struct{}{},
-				"msdn.com":                struct{}{},
-				"schema.org":              struct{}{},
-				"skype.com":               struct{}{},
-				"avast.com":               struct{}{},
-				"bitdefender.com":         struct{}{},
-				"cdn.visiblemeasures.com": struct{}{},
-				"cloudfront.net":          struct{}{},
-				"microsoft.com":           struct{}{},
-				"akamaihd.net":            struct{}{},
-				"amazon.com":              struct{}{},
-				"apple.com":               struct{}{},
-				"shopify.com":             struct{}{},
-				"storage.googleapis.com":  struct{}{},
-				"msecnd.net":              struct{}{},
-				"ssl-on9.com":             struct{}{},
-				"windows.net":             struct{}{},
-				"1e100.net":               struct{}{},
-				"akamai.net":              struct{}{},
-				"coremetrics.com":         struct{}{},
-				"gstatic.com":             struct{}{},
-				"gvt1.com":                struct{}{},
-				"freedns.afraid.org":      struct{}{},
-				"hb.disney.go.com":        struct{}{},
-				"hp.com":                  struct{}{},
-				"live.com":                struct{}{},
-				"rackcdn.com":             struct{}{},
-				"edgesuite.net":           struct{}{},
-				"googleapis.com":          struct{}{},
-				"smacargo.com":            struct{}{},
-				"static.chartbeat.com":    struct{}{},
-				"gvt1.net":                struct{}{},
-				"hulu.com":                struct{}{},
-				"paypal.com":              struct{}{},
-				"amazonaws.com":           struct{}{},
-				"ask.com":                 struct{}{},
-				"github.com":              struct{}{},
-				"githubusercontent.com":   struct{}{},
-				"googletagmanager.com":    struct{}{},
-				"sourceforge.net":         struct{}{},
-				"xboxlive.com":            struct{}{},
-				"2o7.net":                 struct{}{},
-				"adobedtm.com":            struct{}{},
-				"googleadservices.com":    struct{}{},
-				"googleusercontent.com":   struct{}{},
-				"ssl-on9.net":             struct{}{},
-			},
-		}
-		tests := []struct {
-			get  list
-			list list
-			name string
-			node string
-		}{
-			{name: "c.excludes(rootNode)", get: c.excludes(rootNode), list: excludes, node: rootNode},
-			{name: "c.excludes()", get: c.excludes(), list: excludes},
-			{name: "c.excludes(domains)", get: c.excludes(domains), list: list{RWMutex: (*sync.RWMutex)(nil), entry: entry{}}, node: domains},
-			{name: "c.excludes(hosts)", get: c.excludes(hosts), list: list{RWMutex: (*sync.RWMutex)(nil), entry: entry{}}, node: hosts},
-		}
+// 		excludes := list{
+// 			entry: entry{
+// 				"sstatic.net":             struct{}{},
+// 				"yimg.com":                struct{}{},
+// 				"ytimg.com":               struct{}{},
+// 				"google.com":              struct{}{},
+// 				"images-amazon.com":       struct{}{},
+// 				"msdn.com":                struct{}{},
+// 				"schema.org":              struct{}{},
+// 				"skype.com":               struct{}{},
+// 				"avast.com":               struct{}{},
+// 				"bitdefender.com":         struct{}{},
+// 				"cdn.visiblemeasures.com": struct{}{},
+// 				"cloudfront.net":          struct{}{},
+// 				"microsoft.com":           struct{}{},
+// 				"akamaihd.net":            struct{}{},
+// 				"amazon.com":              struct{}{},
+// 				"apple.com":               struct{}{},
+// 				"shopify.com":             struct{}{},
+// 				"storage.googleapis.com":  struct{}{},
+// 				"msecnd.net":              struct{}{},
+// 				"ssl-on9.com":             struct{}{},
+// 				"windows.net":             struct{}{},
+// 				"1e100.net":               struct{}{},
+// 				"akamai.net":              struct{}{},
+// 				"coremetrics.com":         struct{}{},
+// 				"gstatic.com":             struct{}{},
+// 				"gvt1.com":                struct{}{},
+// 				"freedns.afraid.org":      struct{}{},
+// 				"hb.disney.go.com":        struct{}{},
+// 				"hp.com":                  struct{}{},
+// 				"live.com":                struct{}{},
+// 				"rackcdn.com":             struct{}{},
+// 				"edgesuite.net":           struct{}{},
+// 				"googleapis.com":          struct{}{},
+// 				"smacargo.com":            struct{}{},
+// 				"static.chartbeat.com":    struct{}{},
+// 				"gvt1.net":                struct{}{},
+// 				"hulu.com":                struct{}{},
+// 				"paypal.com":              struct{}{},
+// 				"amazonaws.com":           struct{}{},
+// 				"ask.com":                 struct{}{},
+// 				"github.com":              struct{}{},
+// 				"githubusercontent.com":   struct{}{},
+// 				"googletagmanager.com":    struct{}{},
+// 				"sourceforge.net":         struct{}{},
+// 				"xboxlive.com":            struct{}{},
+// 				"2o7.net":                 struct{}{},
+// 				"adobedtm.com":            struct{}{},
+// 				"googleadservices.com":    struct{}{},
+// 				"googleusercontent.com":   struct{}{},
+// 				"ssl-on9.net":             struct{}{},
+// 			},
+// 		}
+// 		tests := []struct {
+// 			get  list
+// 			list list
+// 			name string
+// 			node string
+// 		}{
+// 			{name: "c.excludes(rootNode)", get: c.excludes(rootNode), list: excludes, node: rootNode},
+// 			{name: "c.excludes()", get: c.excludes(), list: excludes},
+// 			{name: "c.excludes(domains)", get: c.excludes(domains), list: list{RWMutex: (*sync.RWMutex)(nil), entry: entry{}}, node: domains},
+// 			{name: "c.excludes(hosts)", get: c.excludes(hosts), list: list{RWMutex: (*sync.RWMutex)(nil), entry: entry{}}, node: hosts},
+// 		}
 
-		for _, tt := range tests {
-			Convey("Testing "+tt.name, func() {
-				switch tt.node {
-				case "":
-					So(c.excludes(), ShouldResemble, tt.list)
-				default:
-					So(c.excludes(tt.node), ShouldResemble, tt.list)
-				}
-			})
-		}
-	})
-}
+// 		for _, tt := range tests {
+// 			Convey("Testing "+tt.name, func() {
+// 				switch tt.node {
+// 				case "":
+// 					So(c.excludes(), ShouldResemble, tt.list)
+// 				default:
+// 					So(c.excludes(tt.node), ShouldResemble, tt.list)
+// 				}
+// 			})
+// 		}
+// 	})
+// }
 
 func TestGetIP(t *testing.T) {
 	b := tree{}

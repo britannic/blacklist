@@ -149,7 +149,10 @@ func (b *bList) writeFile() error {
 		return err
 	}
 
-	_, err = io.Copy(w, b.r)
+	if _, err = io.Copy(w, b.r); err != nil {
+		return err
+	}
+
 	if err = w.Close(); err != nil {
 		return err
 	}

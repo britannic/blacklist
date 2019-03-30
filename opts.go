@@ -110,7 +110,7 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.Disabled(false),
 		e.Dbug(*o.Dbug),
 		e.Dir(o.setDir(*o.ARCH)),
-		e.DNSsvc("/etc/init.d/dnsmasq restart"),
+		e.DNSsvc(dnsmasq),
 		e.Ext("blacklist.conf"),
 		e.File(*o.File),
 		e.FileNameFmt("%v/%v.%v.%v"),
@@ -122,7 +122,7 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.Timeout(30*time.Second),
 		e.Verb(*o.Verb),
 		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
-		e.Writer(ioutil.Discard),
+		// e.Writer(ioutil.Discard),
 	)
 }
 

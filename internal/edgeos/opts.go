@@ -3,7 +3,6 @@ package edgeos
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"runtime"
 	"sync"
 	"time"
@@ -14,7 +13,7 @@ import (
 // Env is struct of parameters
 type Env struct {
 	ctr
-	ioWriter io.Writer
+	// ioWriter io.Writer
 	Log      *logging.Logger
 	API      string        `json:"API,omitempty"`
 	Arch     string        `json:"Arch,omitempty"`
@@ -285,10 +284,10 @@ func WCard(w Wildcard) Option {
 }
 
 // Writer provides an address for anything that can use io.Writer
-func Writer(w io.Writer) Option {
-	return func(c *Config) Option {
-		previous := c.ioWriter
-		c.ioWriter = w
-		return Writer(previous)
-	}
-}
+// func Writer(w io.Writer) Option {
+// 	return func(c *Config) Option {
+// 		previous := c.ioWriter
+// 		c.ioWriter = w
+// 		return Writer(previous)
+// 	}
+// }

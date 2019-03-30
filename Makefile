@@ -79,10 +79,9 @@ GODOC2MD 		 = $(BIN)/godoc2md
 $(BIN)/godoc2md: ; @ $(info $(M) building godoc2md…)
 	$(Q) $(GO) get -u github.com/davecheney/godoc2md
 
-GOLINT 			 = $(BIN)/gometalinter
-$(BIN)/gometalinter: ; @ $(info $(M) building gometalinter…)
-	$(Q) $(GO) get -u github.com/alecthomas/gometalinter
-	$(BIN)/gometalinter --install &> /dev/null
+GOLINT 			 = $(BIN)/golangci-lint
+$(BIN)/golangci-lint: ; @ $(info $(M) building golangci-lint…)
+	$(Q) $(GO) get github.com/golangci/golangci-lint/cmd/golangci-lint
 
 GOCOVMERGE 		 = $(BIN)/gocovmerge
 $(BIN)/gocovmerge: ; @ $(info $(M) building gocovmerge…)
@@ -280,10 +279,8 @@ test-coverage: fmt lint vendor test-coverage-tools | $(BASE) ; $(info $(M) runni
 	$(Q) $(GOCOV) convert $(COVERAGE_PROFILE) | $(GOCOVXML) > $(COVERAGE_XML)
 
 .PHONY: lint
-lint: vendor | $(BASE) $(GOLINT) ; $(info $(M) running gometalinter…)  @ ## Run gometalinter
-	$(Q) cd $(BASE) && ret=0 && for pkg in $(PKGS); do \
-		test -z "$$($(GOLINT) $$pkg | tee /dev/stderr)" || ret=1 ; \
-	 done ; exit $$ret
+lint: vendor | $(BASE) $(GOLINT) ; $(info $(M) running golangci-lint…)  @ ## Run golangci-lint
+	$(GOLINT) run ./...
 
 .PHONY: fmt
 fmt: ; $(info $(M) running gofmt…) @  ## Run gofmt on all source files
