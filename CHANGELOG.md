@@ -2,7 +2,7 @@
 
 ## Releases
 
-### Release v1.1.7.0 (March 30,2019)
+### Release v1.1.7.1 (March 30,2019)
 
 * Addedd support to use systemctl to restart dnsmasq under EdgeOS 2.0.1
 
