@@ -98,9 +98,9 @@ func getOpts() *opts {
 }
 
 func (o *opts) initEdgeOS() *e.Config {
-	dnsmasq := "/etc/init.d/dnsmasq"
-	if _, err := os.Stat(dnsmasq); os.IsNotExist(err) {
-		dnsmasq = "/bin/systemctl restart dnsmasq"
+	dnsmasq := "/bin/systemctl restart dnsmasq"
+	if _, err := os.Stat("/bin/systemctl"); os.IsNotExist(err) {
+		dnsmasq = "/etc/init.d/dnsmasq"
 	}
 	return e.NewConfig(
 		e.API("/bin/cli-shell-api"),
