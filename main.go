@@ -23,7 +23,7 @@ var (
 )
 
 func main() {
-	nogo := os.Getenv("NOBLKLIST")
+	// nogo := os.Getenv("NOBLKLIST")
 	objex := []e.IFace{
 		e.PreRObj,
 		e.PreDObj,
