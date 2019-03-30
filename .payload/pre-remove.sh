@@ -124,14 +124,12 @@ backup_dns_config() {
 
 # Delete the [service dns forwarding blacklist] configuration
 delete_dns_config() {
-	export NOBLKLIST=NOOP
 	try begin
 	try delete system task-scheduler task update_blacklists
 	try delete service dns forwarding blacklist
 	try commit
 	try save
 	try end
-	unset NOBLKLIST
 }
 
 # Remove dnsmasq configuration files
@@ -142,7 +140,7 @@ delete_dnsmasq_config() {
 restart_dnsmasq() {
 	if [[ -f /bin/systemctl ]]; then 
 		/bin/systemctl restart dnsmasq 
-	elif
+	else
 		/etc/init.d/dnsmasq restart
 	fi
 }
@@ -155,8 +153,10 @@ backup_dns_config
 # Only run the pre-installation script if this is a first time installation
 if [[ "${1}" == "remove" ]] ; then
 	echo "Deleting blacklist configuration settings..."
+	# export NOBLKLIST=NOOP
 	delete_dns_config
 	delete_dnsmasq_config
+	# unset NOBLKLIST
 fi
 
 set_vyattacfg_grp

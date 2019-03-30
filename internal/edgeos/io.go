@@ -96,12 +96,12 @@ func GetFile(f string) (io.Reader, error) {
 }
 
 // mode returns a contextual VYOS API argument
-// func mode(insession bool) string {
-// if insession {
-// 	return "--show-working-only"
-// }
-// 	return "--show-active-only"
-// }
+func mode(insession bool) string {
+if insession {
+	return "--show-working-only"
+}
+	return "--show-active-only"
+}
 
 // purgeFiles removes any orphaned blacklist files that don't have sources
 func purgeFiles(files []string) error {

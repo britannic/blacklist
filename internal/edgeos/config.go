@@ -263,7 +263,7 @@ func (c *Config) load(act, lvl string) ([]byte, error) {
 	// nolint
 	cmd := exec.Command(c.Bash)
 	s := fmt.Sprintf(
-		"%v %v %v --show-active-only", c.API, apiCMD(act, c.InSession()), lvl,
+		"%v %v %v %v", c.API, apiCMD(act, c.InSession()), lvl, mode(c.InSession()),
 	)
 	cmd.Stdin = strings.NewReader(s)
 	c.Debug(fmt.Sprintf("Running shell command: %v", s))

@@ -42,10 +42,10 @@ func main() {
 		exitCmd(0)
 	}
 
-	if nogo == "NOOP" {
-		logErrorf("Environment var %s set, shutting down.", nogo)
-		exitCmd(0)
-	}
+	// if nogo == "NOOP" {
+	// 	logErrorf("Environment var %s set, shutting down.", nogo)
+	// 	exitCmd(0)
+	// }
 
 	c.Debug(fmt.Sprintf("Dumping commandline args: %v", os.Args[1:]))
 	c.Debug(fmt.Sprintf("Dumping env variables: %v", c))
