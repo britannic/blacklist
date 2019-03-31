@@ -263,7 +263,7 @@ func (c *Config) load(act, lvl string) ([]byte, error) {
 	// nolint
 	cmd := exec.Command(c.Bash)
 	s := fmt.Sprintf(
-		"%v %v %v %v", c.API, apiCMD(act, c.InSession()), lvl, mode(c.InSession()),
+		"%v %v %v %v", c.API, apiCMD(act, c.InSession()), lvl, c.mode(),
 	)
 	cmd.Stdin = strings.NewReader(s)
 	c.Debug(fmt.Sprintf("Running shell command: %v", s))
@@ -320,6 +320,14 @@ func (c *Config) label(name [][]byte, o *source, n string) {
 		o.url = string(name[2])
 		c.tree[n].src = append(c.tree[n].src, o)
 	}
+}
+
+// mode returns a contextual VYOS API argument
+func (c *Config) mode() string {
+	if c.InSession() {
+		return "--show-working-only"
+	}
+	return "--show-active-only"
 }
 
 func (c *Config) addTnodeSource(n string) {
