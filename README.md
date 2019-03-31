@@ -106,9 +106,11 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.7.4-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-### Release v1.1.7.0 (March 30,2019)
+### Release v1.1.7.4 (March 31,2019)
 
-* Addedd support to use systemctl to restart dnsmasq under EdgeOS 2.0.1
+* Added support for EdgeOS 2.0.1
+* Fixed config session detection bug
+* Ensure all dnsmasq blacklist configuration files are removed for blacklist config delete and package removal1
 
 ### Release v1.1.6.11 (March 9,2019)
 
@@ -133,9 +135,8 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Compatibility**
 
-* edgeos-dnsmasq-blacklist has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X and UniFi Security Gateway USG-3 routers
-  * EdgeMAX versions: v1.9.7+hotfix.4-v1.10.1, UniFi: v4.4.12-v4.4.18
-* integration could be adapted to work on VyOS and Vyatta derived ports, since  EdgeOS is a fork and port of Vyatta 6.3
+* edgeos-dnsmasq-blacklist has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X, ER4 UniFi Security Gateway USG3 and USG4 routers
+  * EdgeMAX versions: v1.9.7+hotfix.4-v2.0.1, UniFi: v4.4.12-v4.4.36
 
 [[Top]](#contents)
 
@@ -146,7 +147,7 @@ modification, are permitted provided that the following conditions are met:
 
 [[Top]](#contents)
 
-### **apt-get Installation - ERLite-3, ERPoe-5, ER-X, ER-X-SFP & UniFi-Gateway-3**
+### **apt-get Installation - ERLite-3, ERPoe-5, ER-X, ER-X-SFP, ER4, UniFi-Gateway-3 & UniFi-Gateway-4**
 
 * Add the blacklist debian package repository using the router's CLI shell
 
@@ -175,7 +176,7 @@ sudo apt-get update && sudo apt-get install edgeos-dnsmasq-blacklist
 
 ## **dpkg Installation - best for disk space constrained routers**
 
-### **EdgeRouter ERLite-3, ERPoe-5 & UniFi-Gateway-3**
+### **EdgeRouter ERLite-3, ERPoe-5, ER4, UniFi-Gateway-3 & UniFi-Gateway-4**
 
 ```bash
 curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.1.7.4_mips.deb

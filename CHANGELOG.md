@@ -2,10 +2,12 @@
 
 ## Releases
 
-### Release v1.1.7.2 (March 30,2019)
+### Release v1.1.7.4 (March 31,2019)
 
-* Added support to use systemctl to restart dnsmasq under EdgeOS 2.0.1
-* Added environment var to inhibit dnsmasq updates during package remove
+* Added support for EdgeOS 2.0.1
+* Fixed config session detection bug
+* Ensure all dnsmasq blacklist configuration files are removed for blacklist config delete and package removal
+* Force dnsmasq restart after blacklist config delete
 
 ### Release v1.1.6.11 (March 9,2019)
 
