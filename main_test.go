@@ -502,7 +502,7 @@ func TestInitEdgeOS(t *testing.T) {
 	"Disabled": false,
 	"Dex": {},
 	"Dir": "/tmp",
-	"dnsmasq service": "/etc/init.d/dnsmasq",
+	"dnsmasq service": "/etc/init.d/dnsmasq restart",
 	"Exc": {},
 	"dnsmasq fileExt.": "blacklist.conf",
 	"File name fmt": "%v/%v.%v.%v",

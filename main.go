@@ -97,6 +97,7 @@ func initEnv() (c *e.Config, err error) {
 		if err = files(c).Remove(); err != nil {
 			fmt.Fprintf(os.Stderr, "%v", err.Error())
 		}
+		reloadDNS(c)
 		exitCmd(0)
 	}
 	return c, err

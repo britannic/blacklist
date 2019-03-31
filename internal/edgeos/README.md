@@ -317,7 +317,7 @@ NewConfig returns a new *Config initialized with the parameter options passed to
 
 
 
-### <a name="Config.Blacklist">func</a> (\*Config) [Blacklist](/src/target/config.go?s=8868:8914#L404)
+### <a name="Config.Blacklist">func</a> (\*Config) [Blacklist](/src/target/config.go?s=8539:8585#L386)
 ``` go
 func (c *Config) Blacklist(r ConfLoader) error
 ```
@@ -326,7 +326,7 @@ Blacklist extracts blacklist nodes from a EdgeOS/VyOS configuration structure
 
 
 
-### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=5017:5057#L229)
+### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4567:4607#L208)
 ``` go
 func (c *Config) Get(nx string) *Objects
 ```
@@ -335,7 +335,7 @@ Get returns an *Object for a given node
 
 
 
-### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=5279:5329#L243)
+### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4829:4879#L222)
 ``` go
 func (c *Config) GetAll(ltypes ...string) *Objects
 ```
@@ -353,7 +353,7 @@ GetTotalStats displays aggregate statistics for processed sources
 
 
 
-### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=5503:5536#L252)
+### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=5053:5086#L231)
 ``` go
 func (c *Config) InSession() bool
 ```
@@ -371,7 +371,7 @@ NewContent returns a Contenter interface of the requested IFace type
 
 
 
-### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=6065:6102#L274)
+### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5736:5773#L256)
 ``` go
 func (c *Config) Nodes() (n []string)
 ```
@@ -380,7 +380,7 @@ Nodes returns an array of configured nodes
 
 
 
-### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/config.go?s=8109:8164#L364)
+### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/config.go?s=7780:7835#L346)
 ``` go
 func (c *Config) ProcessContent(cts ...Contenter) error
 ```
@@ -389,7 +389,7 @@ ProcessContent processes the Contents array
 
 
 
-### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=10899:10943#L459)
+### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=10570:10614#L441)
 ``` go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
@@ -407,7 +407,7 @@ SetOpt sets the specified options passed as Env and returns an option to restore
 
 
 
-### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=11372:11408#L479)
+### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=11043:11079#L461)
 ``` go
 func (c *Config) String() (s string)
 ```

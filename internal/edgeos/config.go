@@ -246,6 +246,9 @@ func (c *Config) load(act, lvl string) ([]byte, error) {
 	)
 	cmd.Stdin = strings.NewReader(s)
 	c.Debug(fmt.Sprintf("Running shell command: %v", s))
+	c.Debug(fmt.Sprintf("Config session is %t", c.InSession()))
+	c.Debug(fmt.Sprintf("Using %s to load configuration", s))
+
 	return cmd.Output()
 }
 
