@@ -41,7 +41,7 @@ We greatly appreciate any and all donations - Thank you! Funds go to maintaining
 1. [Features](#features)
 1. [Compatibility](#compatibility)
 1. [Installation](#installation)
-    1. [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp--unifi-gateway-3)
+    1. [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp-er4-unifi-gateway-3--unifi-gateway-4)
     1. [Using dpkg](#dpkg-installation---best-for-disk-space-constrained-routers)
 1. [Upgrade](#upgrade)
 1. [Removal](#removal)
