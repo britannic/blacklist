@@ -100,7 +100,7 @@ func getOpts() *opts {
 func (o *opts) initEdgeOS() *e.Config {
 	dnsmasq := "/bin/systemctl restart dnsmasq"
 	if _, err := os.Stat("/bin/systemctl"); os.IsNotExist(err) {
-		dnsmasq = "/etc/init.d/dnsmasq"
+		dnsmasq = "/etc/init.d/dnsmasq restart"
 	}
 	return e.NewConfig(
 		e.API("/bin/cli-shell-api"),

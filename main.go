@@ -23,7 +23,6 @@ var (
 )
 
 func main() {
-	// nogo := os.Getenv("NOBLKLIST")
 	objex := []e.IFace{
 		e.PreRObj,
 		e.PreDObj,
@@ -41,11 +40,6 @@ func main() {
 		logErrorf("%s shutting down.", err.Error())
 		exitCmd(0)
 	}
-
-	// if nogo == "NOOP" {
-	// 	logErrorf("Environment var %s set, shutting down.", nogo)
-	// 	exitCmd(0)
-	// }
 
 	c.Debug(fmt.Sprintf("Dumping commandline args: %v", os.Args[1:]))
 	c.Debug(fmt.Sprintf("Dumping env variables: %v", c))
