@@ -2,7 +2,7 @@
 
 ## Releases
 
-### Release v1.1.7.4 (March 31,2019)
+### Release v1.1.7.4 (March 31, 2019)
 
 * Added support for EdgeOS 2.0.1
 * Fixed config session detection bug

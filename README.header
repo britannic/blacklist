@@ -106,7 +106,7 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.7.4-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-### Release v1.1.7.4 (March 31,2019)
+### Release v1.1.7.4 (March 31, 2019)
 
 * Added support for EdgeOS 2.0.1
 * Fixed config session detection bug
@@ -142,7 +142,7 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Installation**
 
-* [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp--unifi-gateway-3) - works for all routers
+* [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp-er4-unifi-gateway-3--unifi-gateway-4) - works for all routers
 * [Using dpkg](#dpkg-installation---best-for-disk-space-constrained-routers) - best for disk space constrained routers
 
 [[Top]](#contents)
