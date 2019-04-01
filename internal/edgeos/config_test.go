@@ -500,8 +500,12 @@ func TestBooltoString(t *testing.T) {
 
 func TestToBool(t *testing.T) {
 	Convey("Testing strToBool()", t, func() {
-		So(strToBool(True), ShouldBeTrue)
-		So(strToBool(False), ShouldBeFalse)
+		b,err:=strToBool(True)
+		So(err, ShouldBeNil)
+		So(b, ShouldBeTrue)
+		b,err=strToBool(False)
+		So(err, ShouldBeNil)
+		So(b, ShouldBeFalse)
 	})
 }
 

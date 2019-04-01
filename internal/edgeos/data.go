@@ -109,10 +109,8 @@ func NewWriter() io.Writer {
 }
 
 // strToBool converts a string ("true" or "false") to boolean
-func strToBool(s string) bool {
-	b, err := strconv.ParseBool(s)
-	fmt.Println(err)
-	return b
+func strToBool(s string) (bool, error) {
+	return strconv.ParseBool(s)
 }
 
 func typeInt(n ntype) string {

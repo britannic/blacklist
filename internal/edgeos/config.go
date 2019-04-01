@@ -322,7 +322,7 @@ func (c *Config) addTnodeSource(n string) {
 
 func (c *Config) disable(line []byte, n string, find *regx.OBJ) {
 	if isTnode(n) {
-		c.tree[n].disabled = strToBool(string(find.SubMatch(regx.DSBL, line)[1]))
+		c.tree[n].disabled, _ = strToBool(string(find.SubMatch(regx.DSBL, line)[1]))
 		c.Env.Disabled = c.tree[n].disabled
 	}
 }

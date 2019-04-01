@@ -153,10 +153,8 @@ backup_dns_config
 # Only run the pre-installation script if this is a first time installation
 if [[ "${1}" == "remove" ]] ; then
 	echo "Deleting blacklist configuration settings..."
-	# export NOBLKLIST=NOOP
 	delete_dns_config
 	delete_dnsmasq_config
-	# unset NOBLKLIST
 fi
 
 set_vyattacfg_grp
