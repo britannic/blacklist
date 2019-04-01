@@ -317,7 +317,7 @@ NewConfig returns a new *Config initialized with the parameter options passed to
 
 
 
-### <a name="Config.Blacklist">func</a> (\*Config) [Blacklist](/src/target/config.go?s=8539:8585#L386)
+### <a name="Config.Blacklist">func</a> (\*Config) [Blacklist](/src/target/config.go?s=8542:8588#L386)
 ``` go
 func (c *Config) Blacklist(r ConfLoader) error
 ```
@@ -380,7 +380,7 @@ Nodes returns an array of configured nodes
 
 
 
-### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/config.go?s=7780:7835#L346)
+### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/config.go?s=7783:7838#L346)
 ``` go
 func (c *Config) ProcessContent(cts ...Contenter) error
 ```
@@ -389,7 +389,7 @@ ProcessContent processes the Contents array
 
 
 
-### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=10570:10614#L441)
+### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=10573:10617#L441)
 ``` go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
@@ -407,7 +407,7 @@ SetOpt sets the specified options passed as Env and returns an option to restore
 
 
 
-### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=11043:11079#L461)
+### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=11046:11082#L461)
 ``` go
 func (c *Config) String() (s string)
 ```

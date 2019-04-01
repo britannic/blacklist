@@ -110,7 +110,7 @@ modification, are permitted provided that the following conditions are met:
 
 * Added support for EdgeOS 2.0.1
 * Fixed config session detection bug
-* Ensure all dnsmasq blacklist configuration files are removed for blacklist config delete and package removal1
+* Ensure all dnsmasq blacklist configuration files are removed for blacklist config delete and package removal
 
 ### Release v1.1.6.11 (March 9,2019)
 
