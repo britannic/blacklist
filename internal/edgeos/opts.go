@@ -282,12 +282,3 @@ func WCard(w Wildcard) Option {
 		return WCard(previous)
 	}
 }
-
-// Writer provides an address for anything that can use io.Writer
-// func Writer(w io.Writer) Option {
-// 	return func(c *Config) Option {
-// 		previous := c.ioWriter
-// 		c.ioWriter = w
-// 		return Writer(previous)
-// 	}
-// }

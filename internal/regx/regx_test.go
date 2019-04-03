@@ -32,12 +32,6 @@ func TestLeafString(t *testing.T) {
 	})
 }
 
-// func TestRegex(t *testing.T) {
-// 	Convey("Testing Regex()", t, func() {
-// 		So(fmt.Sprint(regx.Obj), ShouldEqual, rxout)
-// 	})
-// }
-
 func TestStripPrefixAndSuffix(t *testing.T) {
 	Convey("Testing StripPrefixAndSuffix()", t, func() {
 		tests := []struct {

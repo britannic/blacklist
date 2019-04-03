@@ -4,7 +4,7 @@ package regx
 import (
 	"bytes"
 	"fmt"
-	"regexp"
+	rx "regexp"
 	"sort"
 	"strings"
 )
@@ -36,7 +36,7 @@ const (
 
 // OBJ is a map of regex precompiled objects
 
-type regexMap map[Leaf]*regexp.Regexp
+type regexMap map[Leaf]*rx.Regexp
 
 // OBJ is a struct of regex precompiled objects
 type OBJ struct {
@@ -47,23 +47,23 @@ type OBJ struct {
 func NewRegex() *OBJ {
 	return &OBJ{
 		RX: regexMap{
-			CMNT: regexp.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
-			DESC: regexp.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
-			DSBL: regexp.MustCompile(`^(?:disabled)+\s([\S]+)$`),
-			FLIP: regexp.MustCompile(`^(?:address=[/][.]{0,1}.*[/])(.*)$`),
-			FQDN: regexp.MustCompile(`\b((?:(?:[^.-/]{0,1})[\p{L}\d-_]{1,63}[-]{0,1}[.]{1})+(?:[\p{L}]{2,63}))\b`),
-			HOST: regexp.MustCompile(`^(?:address=[/][.]{0,1})(.*)(?:[/].*)$`),
-			HTTP: regexp.MustCompile(`(?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)`),
-			IPBH: regexp.MustCompile(`^(?:dns-redirect-ip)+\s([\S]+)$`),
-			LBRC: regexp.MustCompile(`[{]`),
-			LEAF: regexp.MustCompile(`^([\S]+)+\s([\S]+)\s[{]{1}$`),
-			MISC: regexp.MustCompile(`^([\w-]+)$`),
-			MLTI: regexp.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`),
-			MPTY: regexp.MustCompile(`^$`),
-			NAME: regexp.MustCompile(`^([\w-]+)\s["']{0,1}(.*?)["']{0,1}$`),
-			NODE: regexp.MustCompile(`^([\w-]+)\s[{]{1}$`),
-			RBRC: regexp.MustCompile(`[}]`),
-			SUFX: regexp.MustCompile(`(?:#.*|\{.*|[/[].*)\z`),
+			CMNT: rx.MustCompile(`^(?:[\/*]+)(.*?)(?:[*\/]+)$`),
+			DESC: rx.MustCompile(`^(?:description)+\s"?([^"]+)?"?$`),
+			DSBL: rx.MustCompile(`^(?:disabled)+\s([\S]+)$`),
+			FLIP: rx.MustCompile(`^(?:address=[/][.]{0,1}.*[/])(.*)$`),
+			FQDN: rx.MustCompile(`\b((?:(?:[^.-/]{0,1})[\p{L}\d-_]{1,63}[-]{0,1}[.]{1})+(?:[\p{L}]{2,63}))\b`),
+			HOST: rx.MustCompile(`^(?:address=[/][.]{0,1})(.*)(?:[/].*)$`),
+			HTTP: rx.MustCompile(`(?:^(?:http|https){1}:)(?:\/|%2f){1,2}(.*)`),
+			IPBH: rx.MustCompile(`^(?:dns-redirect-ip)+\s([\S]+)$`),
+			LBRC: rx.MustCompile(`[{]`),
+			LEAF: rx.MustCompile(`^([\S]+)+\s([\S]+)\s[{]{1}$`),
+			MISC: rx.MustCompile(`^([\w-]+)$`),
+			MLTI: rx.MustCompile(`^((?:include|exclude)+)\s([\S]+)$`),
+			MPTY: rx.MustCompile(`^$`),
+			NAME: rx.MustCompile(`^([\w-]+)\s["']{0,1}(.*?)["']{0,1}$`),
+			NODE: rx.MustCompile(`^([\w-]+)\s[{]{1}$`),
+			RBRC: rx.MustCompile(`[}]`),
+			SUFX: rx.MustCompile(`(?:#.*|\{.*|[/[].*)\z`),
 		},
 	}
 }
