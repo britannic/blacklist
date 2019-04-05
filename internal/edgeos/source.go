@@ -120,11 +120,11 @@ func pad(s string) string {
 // Process extracts hosts/domains from downloaded raw content
 func (s *source) process() *bList {
 	var (
-		l                        = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		area                     = typeInt(s.nType)
 		b                        = bufio.NewScanner(s.r)
 		dropped, extracted, kept int
 		find                     = regx.NewRegex()
+		l                        = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		ok                       bool
 	)
 

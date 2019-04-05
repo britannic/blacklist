@@ -122,14 +122,12 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.Timeout(30*time.Second),
 		e.Verb(*o.Verb),
 		e.WCard(e.Wildcard{Node: "*s", Name: "*"}),
-		// e.Writer(ioutil.Discard),
 	)
 }
 
 // setArgs retrieves arguments entered on the command line
 func (o *opts) setArgs() {
 	if o.Parse(cleanArgs((os.Args[1:]))) != nil {
-		// o.Usage()
 		exitCmd(0)
 	}
 
@@ -144,7 +142,7 @@ func (o *opts) setArgs() {
 	}
 
 	if *o.Test {
-		fmt.Println("Test activated!")
+		fmt.Println("Testing activated!")
 		exitCmd(0)
 	}
 

@@ -135,26 +135,6 @@ func (f *FIODataObjects) Find(s string) int {
 }
 
 // Find returns the int position of an Objects' element
-// func (f *FIODomnObjects) Find(s string) int {
-// 	for i, o := range f.src {
-// 		if o.name == s {
-// 			return i
-// 		}
-// 	}
-// 	return notfound
-// }
-
-// Find returns the int position of an Objects' element
-// func (f *FIOHostObjects) Find(s string) int {
-// 	for i, o := range f.src {
-// 		if o.name == s {
-// 			return i
-// 		}
-// 	}
-// 	return notfound
-// }
-
-// Find returns the int position of an Objects' element
 func (p *PreDomnObjects) Find(s string) int {
 	for i, o := range p.src {
 		if o.name == s {
@@ -263,46 +243,6 @@ func (f *FIODataObjects) GetList() *Objects {
 	return f.Objects
 }
 
-// GetList implements the Contenter interface for FIODataObjects
-// func (f *FIODomnObjects) GetList() *Objects {
-// 	var responses = make(chan *source, len(f.src))
-
-// 	for _, s := range f.src {
-// 		s.Env = f.Env
-// 		go func(s *source) {
-// 			s.r, s.err = GetFile(s.file)
-// 			responses <- s
-// 		}(s)
-// 	}
-
-// 	for range f.src {
-// 		response := <-responses
-// 		f.src[f.Find(response.name)] = response
-// 	}
-// 	close(responses)
-// 	return f.Objects
-// }
-
-// GetList implements the Contenter interface for FIODataObjects
-// func (f *FIOHostObjects) GetList() *Objects {
-// 	var responses = make(chan *source, len(f.src))
-
-// 	for _, s := range f.src {
-// 		s.Env = f.Env
-// 		go func(s *source) {
-// 			s.r, s.err = GetFile(s.file)
-// 			responses <- s
-// 		}(s)
-// 	}
-
-// 	for range f.src {
-// 		response := <-responses
-// 		f.src[f.Find(response.name)] = response
-// 	}
-// 	close(responses)
-// 	return f.Objects
-// }
-
 // GetList implements the Contenter interface for PreDomnObjects
 func (p *PreDomnObjects) GetList() *Objects {
 	for _, o := range p.src {
@@ -388,12 +328,6 @@ func (e *ExcRootObjects) Len() int { return len(e.src) }
 func (f *FIODataObjects) Len() int { return len(f.src) }
 
 // Len returns how many sources there are
-// func (f *FIODomnObjects) Len() int { return len(f.src) }
-
-// Len returns how many sources there are
-// func (f *FIOHostObjects) Len() int { return len(f.src) }
-
-// Len returns how many sources there are
 func (p *PreDomnObjects) Len() int { return len(p.src) }
 
 // Len returns how many sources there are
@@ -443,24 +377,6 @@ func (f *FIODataObjects) SetURL(name, url string) {
 		}
 	}
 }
-
-// SetURL sets the Object's url field value
-// func (f *FIODomnObjects) SetURL(name, url string) {
-// 	for _, o := range f.src {
-// 		if o.name == name {
-// 			o.url = url
-// 		}
-// 	}
-// }
-
-// SetURL sets the Object's url field value
-// func (f *FIOHostObjects) SetURL(name, url string) {
-// 	for _, o := range f.src {
-// 		if o.name == name {
-// 			o.url = url
-// 		}
-// 	}
-// }
 
 // SetURL sets the Object's url field value
 func (p *PreDomnObjects) SetURL(name, url string) {
@@ -517,9 +433,6 @@ func (p *PreRootObjects) String() string { return p.Objects.String() }
 func (u *URLDomnObjects) String() string { return u.Objects.String() }
 func (u *URLHostObjects) String() string { return u.Objects.String() }
 
-// func (f *FIODomnObjects) String() string { return f.Objects.String() }
-// func (f *FIOHostObjects) String() string { return f.Objects.String() }
-
 func (i IFace) String() string {
 	switch i {
 	case ExDmObj:
@@ -541,10 +454,3 @@ func (i IFace) String() string {
 	}
 	return notknown
 }
-
-// func sourceIFace(n string) IFace {
-//  if n == domains {
-// 	 return PreDObj
-//  }
-// return PreHObj
-// }

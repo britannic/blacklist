@@ -55,8 +55,8 @@ func newLog(prefix string) *logging.Logger {
 		fmt.Fprint(os.Stderr, err.Error())
 	}
 
-	fdlog := logging.NewLogBackend(fd, "", 0)
-	fdFmttr = logging.NewBackendFormatter(fdlog, fdFmt)
+	fdLog := logging.NewLogBackend(fd, "", 0)
+	fdFmttr = logging.NewBackendFormatter(fdLog, fdFmt)
 
 	sysFmttr, err := logging.NewSyslogBackend(prog + ": ")
 	if err != nil {

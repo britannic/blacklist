@@ -63,12 +63,3 @@ func (l list) subKeyExists(b []byte) bool {
 	}
 	return l.keyExists(b)
 }
-
-// updateEntry converts [][]byte to map of List
-// func updateEntry(d [][]byte) (l list) {
-// 	l.entry = make(entry)
-// 	for _, k := range d {
-// 		l.entry[string(k)] = struct{}{}
-// 	}
-// 	return l
-// }
