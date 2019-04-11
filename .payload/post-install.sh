@@ -273,5 +273,4 @@ noblacklist && UPGRADE=1
 if [[ ${UPGRADE} == 1 ]] ; then
 	echo "Installing blacklist configuration settings..."
 	update_dns_config
-	# /config/scripts/update-dnsmasq -v
 fi

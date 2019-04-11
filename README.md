@@ -106,11 +106,12 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.7.4-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-### Release v1.1.7.4 (March 31, 2019)
+### Release v1.1.7.4 (April 11, 2019)
 
 * Added support for EdgeOS 2.0.1
 * Fixed config session detection bug
 * Ensure all dnsmasq blacklist configuration files are removed for blacklist config delete and package removal
+* Force dnsmasq restart after blacklist config delete
 
 ### Release v1.1.6.11 (March 9,2019)
 

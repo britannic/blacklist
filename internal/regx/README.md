@@ -30,7 +30,7 @@ Package regx provides regex objects for processing data in files and web content
 
 
 
-## <a name="Leaf">type</a> [Leaf](/src/target/regx.go?s=181:194#L13)
+## <a name="Leaf">type</a> [Leaf](/src/target/regx.go?s=184:197#L13)
 ``` go
 type Leaf int
 ```
@@ -77,7 +77,7 @@ func (i Leaf) String() string
 
 
 
-## <a name="OBJ">type</a> [OBJ](/src/target/regx.go?s=523:555#L42)
+## <a name="OBJ">type</a> [OBJ](/src/target/regx.go?s=522:554#L42)
 ``` go
 type OBJ struct {
     RX regexMap
@@ -92,7 +92,7 @@ OBJ is a struct of regex precompiled objects
 
 
 
-### <a name="NewRegex">func</a> [NewRegex](/src/target/regx.go?s=640:660#L47)
+### <a name="NewRegex">func</a> [NewRegex](/src/target/regx.go?s=639:659#L47)
 ``` go
 func NewRegex() *OBJ
 ```
@@ -102,14 +102,14 @@ NewRegex returns a map of OBJ populated with a map of precompiled regex objects
 
 
 
-### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=1871:1900#L76)
+### <a name="OBJ.String">func</a> (\*OBJ) [String](/src/target/regx.go?s=1802:1831#L76)
 ``` go
 func (o *OBJ) String() string
 ```
 
 
 
-### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2105:2174#L86)
+### <a name="OBJ.StripPrefixAndSuffix">func</a> (\*OBJ) [StripPrefixAndSuffix](/src/target/regx.go?s=2036:2105#L86)
 ``` go
 func (o *OBJ) StripPrefixAndSuffix(l []byte, p string) ([]byte, bool)
 ```
@@ -118,7 +118,7 @@ StripPrefixAndSuffix strips the prefix and suffix
 
 
 
-### <a name="OBJ.SubMatch">func</a> (\*OBJ) [SubMatch](/src/target/regx.go?s=1784:1833#L72)
+### <a name="OBJ.SubMatch">func</a> (\*OBJ) [SubMatch](/src/target/regx.go?s=1715:1764#L72)
 ``` go
 func (o *OBJ) SubMatch(t Leaf, b []byte) [][]byte
 ```
