@@ -113,10 +113,6 @@ modification, are permitted provided that the following conditions are met:
 * Ensure all dnsmasq blacklist configuration files are removed for blacklist config delete and package removal
 * Force dnsmasq restart after blacklist config delete
 
-### Release v1.1.6.11 (March 9,2019)
-
-* Fix for issue #8, /etc/dnsmasq.d/*blacklist.conf files aren't deleted after uninstallation
-
 [[Top]](#contents)
 
 ## **Change Log**
