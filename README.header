@@ -113,7 +113,7 @@ modification, are permitted provided that the following conditions are met:
 * Ensure all dnsmasq blacklist configuration files are removed for blacklist config delete and package removal
 * Force dnsmasq restart after blacklist config delete
 
-[[Top]](#contents)
+[Top]](#contents)
 
 ## **Change Log**
 
@@ -151,8 +151,8 @@ modification, are permitted provided that the following conditions are met:
 ```bash
 configure
 set system package repository blacklist components main
-set system package repository blacklist description 'Britannic blacklist debian wheezy repository'
-set system package repository blacklist distribution wheezy
+set system package repository blacklist description 'Britannic blacklist debian repository'
+set system package repository blacklist distribution britannic
 set system package repository blacklist url 'https://raw.githubusercontent.com/britannic/debian-repo/master/blacklist/'
 commit;save;exit
 ```
