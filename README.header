@@ -148,9 +148,11 @@ modification, are permitted provided that the following conditions are met:
 ```bash
 configure
 set system package repository blacklist components main
-set system package repository blacklist description 'Britannic blacklist debian repository'
-set system package repository blacklist distribution britannic
+set system package repository blacklist description 'Britannic blacklist debian wheezy repository'
+set system package repository blacklist distribution wheezy
+set system package repository blacklist password ''
 set system package repository blacklist url 'https://raw.githubusercontent.com/britannic/debian-repo/master/blacklist/'
+set system package repository blacklist username ''
 commit;save;exit
 ```
 
