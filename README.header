@@ -110,7 +110,7 @@ modification, are permitted provided that the following conditions are met:
 
 * Debian repository fix
 
-[Top]](#contents)
+[[Top]](#contents)
 
 ## **Change Log**
 
