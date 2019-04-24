@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.7.5 (April 24, 2019)
+
+* Debian repository fix
+
 ### Release v1.1.7.4 (April 11, 2019)
 
 * Added support for EdgeOS 2.0.1
