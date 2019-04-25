@@ -29,11 +29,6 @@
                 "prefix": "0.0.0.0",
                 "url": "https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt"
               },
-              "malc0de": {
-                "description": "List of zones serving malicious executables observed by malc0de.com/database/",
-                "prefix": "zone",
-                "url": "http://malc0de.com/bl/ZONES"
-              },
               "malwaredomains.com": {
                 "description": "Just Domains",
                 "url": "http://mirror1.malwaredomains.com/files/justdomains"
@@ -51,27 +46,40 @@
           "exclude": [
             "1e100.net",
             "2o7.net",
+            "adjust.com",
             "adobedtm.com",
             "akamai.net",
             "akamaihd.net",
             "amazon.com",
             "amazonaws.com",
+            "ampproject.org",
+            "android.clients.google.com",
             "apple.com",
+            "apresolve.spotify.com",
             "ask.com",
             "avast.com",
             "avira-update.com",
             "bannerbank.com",
+            "bazaarvoice.com",
             "bing.com",
             "bit.ly",
             "bitdefender.com",
+            "bonsaimirai.us9.list-manage.com",
+            "c.s-microsoft.com",
             "cdn.ravenjs.com",
             "cdn.visiblemeasures.com",
+            "clientconfig.passport.net",
+            "clients2.google.com",
+            "clients4.google.com",
             "cloudfront.net",
             "coremetrics.com",
+            "dickssportinggoods.com",
+            "dl.dropboxusercontent.com",
             "dropbox.com",
             "ebay.com",
             "edgesuite.net",
             "evernote.com",
+            "express.co.uk",
             "feedly.com",
             "freedns.afraid.org",
             "github.com",
@@ -90,8 +98,12 @@
             "herokuapp.com",
             "hp.com",
             "hulu.com",
+            "i.s-microsoft.com",
             "images-amazon.com",
             "live.com",
+            "logmein.com",
+            "m.weeklyad.target.com",
+            "magnetmail1.net",
             "microsoft.com",
             "microsoftonline.com",
             "msdn.com",
@@ -99,15 +111,20 @@
             "msftncsi.com",
             "mywot.com",
             "nsatc.net",
+            "outlook.office365.com",
             "paypal.com",
             "pop.h-cdn.co",
+            "products.office.com",
+            "quora.com",
             "rackcdn.com",
             "rarlab.com",
+            "s.youtube.com",
             "schema.org",
             "shopify.com",
             "skype.com",
             "smacargo.com",
             "sourceforge.net",
+            "spclient.wg.spotify.com",
             "spotify.com",
             "spotify.edgekey.net",
             "spotilocal.com",
@@ -117,27 +134,39 @@
             "static.chartbeat.com",
             "storage.googleapis.com",
             "twimg.com",
+            "video-stats.l.google.com",
             "viewpoint.com",
+            "weeklyad.target.com",
+            "weeklyad.target.com.edgesuite.net",
             "windows.net",
+            "www.msftncsi.com",
             "xboxlive.com",
             "yimg.com",
             "ytimg.com"
           ],
           "hosts": {
+            "exclude": [
+              "cfvod.kaltura.com"
+            ],
             "include": [
               "ads.feedly.com",
               "beap.gemini.yahoo.com"
             ],
             "source": {
+              "YoutubeAdBlockList": {
+                "description": "Anudeeps Youtube Ad Blocking list",
+                "prefix": "",
+                "url": "https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt"
+              },
+              "YoutubeBlockList": {
+                "description": "Youtube Ad-Block-List for PiHole by HenningVanRaeumle",
+                "prefix": "0.0.0.0",
+                "url": "https://raw.githubusercontent.com/HenningVanRaumle/pihole-ytadblock/master/ytadblock.txt"
+              },
               "githubSteveBlack": {
                 "description": "Blacklists adware and malware websites",
                 "prefix": "0.0.0.0",
-                "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts"
-              },
-              "hostsfile.org": {
-                "description": "hostsfile.org bad hosts blacklist",
-                "prefix": "127.0.0.1",
-                "url": "http://www.hostsfile.org/Downloads/hosts.txt"
+                "url": "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
               },
               "openphish": {
                 "description": "OpenPhish automatic phishing detection",
@@ -155,7 +184,8 @@
       }
     }
   },
-  "package": {
+  "system": {
+    "package": {
       "repository": {
         "blacklist": {
           "components": "main",
@@ -164,14 +194,19 @@
           "password": "",
           "url": "https://raw.githubusercontent.com/britannic/debian-repo/master/blacklist/",
           "username": ""
-        },
-        "wheezy": {
-          "components": "main contrib non-free",
-          "distribution": "wheezy",
-          "password": "",
-          "url": "http://http.us.debian.org/debian/",
-          "username": ""
+        }
+      }
+    },
+    "task-scheduler": {
+      "task": {
+        "update_blacklists": {
+          "executable": {
+            "arguments": "10800",
+            "path": "/config/scripts/update-dnsmasq-cronjob.sh"
+          },
+          "interval": "1d"
         }
       }
     }
+  }
 }
