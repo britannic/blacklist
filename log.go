@@ -87,7 +87,7 @@ func screenLog(prefix string) logging.LeveledBackend {
 		)
 
 		if sysFmttr, err = logging.NewSyslogBackend(prefix); err != nil {
-			fmt.Println(err.Error())
+			fmt.Fprint(os.Stderr, err.Error())
 		}
 
 		return logging.SetBackend(
