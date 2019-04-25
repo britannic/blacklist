@@ -44,6 +44,7 @@ We greatly appreciate any and all donations - Thank you! Funds go to maintaining
     1. [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp-er4-unifi-gateway-3--unifi-gateway-4)
     1. [Using dpkg](#dpkg-installation---best-for-disk-space-constrained-routers)
 1. [Upgrade](#upgrade)
+1. [Reconfigure](#reconfigure)
 1. [Removal](#removal)
 1. [Frequently Asked Questions](#frequently-asked-questions)
    1. [Can I donate to project?](#donations-and-sponsorship)
@@ -206,6 +207,16 @@ sudo apt-get update && sudo apt-get upgrade edgeos-dnsmasq-blacklist
 ```
 
 * Note, if you are using dpkg, it cannot upgrade packages, so follow these [instructions](#dpkg-installation---best-for-disk-space-constrained-routers) and the previous package version will be automatically removed before the new package version is installed
+
+[[Top]](#contents)
+
+## **Reconfigure**
+
+* If the Unifi Security Gateway has been re-provisioned you might need to re-enable the blacklists, in order to do so run:
+
+```bash
+sudo dpkg-reconfigure edgeos-dnsmasq-blacklist
+```
 
 [[Top]](#contents)
 
