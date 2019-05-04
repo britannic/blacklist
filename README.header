@@ -438,7 +438,7 @@ set system task-scheduler task update_blacklists executable arguments 10800
 * It can be reconfigured using these CLI configuration commands:
 
 ```bash
-set system task-scheduler task update_blacklists executable path /config/scripts/blacklist-cronjob.sh
+set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq-cronjob.sh
 set system task-scheduler task update_blacklists executable arguments 10800
 set system task-scheduler task update_blacklists interval 1d
 ```
