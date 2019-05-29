@@ -92,8 +92,18 @@ func initEnv() (c *e.Config, err error) {
 	o := getOpts()
 	o.setArgs()
 	c = o.initEdgeOS()
-	if err = c.Blacklist(o.getCFG(c)); err != nil {
+
+	err = c.Blacklist(o.getCFG(c))
+	switch {
+	case err != nil:
 		fmt.Fprintf(os.Stderr, "Removing stale dnsmasq blacklist files, because %v\n", err.Error())
+		if err = files(c).Remove(); err != nil {
+			fmt.Fprintf(os.Stderr, "%v", err.Error())
+		}
+		reloadDNS(c)
+		exitCmd(0)
+	case *o.Disable:
+		fmt.Fprintf(os.Stderr, "Disabling blacklist, removing dnsmasq blacklist files\n")
 		if err = files(c).Remove(); err != nil {
 			fmt.Fprintf(os.Stderr, "%v", err.Error())
 		}

@@ -267,6 +267,11 @@ func TestSetArgs(t *testing.T) {
 			exp:  true,
 		},
 		{
+			name: "disable",
+			args: []string{prog, "-d"},
+			exp:  true,
+		},
+		{
 			name: "dryrun",
 			args: []string{prog, "-dryrun"},
 			exp:  true,
