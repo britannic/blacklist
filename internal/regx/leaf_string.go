@@ -4,6 +4,29 @@ package regx
 
 import "strconv"
 
+func _() {
+	// An "invalid array index" compiler error signifies that the constant values have changed.
+	// Re-run the stringer command to generate them again.
+	var x [1]struct{}
+	_ = x[CMNT-1000]
+	_ = x[DESC-1001]
+	_ = x[DSBL-1002]
+	_ = x[FLIP-1003]
+	_ = x[FQDN-1004]
+	_ = x[HOST-1005]
+	_ = x[HTTP-1006]
+	_ = x[IPBH-1007]
+	_ = x[LEAF-1008]
+	_ = x[LBRC-1009]
+	_ = x[MISC-1010]
+	_ = x[MLTI-1011]
+	_ = x[MPTY-1012]
+	_ = x[NAME-1013]
+	_ = x[NODE-1014]
+	_ = x[RBRC-1015]
+	_ = x[SUFX-1016]
+}
+
 const _Leaf_name = "CMNTDESCDSBLFLIPFQDNHOSTHTTPIPBHLEAFLBRCMISCMLTIMPTYNAMENODERBRCSUFX"
 
 var _Leaf_index = [...]uint8{0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68}
