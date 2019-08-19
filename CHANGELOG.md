@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.7.6 (August 19, 2019)
+
+* Removed dormant source: "YoutubeAdsBlacklist"
+
 ### Release v1.1.7.5 (April 24, 2019)
 
 * Debian repository fix

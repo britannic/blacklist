@@ -107,9 +107,9 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.7.6-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-### Release v1.1.7.5 (April 24, 2019)
+### Release v1.1.7.6 (August 19, 2019)
 
-* Debian repository fix
+* Removed dormant source: "YoutubeAdsBlacklist"
 
 [[Top]](#contents)
 
