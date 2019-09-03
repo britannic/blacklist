@@ -276,7 +276,7 @@ func (p *PreRootObjects) GetList() *Objects {
 	return p.Objects
 }
 
-// GetList implements the Contenter interface for URLHostObjects
+// GetList implements the Contenter interface for URLDomnObjects
 func (u *URLDomnObjects) GetList() *Objects {
 	var responses = make(chan *source, len(u.src))
 
