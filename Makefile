@@ -217,7 +217,7 @@ release: all commit push ; @ $(info creating release…) ## Create release
 commit: ; @ $(info committing to git repo) ## Commit to git repository
 	@echo Committing release $(TAG)
 	git commit -am"Release $(TAG)"
-	git tag $(TAG)
+	git tag -a $(TAG) -m"Release version $(TAG)"
 
 .PHONY: push
 push: ; $(info $(M) pushing release tags $(TAG) to master…) @  ## Push release tags to master
