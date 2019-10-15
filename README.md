@@ -107,9 +107,9 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.7.7-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-### Release v1.1.7.6 (August 19, 2019)
+### Release v1.1.7.7 (October 15, 2019)
 
-* Removed dormant source: "YoutubeAdsBlacklist"
+* Removed dormant source: "abuse.ch ZeuS domain blocklist"
 
 [[Top]](#contents)
 
