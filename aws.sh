@@ -17,6 +17,7 @@ ssh -tt ${host} <<-EOF
 EOF
 
 ssh -tt ${host} <<-EOF
+	cd repositories/
 	git push origin master
 	git push --tags
 	exit
