@@ -13,8 +13,11 @@ ssh -tt ${host} <<-EOF
 	git add --all
 	git commit -am"Package repository release ${tag}"
 	git tag "${pkg}package"
+	exit
+EOF
+
+ssh -tt ${host} <<-EOF
 	git push origin master
 	git push --tags
 	exit
 EOF
-
