@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.7.8 (October 15, 2019
+
+* Fix issues with fpm running under Ruby 2.6.5 and aws repos
+
 ### Release v1.1.7.7 (October 15, 2019)
 
 * Removed dormant source: "abuse.ch ZeuS domain blocklist"
