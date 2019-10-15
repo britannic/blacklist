@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Release v1.1.7.7 (October 15, 2019)
+
+* Removed dormant source: "abuse.ch ZeuS domain blocklist"
+
 ### Release v1.1.7.6 (August 19, 2019)
 
 * Removed dormant source: "YoutubeAdsBlacklist"

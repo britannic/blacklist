@@ -1274,7 +1274,7 @@ Find returns the int position of an Objects' element
 ``` go
 func (u *URLDomnObjects) GetList() *Objects
 ```
-GetList implements the Contenter interface for URLHostObjects
+GetList implements the Contenter interface for URLDomnObjects
 
 
 

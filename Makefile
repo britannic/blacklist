@@ -77,7 +77,7 @@ AllOfIt: clean deps amd64 mips coverage copyright docs readme pkgs
 
 GODOC2MD 		 = $(BIN)/godoc2md
 $(BIN)/godoc2md: ; @ $(info $(M) building godoc2md…)
-	$(Q) $(GO) get -u github.com/davecheney/godoc2md
+	$(Q) $(GO) get -u github.com/britannic/godoc2md
 
 GOLINT 			 = $(BIN)/golangci-lint
 $(BIN)/golangci-lint: ; @ $(info $(M) building golangci-lint…)

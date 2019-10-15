@@ -132,8 +132,6 @@ update_dns_config() {
 	try set service dns forwarding blacklist domains source NoBitCoin url 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'
 	try set service dns forwarding blacklist domains source simple_tracking description '"Basic tracking list by Disconnect"'
 	try set service dns forwarding blacklist domains source simple_tracking url 'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt'
-	try set service dns forwarding blacklist domains source zeus description '"abuse.ch ZeuS domain blocklist"'
-	try set service dns forwarding blacklist domains source zeus url 'https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist'
 	try set service dns forwarding blacklist exclude 1e100.net
 	try set service dns forwarding blacklist exclude 2o7.net
 	try set service dns forwarding blacklist exclude adjust.com
@@ -245,9 +243,6 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
-	# try set service dns forwarding blacklist hosts source YoutubeAdBlockList description '"Anudeeps Youtube Ad Blocking list"'
-	# try set service dns forwarding blacklist hosts source YoutubeAdBlockList prefix '""'
-	# try set service dns forwarding blacklist hosts source YoutubeAdBlockList url 'https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt'
 	try set service dns forwarding blacklist hosts source YoutubeBlockList description '"Youtube Ad-Block-List for PiHole by HenningVanRaeumle"'
 	try set service dns forwarding blacklist hosts source YoutubeBlockList prefix '0.0.0.0 '
 	try set service dns forwarding blacklist hosts source YoutubeBlockList url 'https://raw.githubusercontent.com/HenningVanRaumle/pihole-ytadblock/master/ytadblock.txt'
