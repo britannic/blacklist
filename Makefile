@@ -75,9 +75,9 @@ AllOfIt: clean deps amd64 mips coverage copyright docs readme pkgs
 # $(BIN)/dep: ; @ $(info $(M) building dep…) 
 # 	$(Q) $(GO) get github.com/golang/dep/cmd/dep
 
-GODOC2MD 		 = $(BIN)/godoc2md
-$(BIN)/godoc2md: ; @ $(info $(M) building godoc2md…)
-	$(Q) $(GO) get -u github.com/britannic/godoc2md
+GODOC2MD		= $(BIN)/godocdown
+$(BIN)/godocdown: ; @ $(info $(M) building godocdown…) @ ## Build godocdown
+	$(Q) $(GO) get -u github.com/robertkrimen/godocdown/godocdown
 
 GOLINT 			 = $(BIN)/golangci-lint
 $(BIN)/golangci-lint: ; @ $(info $(M) building golangci-lint…)
@@ -110,7 +110,7 @@ amd64: generate ; @ $(info building Mac OS binary…) ## Build Mac OS binary
 	-ldflags "$(LDFLAGS) $(FLAGS)" -v
 
 .PHONY: build
-build: clean amd64 mips copyright docs readme ; @ $(info building binaries…) ## Build binaries
+build: clean amd64 linux mips copyright docs readme ; @ $(info building binaries…) ## Build binaries
 
 .PHONY: cdeps 
 # cdeps: ; @ $(info building dependency viewer…) ## Build dependency viewer 
@@ -155,6 +155,11 @@ generate: ; @ $(info $(M) generating go boilerplate code…) ## Generate go boil
 		cd $$d ; $(GOGEN) || ret=$$? ; \
 	done ; exit $$ret
 
+# .PHONY: linux 
+linux: generate ; @ $(info building MIPS binary…) ## Build MIPS binary
+	$(eval LDFLAGS += -X main.architecture=amd64 -X main.hostOS=linux)
+	GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(EXE).linux \
+	-ldflags "$(LDFLAGS) $(FLAGS)" -v
 
 mips: mips64 mipsle ; @ $(info building MIPS/MIPSLE binaries…) ## Build MIPS/MIPSLE binaries
 

@@ -2,7 +2,7 @@
 
 ## Releases
 
-### Release v1.1.7.8 (October 15, 2019
+### Release v1.1.7.8 (October 15, 2019)
 
 * Fix issues with fpm running under Ruby 2.6.5 and aws repos
 
