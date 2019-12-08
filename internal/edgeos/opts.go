@@ -241,9 +241,8 @@ func Prefix(d string, h string) Option {
 func (e *Env) String() string {
 	out, err := json.MarshalIndent(e, "", "\t")
 	if err != nil {
-		fmt.Println(err)
+		return fmt.Sprintf("%e", err)
 	}
-
 	return string(out)
 }
 
