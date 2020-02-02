@@ -17,7 +17,7 @@ type list struct {
 }
 
 // set sets the int value of entry
-func (l list) keyExists(k []byte) bool {
+func (l *list) keyExists(k []byte) bool {
 	l.RLock()
 	_, ok := l.entry[string(k)]
 	l.RUnlock()
@@ -25,7 +25,7 @@ func (l list) keyExists(k []byte) bool {
 }
 
 // merge returns a merge of two lists
-func (l list) merge(a list) {
+func (l *list) merge(a *list) {
 	l.Lock()
 	for k, v := range a.entry {
 		l.entry[k] = v
@@ -34,13 +34,13 @@ func (l list) merge(a list) {
 }
 
 // set adds a list entry map member
-func (l list) set(k []byte) {
+func (l *list) set(k []byte) {
 	l.Lock()
 	l.entry[string(k)] = struct{}{}
 	l.Unlock()
 }
 
-func (l list) String() string {
+func (l *list) String() string {
 	var (
 		i  int64
 		ls = make(sort.StringSlice, len(l.entry))
@@ -54,7 +54,7 @@ func (l list) String() string {
 }
 
 // subKeyExists returns true if part or all of the key matches
-func (l list) subKeyExists(b []byte) bool {
+func (l *list) subKeyExists(b []byte) bool {
 	d := bytes.Split(b, []byte("."))
 	for i := range Iter(len(d) - 1) {
 		if l.keyExists(bytes.Join(d[i:], []byte("."))) {

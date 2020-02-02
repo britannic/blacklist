@@ -2,6 +2,11 @@
 
 ## Releases
 
+### Release 1.1.8.0 (February 1, 2020)
+
+* Refactor code to conserve RAM in small memory systems (e.g. ER-X)
+* 11Mb less RAM consumption with default lists
+
 ### Release v1.1.7.8 (October 15, 2019)
 
 * Fix issues with fpm running under Ruby 2.6.5 and aws repos

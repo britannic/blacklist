@@ -43,13 +43,13 @@ func TestAddInc(t *testing.T) {
 						Bash:  "",
 						Cores: 0,
 						Dbug:  false,
-						Dex: list{
+						Dex: &list{
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
 						},
 						Dir:    "",
 						DNSsvc: "",
-						Exc: list{
+						Exc: &list{
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
 						},
@@ -99,13 +99,13 @@ func TestAddInc(t *testing.T) {
 						Bash:  "",
 						Cores: 0,
 						Dbug:  false,
-						Dex: list{
+						Dex: &list{
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
 						},
 						Dir:    "",
 						DNSsvc: "",
-						Exc: list{
+						Exc: &list{
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
 						},
@@ -154,13 +154,13 @@ func TestAddInc(t *testing.T) {
 						Bash:  "",
 						Cores: 0,
 						Dbug:  false,
-						Dex: list{
+						Dex: &list{
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
 						},
 						Dir:    "",
 						DNSsvc: "",
-						Exc: list{
+						Exc: &list{
 							RWMutex: &sync.RWMutex{},
 							entry:   entry{},
 						},

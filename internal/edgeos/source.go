@@ -156,14 +156,14 @@ func (s *source) process() *bList {
 
 	switch s.nType {
 	case domn, excDomn, excRoot:
-		s.Dex.merge(l)
+		s.Dex.merge(&l)
 	}
 
 	s.sum(area, dropped, extracted, kept)
 
 	return &bList{
 		file: s.filename(area),
-		r:    formatData(getDnsmasqPrefix(s), l),
+		r:    formatData(getDnsmasqPrefix(s), &l),
 		size: kept,
 	}
 }

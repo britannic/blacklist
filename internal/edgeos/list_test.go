@@ -85,7 +85,7 @@ func TestMerge(t *testing.T) {
 				testList2.entry[string(i)] = struct{}{}
 			}
 		}
-		testList1.merge(testList2)
+		testList1.merge(&testList2)
 
 		So(testList1, ShouldResemble, exp)
 	})

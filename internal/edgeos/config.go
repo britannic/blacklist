@@ -30,7 +30,6 @@ type Config struct {
 	tree
 }
 
-// list is a struct map of entry with a RW Mutex
 type ctr struct {
 	*sync.RWMutex
 	stat
@@ -460,13 +459,13 @@ func (c *Config) sortKeys() (pkeys sort.StringSlice) {
 // String returns pretty print for the Blacklist struct
 func (c *Config) String() (s string) {
 	indent := 1
-	ø := comma
+	cc := comma
 	cnt := len(c.sortKeys())
 	s += fmt.Sprintf("{\n%v%q: [{\n", tabs(indent), "nodes")
 
 	for i, pkey := range c.sortKeys() {
 		if i == cnt-1 {
-			ø = null
+			cc = null
 		}
 
 		indent++
@@ -480,7 +479,7 @@ func (c *Config) String() (s string) {
 		s += getJSONsrcArray(&cfgJSON{Config: c, pk: pkey, indent: indent})
 
 		indent--
-		s += fmt.Sprintf("%v}%v\n", tabs(indent), ø)
+		s += fmt.Sprintf("%v}%v\n", tabs(indent), cc)
 		indent--
 	}
 

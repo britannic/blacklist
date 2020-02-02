@@ -60,18 +60,18 @@ func diffArray(a, b []string) (diff sort.StringSlice) {
 }
 
 // formatData returns an io.Reader loaded with dnsmasq formatted data
-func formatData(s string, l list) io.Reader {
+func formatData(s string, l *list) io.Reader {
 	var (
 		i int64
-		a = make(sort.StringSlice, len(l.entry))
+		a = make(sort.StringSlice, len((*l).entry))
 	)
 	s += "\n"
 	l.RLock()
-	for k := range l.entry {
+	for k := range (*l).entry {
 		a[i] = fmt.Sprintf(s, k)
 		i++
 	}
-	l.RUnlock()
+	(*l).RUnlock()
 	a.Sort()
 	return strings.NewReader(strings.Join(a, ""))
 }

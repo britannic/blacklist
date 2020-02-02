@@ -59,7 +59,7 @@ func TestFormatData(t *testing.T) {
 
 		for _, node := range c.sortKeys() {
 			var (
-				actList = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
+				actList = &list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 
 				o = &source{
 					ip: c.tree[node].ip,

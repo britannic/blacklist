@@ -21,10 +21,10 @@ type Env struct {
 	Cores    int           `json:"Cores,omitempty"`
 	Disabled bool          `json:"Disabled"`
 	Dbug     bool          `json:"Dbug,omitempty"`
-	Dex      list          `json:"Dex,omitempty"`
+	Dex      *list         `json:"Dex,omitempty"`
 	Dir      string        `json:"Dir,omitempty"`
 	DNSsvc   string        `json:"dnsmasq service,omitempty"`
-	Exc      list          `json:"Exc,omitempty"`
+	Exc      *list         `json:"Exc,omitempty"`
 	Ext      string        `json:"dnsmasq fileExt.,omitempty"`
 	File     string        `json:"File,omitempty"`
 	FnFmt    string        `json:"File name fmt,omitempty"`
@@ -219,8 +219,8 @@ func NewConfig(opts ...Option) *Config {
 		Env: &Env{
 			ctr: ctr{RWMutex: &sync.RWMutex{}, stat: make(stat)},
 			// ctr: ctr{stat: make(stat)},
-			Dex: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
-			Exc: list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+			Dex: &list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
+			Exc: &list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 		},
 	}
 	for _, opt := range opts {

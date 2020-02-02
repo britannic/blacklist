@@ -1,1392 +1,949 @@
-
-
 # edgeos
-`import "github.com/britannic/blacklist/internal/edgeos"`
+--
+    import "github.com/britannic/blacklist/internal/edgeos"
 
-* [Overview](#pkg-overview)
-* [Index](#pkg-index)
+Package edgeos provides methods and structures to retrieve, parse and render
+EdgeOS configuration data and files.
 
-## <a name="pkg-overview">Overview</a>
-Package edgeos provides methods and structures to retrieve, parse and render EdgeOS configuration data and files.
+Package edgeos provides methods and structures to retrieve, parse and render
+EdgeOS configuration data and files.
 
-Package edgeos provides methods and structures to retrieve, parse and render EdgeOS configuration data and files.
+Package edgeos provides methods and structures to retrieve, parse and render
+EdgeOS configuration data and files.
 
-Package edgeos provides methods and structures to retrieve, parse and render EdgeOS configuration data and files.
+## Usage
 
-
-
-
-## <a name="pkg-index">Index</a>
-* [Constants](#pkg-constants)
-* [func GetFile(f string) (io.Reader, error)](#GetFile)
-* [func Iter(i int) []struct{}](#Iter)
-* [func NewWriter() io.Writer](#NewWriter)
-* [type CFGcli](#CFGcli)
-* [type CFGstatic](#CFGstatic)
-* [type CFile](#CFile)
-  * [func (c *CFile) Remove() error](#CFile.Remove)
-  * [func (c *CFile) String() string](#CFile.String)
-  * [func (c *CFile) Strings() []string](#CFile.Strings)
-* [type ConfLoader](#ConfLoader)
-* [type Config](#Config)
-  * [func NewConfig(opts ...Option) *Config](#NewConfig)
-  * [func (c *Config) Blacklist(r ConfLoader) error](#Config.Blacklist)
-  * [func (c *Config) Get(nx string) *Objects](#Config.Get)
-  * [func (c *Config) GetAll(ltypes ...string) *Objects](#Config.GetAll)
-  * [func (c *Config) GetTotalStats() (dropped, extracted, kept int32)](#Config.GetTotalStats)
-  * [func (c *Config) InSession() bool](#Config.InSession)
-  * [func (c *Config) NewContent(iface IFace) (Contenter, error)](#Config.NewContent)
-  * [func (c *Config) Nodes() (n []string)](#Config.Nodes)
-  * [func (c *Config) ProcessContent(cts ...Contenter) error](#Config.ProcessContent)
-  * [func (c *Config) ReloadDNS() ([]byte, error)](#Config.ReloadDNS)
-  * [func (c *Config) SetOpt(opts ...Option) Option](#Config.SetOpt)
-  * [func (c *Config) String() (s string)](#Config.String)
-* [type Contenter](#Contenter)
-* [type Env](#Env)
-  * [func (e *Env) Debug(s ...interface{})](#Env.Debug)
-  * [func (e *Env) String() string](#Env.String)
-* [type ExcDomnObjects](#ExcDomnObjects)
-  * [func (e *ExcDomnObjects) Find(s string) int](#ExcDomnObjects.Find)
-  * [func (e *ExcDomnObjects) GetList() *Objects](#ExcDomnObjects.GetList)
-  * [func (e *ExcDomnObjects) Len() int](#ExcDomnObjects.Len)
-  * [func (e *ExcDomnObjects) SetURL(name, url string)](#ExcDomnObjects.SetURL)
-  * [func (e *ExcDomnObjects) String() string](#ExcDomnObjects.String)
-* [type ExcHostObjects](#ExcHostObjects)
-  * [func (e *ExcHostObjects) Find(s string) int](#ExcHostObjects.Find)
-  * [func (e *ExcHostObjects) GetList() *Objects](#ExcHostObjects.GetList)
-  * [func (e *ExcHostObjects) Len() int](#ExcHostObjects.Len)
-  * [func (e *ExcHostObjects) SetURL(name, url string)](#ExcHostObjects.SetURL)
-  * [func (e *ExcHostObjects) String() string](#ExcHostObjects.String)
-* [type ExcRootObjects](#ExcRootObjects)
-  * [func (e *ExcRootObjects) Find(s string) int](#ExcRootObjects.Find)
-  * [func (e *ExcRootObjects) GetList() *Objects](#ExcRootObjects.GetList)
-  * [func (e *ExcRootObjects) Len() int](#ExcRootObjects.Len)
-  * [func (e *ExcRootObjects) SetURL(name, url string)](#ExcRootObjects.SetURL)
-  * [func (e *ExcRootObjects) String() string](#ExcRootObjects.String)
-* [type FIODataObjects](#FIODataObjects)
-  * [func (f *FIODataObjects) Find(s string) int](#FIODataObjects.Find)
-  * [func (f *FIODataObjects) GetList() *Objects](#FIODataObjects.GetList)
-  * [func (f *FIODataObjects) Len() int](#FIODataObjects.Len)
-  * [func (f *FIODataObjects) SetURL(name, url string)](#FIODataObjects.SetURL)
-  * [func (f *FIODataObjects) String() string](#FIODataObjects.String)
-* [type FIODomnObjects](#FIODomnObjects)
-* [type FIOHostObjects](#FIOHostObjects)
-* [type IFace](#IFace)
-  * [func (i IFace) String() string](#IFace.String)
-* [type Objects](#Objects)
-  * [func (o *Objects) Files() *CFile](#Objects.Files)
-  * [func (o *Objects) Filter(ltype string) *Objects](#Objects.Filter)
-  * [func (o *Objects) Find(elem string) int](#Objects.Find)
-  * [func (o *Objects) Len() int](#Objects.Len)
-  * [func (o *Objects) Less(i, j int) bool](#Objects.Less)
-  * [func (o *Objects) Names() (s sort.StringSlice)](#Objects.Names)
-  * [func (o *Objects) String() (s string)](#Objects.String)
-  * [func (o *Objects) Swap(i, j int)](#Objects.Swap)
-* [type Option](#Option)
-  * [func API(s string) Option](#API)
-  * [func Arch(s string) Option](#Arch)
-  * [func Bash(s string) Option](#Bash)
-  * [func Cores(i int) Option](#Cores)
-  * [func DNSsvc(s string) Option](#DNSsvc)
-  * [func Dbug(b bool) Option](#Dbug)
-  * [func Dir(s string) Option](#Dir)
-  * [func Disabled(b bool) Option](#Disabled)
-  * [func Ext(s string) Option](#Ext)
-  * [func File(s string) Option](#File)
-  * [func FileNameFmt(s string) Option](#FileNameFmt)
-  * [func InCLI(s string) Option](#InCLI)
-  * [func Level(s string) Option](#Level)
-  * [func Logger(l *logging.Logger) Option](#Logger)
-  * [func Method(s string) Option](#Method)
-  * [func Prefix(d string, h string) Option](#Prefix)
-  * [func Test(b bool) Option](#Test)
-  * [func Timeout(t time.Duration) Option](#Timeout)
-  * [func Verb(b bool) Option](#Verb)
-  * [func WCard(w Wildcard) Option](#WCard)
-* [type PreDomnObjects](#PreDomnObjects)
-  * [func (p *PreDomnObjects) Find(s string) int](#PreDomnObjects.Find)
-  * [func (p *PreDomnObjects) GetList() *Objects](#PreDomnObjects.GetList)
-  * [func (p *PreDomnObjects) Len() int](#PreDomnObjects.Len)
-  * [func (p *PreDomnObjects) SetURL(name, url string)](#PreDomnObjects.SetURL)
-  * [func (p *PreDomnObjects) String() string](#PreDomnObjects.String)
-* [type PreHostObjects](#PreHostObjects)
-  * [func (p *PreHostObjects) Find(s string) int](#PreHostObjects.Find)
-  * [func (p *PreHostObjects) GetList() *Objects](#PreHostObjects.GetList)
-  * [func (p *PreHostObjects) Len() int](#PreHostObjects.Len)
-  * [func (p *PreHostObjects) SetURL(name, url string)](#PreHostObjects.SetURL)
-  * [func (p *PreHostObjects) String() string](#PreHostObjects.String)
-* [type PreRootObjects](#PreRootObjects)
-  * [func (p *PreRootObjects) Find(s string) int](#PreRootObjects.Find)
-  * [func (p *PreRootObjects) GetList() *Objects](#PreRootObjects.GetList)
-  * [func (p *PreRootObjects) Len() int](#PreRootObjects.Len)
-  * [func (p *PreRootObjects) SetURL(name, url string)](#PreRootObjects.SetURL)
-  * [func (p *PreRootObjects) String() string](#PreRootObjects.String)
-* [type URLDomnObjects](#URLDomnObjects)
-  * [func (u *URLDomnObjects) Find(s string) int](#URLDomnObjects.Find)
-  * [func (u *URLDomnObjects) GetList() *Objects](#URLDomnObjects.GetList)
-  * [func (u *URLDomnObjects) Len() int](#URLDomnObjects.Len)
-  * [func (u *URLDomnObjects) SetURL(name, url string)](#URLDomnObjects.SetURL)
-  * [func (u *URLDomnObjects) String() string](#URLDomnObjects.String)
-* [type URLHostObjects](#URLHostObjects)
-  * [func (u *URLHostObjects) Find(s string) int](#URLHostObjects.Find)
-  * [func (u *URLHostObjects) GetList() *Objects](#URLHostObjects.GetList)
-  * [func (u *URLHostObjects) Len() int](#URLHostObjects.Len)
-  * [func (u *URLHostObjects) SetURL(name, url string)](#URLHostObjects.SetURL)
-  * [func (u *URLHostObjects) String() string](#URLHostObjects.String)
-* [type Wildcard](#Wildcard)
-
-
-#### <a name="pkg-files">Package files</a>
-[cfile.go](/src/github.com/britannic/blacklist/internal/edgeos/cfile.go) [config.go](/src/github.com/britannic/blacklist/internal/edgeos/config.go) [content.go](/src/github.com/britannic/blacklist/internal/edgeos/content.go) [data.go](/src/github.com/britannic/blacklist/internal/edgeos/data.go) [http.go](/src/github.com/britannic/blacklist/internal/edgeos/http.go) [io.go](/src/github.com/britannic/blacklist/internal/edgeos/io.go) [json.go](/src/github.com/britannic/blacklist/internal/edgeos/json.go) [list.go](/src/github.com/britannic/blacklist/internal/edgeos/list.go) [ntype_string.go](/src/github.com/britannic/blacklist/internal/edgeos/ntype_string.go) [object.go](/src/github.com/britannic/blacklist/internal/edgeos/object.go) [opts.go](/src/github.com/britannic/blacklist/internal/edgeos/opts.go) [source.go](/src/github.com/britannic/blacklist/internal/edgeos/source.go) 
-
-
-## <a name="pkg-constants">Constants</a>
-``` go
+```go
 const (
 
-    // ExcDomns is a string labels for domain exclusions
-    ExcDomns = "whitelisted-subdomains"
-    // ExcHosts is a string labels for host exclusions
-    ExcHosts = "whitelisted-servers"
-    // ExcRoots is a string labels for preconfigured global domain exclusions
-    ExcRoots = "global-whitelisted-domains"
-    // PreDomns is a string label for preconfigured whitelisted domains
-    PreDomns = "blacklisted-subdomains"
-    // PreHosts is a string label for preconfigured blacklisted hosts
-    PreHosts = "blacklisted-servers"
-    // PreRoots is a string label for preconfigured global blacklisted hosts
-    PreRoots = "global-blacklisted-domains"
-    // False is a string constant
-    False = "false"
-    // True is a string constant
-    True = "true"
+	// ExcDomns is a string labels for domain exclusions
+	ExcDomns = "whitelisted-subdomains"
+	// ExcHosts is a string labels for host exclusions
+	ExcHosts = "whitelisted-servers"
+	// ExcRoots is a string labels for preconfigured global domain exclusions
+	ExcRoots = "global-whitelisted-domains"
+	// PreDomns is a string label for preconfigured whitelisted domains
+	PreDomns = "blacklisted-subdomains"
+	// PreHosts is a string label for preconfigured blacklisted hosts
+	PreHosts = "blacklisted-servers"
+	// PreRoots is a string label for preconfigured global blacklisted hosts
+	PreRoots = "global-blacklisted-domains"
+	// False is a string constant
+	False = "false"
+	// True is a string constant
+	True = "true"
 )
 ```
 
+#### func  GetFile
 
-
-## <a name="GetFile">func</a> [GetFile](/src/target/io.go?s=1940:1981#L93)
-``` go
+```go
 func GetFile(f string) (io.Reader, error)
 ```
 GetFile reads a file and returns an io.Reader
 
+#### func  Iter
 
-
-## <a name="Iter">func</a> [Iter](/src/target/data.go?s=2285:2312#L102)
-``` go
+```go
 func Iter(i int) []struct{}
 ```
 Iter iterates over ints - use it in for loops
 
+#### func  NewWriter
 
-
-## <a name="NewWriter">func</a> [NewWriter](/src/target/data.go?s=2380:2406#L107)
-``` go
+```go
 func NewWriter() io.Writer
 ```
 NewWriter returns an io.Writer
 
+#### type CFGcli
 
-
-
-## <a name="CFGcli">type</a> [CFGcli](/src/target/io.go?s=139:182#L14)
-``` go
+```go
 type CFGcli struct {
-    *Config
-    Cfg string
+	*Config
+	Cfg string
 }
-
 ```
+
 CFGcli loads configurations using the EdgeOS CFGcli
 
+#### type CFGstatic
 
-
-
-
-
-
-
-
-
-## <a name="CFGstatic">type</a> [CFGstatic](/src/target/io.go?s=237:283#L20)
-``` go
+```go
 type CFGstatic struct {
-    *Config
-    Cfg string
+	*Config
+	Cfg string
 }
-
 ```
+
 CFGstatic loads static configurations for testing
 
+#### type CFile
 
-
-
-
-
-
-
-
-
-## <a name="CFile">type</a> [CFile](/src/target/cfile.go?s=226:269#L12)
-``` go
+```go
 type CFile struct {
-    *Env
-    Names []string
+	*Env
+	Names []string
 }
-
 ```
+
 CFile holds an array of file names
 
+#### func (*CFile) Remove
 
-
-
-
-
-
-
-
-
-### <a name="CFile.Remove">func</a> (\*CFile) [Remove](/src/target/cfile.go?s=552:582#L25)
-``` go
+```go
 func (c *CFile) Remove() error
 ```
 Remove deletes a CFile array of file names
 
+#### func (*CFile) String
 
-
-
-### <a name="CFile.String">func</a> (\*CFile) [String](/src/target/cfile.go?s=838:869#L36)
-``` go
+```go
 func (c *CFile) String() string
 ```
 String implements string method
 
+#### func (*CFile) Strings
 
-
-
-### <a name="CFile.Strings">func</a> (\*CFile) [Strings](/src/target/cfile.go?s=961:995#L41)
-``` go
+```go
 func (c *CFile) Strings() []string
 ```
 Strings returns a sorted array of strings.
 
+#### type ConfLoader
 
-
-
-## <a name="ConfLoader">type</a> [ConfLoader](/src/target/config.go?s=414:461#L23)
-``` go
+```go
 type ConfLoader interface {
-    // contains filtered or unexported methods
+	// contains filtered or unexported methods
 }
 ```
+
 ConfLoader interface handles multiple configuration load methods
 
+#### type Config
 
-
-
-
-
-
-
-
-
-## <a name="Config">type</a> [Config](/src/target/config.go?s=509:543#L28)
-``` go
+```go
 type Config struct {
-    *Env
-    // contains filtered or unexported fields
+	*Env
 }
-
 ```
+
 Config is a struct of configuration fields
 
+#### func  NewConfig
 
-
-
-
-
-
-### <a name="NewConfig">func</a> [NewConfig](/src/target/opts.go?s=4837:4875#L216)
-``` go
+```go
 func NewConfig(opts ...Option) *Config
 ```
-NewConfig returns a new *Config initialized with the parameter options passed to it
+NewConfig returns a new *Config initialized with the parameter options passed to
+it
 
+#### func (*Config) Blacklist
 
-
-
-
-### <a name="Config.Blacklist">func</a> (\*Config) [Blacklist](/src/target/config.go?s=8542:8588#L386)
-``` go
+```go
 func (c *Config) Blacklist(r ConfLoader) error
 ```
 Blacklist extracts blacklist nodes from a EdgeOS/VyOS configuration structure
 
+#### func (*Config) Get
 
-
-
-### <a name="Config.Get">func</a> (\*Config) [Get](/src/target/config.go?s=4567:4607#L208)
-``` go
+```go
 func (c *Config) Get(nx string) *Objects
 ```
 Get returns an *Object for a given node
 
+#### func (*Config) GetAll
 
-
-
-### <a name="Config.GetAll">func</a> (\*Config) [GetAll](/src/target/config.go?s=4829:4879#L222)
-``` go
+```go
 func (c *Config) GetAll(ltypes ...string) *Objects
 ```
 GetAll returns a pointer to an Objects struct
 
+#### func (*Config) GetTotalStats
 
-
-
-### <a name="Config.GetTotalStats">func</a> (\*Config) [GetTotalStats](/src/target/config.go?s=3148:3213#L164)
-``` go
+```go
 func (c *Config) GetTotalStats() (dropped, extracted, kept int32)
 ```
 GetTotalStats displays aggregate statistics for processed sources
 
+#### func (*Config) InSession
 
-
-
-### <a name="Config.InSession">func</a> (\*Config) [InSession](/src/target/config.go?s=5053:5086#L231)
-``` go
+```go
 func (c *Config) InSession() bool
 ```
 InSession returns true if VyOS/EdgeOS configure is in session
 
+#### func (*Config) NewContent
 
-
-
-### <a name="Config.NewContent">func</a> (\*Config) [NewContent](/src/target/config.go?s=3683:3742#L183)
-``` go
+```go
 func (c *Config) NewContent(iface IFace) (Contenter, error)
 ```
 NewContent returns a Contenter interface of the requested IFace type
 
+#### func (*Config) Nodes
 
-
-
-### <a name="Config.Nodes">func</a> (\*Config) [Nodes](/src/target/config.go?s=5736:5773#L256)
-``` go
+```go
 func (c *Config) Nodes() (n []string)
 ```
 Nodes returns an array of configured nodes
 
+#### func (*Config) ProcessContent
 
-
-
-### <a name="Config.ProcessContent">func</a> (\*Config) [ProcessContent](/src/target/config.go?s=7783:7838#L346)
-``` go
+```go
 func (c *Config) ProcessContent(cts ...Contenter) error
 ```
 ProcessContent processes the Contents array
 
+#### func (*Config) ReloadDNS
 
-
-
-### <a name="Config.ReloadDNS">func</a> (\*Config) [ReloadDNS](/src/target/config.go?s=10573:10617#L441)
-``` go
+```go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
 ReloadDNS reloads the dnsmasq configuration
 
+#### func (*Config) SetOpt
 
-
-
-### <a name="Config.SetOpt">func</a> (\*Config) [SetOpt](/src/target/opts.go?s=1889:1935#L64)
-``` go
+```go
 func (c *Config) SetOpt(opts ...Option) Option
 ```
-SetOpt sets the specified options passed as Env and returns an option to restore the last set of arg's previous values
+SetOpt sets the specified options passed as Env and returns an option to restore
+the last set of arg's previous values
 
+#### func (*Config) String
 
-
-
-### <a name="Config.String">func</a> (\*Config) [String](/src/target/config.go?s=11046:11082#L461)
-``` go
+```go
 func (c *Config) String() (s string)
 ```
 String returns pretty print for the Blacklist struct
 
+#### type Contenter
 
-
-
-## <a name="Contenter">type</a> [Contenter](/src/target/content.go?s=441:559#L34)
-``` go
+```go
 type Contenter interface {
-    Find(string) int
-    GetList() *Objects
-    Len() int
-    SetURL(string, string)
-    String() string
+	Find(string) int
+	GetList() *Objects
+	Len() int
+	SetURL(string, string)
+	String() string
 }
 ```
+
 Contenter is an interface for handling the different file/http data sources
 
+#### type Env
 
-
-
-
-
-
-
-
-
-## <a name="Env">type</a> [Env](/src/target/opts.go?s=154:1270#L14)
-``` go
+```go
 type Env struct {
 
-    // ioWriter io.Writer
-    Log      *logging.Logger
-    API      string        `json:"API,omitempty"`
-    Arch     string        `json:"Arch,omitempty"`
-    Bash     string        `json:"Bash,omitempty"`
-    Cores    int           `json:"Cores,omitempty"`
-    Disabled bool          `json:"Disabled"`
-    Dbug     bool          `json:"Dbug,omitempty"`
-    Dex      list          `json:"Dex,omitempty"`
-    Dir      string        `json:"Dir,omitempty"`
-    DNSsvc   string        `json:"dnsmasq service,omitempty"`
-    Exc      list          `json:"Exc,omitempty"`
-    Ext      string        `json:"dnsmasq fileExt.,omitempty"`
-    File     string        `json:"File,omitempty"`
-    FnFmt    string        `json:"File name fmt,omitempty"`
-    InCLI    string        `json:"-"`
-    Level    string        `json:"CLI Path,omitempty"`
-    Method   string        `json:"HTTP method,omitempty"`
-    Pfx      dnsPfx        `json:"Prefix,omitempty"`
-    Test     bool          `json:"Test,omitempty"`
-    Timeout  time.Duration `json:"Timeout,omitempty"`
-    Verb     bool          `json:"Verbosity,omitempty"`
-    Wildcard `json:"Wildcard,omitempty"`
-    // contains filtered or unexported fields
+	// ioWriter io.Writer
+	Log      *logging.Logger
+	API      string        `json:"API,omitempty"`
+	Arch     string        `json:"Arch,omitempty"`
+	Bash     string        `json:"Bash,omitempty"`
+	Cores    int           `json:"Cores,omitempty"`
+	Disabled bool          `json:"Disabled"`
+	Dbug     bool          `json:"Dbug,omitempty"`
+	Dex      *list         `json:"Dex,omitempty"`
+	Dir      string        `json:"Dir,omitempty"`
+	DNSsvc   string        `json:"dnsmasq service,omitempty"`
+	Exc      *list         `json:"Exc,omitempty"`
+	Ext      string        `json:"dnsmasq fileExt.,omitempty"`
+	File     string        `json:"File,omitempty"`
+	FnFmt    string        `json:"File name fmt,omitempty"`
+	InCLI    string        `json:"-"`
+	Level    string        `json:"CLI Path,omitempty"`
+	Method   string        `json:"HTTP method,omitempty"`
+	Pfx      dnsPfx        `json:"Prefix,omitempty"`
+	Test     bool          `json:"Test,omitempty"`
+	Timeout  time.Duration `json:"Timeout,omitempty"`
+	Verb     bool          `json:"Verbosity,omitempty"`
+	Wildcard `json:"Wildcard,omitempty"`
 }
-
 ```
+
 Env is struct of parameters
 
+#### func (*Env) Debug
 
-
-
-
-
-
-
-
-
-### <a name="Env.Debug">func</a> (\*Env) [Debug](/src/target/opts.go?s=1618:1655#L54)
-``` go
+```go
 func (e *Env) Debug(s ...interface{})
 ```
 Debug logs debug messages when the Dbug flag is true
 
+#### func (*Env) String
 
-
-
-### <a name="Env.String">func</a> (\*Env) [String](/src/target/opts.go?s=5445:5474#L241)
-``` go
+```go
 func (e *Env) String() string
 ```
 Env Stringer interface
 
+#### type ExcDomnObjects
 
-
-
-## <a name="ExcDomnObjects">type</a> [ExcDomnObjects](/src/target/content.go?s=620:660#L43)
-``` go
+```go
 type ExcDomnObjects struct {
-    *Objects
+	*Objects
 }
-
 ```
+
 ExcDomnObjects struct of *Objects for domain exclusions
 
+#### func (*ExcDomnObjects) Find
 
-
-
-
-
-
-
-
-
-### <a name="ExcDomnObjects.Find">func</a> (\*ExcDomnObjects) [Find](/src/target/content.go?s=1718:1761#L98)
-``` go
+```go
 func (e *ExcDomnObjects) Find(s string) int
 ```
 Find returns the int position of an Objects' element
 
+#### func (*ExcDomnObjects) GetList
 
-
-
-### <a name="ExcDomnObjects.GetList">func</a> (\*ExcDomnObjects) [GetList](/src/target/content.go?s=3410:3453#L188)
-``` go
+```go
 func (e *ExcDomnObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for ExcDomnObjects
 
+#### func (*ExcDomnObjects) Len
 
-
-
-### <a name="ExcDomnObjects.Len">func</a> (\*ExcDomnObjects) [Len](/src/target/content.go?s=6113:6147#L319)
-``` go
+```go
 func (e *ExcDomnObjects) Len() int
 ```
 Len returns how many sources there are
 
+#### func (*ExcDomnObjects) SetURL
 
-
-
-### <a name="ExcDomnObjects.SetURL">func</a> (\*ExcDomnObjects) [SetURL](/src/target/content.go?s=7015:7064#L346)
-``` go
+```go
 func (e *ExcDomnObjects) SetURL(name, url string)
 ```
 SetURL sets the Object's url field value
 
+#### func (*ExcDomnObjects) String
 
-
-
-### <a name="ExcDomnObjects.String">func</a> (\*ExcDomnObjects) [String](/src/target/content.go?s=8501:8541#L426)
-``` go
+```go
 func (e *ExcDomnObjects) String() string
 ```
 
+#### type ExcHostObjects
 
-
-## <a name="ExcHostObjects">type</a> [ExcHostObjects](/src/target/content.go?s=719:759#L48)
-``` go
+```go
 type ExcHostObjects struct {
-    *Objects
+	*Objects
 }
-
 ```
+
 ExcHostObjects struct of *Objects for host exclusions
 
+#### func (*ExcHostObjects) Find
 
-
-
-
-
-
-
-
-
-### <a name="ExcHostObjects.Find">func</a> (\*ExcHostObjects) [Find](/src/target/content.go?s=1905:1948#L108)
-``` go
+```go
 func (e *ExcHostObjects) Find(s string) int
 ```
 Find returns the int position of an Objects' element
 
+#### func (*ExcHostObjects) GetList
 
-
-
-### <a name="ExcHostObjects.GetList">func</a> (\*ExcHostObjects) [GetList](/src/target/content.go?s=3669:3712#L201)
-``` go
+```go
 func (e *ExcHostObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for ExcHostObjects
 
+#### func (*ExcHostObjects) Len
 
-
-
-### <a name="ExcHostObjects.Len">func</a> (\*ExcHostObjects) [Len](/src/target/content.go?s=6213:6247#L322)
-``` go
+```go
 func (e *ExcHostObjects) Len() int
 ```
 Len returns how many sources there are
 
+#### func (*ExcHostObjects) SetURL
 
-
-
-### <a name="ExcHostObjects.SetURL">func</a> (\*ExcHostObjects) [SetURL](/src/target/content.go?s=7185:7234#L355)
-``` go
+```go
 func (e *ExcHostObjects) SetURL(name, url string)
 ```
 SetURL sets the Object's url field value
 
+#### func (*ExcHostObjects) String
 
-
-
-### <a name="ExcHostObjects.String">func</a> (\*ExcHostObjects) [String](/src/target/content.go?s=8572:8612#L427)
-``` go
+```go
 func (e *ExcHostObjects) String() string
 ```
 
+#### type ExcRootObjects
 
-
-## <a name="ExcRootObjects">type</a> [ExcRootObjects](/src/target/content.go?s=827:867#L53)
-``` go
+```go
 type ExcRootObjects struct {
-    *Objects
+	*Objects
 }
-
 ```
+
 ExcRootObjects struct of *Objects for global domain exclusions
 
+#### func (*ExcRootObjects) Find
 
-
-
-
-
-
-
-
-
-### <a name="ExcRootObjects.Find">func</a> (\*ExcRootObjects) [Find](/src/target/content.go?s=2092:2135#L118)
-``` go
+```go
 func (e *ExcRootObjects) Find(s string) int
 ```
 Find returns the int position of an Objects' element
 
+#### func (*ExcRootObjects) GetList
 
-
-
-### <a name="ExcRootObjects.GetList">func</a> (\*ExcRootObjects) [GetList](/src/target/content.go?s=3928:3971#L214)
-``` go
+```go
 func (e *ExcRootObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for ExcRootObjects
 
+#### func (*ExcRootObjects) Len
 
-
-
-### <a name="ExcRootObjects.Len">func</a> (\*ExcRootObjects) [Len](/src/target/content.go?s=6313:6347#L325)
-``` go
+```go
 func (e *ExcRootObjects) Len() int
 ```
 Len returns how many sources there are
 
+#### func (*ExcRootObjects) SetURL
 
-
-
-### <a name="ExcRootObjects.SetURL">func</a> (\*ExcRootObjects) [SetURL](/src/target/content.go?s=7355:7404#L364)
-``` go
+```go
 func (e *ExcRootObjects) SetURL(name, url string)
 ```
 SetURL sets the Object's url field value
 
+#### func (*ExcRootObjects) String
 
-
-
-### <a name="ExcRootObjects.String">func</a> (\*ExcRootObjects) [String](/src/target/content.go?s=8643:8683#L428)
-``` go
+```go
 func (e *ExcRootObjects) String() string
 ```
 
+#### type FIODataObjects
 
-
-## <a name="FIODataObjects">type</a> [FIODataObjects](/src/target/content.go?s=916:956#L58)
-``` go
+```go
 type FIODataObjects struct {
-    *Objects
+	*Objects
 }
-
 ```
+
 FIODataObjects struct of *Objects for files
 
+#### func (*FIODataObjects) Find
 
-
-
-
-
-
-
-
-
-### <a name="FIODataObjects.Find">func</a> (\*FIODataObjects) [Find](/src/target/content.go?s=2279:2322#L128)
-``` go
+```go
 func (f *FIODataObjects) Find(s string) int
 ```
 Find returns the int position of an Objects' element
 
+#### func (*FIODataObjects) GetList
 
-
-
-### <a name="FIODataObjects.GetList">func</a> (\*FIODataObjects) [GetList](/src/target/content.go?s=4187:4230#L227)
-``` go
+```go
 func (f *FIODataObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for FIODataObjects
 
+#### func (*FIODataObjects) Len
 
-
-
-### <a name="FIODataObjects.Len">func</a> (\*FIODataObjects) [Len](/src/target/content.go?s=6413:6447#L328)
-``` go
+```go
 func (f *FIODataObjects) Len() int
 ```
 Len returns how many sources there are
 
+#### func (*FIODataObjects) SetURL
 
-
-
-### <a name="FIODataObjects.SetURL">func</a> (\*FIODataObjects) [SetURL](/src/target/content.go?s=7525:7574#L373)
-``` go
+```go
 func (f *FIODataObjects) SetURL(name, url string)
 ```
 SetURL sets the Object's url field value
 
+#### func (*FIODataObjects) String
 
-
-
-### <a name="FIODataObjects.String">func</a> (\*FIODataObjects) [String](/src/target/content.go?s=8714:8754#L429)
-``` go
+```go
 func (f *FIODataObjects) String() string
 ```
 
+#### type FIODomnObjects
 
-
-## <a name="FIODomnObjects">type</a> [FIODomnObjects](/src/target/content.go?s=1005:1045#L63)
-``` go
+```go
 type FIODomnObjects struct {
-    *Objects
+	*Objects
 }
-
 ```
+
 FIODomnObjects struct of *Objects for files
 
+#### type FIOHostObjects
 
-
-
-
-
-
-
-
-
-## <a name="FIOHostObjects">type</a> [FIOHostObjects](/src/target/content.go?s=1094:1134#L68)
-``` go
+```go
 type FIOHostObjects struct {
-    *Objects
+	*Objects
 }
-
 ```
+
 FIOHostObjects struct of *Objects for files
 
+#### type IFace
 
-
-
-
-
-
-
-
-
-## <a name="IFace">type</a> [IFace](/src/target/content.go?s=77:91#L8)
-``` go
+```go
 type IFace int
 ```
+
 IFace type for labeling interface types
 
-
-``` go
+```go
 const (
-    Invalid IFace = iota + 100
-    ExDmObj
-    ExHtObj
-    ExRtObj
-    FileObj
-    FylDObj
-    FylHObj
-    PreDObj
-    PreHObj
-    PreRObj
-    URLdObj
-    URLhObj
+	Invalid IFace = iota + 100
+	ExDmObj
+	ExHtObj
+	ExRtObj
+	FileObj
+	FylDObj
+	FylHObj
+	PreDObj
+	PreHObj
+	PreRObj
+	URLdObj
+	URLhObj
 )
 ```
 IFace types for labeling Content interfaces
 
+#### func (IFace) String
 
-
-
-
-
-
-
-
-
-### <a name="IFace.String">func</a> (IFace) [String](/src/target/content.go?s=9141:9171#L436)
-``` go
+```go
 func (i IFace) String() string
 ```
 
+#### type Objects
 
-
-## <a name="Objects">type</a> [Objects](/src/target/object.go?s=90:149#L10)
-``` go
+```go
 type Objects struct {
-    *Env
-    // contains filtered or unexported fields
+	*Env
 }
-
 ```
+
 Objects is a struct of []*source
 
+#### func (*Objects) Files
 
-
-
-
-
-
-
-
-
-### <a name="Objects.Files">func</a> (\*Objects) [Files](/src/target/object.go?s=357:389#L22)
-``` go
+```go
 func (o *Objects) Files() *CFile
 ```
 Files returns a list of dnsmasq conf files from all srcs
 
+#### func (*Objects) Filter
 
-
-
-### <a name="Objects.Filter">func</a> (\*Objects) [Filter](/src/target/object.go?s=647:694#L34)
-``` go
+```go
 func (o *Objects) Filter(ltype string) *Objects
 ```
 Filter returns a subset of Objects filtered by ltype
 
+#### func (*Objects) Find
 
-
-
-### <a name="Objects.Find">func</a> (\*Objects) [Find](/src/target/object.go?s=1083:1122#L54)
-``` go
+```go
 func (o *Objects) Find(elem string) int
 ```
 Find returns the int position of an Objects' element
 
+#### func (*Objects) Len
 
-
-
-### <a name="Objects.Len">func</a> (\*Objects) [Len](/src/target/object.go?s=2756:2783#L138)
-``` go
+```go
 func (o *Objects) Len() int
 ```
 Implement Sort Interface for Objects
 
+#### func (*Objects) Less
 
-
-
-### <a name="Objects.Less">func</a> (\*Objects) [Less](/src/target/object.go?s=2816:2853#L139)
-``` go
+```go
 func (o *Objects) Less(i, j int) bool
 ```
 
+#### func (*Objects) Names
 
-
-### <a name="Objects.Names">func</a> (\*Objects) [Names](/src/target/object.go?s=2453:2499#L121)
-``` go
+```go
 func (o *Objects) Names() (s sort.StringSlice)
 ```
 Names returns a sorted slice of Objects names
 
+#### func (*Objects) String
 
-
-
-### <a name="Objects.String">func</a> (\*Objects) [String](/src/target/object.go?s=2611:2648#L130)
-``` go
+```go
 func (o *Objects) String() (s string)
 ```
 Stringer for Objects
 
+#### func (*Objects) Swap
 
-
-
-### <a name="Objects.Swap">func</a> (\*Objects) [Swap](/src/target/object.go?s=2895:2927#L140)
-``` go
+```go
 func (o *Objects) Swap(i, j int)
 ```
 
+#### type Option
 
-
-## <a name="Option">type</a> [Option](/src/target/opts.go?s=1731:1765#L61)
-``` go
+```go
 type Option func(c *Config) Option
 ```
+
 Option is a recursive function
 
+#### func  API
 
-
-
-
-
-
-### <a name="API">func</a> [API](/src/target/opts.go?s=2415:2440#L89)
-``` go
+```go
 func API(s string) Option
 ```
 API sets the EdgeOS CLI API command
 
+#### func  Arch
 
-### <a name="Arch">func</a> [Arch](/src/target/opts.go?s=2250:2276#L80)
-``` go
+```go
 func Arch(s string) Option
 ```
 Arch sets target CPU architecture
 
+#### func  Bash
 
-### <a name="Bash">func</a> [Bash](/src/target/opts.go?s=2570:2596#L98)
-``` go
+```go
 func Bash(s string) Option
 ```
 Bash sets the shell processor
 
+#### func  Cores
 
-### <a name="Cores">func</a> [Cores](/src/target/opts.go?s=2724:2748#L107)
-``` go
+```go
 func Cores(i int) Option
 ```
 Cores sets max CPU cores
 
+#### func  DNSsvc
 
-### <a name="DNSsvc">func</a> [DNSsvc](/src/target/opts.go?s=3398:3426#L144)
-``` go
+```go
 func DNSsvc(s string) Option
 ```
 DNSsvc sets dnsmasq restart command
 
+#### func  Dbug
 
-### <a name="Dbug">func</a> [Dbug](/src/target/opts.go?s=3082:3106#L126)
-``` go
+```go
 func Dbug(b bool) Option
 ```
 Dbug toggles Debug level on or off
 
+#### func  Dir
 
-### <a name="Dir">func</a> [Dir](/src/target/opts.go?s=3237:3262#L135)
-``` go
+```go
 func Dir(s string) Option
 ```
 Dir sets directory location
 
+#### func  Disabled
 
-### <a name="Disabled">func</a> [Disabled](/src/target/opts.go?s=2904:2932#L117)
-``` go
+```go
 func Disabled(b bool) Option
 ```
 Disabled toggles Disabled
 
+#### func  Ext
 
-### <a name="Ext">func</a> [Ext](/src/target/opts.go?s=3575:3600#L153)
-``` go
+```go
 func Ext(s string) Option
 ```
 Ext sets the blacklist file n extension
 
+#### func  File
 
-### <a name="File">func</a> [File](/src/target/opts.go?s=3740:3766#L162)
-``` go
+```go
 func File(s string) Option
 ```
 File sets the EdgeOS configuration file
 
+#### func  FileNameFmt
 
-### <a name="FileNameFmt">func</a> [FileNameFmt](/src/target/opts.go?s=3928:3961#L171)
-``` go
+```go
 func FileNameFmt(s string) Option
 ```
 FileNameFmt sets the EdgeOS configuration file name format
 
+#### func  InCLI
 
-### <a name="InCLI">func</a> [InCLI](/src/target/opts.go?s=4110:4137#L180)
-``` go
+```go
 func InCLI(s string) Option
 ```
 InCLI sets the CLI inSession command
 
+#### func  Level
 
-### <a name="Level">func</a> [Level](/src/target/opts.go?s=4279:4306#L189)
-``` go
+```go
 func Level(s string) Option
 ```
 Level sets the EdgeOS API CLI level
 
+#### func  Logger
 
-### <a name="Logger">func</a> [Logger](/src/target/opts.go?s=4448:4485#L198)
-``` go
+```go
 func Logger(l *logging.Logger) Option
 ```
 Logger sets a pointer to the logger
 
+#### func  Method
 
-### <a name="Method">func</a> [Method](/src/target/opts.go?s=4616:4644#L207)
-``` go
+```go
 func Method(s string) Option
 ```
 Method sets the HTTP method
 
+#### func  Prefix
 
-### <a name="Prefix">func</a> [Prefix](/src/target/opts.go?s=5260:5298#L233)
-``` go
+```go
 func Prefix(d string, h string) Option
 ```
 Prefix sets the dnsmasq configuration address line prefix
 
+#### func  Test
 
-### <a name="Test">func</a> [Test](/src/target/opts.go?s=5624:5648#L251)
-``` go
+```go
 func Test(b bool) Option
 ```
 Test toggles testing mode on or off
 
+#### func  Timeout
 
-### <a name="Timeout">func</a> [Timeout](/src/target/opts.go?s=5817:5853#L260)
-``` go
+```go
 func Timeout(t time.Duration) Option
 ```
 Timeout sets how long before an unresponsive goroutine is aborted
 
+#### func  Verb
 
-### <a name="Verb">func</a> [Verb](/src/target/opts.go?s=6000:6024#L269)
-``` go
+```go
 func Verb(b bool) Option
 ```
 Verb sets the verbosity level to v
 
+#### func  WCard
 
-### <a name="WCard">func</a> [WCard](/src/target/opts.go?s=6168:6197#L278)
-``` go
+```go
 func WCard(w Wildcard) Option
 ```
 WCard sets file globbing wildcard values
 
+#### type PreDomnObjects
 
-
-
-
-## <a name="PreDomnObjects">type</a> [PreDomnObjects](/src/target/content.go?s=1208:1248#L73)
-``` go
+```go
 type PreDomnObjects struct {
-    *Objects
+	*Objects
 }
-
 ```
+
 PreDomnObjects struct of *Objects for pre-configured domains content
 
+#### func (*PreDomnObjects) Find
 
-
-
-
-
-
-
-
-
-### <a name="PreDomnObjects.Find">func</a> (\*PreDomnObjects) [Find](/src/target/content.go?s=2466:2509#L138)
-``` go
+```go
 func (p *PreDomnObjects) Find(s string) int
 ```
 Find returns the int position of an Objects' element
 
+#### func (*PreDomnObjects) GetList
 
-
-
-### <a name="PreDomnObjects.GetList">func</a> (\*PreDomnObjects) [GetList](/src/target/content.go?s=4603:4646#L247)
-``` go
+```go
 func (p *PreDomnObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for PreDomnObjects
 
+#### func (*PreDomnObjects) Len
 
-
-
-### <a name="PreDomnObjects.Len">func</a> (\*PreDomnObjects) [Len](/src/target/content.go?s=6513:6547#L331)
-``` go
+```go
 func (p *PreDomnObjects) Len() int
 ```
 Len returns how many sources there are
 
+#### func (*PreDomnObjects) SetURL
 
-
-
-### <a name="PreDomnObjects.SetURL">func</a> (\*PreDomnObjects) [SetURL](/src/target/content.go?s=7695:7744#L382)
-``` go
+```go
 func (p *PreDomnObjects) SetURL(name, url string)
 ```
 SetURL sets the Object's url field value
 
+#### func (*PreDomnObjects) String
 
-
-
-### <a name="PreDomnObjects.String">func</a> (\*PreDomnObjects) [String](/src/target/content.go?s=8785:8825#L430)
-``` go
+```go
 func (p *PreDomnObjects) String() string
 ```
 
+#### type PreHostObjects
 
-
-## <a name="PreHostObjects">type</a> [PreHostObjects](/src/target/content.go?s=1320:1360#L78)
-``` go
+```go
 type PreHostObjects struct {
-    *Objects
+	*Objects
 }
-
 ```
+
 PreHostObjects struct of *Objects for pre-configured hosts content
 
+#### func (*PreHostObjects) Find
 
-
-
-
-
-
-
-
-
-### <a name="PreHostObjects.Find">func</a> (\*PreHostObjects) [Find](/src/target/content.go?s=2653:2696#L148)
-``` go
+```go
 func (p *PreHostObjects) Find(s string) int
 ```
 Find returns the int position of an Objects' element
 
+#### func (*PreHostObjects) GetList
 
-
-
-### <a name="PreHostObjects.GetList">func</a> (\*PreHostObjects) [GetList](/src/target/content.go?s=4851:4894#L258)
-``` go
+```go
 func (p *PreHostObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for PreHostObjects
 
+#### func (*PreHostObjects) Len
 
-
-
-### <a name="PreHostObjects.Len">func</a> (\*PreHostObjects) [Len](/src/target/content.go?s=6613:6647#L334)
-``` go
+```go
 func (p *PreHostObjects) Len() int
 ```
 Len returns how many sources there are
 
+#### func (*PreHostObjects) SetURL
 
-
-
-### <a name="PreHostObjects.SetURL">func</a> (\*PreHostObjects) [SetURL](/src/target/content.go?s=7865:7914#L391)
-``` go
+```go
 func (p *PreHostObjects) SetURL(name, url string)
 ```
 SetURL sets the Object's url field value
 
+#### func (*PreHostObjects) String
 
-
-
-### <a name="PreHostObjects.String">func</a> (\*PreHostObjects) [String](/src/target/content.go?s=8856:8896#L431)
-``` go
+```go
 func (p *PreHostObjects) String() string
 ```
 
+#### type PreRootObjects
 
-
-## <a name="PreRootObjects">type</a> [PreRootObjects](/src/target/content.go?s=1432:1472#L83)
-``` go
+```go
 type PreRootObjects struct {
-    *Objects
+	*Objects
 }
-
 ```
+
 PreRootObjects struct of *Objects for pre-configured hosts content
 
+#### func (*PreRootObjects) Find
 
-
-
-
-
-
-
-
-
-### <a name="PreRootObjects.Find">func</a> (\*PreRootObjects) [Find](/src/target/content.go?s=2840:2883#L158)
-``` go
+```go
 func (p *PreRootObjects) Find(s string) int
 ```
 Find returns the int position of an Objects' element
 
+#### func (*PreRootObjects) GetList
 
-
-
-### <a name="PreRootObjects.GetList">func</a> (\*PreRootObjects) [GetList](/src/target/content.go?s=5099:5142#L269)
-``` go
+```go
 func (p *PreRootObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for PreRootObjects
 
+#### func (*PreRootObjects) Len
 
-
-
-### <a name="PreRootObjects.Len">func</a> (\*PreRootObjects) [Len](/src/target/content.go?s=6713:6747#L337)
-``` go
+```go
 func (p *PreRootObjects) Len() int
 ```
 Len returns how many sources there are
 
+#### func (*PreRootObjects) SetURL
 
-
-
-### <a name="PreRootObjects.SetURL">func</a> (\*PreRootObjects) [SetURL](/src/target/content.go?s=8035:8084#L400)
-``` go
+```go
 func (p *PreRootObjects) SetURL(name, url string)
 ```
 SetURL sets the Object's url field value
 
+#### func (*PreRootObjects) String
 
-
-
-### <a name="PreRootObjects.String">func</a> (\*PreRootObjects) [String](/src/target/content.go?s=8927:8967#L432)
-``` go
+```go
 func (p *PreRootObjects) String() string
 ```
 
+#### type URLDomnObjects
 
-
-## <a name="URLDomnObjects">type</a> [URLDomnObjects](/src/target/content.go?s=1527:1567#L88)
-``` go
+```go
 type URLDomnObjects struct {
-    *Objects
+	*Objects
 }
-
 ```
+
 URLDomnObjects struct of *Objects for domain URLs
 
+#### func (*URLDomnObjects) Find
 
-
-
-
-
-
-
-
-
-### <a name="URLDomnObjects.Find">func</a> (\*URLDomnObjects) [Find](/src/target/content.go?s=3214:3257#L178)
-``` go
+```go
 func (u *URLDomnObjects) Find(s string) int
 ```
 Find returns the int position of an Objects' element
 
+#### func (*URLDomnObjects) GetList
 
-
-
-### <a name="URLDomnObjects.GetList">func</a> (\*URLDomnObjects) [GetList](/src/target/content.go?s=5347:5390#L280)
-``` go
+```go
 func (u *URLDomnObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for URLDomnObjects
 
+#### func (*URLDomnObjects) Len
 
-
-
-### <a name="URLDomnObjects.Len">func</a> (\*URLDomnObjects) [Len](/src/target/content.go?s=6813:6847#L340)
-``` go
+```go
 func (u *URLDomnObjects) Len() int
 ```
 Len returns how many sources there are
 
+#### func (*URLDomnObjects) SetURL
 
-
-
-### <a name="URLDomnObjects.SetURL">func</a> (\*URLDomnObjects) [SetURL](/src/target/content.go?s=8205:8254#L409)
-``` go
+```go
 func (u *URLDomnObjects) SetURL(name, url string)
 ```
 SetURL sets the Object's url field value
 
+#### func (*URLDomnObjects) String
 
-
-
-### <a name="URLDomnObjects.String">func</a> (\*URLDomnObjects) [String](/src/target/content.go?s=8998:9038#L433)
-``` go
+```go
 func (u *URLDomnObjects) String() string
 ```
 
+#### type URLHostObjects
 
-
-## <a name="URLHostObjects">type</a> [URLHostObjects](/src/target/content.go?s=1620:1660#L93)
-``` go
+```go
 type URLHostObjects struct {
-    *Objects
+	*Objects
 }
-
 ```
+
 URLHostObjects struct of *Objects for host URLs
 
+#### func (*URLHostObjects) Find
 
-
-
-
-
-
-
-
-
-### <a name="URLHostObjects.Find">func</a> (\*URLHostObjects) [Find](/src/target/content.go?s=3027:3070#L168)
-``` go
+```go
 func (u *URLHostObjects) Find(s string) int
 ```
 Find returns the int position of an Objects' element
 
+#### func (*URLHostObjects) GetList
 
-
-
-### <a name="URLHostObjects.GetList">func</a> (\*URLHostObjects) [GetList](/src/target/content.go?s=5741:5784#L299)
-``` go
+```go
 func (u *URLHostObjects) GetList() *Objects
 ```
 GetList implements the Contenter interface for URLHostObjects
 
+#### func (*URLHostObjects) Len
 
-
-
-### <a name="URLHostObjects.Len">func</a> (\*URLHostObjects) [Len](/src/target/content.go?s=6913:6947#L343)
-``` go
+```go
 func (u *URLHostObjects) Len() int
 ```
 Len returns how many sources there are
 
+#### func (*URLHostObjects) SetURL
 
-
-
-### <a name="URLHostObjects.SetURL">func</a> (\*URLHostObjects) [SetURL](/src/target/content.go?s=8375:8424#L418)
-``` go
+```go
 func (u *URLHostObjects) SetURL(name, url string)
 ```
 SetURL sets the Object's url field value
 
+#### func (*URLHostObjects) String
 
-
-
-### <a name="URLHostObjects.String">func</a> (\*URLHostObjects) [String](/src/target/content.go?s=9069:9109#L434)
-``` go
+```go
 func (u *URLHostObjects) String() string
 ```
 
+#### type Wildcard
 
-
-## <a name="Wildcard">type</a> [Wildcard](/src/target/opts.go?s=1462:1560#L48)
-``` go
+```go
 type Wildcard struct {
-    Node string `json:"Node,omitempty"`
-    Name string `json:"Name,omitempty"`
+	Node string `json:"Node,omitempty"`
+	Name string `json:"Name,omitempty"`
 }
-
 ```
+
 Wildcard struct sets globbing wildcards for filename searches
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-- - -
-Generated by [godoc2md](http://godoc.org/github.com/davecheney/godoc2md)

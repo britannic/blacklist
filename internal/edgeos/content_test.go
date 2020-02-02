@@ -409,7 +409,7 @@ func TestNewContent(t *testing.T) {
 
 		So(c.Blacklist(&CFGstatic{Cfg: Cfg}), ShouldBeNil)
 
-		c.Dex.merge(list{RWMutex: &sync.RWMutex{}, entry: entry{"amazon-de.com": struct{}{}}})
+		c.Dex.merge(&list{RWMutex: &sync.RWMutex{}, entry: entry{"amazon-de.com": struct{}{}}})
 		So(c.Dex.String(), ShouldEqual, `"amazon-de.com":{},
 `)
 

@@ -1,30 +1,14 @@
-
-
 # tdata
-`import "github.com/britannic/blacklist/internal/tdata"`
-
-* [Overview](#pkg-overview)
-* [Index](#pkg-index)
-
-## <a name="pkg-overview">Overview</a>
+--
+    import "github.com/britannic/blacklist/internal/tdata"
 
 
+## Usage
 
-## <a name="pkg-index">Index</a>
-* [Variables](#pkg-variables)
-* [func Get(s string) string](#Get)
-
-
-#### <a name="pkg-files">Package files</a>
-[tdata.go](/src/github.com/britannic/blacklist/internal/tdata/tdata.go) 
-
-
-
-## <a name="pkg-variables">Variables</a>
-``` go
+```go
 var (
-    // Cfg contains a valid full EdgeOS blacklist configuration
-    Cfg = `blacklist {
+	// Cfg contains a valid full EdgeOS blacklist configuration
+	Cfg = `blacklist {
     disabled false
     dns-redirect-ip 0.0.0.0
     domains {
@@ -147,13 +131,13 @@ var (
     }
 }
 
-    /* Warning: Do not remove the following line. */
-    /* === vyatta-config-version: "config-management@1:conntrack@1:cron@1:dhcp-relay@1:dhcp-server@4:firewall@5:ipsec@5:nat@3:qos@1:quagga@2:system@4:ubnt-pptp@1:ubnt-util@1:vrrp@1:webgui@1:webproxy@1:zone-policy@1" === */
-    /* Release version: v1.8.5.4884695.160608.1057 */
+	/* Warning: Do not remove the following line. */
+	/* === vyatta-config-version: "config-management@1:conntrack@1:cron@1:dhcp-relay@1:dhcp-server@4:firewall@5:ipsec@5:nat@3:qos@1:quagga@2:system@4:ubnt-pptp@1:ubnt-util@1:vrrp@1:webgui@1:webproxy@1:zone-policy@1" === */
+	/* Release version: v1.8.5.4884695.160608.1057 */
 }`
 
-    // CfgPartial contains a valid partial EdgeOS blacklist configuration
-    CfgPartial = `blacklist {
+	// CfgPartial contains a valid partial EdgeOS blacklist configuration
+	CfgPartial = `blacklist {
     disabled false
     dns-redirect-ip 0.0.0.0
     domains {
@@ -218,8 +202,8 @@ var (
     }
 }`
 
-    // CfgMimimal contains a valid minimal EdgeOS blacklist configuration
-    CfgMimimal = `blacklist {
+	// CfgMimimal contains a valid minimal EdgeOS blacklist configuration
+	CfgMimimal = `blacklist {
     disabled false
     dns-redirect-ip 0.0.0.0
     domains {
@@ -248,8 +232,8 @@ var (
     }
 }`
 
-    // CfgDeleted has no EdgeOS blacklist configuration
-    CfgDeleted = `interfaces {
+	// CfgDeleted has no EdgeOS blacklist configuration
+	CfgDeleted = `interfaces {
     ethernet eth0 {
         address dhcp
         address dhcpv6
@@ -427,8 +411,8 @@ system {
 /* Release version: v1.10.0-beta.3.5051713.180109.1605 */
 `
 
-    // DisabledCfg contains a disabled valid EdgeOS blacklist configuration
-    DisabledCfg = `blacklist {
+	// DisabledCfg contains a disabled valid EdgeOS blacklist configuration
+	DisabledCfg = `blacklist {
         disabled true
         dns-redirect-ip 0.0.0.0
         domains {
@@ -556,79 +540,79 @@ system {
         /* Release version: v1.8.5.4884695.160608.1057 */
     }`
 
-    // ZeroHostSourcesCfg is a valid EdgeOS blacklist configuration with zero hosts sources
-    ZeroHostSourcesCfg = `blacklist {
-    disabled false
-    dns-redirect-ip 0.0.0.0
-    domains {
-            dns-redirect-ip
-            include adsrvr.org
-            include adtechus.net
-            include advertising.com
-            include centade.com
-            include doubleclick.net
-            include free-counter.co.uk
-            include intellitxt.com
-            include kiosked.com
-            source malc0de {
-                    description "List of zones serving malicious executables observed by malc0de.com/database/"
-                    prefix "zone "
-                    url http://malc0de.com/bl/ZONES
-            }
-    }
-    exclude 122.2o7.net
-    exclude 1e100.net
-    exclude adobedtm.com
-    exclude akamai.net
-    exclude amazon.com
-    exclude amazonaws.com
-    exclude apple.com
-    exclude ask.com
-    exclude avast.com
-    exclude bitdefender.com
-    exclude cdn.visiblemeasures.com
-    exclude cloudfront.net
-    exclude coremetrics.com
-    exclude edgesuite.net
-    exclude freedns.afraid.org
-    exclude github.com
-    exclude githubusercontent.com
-    exclude google.com
-    exclude googleadservices.com
-    exclude googleapis.com
-    exclude googleusercontent.com
-    exclude gstatic.com
-    exclude gvt1.com
-    exclude gvt1.net
-    exclude hb.disney.go.com
-    exclude hp.com
-    exclude hulu.com
-    exclude images-amazon.com
-    exclude msdn.com
-    exclude paypal.com
-    exclude rackcdn.com
-    exclude schema.org
-    exclude skype.com
-    exclude smacargo.com
-    exclude sourceforge.net
-    exclude ssl-on9.com
-    exclude ssl-on9.net
-    exclude static.chartbeat.com
-    exclude storage.googleapis.com
-    exclude windows.net
-    exclude yimg.com
-    exclude ytimg.com
-    hosts {
-            dns-redirect-ip
-            include beap.gemini.yahoo.com
-    }
+	// ZeroHostSourcesCfg is a valid EdgeOS blacklist configuration with zero hosts sources
+	ZeroHostSourcesCfg = `blacklist {
+	disabled false
+	dns-redirect-ip 0.0.0.0
+	domains {
+			dns-redirect-ip
+			include adsrvr.org
+			include adtechus.net
+			include advertising.com
+			include centade.com
+			include doubleclick.net
+			include free-counter.co.uk
+			include intellitxt.com
+			include kiosked.com
+			source malc0de {
+					description "List of zones serving malicious executables observed by malc0de.com/database/"
+					prefix "zone "
+					url http://malc0de.com/bl/ZONES
+			}
+	}
+	exclude 122.2o7.net
+	exclude 1e100.net
+	exclude adobedtm.com
+	exclude akamai.net
+	exclude amazon.com
+	exclude amazonaws.com
+	exclude apple.com
+	exclude ask.com
+	exclude avast.com
+	exclude bitdefender.com
+	exclude cdn.visiblemeasures.com
+	exclude cloudfront.net
+	exclude coremetrics.com
+	exclude edgesuite.net
+	exclude freedns.afraid.org
+	exclude github.com
+	exclude githubusercontent.com
+	exclude google.com
+	exclude googleadservices.com
+	exclude googleapis.com
+	exclude googleusercontent.com
+	exclude gstatic.com
+	exclude gvt1.com
+	exclude gvt1.net
+	exclude hb.disney.go.com
+	exclude hp.com
+	exclude hulu.com
+	exclude images-amazon.com
+	exclude msdn.com
+	exclude paypal.com
+	exclude rackcdn.com
+	exclude schema.org
+	exclude skype.com
+	exclude smacargo.com
+	exclude sourceforge.net
+	exclude ssl-on9.com
+	exclude ssl-on9.net
+	exclude static.chartbeat.com
+	exclude storage.googleapis.com
+	exclude windows.net
+	exclude yimg.com
+	exclude ytimg.com
+	hosts {
+			dns-redirect-ip
+			include beap.gemini.yahoo.com
+	}
 }`
 
-    // NoBlacklist returns a VyOS error message
-    NoBlacklist = `Configuration under specified path is empty`
+	// NoBlacklist returns a VyOS error message
+	NoBlacklist = `Configuration under specified path is empty`
 
-    // JSONcfg is JSON formatted blacklist configuration output
-    JSONcfg = `{
+	// JSONcfg is JSON formatted blacklist configuration output
+	JSONcfg = `{
   "nodes": [{
     "blacklist": {
       "disabled": "false",
@@ -775,11 +759,11 @@ system {
   }]
 }`
 
-    // JSONrawcfg is JSON unformatted blacklist configuration output
-    JSONrawcfg = `{"blacklist":{"data":{},"disable":false,"excludes":["122.2o7.net","1e100.net","adobedtm.com","akamai.net","amazon.com","amazonaws.com","apple.com","ask.com","avast.com","bitdefender.com","cdn.visiblemeasures.com","cloudfront.net","coremetrics.com","edgesuite.net","freedns.afraid.org","github.com","githubusercontent.com","google.com","googleadservices.com","googleapis.com","googleusercontent.com","gstatic.com","gvt1.com","gvt1.net","hb.disney.go.com","hp.com","hulu.com","images-amazon.com","msdn.com","paypal.com","rackcdn.com","schema.org","skype.com","smacargo.com","sourceforge.net","ssl-on9.com","ssl-on9.net","static.chartbeat.com","storage.googleapis.com","windows.net","yimg.com","ytimg.com"],"includes":[],"ip":"0.0.0.0"},"domains":{"data":{"malc0de":{"desc":"List of zones serving malicious executables observed by malc0de.com/database/","disabled":false,"file":"","ip":"","name":"malc0de","prefix":"zone ","type":2,"url":"http://malc0de.com/bl/ZONES"}},"disable":false,"excludes":[],"includes":["adsrvr.org","adtechus.net","advertising.com","centade.com","doubleclick.net","free-counter.co.uk","intellitxt.com","kiosked.com"],"ip":"0.0.0.0"},"hosts":{"data":{"adaway":{"desc":"Blocking mobile ad providers and some analytics providers","disabled":false,"file":"","ip":"","name":"adaway","prefix":"127.0.0.1 ","type":3,"url":"http://adaway.org/hosts.txt"},"malwaredomainlist":{"desc":"127.0.0.1 based host and domain list","disabled":false,"file":"","ip":"","name":"malwaredomainlist","prefix":"127.0.0.1 ","type":3,"url":"http://www.malwaredomainlist.com/hostslist/hosts.txt"},"openphish":{"desc":"OpenPhish automatic phishing detection","disabled":false,"file":"","ip":"","name":"openphish","prefix":"http","type":3,"url":"https://openphish.com/feed.txt"},"someonewhocares":{"desc":"Zero based host and domain list","disabled":false,"file":"","ip":"","name":"someonewhocares","prefix":"0.0.0.0","type":3,"url":"http://someonewhocares.org/hosts/zero/"},"tasty":{"desc":"File source","disabled":false,"file":"../internal/testdata/blist.hosts.src","ip":"0.0.0.0","name":"tasty","prefix":"","type":3,"url":""},"volkerschatz":{"desc":"Ad server blacklists","disabled":false,"file":"","ip":"","name":"volkerschatz","prefix":"http","type":3,"url":"http://www.volkerschatz.com/net/adpaths"},"winhelp2002":{"desc":"Zero based host and domain list","disabled":false,"file":"","ip":"0.0.0.0","name":"winhelp2002","prefix":"0.0.0.0 ","type":3,"url":"http://winhelp2002.mvps.org/hosts.txt"},"yoyo":{"desc":"Fully Qualified Domain Names only - no prefix to strip","disabled":false,"file":"","ip":"","name":"yoyo","prefix":"","type":3,"url":"http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml\u0026showintro=1\u0026mimetype=plaintext"}},"disable":false,"excludes":[],"includes":["beap.gemini.yahoo.com"],"ip":"192.168.168.1"}}`
+	// JSONrawcfg is JSON unformatted blacklist configuration output
+	JSONrawcfg = `{"blacklist":{"data":{},"disable":false,"excludes":["122.2o7.net","1e100.net","adobedtm.com","akamai.net","amazon.com","amazonaws.com","apple.com","ask.com","avast.com","bitdefender.com","cdn.visiblemeasures.com","cloudfront.net","coremetrics.com","edgesuite.net","freedns.afraid.org","github.com","githubusercontent.com","google.com","googleadservices.com","googleapis.com","googleusercontent.com","gstatic.com","gvt1.com","gvt1.net","hb.disney.go.com","hp.com","hulu.com","images-amazon.com","msdn.com","paypal.com","rackcdn.com","schema.org","skype.com","smacargo.com","sourceforge.net","ssl-on9.com","ssl-on9.net","static.chartbeat.com","storage.googleapis.com","windows.net","yimg.com","ytimg.com"],"includes":[],"ip":"0.0.0.0"},"domains":{"data":{"malc0de":{"desc":"List of zones serving malicious executables observed by malc0de.com/database/","disabled":false,"file":"","ip":"","name":"malc0de","prefix":"zone ","type":2,"url":"http://malc0de.com/bl/ZONES"}},"disable":false,"excludes":[],"includes":["adsrvr.org","adtechus.net","advertising.com","centade.com","doubleclick.net","free-counter.co.uk","intellitxt.com","kiosked.com"],"ip":"0.0.0.0"},"hosts":{"data":{"adaway":{"desc":"Blocking mobile ad providers and some analytics providers","disabled":false,"file":"","ip":"","name":"adaway","prefix":"127.0.0.1 ","type":3,"url":"http://adaway.org/hosts.txt"},"malwaredomainlist":{"desc":"127.0.0.1 based host and domain list","disabled":false,"file":"","ip":"","name":"malwaredomainlist","prefix":"127.0.0.1 ","type":3,"url":"http://www.malwaredomainlist.com/hostslist/hosts.txt"},"openphish":{"desc":"OpenPhish automatic phishing detection","disabled":false,"file":"","ip":"","name":"openphish","prefix":"http","type":3,"url":"https://openphish.com/feed.txt"},"someonewhocares":{"desc":"Zero based host and domain list","disabled":false,"file":"","ip":"","name":"someonewhocares","prefix":"0.0.0.0","type":3,"url":"http://someonewhocares.org/hosts/zero/"},"tasty":{"desc":"File source","disabled":false,"file":"../internal/testdata/blist.hosts.src","ip":"0.0.0.0","name":"tasty","prefix":"","type":3,"url":""},"volkerschatz":{"desc":"Ad server blacklists","disabled":false,"file":"","ip":"","name":"volkerschatz","prefix":"http","type":3,"url":"http://www.volkerschatz.com/net/adpaths"},"winhelp2002":{"desc":"Zero based host and domain list","disabled":false,"file":"","ip":"0.0.0.0","name":"winhelp2002","prefix":"0.0.0.0 ","type":3,"url":"http://winhelp2002.mvps.org/hosts.txt"},"yoyo":{"desc":"Fully Qualified Domain Names only - no prefix to strip","disabled":false,"file":"","ip":"","name":"yoyo","prefix":"","type":3,"url":"http://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml\u0026showintro=1\u0026mimetype=plaintext"}},"disable":false,"excludes":[],"includes":["beap.gemini.yahoo.com"],"ip":"192.168.168.1"}}`
 
-    // JSONcfgZeroHostSources is JSON formatted blacklist configuration output with zero sources for hosts
-    JSONcfgZeroHostSources = `{
+	// JSONcfgZeroHostSources is JSON formatted blacklist configuration output with zero sources for hosts
+	JSONcfgZeroHostSources = `{
   "nodes": [{
     "blacklist": {
       "disabled": "false",
@@ -861,8 +845,8 @@ system {
     }
   }]
 }`
-    // FileManifest is complete list of the blacklist config node templates
-    FileManifest = `../payload/blacklist
+	// FileManifest is complete list of the blacklist config node templates
+	FileManifest = `../payload/blacklist
 ../payload/blacklist/disabled
 ../payload/blacklist/disabled/node.def
 ../payload/blacklist/dns-redirect-ip
@@ -905,8 +889,8 @@ system {
 ../payload/blacklist/hosts/source/node.tag/url/node.def
 ../payload/blacklist/node.def
 `
-    // Live is a working EdgeOS configuration
-    Live = `blacklist {
+	// Live is a working EdgeOS configuration
+	Live = `blacklist {
         disabled false
         dns-redirect-ip 192.168.168.1
         domains {
@@ -1054,8 +1038,8 @@ system {
         }
     }`
 
-    // SingleSource is a single source EdgeOS configuration
-    SingleSource = `interfaces {
+	// SingleSource is a single source EdgeOS configuration
+	SingleSource = `interfaces {
     ethernet eth0 {
         address dhcp
         address dhcpv6
@@ -1232,19 +1216,9 @@ system {
 )
 ```
 
+#### func  Get
 
-## <a name="Get">func</a> [Get](/src/target/tdata.go?s=32:57#L4)
-``` go
+```go
 func Get(s string) string
 ```
 Get returns r
-
-
-
-
-
-
-
-
-- - -
-Generated by [godoc2md](http://godoc.org/github.com/davecheney/godoc2md)
