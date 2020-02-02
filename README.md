@@ -28,7 +28,7 @@ Please show your thanks by donating to the project using [Square Cash](https://c
 
 We greatly appreciate any and all donations - Thank you! Funds go to maintaining development servers and networks.
 
-## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti NetworksÂ®
+## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti Networks®
 
 ## **Contents**
 
