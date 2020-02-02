@@ -107,7 +107,7 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.8.1-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-### Release 1.1.8.0 (February 1, 2020)
+### Release 1.1.8.1 (February 1, 2020)
 
 * Refactor code to conserve RAM in small memory systems (e.g. ER-X)
 * 11Mb less RAM consumption with default lists

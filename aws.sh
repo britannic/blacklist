@@ -9,8 +9,8 @@ tag=${3}
 ssh -tt ${host} <<-EOF
 	aptly repo add blacklist .
 	aptly snapshot create blacklist-${tag} from repo blacklist
-	aptly publish snapshot blacklist-${tag}
-	cd /home/ubuntu/.aptly/public
+	aptly publish switch stretch blacklist-${tag}
+	cd /home/ubuntu/debian-repo
 	git add --all
 	git commit -am"Package repository release ${tag}"
 	git tag "${pkg}package"

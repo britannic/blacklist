@@ -2,7 +2,7 @@
 
 ## Releases
 
-### Release 1.1.8.0 (February 1, 2020)
+### Release 1.1.8.1 (February 1, 2020)
 
 * Refactor code to conserve RAM in small memory systems (e.g. ER-X)
 * 11Mb less RAM consumption with default lists
