@@ -54,7 +54,6 @@ We greatly appreciate any and all donations - Thank you! Funds go to maintaining
    1. [How do I back up my blacklist configuration and restore it later?](#how-do-i-back-up-my-blacklist-configuration-and-restore-it-later)
    1. [How do I configure dnsmasq?](#how-do-i-configure-dnsmasq)
    1. [How do I configure local file sources instead of internet based ones?](#how-do-i-configure-local-file-sources-instead-of-internet-based-ones)
-   1. [Which blacklist sources are installed by default?](#which-blacklist-sources-are-installed-by-default)
    1. [How do I disable/enable dnsmasq blacklisting?](#how-do-i-disableenable-dnsmasq-blacklisting)
    1. [How do I exclude or include a host or a domain?](#how-do-i-exclude-or-include-a-host-or-a-domain)
    1. [How do I globally exclude or include hosts or a domains?](#how-do-i-globally-exclude-or-include-hosts-or-a-domains)
@@ -234,15 +233,6 @@ sudo apt-get remove --purge edgeos-dnsmasq-blacklist
 
 ## **Frequently Asked Questions**
 
-### **Which blacklist sources are installed by default?**
-
-* Use this CLI shell command to view the current sources or scan the log for previous downloads:
-
-```bash
-show configuration commands | match blacklist | match source
-grep downloaded /var/log/update-dnsmasq.log
-```
-
 ### **How do I disable/enable dnsmasq blacklisting?**
 
 * Use these CLI configure commands:
@@ -299,11 +289,11 @@ commit;save;exit
 
 ### **Which blacklist sources are installed by default?**
 
-* You can use this command in the CLI shell to view the current sources after installation or view the log and see previous downloads:
+* Use this CLI shell command to view the current sources or scan the log for previous downloads:
 
 ```bash
-show configuration commands | match blacklist | match source
-more /var/log/update-dnsmasq.log
+show configuration commands | match source
+grep downloaded /var/log/update-dnsmasq.log
 ```
 
 [[Top]](#contents)
