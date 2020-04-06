@@ -233,6 +233,15 @@ sudo apt-get remove --purge edgeos-dnsmasq-blacklist
 
 ## **Frequently Asked Questions**
 
+### **Which blacklist sources are installed by default?**
+
+* Use this CLI shell command to view the current sources or scan the log for previous downloads:
+
+```bash
+show configuration commands | match blacklist | match source
+grep downloaded /var/log/update-dnsmasq.log
+```
+
 ### **How do I disable/enable dnsmasq blacklisting?**
 
 * Use these CLI configure commands:
