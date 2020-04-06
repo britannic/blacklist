@@ -289,7 +289,7 @@ commit;save;exit
 
 ### **Which blacklist sources are installed by default?**
 
-* Use this CLI shell command to view the current sources or scan the log for previous downloads:
+* Use these CLI shell commands to view the current sources or scan the log for previous downloads:
 
 ```bash
 show configuration commands | match source
