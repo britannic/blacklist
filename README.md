@@ -58,7 +58,7 @@ We greatly appreciate any and all donations - Thank you! Funds go to maintaining
    1. [How do I exclude or include a host or a domain?](#how-do-i-exclude-or-include-a-host-or-a-domain)
    1. [How do I globally exclude or include hosts or a domains?](#how-do-i-globally-exclude-or-include-hosts-or-a-domains)
    1. [How do I use the command line switches?](#how-do-i-use-the-command-line-switches)
-   1. [How do can keep my USG configuration after an upgrade, provision or reboot?](#how-do-can-keep-my-usg-configuration-after-an-upgrade-provision-or-reboot)
+   1. [How do can keep my USG configuration after an upgrade, provision or reboot?](#how-do-i-keep-my-usg-configuration-after-an-upgrade-provision-or-reboot)
    1. [How does whitelisting work?](#how-does-whitelisting-work)
    1. [What is the difference between blocking domains and hosts?](#what-is-the-difference-between-blocking-domains-and-hosts)
    1. [Which blacklist sources are installed by default?](#which-blacklist-sources-are-installed-by-default)
@@ -334,7 +334,7 @@ admicro1.vcmedia.vn
 
 [[Top]](#contents)
 
-### **How do can keep my USG configuration after an upgrade, provision or reboot?**
+### **How do I keep my USG configuration after an upgrade, provision or reboot?**
 
 * Follow these [instructions](https://britannic.github.io/install-edgeos-packages/) on how to automatically install edgeos-dnsmasq-blacklist
 * Generate and download a config.gateway.json file from your USG following these [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
