@@ -243,9 +243,12 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
-	try set service dns forwarding blacklist hosts source YoutubeBlockList description '"Youtube Ad-Block-List for PiHole by HenningVanRaeumle"'
+	# try set service dns forwarding blacklist hosts source YoutubeBlockList description '"Youtube Ad-Block-List for PiHole by HenningVanRaeumle"'
+	# try set service dns forwarding blacklist hosts source YoutubeBlockList prefix '0.0.0.0 '
+	# try set service dns forwarding blacklist hosts source YoutubeBlockList url 'https://raw.githubusercontent.com/HenningVanRaumle/pihole-ytadblock/master/ytadblock.txt'
+	try set service dns forwarding blacklist hosts source YoutubeBlockList description '"OSID Blocklist"'
 	try set service dns forwarding blacklist hosts source YoutubeBlockList prefix '0.0.0.0 '
-	try set service dns forwarding blacklist hosts source YoutubeBlockList url 'https://raw.githubusercontent.com/HenningVanRaumle/pihole-ytadblock/master/ytadblock.txt'
+	try set service dns forwarding blacklist hosts source YoutubeBlockList url 'https://hosts.oisd.nl/'
 	try set system task-scheduler task update_blacklists executable arguments 10800
 	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq-cronjob.sh
 	try set system task-scheduler task update_blacklists interval 1d
