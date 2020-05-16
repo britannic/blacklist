@@ -262,7 +262,7 @@ commit;save;exit
 
 ### **How do I back up my blacklist configuration and restore it later?**
 
-* use the following commands (make a note of the file name):
+* use the following commands (make a note of the file name) in the shell (not in configure):
 
 ```bash
 export DATE=$(date +'%FT%H%M%S'); echo "Backing up blacklist configuration to: /config/user-data/blacklist.${DATE}.cmds"; show configuration commands | grep blacklist > /config/user-data/blacklist.$(date +'%FT%H%M%S').cmds
