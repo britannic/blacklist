@@ -107,7 +107,7 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.8.3-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-### Release 1.1.8.3 (May 22, 2020)
+### Release v1.1.8.3 (May 22, 2020)
 
 * Remove obsolete source Youtube Ad-Block-List for PiHole by HenningVanRaeumle
 * Update documentation
