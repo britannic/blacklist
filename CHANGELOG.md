@@ -2,6 +2,12 @@
 
 ## Releases
 
+### Release 1.1.8.3 (May 22, 2020)
+
+* Remove obsolete source Youtube Ad-Block-List for PiHole by HenningVanRaeumle
+* Update documentation
+* Update blacklist.cfg example file with the latest configuration
+
 ### Release 1.1.8.1 (February 1, 2020)
 
 * Refactor code to conserve RAM in small memory systems (e.g. ER-X)

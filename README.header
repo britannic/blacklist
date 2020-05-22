@@ -107,10 +107,11 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.1.8.3-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-### Release 1.1.8.1 (February 1, 2020)
+### Release 1.1.8.3 (May 22, 2020)
 
-* Refactor code to conserve RAM in small memory systems (e.g. ER-X)
-* 11Mb less RAM consumption with default lists
+* Remove obsolete source Youtube Ad-Block-List for PiHole by HenningVanRaeumle
+* Update documentation
+* Update blacklist.cfg example file with the latest configuration
 
 [[Top]](#contents)
 
