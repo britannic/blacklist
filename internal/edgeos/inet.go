@@ -1,14 +1,13 @@
-// Package edgeos provides methods and structures to retrieve, parse and render EdgeOS configuration data and files.
 package edgeos
 
 import (
+	"fmt"
 	"net"
 )
 
 // Chk_Web() returns true if DNS is working
-func Chk_Web(site string) bool {
-	if _, err := net.LookupIP(site); err != nil {
-		return false
-	}
-	return true
+func Chk_Web(site, port string) bool {
+	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%s", site, port))
+	conn.Close()
+	return err == nil
 }

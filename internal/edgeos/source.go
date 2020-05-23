@@ -1,4 +1,3 @@
-// Package edgeos provides methods and structures to retrieve, parse and render EdgeOS configuration data and files.
 package edgeos
 
 import (

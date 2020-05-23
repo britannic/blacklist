@@ -11,6 +11,9 @@ EdgeOS configuration data and files.
 Package edgeos provides methods and structures to retrieve, parse and render
 EdgeOS configuration data and files.
 
+Package edgeos provides methods and structures to retrieve, parse and render
+EdgeOS configuration data and files.
+
 ## Usage
 
 ```go
@@ -34,6 +37,13 @@ const (
 	True = "true"
 )
 ```
+
+#### func  Chk_Web
+
+```go
+func Chk_Web(site, port string) bool
+```
+Chk_Web() returns true if DNS is working
 
 #### func  GetFile
 
