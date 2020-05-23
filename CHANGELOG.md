@@ -2,6 +2,12 @@
 
 ## Releases
 
+### Release v1.2 (May 25, 2020)
+
+* Add obsolete source OSID Mobile Blocklist
+* Update documentation
+* Check for internet connectivity before running an update
+
 ### Release v1.1.8.3 (May 22, 2020)
 
 * Remove obsolete source Youtube Ad-Block-List for PiHole by HenningVanRaeumle
