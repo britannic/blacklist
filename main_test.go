@@ -210,7 +210,7 @@ func TestProcessObjects(t *testing.T) {
 	c, _ := initEnv()
 	badFileError := `open EinenSieAugenBlick/domains.tasty.blacklist.conf: no such file or directory`
 	Convey("Testing processObjects", t, func() {
-		Convey("Testing that the config is correctly loaded ", func() {
+		Convey("Testing config is correctly loaded ", func() {
 			So(c.String(), ShouldEqual, mainGetConfig)
 			err := processObjects(c,
 				[]e.IFace{

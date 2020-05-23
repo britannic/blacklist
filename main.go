@@ -45,7 +45,11 @@ func main() {
 	c.Debug(fmt.Sprintf("Dumping env variables: %v", c))
 	logNoticef("%v", "Starting blacklist update...")
 
-	logInfo("Removing stale blacklists...")
+	if e.ChkWeb("google.com", "80") != true {
+		logFatalf("%s", "No internet access, aborting")
+	}
+
+	logInfo("Checking for stale blacklists...")
 	if err = removeStaleFiles(c); err != nil {
 		logFatalf("%v", err.Error())
 	}

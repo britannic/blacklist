@@ -29,12 +29,12 @@ const (
 )
 ```
 
-#### func  Chk_Web
+#### func  ChkWeb
 
 ```go
-func Chk_Web(site, port string) bool
+func ChkWeb(site, port string) bool
 ```
-Chk_Web() returns true if DNS is working
+ChkWeb() returns true if DNS is working
 
 #### func  GetFile
 

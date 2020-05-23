@@ -2,11 +2,13 @@ package edgeos
 
 import (
 	"net"
+	"time"
 )
 
-// Chk_Web() returns true if DNS is working
-func Chk_Web(site, port string) bool {
-	conn, err := net.Dial("tcp", net.JoinHostPort(site, port))
+// ChkWeb() returns true if DNS is working
+func ChkWeb(site, port string) bool {
+	timeOut := 3 * time.Second
+	conn, err := net.DialTimeout("tcp4", net.JoinHostPort(site, port), timeOut)
 	conn.Close()
 	return err == nil
 }
