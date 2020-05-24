@@ -4,7 +4,7 @@
 
 ### Release v1.2 (May 25, 2020)
 
-* Add obsolete source OSID Mobile Blocklist
+* Add source OSID Mobile Blocklist
 * Update documentation
 * Check for internet connectivity before running an update
 
