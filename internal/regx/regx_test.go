@@ -28,7 +28,8 @@ func TestGet(t *testing.T) {
 
 func TestLeafString(t *testing.T) {
 	Convey("Testing LeafString()", t, func() {
-		So(regx.Leaf(regx.Leaf(1)).String(), ShouldEqual, "Leaf(1)")
+		var i regx.Leaf = 1000
+		So(i.String(), ShouldEqual, "CMNT")
 	})
 }
 
