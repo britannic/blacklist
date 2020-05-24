@@ -32,7 +32,7 @@ const (
 #### func  ChkWeb
 
 ```go
-func ChkWeb(site, port string) bool
+func ChkWeb(site string, port int) bool
 ```
 ChkWeb() returns true if DNS is working
 
