@@ -1,11 +1,6 @@
 theme: jekyll-theme-cayman
 encoding: UTF-8
-
 plugins:
-    - jekyll-relative-links
-  relative_links:
-    enabled: true
-    collections: true
   include:
     # - README.md
     - CHANGELOG.md
