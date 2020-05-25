@@ -20,6 +20,7 @@ var (
 	initEnvirons = initEnv
 	prog         = basename(os.Args[0])
 	prefix       = fmt.Sprintf("%s: ", prog)
+	defCfgFile   = "/config/user-data/blacklist.cfg"
 )
 
 func main() {

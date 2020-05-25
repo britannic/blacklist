@@ -346,30 +346,6 @@ func TestBuild(t *testing.T) {
 	})
 }
 
-// func TestCommandLineArgs(t *testing.T) {
-// 	Convey("Testing command line arguments", t, func() {
-// 		origArgs := os.Args
-// 		defer func() { os.Args = origArgs }()
-// 		act := new(bytes.Buffer)
-// 		exitCmd = func(int) {}
-// 		exp := vanillaArgs
-// 		if IsDrone() {
-// 			exp = vanillaArgsOnDrone
-// 		}
-
-// 		prog := path.Base(os.Args[0])
-// 		os.Args = []string{prog, "-convey-json", "-h"}
-
-// 		o := getOpts()
-// 		o.Init("blacklist", mflag.ContinueOnError)
-// 		o.SetOutput(act)
-// 		o.Parse(cleanArgs(os.Args[1:]))
-// 		o.setArgs()
-
-// 		So(act.String(), ShouldEqual, exp)
-// 	})
-// }
-
 func TestGetCFG(t *testing.T) {
 	Convey("Testing getCFG()", t, func() {
 		exitCmd = func(int) {}
@@ -383,6 +359,12 @@ func TestGetCFG(t *testing.T) {
 		c = o.initEdgeOS()
 		c.Blacklist(o.getCFG(c))
 		So(c.String(), ShouldEqual, "{\n  \"nodes\": [{\n  }]\n}")
+
+		origDefCfgFile := defCfgFile
+		defCfgFile = "internal/testdata/config.test.boot"
+		c.Blacklist(o.getCFG(c))
+		So(c.String(), ShouldEqual, mainGetConfig)
+		defCfgFile = origDefCfgFile
 	})
 }
 

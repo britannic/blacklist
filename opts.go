@@ -46,6 +46,11 @@ func cleanArgs(args []string) (r []string) {
 
 // getCFG returns a e.ConfLoader
 func (o *opts) getCFG(c *e.Config) e.ConfLoader {
+	if *o.File == ""  {
+		if _, err := os.Stat(defCfgFile); !os.IsNotExist(err) {
+			*o.File = defCfgFile	
+		}
+	} 
 	if _, err := os.Stat(*o.File); !os.IsNotExist(err) {
 		var (
 			err error
