@@ -2,11 +2,13 @@
 
 ## Releases
 
-### Release v1.2 (May 25, 2020)
+### Release v1.2.2 (May 25, 2020)
 
 * Add source OSID Mobile Blocklist
 * Update documentation
 * Check for internet connectivity before running an update
+* Check and load /config/user-data/blacklist.cfg in preference to config.boot
+* Fix bug in configure preventing use of the latest commit
 
 ### Release v1.1.8.3 (May 22, 2020)
 
