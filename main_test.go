@@ -355,16 +355,23 @@ func TestGetCFG(t *testing.T) {
 		c.Blacklist(o.getCFG(c))
 		So(c.String(), ShouldEqual, mainGetConfig)
 
-		*o.MIPS64 = "amd64"
-		c = o.initEdgeOS()
-		c.Blacklist(o.getCFG(c))
-		So(c.String(), ShouldEqual, "{\n  \"nodes\": [{\n  }]\n}")
-
 		origDefCfgFile := defCfgFile
 		defCfgFile = "internal/testdata/config.test.boot"
 		c.Blacklist(o.getCFG(c))
 		So(c.String(), ShouldEqual, mainGetConfig)
 		defCfgFile = origDefCfgFile
+
+		origFile := *o.File
+		*o.File = "internal/testdata/config.test.boot"
+		c.Blacklist(o.getCFG(c))
+		So(c.String(), ShouldEqual, mainGetConfig)
+		*o.File = origFile
+
+		*o.MIPS64 = "amd64"
+		c = o.initEdgeOS()
+		c.Blacklist(o.getCFG(c))
+		So(c.String(), ShouldEqual, "{\n  \"nodes\": [{\n  }]\n}")
+
 	})
 }
 

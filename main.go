@@ -20,7 +20,7 @@ var (
 	initEnvirons = initEnv
 	prog         = basename(os.Args[0])
 	prefix       = fmt.Sprintf("%s: ", prog)
-	defCfgFile   = "/config/user-data/blacklist.cfg"
+	defCfgFile   = "/config/user-data/blacklist.failover.cfg"
 )
 
 func main() {
@@ -97,13 +97,21 @@ func initEnv() (c *e.Config, err error) {
 	o := getOpts()
 	o.setArgs()
 	c = o.initEdgeOS()
-	if err = c.Blacklist(o.getCFG(c)); err != nil {
-		fmt.Fprintf(os.Stderr, "Removing stale dnsmasq blacklist files, because %v\n", err.Error())
-		if err = files(c).Remove(); err != nil {
-			fmt.Fprintf(os.Stderr, "%v", err.Error())
+
+	if *o.File == "" {
+		if err = c.Blacklist(o.getCFG(c)); err != nil {
+			if _, err = os.Stat(defCfgFile); !os.IsNotExist(err) {
+				*o.File = defCfgFile
+			}
+			if err = c.Blacklist(o.getCFG(c)); err != nil {
+				fmt.Fprintf(os.Stderr, "Removing stale dnsmasq blacklist files, because %v\n", err.Error())
+				if err = files(c).Remove(); err != nil {
+					fmt.Fprintf(os.Stderr, "%v", err.Error())
+				}
+				reloadDNS(c)
+				exitCmd(0)
+			}
 		}
-		reloadDNS(c)
-		exitCmd(0)
 	}
 	return c, err
 }

@@ -2,7 +2,11 @@
 
 ## Releases
 
-### Release v1.2.2 (May 25, 2020)
+### Prerelease v1.2.3 (May 25, 2020)
+
+* Only load failover /config/user-data/blacklist.failover.cfg if API config fails
+
+### Prerelease v1.2.2 (May 25, 2020)
 
 * Add source OSID Mobile Blocklist
 * Update documentation
