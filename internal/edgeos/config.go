@@ -240,9 +240,8 @@ func (c tree) keyExists(k string) bool {
 func (c *Config) load(act, lvl string) ([]byte, error) {
 	// nolint
 	cmd := exec.Command(c.Bash)
-	s := fmt.Sprintf(
-		"%v %v %v %v", c.API, apiCMD(act, c.InSession()), lvl, c.mode(),
-	)
+	s := fmt.Sprintf("%v %v %v %v", c.API, apiCMD(act, c.InSession()), c.mode(), lvl)
+	c.Debug(fmt.Sprintf("%v %v %v %v", c.API, apiCMD(act, c.InSession()), c.mode(), lvl))
 	cmd.Stdin = strings.NewReader(s)
 	c.Debug(fmt.Sprintf("Running shell command: %v", s))
 	c.Debug(fmt.Sprintf("Config session is %t", c.InSession()))
@@ -308,7 +307,7 @@ func (c *Config) mode() string {
 	if c.InSession() {
 		return "--show-working-only"
 	}
-	return "--show-active-only"
+	return ""
 }
 
 func (c *Config) addTnodeSource(n string) {
