@@ -2,6 +2,10 @@
 
 ## Releases
 
+### Prerelease v1.2.3.2 (May 25, 2020)
+
+* Code refactor: remove obsolete functions and tests
+
 ### Prerelease v1.2.3.1 (May 25, 2020)
 
 * Fix bug when in level edit mode that caused update-dnsmasq not loading active config

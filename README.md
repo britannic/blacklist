@@ -107,10 +107,9 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.2.3.2-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-### Prerelease v1.2.3.1 (May 25, 2020)
+### Prerelease v1.2.3.2 (May 25, 2020)
 
-* Fix bug when in level edit mode that caused update-dnsmasq not loading active config
-  * i.e. edit service dns forwarding blacklis
+* Code refactor: remove obsolete functions and tests
 
 [[Top]](#contents)
 
