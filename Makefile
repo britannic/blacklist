@@ -42,6 +42,7 @@ OLDVER 			 = $(shell cat ./OLDVERSION)
 PAYLOAD 		 = ./.payload
 README 			 = README.md
 READMEHDR 		 = README.header
+GITPAGES		 = docs/index.md
 RELEASE 		 = s/Release-v$(OLDVER)-green.svg/Release-v$(VER)-green.svg/g
 SCRIPTS 		 = /config/scripts
 TAG 			 = "v$(VER)"
@@ -191,6 +192,7 @@ pkg-mipsel: deps mipsle coverage copyright docs readme ; @ $(info building MIPSL
 # .PHONY: readme 
 readme: version ; @ $(info building READMEs…) ## Build README
 	cat $(READMEHDR) > $(README)
+	cp $(README) $(GITPAGES)
 	# $(GODOC2MD) $(BASE) >> $(README)
 
 .PHONY: simplify
