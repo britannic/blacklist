@@ -29,7 +29,6 @@ type Env struct {
 	File     string        `json:"File,omitempty"`
 	FnFmt    string        `json:"File name fmt,omitempty"`
 	InCLI    string        `json:"-"`
-	Level    string        `json:"CLI Path,omitempty"`
 	Method   string        `json:"HTTP method,omitempty"`
 	Pfx      dnsPfx        `json:"Prefix,omitempty"`
 	Test     bool          `json:"Test,omitempty"`
@@ -182,15 +181,6 @@ func InCLI(s string) Option {
 		previous := c.InCLI
 		c.InCLI = s
 		return InCLI(previous)
-	}
-}
-
-// Level sets the EdgeOS API CLI level
-func Level(s string) Option {
-	return func(c *Config) Option {
-		previous := c.Level
-		c.Level = s
-		return Level(previous)
 	}
 }
 

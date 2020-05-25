@@ -495,7 +495,6 @@ func TestInitEdgeOS(t *testing.T) {
 	"Exc": {},
 	"dnsmasq fileExt.": "blacklist.conf",
 	"File name fmt": "%v/%v.%v.%v",
-	"CLI Path": "service dns forwarding",
 	"HTTP method": "GET",
 	"Prefix": {},
 	"Timeout": 30000000000,

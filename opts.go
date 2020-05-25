@@ -113,7 +113,6 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.File(*o.File),
 		e.FileNameFmt("%v/%v.%v.%v"),
 		e.InCLI("inSession"),
-		e.Level("service dns forwarding"),
 		e.Method("GET"),
 		e.Prefix("address=", "server="),
 		e.Logger(log),

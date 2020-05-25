@@ -252,7 +252,6 @@ type Env struct {
 	File     string        `json:"File,omitempty"`
 	FnFmt    string        `json:"File name fmt,omitempty"`
 	InCLI    string        `json:"-"`
-	Level    string        `json:"CLI Path,omitempty"`
 	Method   string        `json:"HTTP method,omitempty"`
 	Pfx      dnsPfx        `json:"Prefix,omitempty"`
 	Test     bool          `json:"Test,omitempty"`
@@ -661,13 +660,6 @@ FileNameFmt sets the EdgeOS configuration file name format
 func InCLI(s string) Option
 ```
 InCLI sets the CLI inSession command
-
-#### func  Level
-
-```go
-func Level(s string) Option
-```
-Level sets the EdgeOS API CLI level
 
 #### func  Logger
 

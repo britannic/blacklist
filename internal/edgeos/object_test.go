@@ -25,22 +25,6 @@ func TestObjectsAddObj(t *testing.T) {
 		o.GetList().addObj(c, rootNode)
 
 		So(o, ShouldResemble, exp)
-		// tests := []struct {
-		// 	name string
-		// 	rEnv *Env
-		// 	rx     []*source
-		// 	c    *Config
-		// 	node string
-		// }{
-		// // TODO: Add test cases.
-		// }
-		// for _, tt := range tests {
-		// 	o := &Objects{
-		// 		Env: tt.rEnv,
-		// 	src:     tt.rx,
-		// 	}
-		// 	o.addObj(tt.c, tt.node)
-		// }
 	})
 }
 

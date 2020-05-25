@@ -15,7 +15,6 @@ func TestLoad(t *testing.T) {
 			API("/bin/cli-shell-api"),
 			Bash("/bin/bash"),
 			InCLI("inSession"),
-			Level("service dns forwarding"),
 		)
 
 		_, err := c.load("zBroken")
