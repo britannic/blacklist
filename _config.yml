@@ -7,5 +7,5 @@ plugins:
     enabled: true
     collections: true
   include:
-    - README.md
+    # - README.md
     - CHANGELOG.md
