@@ -18,10 +18,10 @@ func TestLoad(t *testing.T) {
 			Level("service dns forwarding"),
 		)
 
-		_, err := c.load("zBroken", "service dns forwarding")
+		_, err := c.load("zBroken")
 		So(err, ShouldNotBeNil)
 
-		_, err = c.load("showConfig", "")
+		_, err = c.load("showConfig")
 		So(err, ShouldNotBeNil)
 
 		r := CFGcli{Config: c}
@@ -29,7 +29,7 @@ func TestLoad(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(string(act), ShouldEqual, "")
 
-		cfg, err := c.load("echo", "true")
+		cfg, err := c.load("echo")
 		So(err, ShouldNotBeNil)
 		So(cfg, ShouldResemble, []byte{})
 	})

@@ -237,11 +237,13 @@ func (c tree) keyExists(k string) bool {
 }
 
 // load reads the config using the EdgeOS/VyOS cli-shell-api
-func (c *Config) load(act, lvl string) ([]byte, error) {
+func (c *Config) load(act string) ([]byte, error) {
 	// nolint
 	cmd := exec.Command(c.Bash)
-	s := fmt.Sprintf("%v %v %v %v", c.API, apiCMD(act, c.InSession()), c.mode(), lvl)
-	c.Debug(fmt.Sprintf("%v %v %v %v", c.API, apiCMD(act, c.InSession()), c.mode(), lvl))
+	s := fmt.Sprintf("%v %v %v", c.API, apiCMD(act, c.InSession()), c.mode())
+	c.Debug(fmt.Sprintf("%v %v %v", c.API, apiCMD(act, c.InSession()), c.mode()))
+	// fmt.Printf("Session[%v]: %v %v %v", c.InSession(), c.API, apiCMD(act, c.InSession()), c.mode())
+	// os.Exit(0)
 	cmd.Stdin = strings.NewReader(s)
 	c.Debug(fmt.Sprintf("Running shell command: %v", s))
 	c.Debug(fmt.Sprintf("Config session is %t", c.InSession()))
