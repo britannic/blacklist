@@ -46,11 +46,11 @@ func cleanArgs(args []string) (r []string) {
 
 // getCFG returns a e.ConfLoader
 func (o *opts) getCFG(c *e.Config) e.ConfLoader {
-	if *o.File == ""  {
+	if *o.File == "" {
 		if _, err := os.Stat(defCfgFile); !os.IsNotExist(err) {
-			*o.File = defCfgFile	
+			*o.File = defCfgFile
 		}
-	} 
+	}
 	if _, err := os.Stat(*o.File); !os.IsNotExist(err) {
 		var (
 			err error
@@ -72,8 +72,6 @@ func (o *opts) getCFG(c *e.Config) e.ConfLoader {
 		return &e.CFGcli{Config: c}
 	}
 	return &e.CFGstatic{Config: c, Cfg: tdata.Live}
-	// return &e.CFGstatic{Config: c, Cfg: tdata.Get("none")}
-
 }
 
 // getOpts returns command line flags and values or displays help
