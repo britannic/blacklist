@@ -4,7 +4,7 @@
 
 ### Prerelease v1.2.3.1 (May 25, 2020)
 
-* Fix bug when in level edit mode that caused update-dnsmasq no loading active config
+* Fix bug when in level edit mode that caused update-dnsmasq not loading active config
 ** i.e. edit service dns forwarding blacklist
 
 ### Prerelease v1.2.3 (May 25, 2020)

@@ -109,7 +109,7 @@ modification, are permitted provided that the following conditions are met:
 
 ### Prerelease v1.2.3.1 (May 25, 2020)
 
-* Fix bug when in level edit mode that caused update-dnsmasq no loading active config
+* Fix bug when in level edit mode that caused update-dnsmasq not loading active config
 ** i.e. edit service dns forwarding blacklist
 
 [[Top]](#contents)
