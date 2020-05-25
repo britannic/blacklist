@@ -33,6 +33,7 @@ COVERALLS_TOKEN	\
 				 = W6VHc8ZFpwbfTzT3xoluEWbKkrsKT1w25
 # DATE=$(shell date -u '+%Y-%m-%d_%I:%M:%S%p')
 BADGE 			 = s/version-v$(OLDVER)-green.svg/version-v$(VER)-green.svg/g
+CHANGELOG		 = CHANGELOG.md
 DATE			 = $(shell date +'%FT%H%M%S')
 FLAGS 			 = -s -w
 GIT				 = $(shell git rev-parse --short HEAD)
@@ -70,11 +71,6 @@ mac: amd64
 
 all: AllOfIt ; @ $(info making everything...) ## Build everything
 AllOfIt: clean deps amd64 mips coverage copyright docs readme pkgs 
-
-# Tools
-# DEP				 = $(BIN)/dep
-# $(BIN)/dep: ; @ $(info $(M) building dep…) 
-# 	$(Q) $(GO) get github.com/golang/dep/cmd/dep
 
 GODOC2MD		= $(BIN)/godocdown
 $(BIN)/godocdown: ; @ $(info $(M) building godocdown…) @ ## Build godocdown
@@ -192,7 +188,7 @@ pkg-mipsel: deps mipsle coverage copyright docs readme ; @ $(info building MIPSL
 # .PHONY: readme 
 readme: version ; @ $(info building READMEs…) ## Build README
 	cat $(READMEHDR) > $(README)
-	cp $(README) $(GITPAGES)
+	cp $(CHANGELOG) $(GITPAGES)
 	# $(GODOC2MD) $(BASE) >> $(README)
 
 .PHONY: simplify

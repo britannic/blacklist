@@ -1,417 +1,142 @@
-# **UBNT edgeos-dnsmasq-blacklist dnsmasq DNS Blacklisting and Redirection**
+# Changelog
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt "View the software license here")[![Version](https://img.shields.io/badge/version-v1.2.3.2-green.svg)](https://github.com/britannic/blacklist "Latest version")[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist  "Go documentation")[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist  "Build status for this version")[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master "")](https://coveralls.io/github/britannic/blacklist?branch=master "Test coverage status for this version")[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist "Quality of Go code for this version")
-
-Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/EdgeRouter/DNS-Adblocking-amp-Blacklisting-dnsmasq-Configuration/td-p/2215008/jump-to/first-unread-message "Follow the conversation about this software in the EdgeRouter forum (https://community.ubnt.com/t5/EdgeRouter/)")
-
-## Donations and Sponsorship
-
-Please show your thanks by donating to the project using [Square Cash](https://cash.me/$HelmRockSecurity/ "Securely send and receive cash without fees using Square Cash") or [PayPal](https://www.paypal.me/helmrocksecurity/)
-
-[![Donate](https://img.shields.io/badge/Donate-%245-orange.svg?style=plastic)](https://cash.me/$HelmRockSecurity/5 "Give $5 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2410-red.svg?style=plastic)](https://cash.me/$HelmRockSecurity/10 "Give $10 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2415-yellow.svg?style=plastic)](https://cash.me/$HelmRockSecurity/15 "Give $15 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2420-yellowgreen.svg?style=plastic)](https://cash.me/$HelmRockSecurity/20 "Give $20 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2425-brightgreen.svg?style=plastic)](https://cash.me/$HelmRockSecurity/25 "Give $25 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2450-ff69b4.svg?style=plastic)](https://cash.me/$HelmRockSecurity/50 "Give $50 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%24100-blue.svg?style=plastic)](https://cash.me/$HelmRockSecurity/100 "Give $100 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-Custom%20Amount-4B0082.svg?style=plastic)](https://cash.me/$HelmRockSecurity/ "Choose your own donation amount using Square Cash (free money transfer)")
-
-[![Donate](https://img.shields.io/badge/Donate-%245-orange.svg?style=plastic)](https://paypal.me/helmrocksecurity/5 "Give $5 using PayPal (PayPal money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2410-red.svg?style=plastic)](https://paypal.me/helmrocksecurity/10 "Give $10 using PayPal (PayPal money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2415-yellow.svg?style=plastic)](https://paypal.me/helmrocksecurity/15 "Give $15 using PayPal (PayPal money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2420-yellowgreen.svg?style=plastic)](https://paypal.me/helmrocksecurity/20 "Give $20 using PayPal (PayPal money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2425-brightgreen.svg?style=plastic)](https://paypal.me/helmrocksecurity/25 "Give $25 using PayPal (PayPal money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2450-ff69b4.svg?style=plastic)](https://paypal.me/helmrocksecurity/50 "Give $50 using PayPal (PayPal money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%24100-blue.svg?style=plastic)](https://paypal.me/helmrocksecurity/100 "Give $100 using PayPal (PayPal money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-Custom%20Amount-4B0082.svg?style=plastic)](https://paypal.me/helmrocksecurity/ "Choose your own donation amount using PayPal (PayPal money transfer)")
-
-We greatly appreciate any and all donations - Thank you! Funds go to maintaining development servers and networks.
-
-## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti Networks®
-
-## **Contents**
-
-1. [Overview](#overview)
-1. [Donate](#donations-and-sponsorship)
-1. [Copyright](#copyright)
-1. [Licenses](#licenses)
-1. [Latest Version](#latest-version)
-1. [Change Log](https://github.com/britannic/blacklist/blob/master/CHANGELOG.md)
-1. [Features](#features)
-1. [Compatibility](#compatibility)
-1. [Installation](#installation)
-    1. [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp-er4-unifi-gateway-3--unifi-gateway-4)
-    1. [Using dpkg](#dpkg-installation---best-for-disk-space-constrained-routers)
-1. [Upgrade](#upgrade)
-1. [Reconfigure](#reconfigure)
-1. [Removal](#removal)
-1. [Frequently Asked Questions](#frequently-asked-questions)
-   1. [Can I donate to project?](#donations-and-sponsorship)
-   1. [Does the install backup my blacklist configuration before deleting it?](#does-the-install-backup-my-blacklist-configuration-before-deleting-it)
-   1. [Does update-dnsmasq run automatically?](#does-update-dnsmasq-run-automatically)
-   1. [How do I add or delete sources?](#how-do-i-add-or-delete-sources)
-   1. [How do I back up my blacklist configuration and restore it later?](#how-do-i-back-up-my-blacklist-configuration-and-restore-it-later)
-   1. [How do I configure dnsmasq?](#how-do-i-configure-dnsmasq)
-   1. [How do I configure local file sources instead of internet based ones?](#how-do-i-configure-local-file-sources-instead-of-internet-based-ones)
-   1. [How do I disable/enable dnsmasq blacklisting?](#how-do-i-disableenable-dnsmasq-blacklisting)
-   1. [How do I exclude or include a host or a domain?](#how-do-i-exclude-or-include-a-host-or-a-domain)
-   1. [How do I globally exclude or include hosts or a domains?](#how-do-i-globally-exclude-or-include-hosts-or-a-domains)
-   1. [How do I use the command line switches?](#how-do-i-use-the-command-line-switches)
-   1. [How do can keep my USG configuration after an upgrade, provision or reboot?](#how-do-i-keep-my-usg-configuration-after-an-upgrade-provision-or-reboot)
-   1. [How does whitelisting work?](#how-does-whitelisting-work)
-   1. [What is the difference between blocking domains and hosts?](#what-is-the-difference-between-blocking-domains-and-hosts)
-   1. [Which blacklist sources are installed by default?](#which-blacklist-sources-are-installed-by-default)
-
-## **Overview**
-
-EdgeMax dnsmasq DNS blacklisting and redirection is inspired by the users at [EdgeMAX Community](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX/)
-
-[[Top]](#contents)
-
-## **Copyright**
-
-* Copyright © 2020 [Helm Rock Consulting](https://www.helmrock.com/ "Visit Helm Rock Consulting at https://www.helmrock.com/")
-
-[[Top]](#contents)
-
-## **Licenses**
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-1. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-    ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-    The views and conclusions contained in the software and documentation are those
-    of the authors and should not be interpreted as representing official policies,
-    either expressed or implied, of the FreeBSD Project.
-
-[[Top]](#contents)
-
-## **Latest Version**
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.2.3.2-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
+## Releases
 
 ### Prerelease v1.2.3.2 (May 25, 2020)
 
 * Code refactor: remove obsolete functions and tests
 
-[[Top]](#contents)
+### Prerelease v1.2.3.1 (May 25, 2020)
 
-## **Change Log**
+* Fix bug when in level edit mode that caused update-dnsmasq not loading active config
+  * i.e. edit service dns forwarding blacklist
 
-* See [changelog](https://github.com/britannic/blacklist/blob/master/CHANGELOG.md) for details.
+### Prerelease v1.2.3 (May 25, 2020)
 
-[[Top]](#contents)
+* Only load failover /config/user-data/blacklist.failover.cfg if API config fails
 
-## **Features**
+### Prerelease v1.2.2 (May 25, 2020)
 
-* Adds DNS blacklisting integration to the EdgeRouter configuration
-* Generates configuration files used directly by dnsmasq to redirect dns lookups
-* Integrated with the EdgeMax OS CLI
-* Any FQDN in the blacklist will force dnsmasq to return the configured dns redirect IP address
+* Add source OSID Mobile Blocklist
+* Update documentation
+* Check for internet connectivity before running an update
+* Check and load /config/user-data/blacklist.cfg in preference to config.boot
+* Fix bug in configure preventing use of the latest commit
 
-[[Top]](#contents)
+### Release v1.1.8.3 (May 22, 2020)
 
-## **Compatibility**
+* Remove obsolete source Youtube Ad-Block-List for PiHole by HenningVanRaeumle
+* Update documentation
+* Update blacklist.cfg example file with the latest configuration
 
-* edgeos-dnsmasq-blacklist has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X, ER4 UniFi Security Gateway USG3 and USG4 routers
-  * EdgeMAX versions: v1.9.7+hotfix.4-v2.0.8, UniFi: v4.4.12-v4.4.44.5213871
+### Release v1.1.8.1 (February 1, 2020)
 
-[[Top]](#contents)
+* Refactor code to conserve RAM in small memory systems (e.g. ER-X)
+* 11Mb less RAM consumption with default lists
 
-## **Installation**
+### Release v1.1.7.8 (October 15, 2019)
 
-* [Using apt-get](#apt-get-installation---erlite-3-erpoe-5-er-x-er-x-sfp-er4-unifi-gateway-3--unifi-gateway-4) - works for all routers
-* [Using dpkg](#dpkg-installation---best-for-disk-space-constrained-routers) - best for disk space constrained routers
+* Fix issues with fpm running under Ruby 2.6.5 and aws repos
 
-[[Top]](#contents)
+### Release v1.1.7.7 (October 15, 2019)
 
-### **apt-get Installation - ERLite-3, ERPoe-5, ER-X, ER-X-SFP, ER4, UniFi-Gateway-3 & UniFi-Gateway-4**
+* Removed dormant source: "abuse.ch ZeuS domain blocklist"
 
-* Add the blacklist debian package repository using the router's CLI shell
+### Release v1.1.7.6 (August 19, 2019)
 
-```bash
-configure
-set system package repository blacklist components main
-set system package repository blacklist description 'Britannic blacklist debian stretch repository'
-set system package repository blacklist distribution stretch
-set system package repository blacklist url 'https://raw.githubusercontent.com/britannic/debian-repo/master/blacklist/'
-commit;save;exit
-```
+* Removed dormant source: "YoutubeAdsBlacklist"
 
-* Add the GPG signing key
+### Release v1.1.7.5 (April 24, 2019)
 
-```bash
-sudo curl -L https://raw.githubusercontent.com/britannic/debian-repo/master/blacklist/public.key | sudo apt-key add -
-```
+* Debian repository fix
 
-* Update the system repositorities and install edgeos-dnsmasq-blacklist
+### Release v1.1.7.4 (April 11, 2019)
 
-```bash
-sudo apt-get update && sudo apt-get install edgeos-dnsmasq-blacklist
-```
+* Added support for EdgeOS 2.0.1
+* Fixed config session detection bug
+* Ensure all dnsmasq blacklist configuration files are removed for blacklist config delete and package removal
+* Force dnsmasq restart after blacklist config delete
 
-[[Top]](#contents)
+### Release v1.1.6.11 (March 9,2019)
 
-## **dpkg Installation - best for disk space constrained routers**
+* Fix for issue #8, /etc/dnsmasq.d/*blacklist.conf files aren't deleted after uninstallation
 
-### **EdgeRouter ERLite-3, ERPoe-5, ER4, UniFi-Gateway-3 & UniFi-Gateway-4**
+### Release v1.1.6.10 (February 3,2019)
 
-```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.2.3.2_mips.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.2.3.2_mips.deb
-```
+* Removed "try set service dns forwarding blacklist disabled false" from the installation setup to prevent false positive issue in EdgeOS 2.0
+* Forced update_dnsmasq to run after installation, to resolve non-detection of a new configuration in EdgeOS 2.0
 
-[[Top]](#contents)
+### Release v1.1.6.9 (January 27, 2019)
 
-### **EdgeRouter ER-X & ER-X-SFP**
+* Added adjust.com to domain exclusions as this domain is being used by Microsoft for guiding users through a two-factor authentication setup process.
 
-* Ensure the router has enough space, by removing unnecessary files
+### Release v1.1.6.8 (January 20, 2019)
 
-```bash
-sudo apt-get clean cache
-delete system image
-```
+* Removed "set service dns forwarding blacklist disabled false" as it is broken in EdgeOS 2.0.0
 
-* Now download and install the edgeos-dnsmasq-blacklist package
+### Release v1.1.6.7 (January 13, 2019)
+
+* Removed hostfile.org as it is too agressive and causes a lot of false positive entries
+
+### Release v1.1.6.3 (June 11, 2018)
+
+* Removed domain source Malc0de as it is posting false positives with no means to notify the maintainer
+* Added log message for sources that have no records extracted
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.2.3.2_mipsel.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.2.3.2_mipsel.deb
+[Source]: no records processed - check source and/or configuration
 ```
 
-[[Top]](#contents)
-
-## **Upgrade**
-
-* If the repository is set up and you are using apt-get:
+* Any source without records extracted, will still have a file written, but it will contain a message
 
 ```bash
-sudo apt-get update && sudo apt-get install --only-upgrade edgeos-dnsmasq-blacklist
+# NO DATA WRITTEN - CHECK WHITELIST EXCLUSIONS
 ```
 
-* Note, if you are using dpkg, it cannot upgrade packages, so follow these [instructions](#dpkg-installation---best-for-disk-space-constrained-routers) and the previous package version will be automatically removed before the new package version is installed
+### Release v1.1.6.2 (April 24, 2018)
 
-[[Top]](#contents)
-
-## **Reconfigure**
-
-* If the Unifi Security Gateway has been re-provisioned you might need to re-enable the blacklists, in order to do so run:
+* Code refactor
+* Global whitelist and blacklist configuration files now have their own prefix: "roots" i.e.
 
 ```bash
-sudo dpkg-reconfigure edgeos-dnsmasq-blacklist
+roots.global-blacklisted-domains.blacklist.conf
 ```
 
-[[Top]](#contents)
+### Release v1.1.6.1 (April 13, 2018)
 
-## **Removal**
+* Suppress log messages for predefined includes (blacklists) and excludes (whitelists)
+* Changed Debian pre-remove and post-install script algorithm to detect an existing installation and reinstall a default configuration if none exists
 
-### **EdgeMAX - All Platforms**
+### Release v1.1.5 (April 10, 2018)
 
-```bash
-sudo apt-get remove --purge edgeos-dnsmasq-blacklist
-```
+* Add build architecture and OS information to "-version" argument
+* Code refactor and parsing algorithm updates
 
-[[Top]](#contents)
+### Release v1.1.4 (April 8, 2018)
 
-## **Frequently Asked Questions**
+* Performance enhancements for source entry processing
+* Improved data counter metrics for found, extracted and dropped records
 
-### **How do I disable/enable dnsmasq blacklisting?**
+### Release v1.1.3 (April 5, 2018)
 
-* Use these CLI configure commands:
-* Disable:
+* Document updates
 
-```bash
-configure
-set service dns forwarding blacklist disabled true
-commit;save;exit
-```
+### Release v1.1.2 (April 5, 2018)
 
-* Enable:
+* Fixed bug that overwrote user configured blacklist settings during an upgrade
 
-```bash
-configure
-set service dns forwarding blacklist disabled false
-commit;save;exit
-```
+### Release v1.1.1 (April 4, 2018)
 
-[[Top]](#contents)
+* Fixed bug that prevented pre-configured included hosts being correctly blacklisted
 
-### **Does the install backup my blacklist configuration before deleting it?**
+### Release v1.1.0 (April 3, 2018)
 
-* If a blacklist configuration already exists, the install routine will automatically back it up to /config/user-data/blacklist.$(date +'%FT%H%M%S').cmds
-
-[[Top]](#contents)
-
-### **How do I back up my blacklist configuration and restore it later?**
-
-* use the following commands (make a note of the file name) in the shell (not in configure):
-
-```bash
-export DATE=$(date +'%FT%H%M%S'); echo "Backing up blacklist configuration to: /config/user-data/blacklist.${DATE}.cmds"; show configuration commands | grep blacklist > /config/user-data/blacklist.$(date +'%FT%H%M%S').cmds
-```
-
-* After installing the latest version, you can merge your backed up configuration:
-
-```bash
-configure
-.  /config/user-data/blacklist.[date string].cmds
-commit;save;exit
-```
-
-* If you prefer to delete the default configuration and restore your previous configuration, run these commands:
-
-```bash
-configure
-delete service dns forwarding blacklist
-.  /config/user-data/blacklist.[date string].cmds
-commit;save;exit
-```
-
-[[Top]](#contents)
-
-### **Which blacklist sources are installed by default?**
-
-* Use these CLI shell commands to view the current sources or scan the log for previous downloads:
-
-```bash
-show configuration commands | match source
-grep downloaded /var/log/update-dnsmasq.log
-```
-
-[[Top]](#contents)
-
-### **How do I configure local file sources instead of internet based ones?**
-
-* Use these commands to configure a local file source
-
-```bash
-set service dns forwarding blacklist hosts source myhosts description 'Blacklist file source'
-set service dns forwarding blacklist hosts source myhosts dns-redirect-ip 0.0.0.0
-set service dns forwarding blacklist hosts source myhosts file /config/user-data/blist.hosts.src
-```
-
-* File contents example for /config/user-data/blist.hosts.src:
-
-```bash
-gsmtop.net
-click.buzzcity.net
-ads.admoda.com
-stats.pflexads.com
-a.glcdn.co
-wwww.adleads.com
-ad.madvertise.de
-apps.buzzcity.net
-ads.mobgold.com
-android.bcfads.com
-req.appads.com
-show.buzzcity.net
-api.analytics.omgpop.com
-r.edge.inmobicdn.net
-www.mmnetwork.mobi
-img.ads.huntmad.com
-creative1cdn.mobfox.com
-admicro2.vcmedia.vn
-admicro1.vcmedia.vn
-```
-
-[[Top]](#contents)
-
-### **How do I keep my USG configuration after an upgrade, provision or reboot?**
-
-* Follow these [instructions](https://britannic.github.io/install-edgeos-packages/) on how to automatically install edgeos-dnsmasq-blacklist
-* Generate and download a config.gateway.json file from your USG following these [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
-* Here's a sample [config.gateway.json](https://raw.githubusercontent.com/britannic/blacklist/master/config.gateway.json)
-* Once the config.gateway.json has been generated, it will need to be uploaded to your **UniFi controller** per the [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
-
-[[Top]](#contents)
-
-### **How do I add or delete sources?**
-
-* Using the CLI configure command, to delete domains and hosts sources:
-
-```bash
-configure
-delete service dns forwarding blacklist domains source malc0de
-delete service dns forwarding blacklist hosts source yoyo.org
-commit;save;exit
-```
-
-* To add a source, first check it can serve a text list and also note the prefix (if any) before the hosts or domains, e.g. [http://www.malwaredomainlist.com/](http://www.malwaredomainlist.com/) has this format:
-
-```text
-#               MalwareDomainList.com Hosts List           #
-#   http://www.malwaredomainlist.com/hostslist/hosts.txt   #
-#         Last updated: Mon, 04 Dec 17 19:18:42 +0000      #
-
-
-127.0.0.1  localhost
-127.0.0.1  0koryu0.easter.ne.jp
-127.0.0.1  109-204-26-16.netconnexion.managedbroadband.co.uk
-127.0.0.1  1866809.securefastserver.com
-```
-
-* So the prefix is "127.0.0.1  "
-* Here's how to creating the source in the CLI:
-
-```bash
-configure
-set service dns forwarding blacklist hosts source malwaredomainlist description '127.0.0.1 based host and domain list'
-set service dns forwarding blacklist hosts source malwaredomainlist prefix '127.0.0.1  '
-set service dns forwarding blacklist hosts source malwaredomainlist url 'http://www.malwaredomainlist.com/hostslist/hosts.txt'
-commit;save;exit
-```
-
-[[Top]](#contents)
-
-### **How do I globally exclude or include hosts or a domains?**
-
-* Use these example commands to globally include or exclude blacklisted entries:
-
-```bash
-configure
-set service dns forwarding blacklist exclude cdn.visiblemeasures.com
-set service dns forwarding blacklist include www.nastywebsites.com
-commit;save;exit
-```
-
-[[Top]](#contents)
-
-### **How do I exclude or include a host or a domain?**
-
-* Use these example commands to include or exclude blacklisted entries:
-
-```bash
-configure
-set service dns forwarding blacklist domains exclude visiblemeasures.com
-set service dns forwarding blacklist domains include domainsnastywebsites.com
-set service dns forwarding blacklist hosts exclude cdn.visiblemeasures.com
-set service dns forwarding blacklist hosts include www.nastywebsites.com
-commit;save;exit
-```
-
-[[Top]](#contents)
-
-### **How does whitelisting work?**
-
-*dnsmasq will whitelist any entries in the configuration file domains and hosts (servers) with a hash in place of an IP address (the "#" force dnsmasq to forward the DNS request to the router's configured nameservers)
-
+* Fixed minor log message bug to insert space between progname and "starting up"
+* Renamed blacklist-cronjob.sh to update-dnsmasq-cronjob.sh to be consistent with update-dnsmasq
+* Fixed a bug when scripted configure session isn't detected, resulting in wrong showconfig mode being used
+* Fixed a bug in blacklist-cronjob.sh that inhibited the cron job delay
+* Changed http error handling from fatal to error notification, so that update-dnsmasq can continue processing for sources that don't have problems and complete the update
+* Added code to support dnsmasq configuration file whitelisting for domains and hosts (servers) using hash syntax (the "#" force dnsmasq to forward the DNS request to the configured nameservers)
 * i.e. servers (hosts)
 
 ```bash
@@ -424,83 +149,148 @@ server=/www.bing.com/#
 address=/bing.com/#
 ```
 
-[[Top]](#contents)
+### Release v1.0.10 (February 27, 2018)
 
-### **Does update-dnsmasq run automatically?**
-
-* Yes, a scheduled task is created and run daily at midnight with a random start delay is used ensure other routers in the same time zone won't overload the source servers.
-* The random start delay window is configured in seconds using this command - this example sets the start delay between 1-10800 seconds (0-3 hours):
+* Added functions to ensure all blacklist configuration files are removed from /etc/dnsmasq.d/ when uninstalling using
 
 ```bash
-set system task-scheduler task update_blacklists executable arguments 10800
+dpkg -P edgeos-dnsmasq-blacklist
 ```
 
-* It can be reconfigured using these CLI configuration commands:
+* Or
 
 ```bash
-set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq-cronjob.sh
-set system task-scheduler task update_blacklists executable arguments 10800
+apt-get remove --purge edgeos-dnsmasq-blacklist
+```
+
+* dnsmasq will be automatically restarted to remove stale redirects
+
+### Release v1.0.9 (February 26, 2018)
+
+* Added logic to not run the post installation script after an upgrade
+
+### Release v1.0.8 (February 26, 2018)
+
+* Algorithm to trap out of range cronjob arguments
+
+### Release v1.0.7 (February 25, 2018)
+
+* Adjust task-scheduler argument
+
+### Release v1.0.6 (February 25, 2018)
+
+* Fix bug in task-scheduler stanza to insert missing key work "system
+
+### Release v1.0.5 (February 25, 2018)
+
+* Nightly update-dnsmasq cron job now has a configurable argument to set how many seconds of random delay before starting
+
+```bash
+set system task-scheduler task update_blacklists executable arguments 60
+set system task-scheduler task update_blacklists executable path /config/scripts/blacklist-cronjob.sh
 set system task-scheduler task update_blacklists interval 1d
 ```
 
-* For example, to change the execution interval to every 6 hours, use this command:
+### Release v1.0.4 (February 24, 2018)
 
-```bash
-set system task-scheduler task update_blacklists interval 6h
-```
+* Implemented starting nightly update-dnsmasq cron job at random times to prevent a datastorm if a lot of users are in the same time zone
+  * Suggested by EdgeMax Community User [@sorvani](https://community.ubnt.com/t5/user/viewprofilepage/user-id/185589)
 
-* In daily use, no additional interaction with update-dnsmasq is required. By default, cron will run update-dnsmasq at midnight each day to download the blacklist sources and update the dnsmasq configuration files in /etc/dnsmasq.d. dnsmasq will automatically be reloaded after the configuration file update is completed.
+### Release v1.0.3 (February 23, 2018)
 
-[[Top]](#contents)
+* Switching to debian respository installation using apt-get
 
-### **How do I use the command line switches?**
+### Release v1.0.2 (February 18, 2018)
 
-* update-dnsmasq has the following commandline switches available:
+* Updated sources
+  * Changed hosts source [https://github.com/StevenBlack/hosts/](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts) to version that only blacklists ads and malware
 
-```bash
-/config/scripts/update-dnsmasq -h
-    -dir string
-            Override dnsmasq directory (default "/etc/dnsmasq.d")
-    -f [full file path]
-            [full file path] # Load a config.boot file
-    -h   Display help
-    -v   Verbose display
-    -version
-            Show version
-```
+### Release v1.0.1 (February 18, 2018)
 
-[[Top]](#contents)
+* Updated sources
+  * Changed hosts source [https://github.com/StevenBlack/hosts/](https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts) to version that doesn't blacklist social networks
 
-### **How do I configure dnsmasq?**
+### GA Release v1.0.0 (February 17, 2018)
 
-* dnsmasq may need to be configured to ensure blacklisting works correctly
-  * Here is an example using the EdgeOS configuration shell
+* Updated sources
+  * Added hosts source [https://github.com/StevenBlack/hosts/](https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn/hosts)
+  * Removed Yoyo and raw.github.com, since the new sources make them redundant
+* Fixed bug where "domains" was reported as "hosts" source type
 
-```bash
-configure
-set service dns forwarding cache-size 2048
-set service dns forwarding except-interface [Your WAN i/f]
-set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
-set service dns forwarding name-server [Your choice of IPv4 Internet Name-Server]
-set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
-set service dns forwarding name-server [Your choice of IPv6 Internet Name-Server]
-set service dns forwarding options bogus-priv
-set service dns forwarding options domain-needed
-set service dns forwarding options domain=mydomain.local
-set service dns forwarding options enable-ra
-set service dns forwarding options expand-hosts
-set service dns forwarding options localise-queries
-set service dns forwarding options strict-order
-set service dns forwarding system
-set system name-server 127.0.0.1
-set system name-server '::1'
-commit; save; exit
-```
+### Release Candidate v1.0.0.rc5 (February 4, 2018)
 
-[[Top]](#contents)
+* Extended vyattacfg change group to include /opt/vyatta/config/tmp and /opt/vyatta/config/active
 
-### **What is the difference between blocking domains and hosts?**
+### Release Candidate v1.0.0.rc4 (February 1, 2018)
 
-* The difference lies in the order of update-dnsmasq's processing algorithm. Domains are processed first and take precedence over hosts, so that a blacklisted domain will force update-dnsmasq's source parser to exclude subsequent hosts from the same domain. This reduces dnsmasq's list of lookups, since it will automatically redirect hosts for a blacklisted domain.
+* Release candidate #4 v1.0.0
+* Fixed bug to ensure pre-configured includes are processed first, so that pre-configured excludes won't drop them
 
-[[Top]](#contents)
+### Release Candidate v1.0.0.rc3 (January 31, 2018)
+
+* Release candidate #3 v1.0.0
+* Added domains exclude nsatc.net as it was blocking MS Office logins
+
+### Release Candidate v1.0.0.rc2 (January 31, 2018)
+
+* Release candidate #2 v1.0.0
+* New source added: [http://www.hostsfile.org/Downloads/hosts.txt](http://www.hostsfile.org/Downloads/hosts.txt)
+* Added global exclude googleads.g.doubleclick.net to fix Google search results
+
+### Release Candidate v1.0.0.rc1 (January 31, 2018)
+
+* Release candidate #1 v1.0.0
+* Includes pre-remove.sh back up routine
+
+### Patch v0.0.12 (January 30, 2018)
+
+* Added global exclude "evernote.com" as it is being false flagged by some sources
+
+### Patch v0.0.11 (January 30, 2018)
+
+* Reformatted update-dnsmasq.log output
+* README Updates
+  * Added FAQ
+  * Refactored layout
+
+### Patch v0.0.10 (January 28, 2018)
+
+* Improved counters for statistics logging
+* Increased test coverage of code
+* Additional documentation
+* Added config.boot file loader
+
+### Patch v0.0.9 (January 24, 2018)
+
+* Added logging for download errors and warnings for empty content
+* Change HTTP user agent to emulate curl, to stop web servers from offering complex content
+* Removed embedded tabs in source prefixes that were interpreted by the EdgeOS configure shell as a completion request,  preventing correct prefix matches
+
+### Patch v0.0.8 (January 22, 2018)
+
+* Removes redundant references to blacklist.t and perl modules
+* Replace "â–¶" with ":" in log messages
+
+### Release v0.0.7 (January 22, 2018)
+
+* Debian package release for ease of installation, maintenance and updating. See README for instructions and general release notes.
+
+### Pre-release v0.0.6 (January 20, 2018)
+
+* Debian package script rough in
+
+### Pre-release v0.0.5-alpha (June 5, 2016)
+
+* Major code refactor
+
+### Pre-release v0.0.4-alpha (May 11, 2016)
+
+* Ground up rewrite to create self contained packages and simplify code base
+
+### Pre-release v0.0.3-alpha (Jan 16, 2016)
+
+* Alpha code release
+
+### Pre-Alpha (Jan 15, 2016)
+
+* Learning Go, rudimentary coding
