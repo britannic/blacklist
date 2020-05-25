@@ -134,17 +134,17 @@ func TestMain(t *testing.T) {
 			os.Args = origArgs
 		})
 
-		Convey("Testing main() with non-existent configuration file load", func() {
-			var s string
-			os.Args = []string{prog, "-convey-json", "-f", "internal/testdata/config.bad.boot"}
-			logFatalf = func(f string, args ...interface{}) {
-				s = fmt.Sprintf(f, args...)
-			}
+		// Convey("Testing main() with non-existent configuration file load", func() {
+		// 	var s string
+		// 	os.Args = []string{prog, "-convey-json", "-f", "internal/testdata/config.bad.boot"}
+		// 	logFatalf = func(f string, args ...interface{}) {
+		// 		s = fmt.Sprintf(f, args...)
+		// 	}
 
-			main()
-			So(s, ShouldEqual, "cannot read configuration file internal/testdata/config.bad.boot!")
-			os.Args = origArgs
-		})
+		// 	main()
+		// 	So(s, ShouldEqual, "cannot read configuration file internal/testdata/config.bad.boot!")
+		// 	os.Args = origArgs
+		// })
 
 		Convey("Testing main() with failed initEnv()", func() {
 			var (

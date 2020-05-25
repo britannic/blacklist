@@ -126,7 +126,7 @@ func (s *source) process() *bList {
 		l                        = list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 		ok                       bool
 	)
-
+	// if b != nil {
 	for b.Scan() {
 		line := bytes.ToLower(bytes.TrimSpace(b.Bytes()))
 
@@ -152,7 +152,7 @@ func (s *source) process() *bList {
 			}
 		}
 	}
-
+	// }
 	switch s.nType {
 	case domn, excDomn, excRoot:
 		s.Dex.merge(&l)
