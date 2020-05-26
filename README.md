@@ -26,7 +26,7 @@ Please show your thanks by donating to the project using [Square Cash](https://c
 [![Donate](https://img.shields.io/badge/Donate-%24100-blue.svg?style=plastic)](https://paypal.me/helmrocksecurity/100 "Give $100 using PayPal (PayPal money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-Custom%20Amount-4B0082.svg?style=plastic)](https://paypal.me/helmrocksecurity/ "Choose your own donation amount using PayPal (PayPal money transfer)")
 
-We greatly appreciate any and all donations - Thank you! Funds go to maintaining development servers and networks.
+We greatly appreciate any and all donations - thank you! Funds go to maintaining development servers and networks.
 
 ## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti Networks®
 
@@ -54,6 +54,7 @@ We greatly appreciate any and all donations - Thank you! Funds go to maintaining
    1. [How do I back up my blacklist configuration and restore it later?](#how-do-i-back-up-my-blacklist-configuration-and-restore-it-later)
    1. [How do I configure dnsmasq?](#how-do-i-configure-dnsmasq)
    1. [How do I configure local file sources instead of internet based ones?](#how-do-i-configure-local-file-sources-instead-of-internet-based-ones)
+   1. [How do I use standalone or failover mode?](#how-do-I-use-standalone-or-failover-mode)
    1. [How do I disable/enable dnsmasq blacklisting?](#how-do-i-disableenable-dnsmasq-blacklisting)
    1. [How do I exclude or include a host or a domain?](#how-do-i-exclude-or-include-a-host-or-a-domain)
    1. [How do I globally exclude or include hosts or a domains?](#how-do-i-globally-exclude-or-include-hosts-or-a-domains)
@@ -333,12 +334,24 @@ admicro1.vcmedia.vn
 
 [[Top]](#contents)
 
+### **How do I use standalone or failover mode?**
+
+* The update-dnsmasq binary checks for an active configuration in the following locations:
+  1. Uses the EdgeOS/UniFi shell API to get the active blacklist configuration
+  1. /config/config.boot
+  1. /config/user-data/blacklist.failover.cfg
+
+* If no configuration is found, update-dnsmasq will remove any dnsmasq blocklists it previously created
+
+[[Top]](#contents)
+
 ### **How do I keep my USG configuration after an upgrade, provision or reboot?**
 
 * Follow these [instructions](https://britannic.github.io/install-edgeos-packages/) on how to automatically install edgeos-dnsmasq-blacklist
 * Generate and download a config.gateway.json file from your USG following these [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
 * Here's a sample [config.gateway.json](https://raw.githubusercontent.com/britannic/blacklist/master/config.gateway.json)
 * Once the config.gateway.json has been generated, it will need to be uploaded to your **UniFi controller** per the [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
+* Alternatively follow the instructions for [how do I use standalone or failover mode?](how-do-I-use-standalone-or-failover-mode)
 
 [[Top]](#contents)
 
