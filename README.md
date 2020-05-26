@@ -351,7 +351,7 @@ admicro1.vcmedia.vn
 * Generate and download a config.gateway.json file from your USG following these [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
 * Here's a sample [config.gateway.json](https://raw.githubusercontent.com/britannic/blacklist/master/config.gateway.json)
 * Once the config.gateway.json has been generated, it will need to be uploaded to your **UniFi controller** per the [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
-* Alternatively follow the instructions for [how do I use standalone or failover mode?](how-do-I-use-standalone-or-failover-mode)
+* Alternatively follow the instructions for [how do I use standalone or failover mode?](#how-do-I-use-standalone-or-failover-mode)
 
 [[Top]](#contents)
 
