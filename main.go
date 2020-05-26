@@ -36,6 +36,11 @@ func main() {
 		e.URLhObj,
 	}
 
+	if os.Geteuid() != 0 {
+		fmt.Printf("%s must be run as sudo\n", prog)
+		logErrorf("%s must be run as sudo", prog)
+		exitCmd(0)
+	}
 	c, err := initEnvirons()
 	if err != nil {
 		logErrorf("%s shutting down.", err.Error())
