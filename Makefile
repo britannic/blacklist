@@ -133,7 +133,7 @@ copyright: ; @ $(info updating copyright…) ## Update copyright
 	cp $(LIC) internal/regx/
 	cp $(LIC) internal/tdata/
 
-.PHONY: dep-stat 
+# .PHONY: dep-stat 
 # dep-stat: ; @ $(info showing dependency status…) ## Show dependency status
 # 	dep status
 

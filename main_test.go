@@ -195,6 +195,7 @@ func TestExitCmd(t *testing.T) {
 
 func TestInitEnv(t *testing.T) {
 	Convey("Testing initEnv", t, func() {
+		var err error
 		initEnv := func() (*e.Config, error) {
 			return &e.Config{
 				Env: &e.Env{Arch: "MegaOS"},
@@ -203,6 +204,24 @@ func TestInitEnv(t *testing.T) {
 		act, _ := initEnv()
 		exp := "MegaOS"
 		So(act.Arch, ShouldEqual, exp)
+
+		origArgs := os.Args
+		o := getOpts()
+		o.setArgs()
+
+		origdefCfgFile := defCfgFile
+		defCfgFile = "internal/testdata/config.test.boot"
+		c := o.initEdgeOS()
+
+		*o.ARCH = *o.MIPS64
+		*o.Safe = true
+		
+		c, err = loadConfig(c, o)
+		So(err, ShouldBeNil)
+		So(c, ShouldNotBeNil)
+
+		defCfgFile = origdefCfgFile
+		os.Args = origArgs
 	})
 }
 

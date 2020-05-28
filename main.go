@@ -102,22 +102,32 @@ func initEnv() (c *e.Config, err error) {
 	o := getOpts()
 	o.setArgs()
 	c = o.initEdgeOS()
-
 	if *o.File == "" {
-		if err = c.Blacklist(o.getCFG(c)); err != nil {
-			if _, err = os.Stat(defCfgFile); !os.IsNotExist(err) {
+		if c, err = loadConfig(c, o); err != nil {
+			if _, err = os.Stat(defCfgFile); !os.IsNotExist(err) && *o.Safe {
 				*o.File = defCfgFile
-			}
-			if err = c.Blacklist(o.getCFG(c)); err != nil {
-				fmt.Fprintf(os.Stderr, "Removing stale dnsmasq blacklist files, because %v\n", err.Error())
-				if err = files(c).Remove(); err != nil {
-					fmt.Fprintf(os.Stderr, "%v", err.Error())
-				}
-				reloadDNS(c)
-				exitCmd(0)
 			}
 		}
 	}
+
+	return loadConfig(c, o)
+
+}
+
+func loadConfig(c *e.Config, o *opts) (*e.Config, error) {
+	var err error
+
+	if err = c.Blacklist(o.getCFG(c)); err != nil {
+		if err = c.Blacklist(o.getCFG(c)); err != nil {
+			fmt.Fprintf(os.Stderr, "Removing stale dnsmasq blacklist files, because %v\n", err.Error())
+			if err = files(c).Remove(); err != nil {
+				fmt.Fprintf(os.Stderr, "%v", err.Error())
+			}
+			reloadDNS(c)
+			exitCmd(0)
+		}
+	}
+
 	return c, err
 }
 

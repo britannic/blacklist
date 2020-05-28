@@ -4,6 +4,8 @@ flag provided but not defined: -z
   -f <file>
     	<file> # Load a config.boot file
   -h	Display help
+  -safe
+    	Set true to fail over to /config/user-data/blacklist.failover.cfg
   -v	Verbose display
   -version
     	Show version
