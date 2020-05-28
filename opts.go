@@ -85,7 +85,7 @@ func getOpts() *opts {
 			MIPS64:  flags.String("mips64", "mips64", "Override target EdgeOS CPU architecture", false),
 			MIPSLE:  flags.String("mipsle", "mipsle", "Override target EdgeOS CPU architecture", false),
 			OS:      flags.String("os", runtime.GOOS, "Override native EdgeOS OS", false),
-			Safe:    flags.Bool("safe", false, fmt.Sprintf("Set true to fail over to %s", defCfgFile), true),
+			Safe:    flags.Bool("safe", false, fmt.Sprintf("Fail over to %s", defCfgFile), true),
 			Test:    flags.Bool("dryrun", false, "Run config and data validation tests", false),
 			Verb:    flags.Bool("v", false, "Verbose display", true),
 			Version: flags.Bool("version", false, "Show version", true),

@@ -1,6 +1,6 @@
 # **UBNT edgeos-dnsmasq-blacklist dnsmasq DNS Blacklisting and Redirection**
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt "View the software license here")[![Version](https://img.shields.io/badge/version-v1.2.3.2-green.svg)](https://github.com/britannic/blacklist "Latest version")[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist  "Go documentation")[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist  "Build status for this version")[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master "")](https://coveralls.io/github/britannic/blacklist?branch=master "Test coverage status for this version")[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist "Quality of Go code for this version")
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt "View the software license here")[![Version](https://img.shields.io/badge/version-v1.2.3.4-green.svg)](https://github.com/britannic/blacklist "Latest version")[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist  "Go documentation")[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist  "Build status for this version")[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master "")](https://coveralls.io/github/britannic/blacklist?branch=master "Test coverage status for this version")[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist "Quality of Go code for this version")
 
 Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/EdgeRouter/DNS-Adblocking-amp-Blacklisting-dnsmasq-Configuration/td-p/2215008/jump-to/first-unread-message "Follow the conversation about this software in the EdgeRouter forum (https://community.ubnt.com/t5/EdgeRouter/)")
 
@@ -106,7 +106,7 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Latest Version**
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.2.3.2-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.2.3.4-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
 ### Prerelease v1.2.3.2 (May 25, 2020)
 
@@ -175,8 +175,8 @@ sudo apt-get update && sudo apt-get install edgeos-dnsmasq-blacklist
 ### **EdgeRouter ERLite-3, ERPoe-5, ER4, UniFi-Gateway-3 & UniFi-Gateway-4**
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.2.3.2_mips.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.2.3.2_mips.deb
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.2.3.4_mips.deb
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.2.3.4_mips.deb
 ```
 
 [[Top]](#contents)
@@ -193,8 +193,8 @@ delete system image
 * Now download and install the edgeos-dnsmasq-blacklist package
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.2.3.2_mipsel.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.2.3.2_mipsel.deb
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.2.3.4_mipsel.deb
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.2.3.4_mipsel.deb
 ```
 
 [[Top]](#contents)
@@ -338,8 +338,8 @@ admicro1.vcmedia.vn
 
 * The update-dnsmasq binary checks for an active configuration in the following locations:
   1. Uses the EdgeOS/UniFi shell API to get the active blacklist configuration
-  1. /config/config.boot
-  1. /config/user-data/blacklist.failover.cfg
+  1. /config/config.boot (only used if -safe switch is used)
+  1. /config/user-data/blacklist.failover.cfg (only used if -safe switch is used)
 
 * If no configuration is found, update-dnsmasq will remove any dnsmasq blocklists it previously created
 
@@ -472,14 +472,15 @@ set system task-scheduler task update_blacklists interval 6h
 
 ```bash
 /config/scripts/update-dnsmasq -h
-    -dir string
-            Override dnsmasq directory (default "/etc/dnsmasq.d")
-    -f [full file path]
-            [full file path] # Load a config.boot file
-    -h   Display help
-    -v   Verbose display
-    -version
-            Show version
+  -dir string
+        Override dnsmasq directory (default "/etc/dnsmasq.d")
+  -f <file>
+        <file> # Load a config.boot file
+  -h    Display help
+  -safe
+        Fail over to /config/user-data/blacklist.failover.cfg
+  -v    Verbose display
+  -version
 ```
 
 [[Top]](#contents)
