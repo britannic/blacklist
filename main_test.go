@@ -323,7 +323,7 @@ func TestSetArgs(t *testing.T) {
 					act := new(bytes.Buffer)
 					env.SetOutput(act)
 					env.setArgs()
-					*update = true
+					// *update = true // uncomment to get latest golden file
 					writeGolden(t, act.Bytes(), "testInvalidArgs")
 					So(act.Bytes(), ShouldResemble, tt.exp.([]byte))
 				default:
