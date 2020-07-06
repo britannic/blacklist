@@ -132,7 +132,7 @@ update_dns_config() {
 	try set service dns forwarding blacklist domains source NoBitCoin url 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'
 	try set service dns forwarding blacklist domains source simple_tracking description '"Basic tracking list by Disconnect"'
 	try set service dns forwarding blacklist domains source simple_tracking url 'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt'
-	try set service dns forwarding blacklist domains source OISD description "OISD Domains Light"
+	try set service dns forwarding blacklist domains source OISD description '"OISD Domains Light"'
 	try set service dns forwarding blacklist domains source OISD url 'https://dbl.oisd.nl/light/'	
 	try set service dns forwarding blacklist exclude 1e100.net
 	try set service dns forwarding blacklist exclude 2o7.net

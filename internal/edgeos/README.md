@@ -34,7 +34,7 @@ const (
 ```go
 func ChkWeb(site string, port int) bool
 ```
-ChkWeb() returns true if DNS is working
+ChkWeb returns true if DNS is working
 
 #### func  GetFile
 

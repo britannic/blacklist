@@ -33,13 +33,14 @@
                 "description": "Just Domains",
                 "url": "http://mirror1.malwaredomains.com/files/justdomains"
               },
+              "OISD": {
+                "description": "OISD Domains Light",
+                "prefix": "",
+                "url": "https://dbl.oisd.nl/light/"
+              },
               "simple_tracking": {
                 "description": "Basic tracking list by Disconnect",
                 "url": "https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt"
-              },
-              "zeus": {
-                "description": "abuse.ch ZeuS domain blocklist",
-                "url": "https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist"
               }
             }
           },
@@ -157,11 +158,6 @@
                 "description": "Anudeeps Youtube Ad Blocking list",
                 "prefix": "",
                 "url": "https://raw.githubusercontent.com/anudeepND/youtubeadsblacklist/master/domainlist.txt"
-              },
-              "YoutubeBlockList": {
-                "description": "Youtube Ad-Block-List for PiHole by HenningVanRaeumle",
-                "prefix": "0.0.0.0",
-                "url": "https://raw.githubusercontent.com/HenningVanRaumle/pihole-ytadblock/master/ytadblock.txt"
               },
               "githubSteveBlack": {
                 "description": "Blacklists adware and malware websites",
