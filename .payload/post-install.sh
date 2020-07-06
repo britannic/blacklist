@@ -132,6 +132,8 @@ update_dns_config() {
 	try set service dns forwarding blacklist domains source NoBitCoin url 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'
 	try set service dns forwarding blacklist domains source simple_tracking description '"Basic tracking list by Disconnect"'
 	try set service dns forwarding blacklist domains source simple_tracking url 'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt'
+	try set service dns forwarding blacklist domains source OISD description "OISD Domains Light"
+	try set service dns forwarding blacklist domains source OISD url 'https://dbl.oisd.nl/light/'	
 	try set service dns forwarding blacklist exclude 1e100.net
 	try set service dns forwarding blacklist exclude 2o7.net
 	try set service dns forwarding blacklist exclude adjust.com
@@ -243,9 +245,9 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
 	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
 	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
-	try set service dns forwarding blacklist hosts source YoutubeBlockList description '"OSID Mobile Blocklist"'
-	try set service dns forwarding blacklist hosts source YoutubeBlockList prefix '0.0.0.0 '
-	try set service dns forwarding blacklist hosts source YoutubeBlockList url 'https://hostsmobile.oisd.nl/'
+	# try set service dns forwarding blacklist hosts source YoutubeBlockList description '"OSID Mobile Blocklist"'
+	# try set service dns forwarding blacklist hosts source YoutubeBlockList prefix '0.0.0.0 '
+	# try set service dns forwarding blacklist hosts source YoutubeBlockList url 'https://hostsmobile.oisd.nl/'
 	try set system task-scheduler task update_blacklists executable arguments 10800
 	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq-cronjob.sh
 	try set system task-scheduler task update_blacklists interval 1d

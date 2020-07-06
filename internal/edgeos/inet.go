@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// ChkWeb() returns true if DNS is working
+// ChkWeb returns true if DNS is working
 func ChkWeb(site string, port int) bool {
 	target := fmt.Sprintf("%s:%d", site, port)
 	timeOut := 3 * time.Second
