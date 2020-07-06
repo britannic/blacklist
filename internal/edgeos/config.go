@@ -43,7 +43,7 @@ type stats struct {
 }
 
 const (
-	agent     = `curl/7.26.0`
+	agent     = `curl/7.64.1`
 	all       = "all"
 	blackhole = "dns-redirect-ip"
 	disabled  = "disabled"
