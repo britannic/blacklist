@@ -114,7 +114,7 @@ modification, are permitted provided that the following conditions are met:
 * Move "OISD Domains Light" to hosts source (per [amoeba00](https://community.ui.com/user/9f2abc79-fcd8-4dda-9233-c0306f22f4df))
 * Add -safe switch for fail-over mode
 * Remove hosts "OSID Mobile Blocklist"
-* Add "OISD Domains Light" (per [amoeba00](https://community.ui.com/user/9f2abc79-fcd8-4dda-9233-c0306f22f4df))s
+* Add "OISD Domains Light" (per [amoeba00](https://community.ui.com/user/9f2abc79-fcd8-4dda-9233-c0306f22f4df))
 
 [[Top]](#contents)
 
