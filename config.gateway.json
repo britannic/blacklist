@@ -34,7 +34,7 @@
                 "url": "http://mirror1.malwaredomains.com/files/justdomains"
               },
               "OISD": {
-                "description": "OISD Domains Light",
+                "description": "OISD (Hosts) Light",
                 "prefix": "",
                 "url": "https://dbl.oisd.nl/light/"
               },
