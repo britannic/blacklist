@@ -112,9 +112,6 @@ modification, are permitted provided that the following conditions are met:
 ### Release v1.2.3.6 (July 8, 2020)
 
 * Move "OISD Domains Light" to hosts source (per [amoeba00](https://community.ui.com/user/9f2abc79-fcd8-4dda-9233-c0306f22f4df))
-
-### Release v1.2.3.5 (July 8, 2020)
-
 * Add -safe switch for fail-over mode
 * Remove hosts "OSID Mobile Blocklist"
 * Add "OISD Domains Light" (per [amoeba00](https://community.ui.com/user/9f2abc79-fcd8-4dda-9233-c0306f22f4df))s
