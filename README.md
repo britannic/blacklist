@@ -136,7 +136,7 @@ modification, are permitted provided that the following conditions are met:
 ## **Compatibility**
 
 * edgeos-dnsmasq-blacklist has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X, ER4 UniFi Security Gateway USG3 and USG4 routers
-  * EdgeMAX versions: v1.9.7+hotfix.4-v2.0.8, UniFi: v4.4.12-v4.4.44.5213871
+  * EdgeMAX versions: v1.9.7+hotfix.4-v2.0.8-hotfix.1, UniFi: v4.4.12-v4.4.51
 
 [[Top]](#contents)
 
