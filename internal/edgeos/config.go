@@ -242,8 +242,6 @@ func (c *Config) load(act string) ([]byte, error) {
 	cmd := exec.Command(c.Bash)
 	s := fmt.Sprintf("%v %v %v", c.API, apiCMD(act, c.InSession()), c.mode())
 	c.Debug(fmt.Sprintf("%v %v %v", c.API, apiCMD(act, c.InSession()), c.mode()))
-	// fmt.Printf("Session[%v]: %v %v %v", c.InSession(), c.API, apiCMD(act, c.InSession()), c.mode())
-	// os.Exit(0)
 	cmd.Stdin = strings.NewReader(s)
 	c.Debug(fmt.Sprintf("Running shell command: %v", s))
 	c.Debug(fmt.Sprintf("Config session is %t", c.InSession()))
