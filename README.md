@@ -54,7 +54,7 @@ We greatly appreciate any and all donations - thank you! Funds go to maintaining
    1. [How do I back up my blacklist configuration and restore it later?](#how-do-i-back-up-my-blacklist-configuration-and-restore-it-later)
    1. [How do I configure dnsmasq?](#how-do-i-configure-dnsmasq)
    1. [How do I configure local file sources instead of internet based ones?](#how-do-i-configure-local-file-sources-instead-of-internet-based-ones)
-   1. [How do I use standalone or failover mode?](#how-do-I-use-standalone-or-failover-mode)
+   1. [How do I use standalone or failover mode?](#how-do-i-use-standalone-or-failover-mode)
    1. [How do I disable/enable dnsmasq blacklisting?](#how-do-i-disableenable-dnsmasq-blacklisting)
    1. [How do I exclude or include a host or a domain?](#how-do-i-exclude-or-include-a-host-or-a-domain)
    1. [How do I globally exclude or include hosts or a domains?](#how-do-i-globally-exclude-or-include-hosts-or-a-domains)
@@ -63,7 +63,6 @@ We greatly appreciate any and all donations - thank you! Funds go to maintaining
    1. [How does whitelisting work?](#how-does-whitelisting-work)
    1. [What is the difference between blocking domains and hosts?](#what-is-the-difference-between-blocking-domains-and-hosts)
    1. [Which blacklist sources are installed by default?](#which-blacklist-sources-are-installed-by-default)
-   1. [How do I use failover when no blacklist configuration is detected during router boot up?](#how-I-use-failover-when-no-blacklist-configuration-is-detected-during-router-boot-up)
 
 ## **Overview**
 
@@ -355,7 +354,7 @@ admicro1.vcmedia.vn
 * Generate and download a config.gateway.json file from your USG following these [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
 * Here's a sample [config.gateway.json](https://raw.githubusercontent.com/britannic/blacklist/master/config.gateway.json)
 * Once the config.gateway.json has been generated, it will need to be uploaded to your **UniFi controller** per the [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
-* Alternatively follow the instructions for [how do I use standalone or failover mode?](#how-do-I-use-standalone-or-failover-mode)
+* Alternatively follow the instructions for [how do I use standalone or failover mode?](#how-do-i-use-standalone-or-failover-mode)
 
 [[Top]](#contents)
 
