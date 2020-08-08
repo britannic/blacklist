@@ -68,8 +68,15 @@ func main() {
 		}
 	}
 
-	c.GetTotalStats()
+	dropped, extracted, kept := c.GetTotalStats()
+	if kept+dropped != 0 {
+		c.Log.Noticef("Total entries found: %d", extracted)
+		c.Log.Noticef("Total entries extracted %d", kept)
+		c.Log.Noticef("Total entries dropped %d", dropped)
+	}
+
 	reloadDNS(c)
+
 	logNoticef("%v", "Blacklist update completed......")
 }
 

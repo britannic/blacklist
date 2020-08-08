@@ -170,11 +170,11 @@ func (c *Config) GetTotalStats() (dropped, extracted, kept int32) {
 		}
 	}
 
-	if kept+dropped != 0 {
-		c.Log.Noticef("Total entries found: %d", extracted)
-		c.Log.Noticef("Total entries extracted %d", kept)
-		c.Log.Noticef("Total entries dropped %d", dropped)
-	}
+	// if kept+dropped != 0 {
+	// 	c.Log.Noticef("Total entries found: %d", extracted)
+	// 	c.Log.Noticef("Total entries extracted %d", kept)
+	// 	c.Log.Noticef("Total entries dropped %d", dropped)
+	// }
 	return dropped, extracted, kept
 }
 
@@ -438,8 +438,11 @@ func (c *Config) Blacklist(r ConfLoader) error {
 // ReloadDNS reloads the dnsmasq configuration
 func (c *Config) ReloadDNS() ([]byte, error) {
 	// nolint
-	cmd := exec.Command(c.Bash)
-	cmd.Stdin = strings.NewReader(c.DNSsvc)
+	bcmd := c.Bash
+	dnssvc := c.DNSsvc
+	c = nil // workaround to release memory for ER-X
+	cmd := exec.Command(bcmd)
+	cmd.Stdin = strings.NewReader(dnssvc)
 	return cmd.CombinedOutput()
 }
 

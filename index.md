@@ -2,6 +2,15 @@
 
 ## Releases
 
+## Release 1.2.4.0 (August 9, 2020)
+
+* Implement a workaround to conserve memory on the ER-X routers
+  * Fixes dnsmasq restart
+
+    ```bash
+    error: fork/exec /bin/bash: cannot allocate memory
+    ```
+
 ## Release 1.2.3.7 (August 8, 2020)
 
 * Remove [sysctl.org source](https://sysctl.org/cameleon/) as list is no longer maintained
