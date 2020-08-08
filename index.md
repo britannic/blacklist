@@ -2,6 +2,10 @@
 
 ## Releases
 
+## Release 1.2.3.7 (August 8, 2020)
+
+* Remove [sysctl.org source](https://sysctl.org/cameleon/) as list is no longer maintained
+
 ### Release v1.2.3.6 (July 8, 2020)
 
 * Move "OISD Domains Light" to hosts source (per [amoeba00](https://community.ui.com/user/9f2abc79-fcd8-4dda-9233-c0306f22f4df))

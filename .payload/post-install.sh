@@ -242,9 +242,9 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts source openphish description '"OpenPhish automatic phishing detection"'
 	try set service dns forwarding blacklist hosts source openphish prefix 'http'
 	try set service dns forwarding blacklist hosts source openphish url 'https://openphish.com/feed.txt'
-	try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
-	try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
-	try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
+	# try set service dns forwarding blacklist hosts source sysctl.org description '"This hosts file is a merged collection of hosts from Cameleon"'
+	# try set service dns forwarding blacklist hosts source sysctl.org prefix '127.0.0.1 '
+	# try set service dns forwarding blacklist hosts source sysctl.org url 'http://sysctl.org/cameleon/hosts'
 	try set system task-scheduler task update_blacklists executable arguments 10800
 	try set system task-scheduler task update_blacklists executable path /config/scripts/update-dnsmasq-cronjob.sh
 	try set system task-scheduler task update_blacklists interval 1d
