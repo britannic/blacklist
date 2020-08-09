@@ -2,6 +2,10 @@
 
 ## Releases
 
+## Release 1.2.4.1 (August 10, 2020)
+
+* Move OISD list to domains, since it is a domain list
+
 ## Release 1.2.4.0 (August 9, 2020)
 
 * Implement a workaround to conserve memory on the ER-X routers

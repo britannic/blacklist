@@ -29,8 +29,7 @@ GSED			 = $(shell which gsed || which sed) -i.bak -e
 # Environment variables
 AWS				 = aws
 COPYRIGHT		 = s/Copyright © 20../Copyright © $(shell date +"%Y")/g
-COVERALLS_TOKEN	\
-				 = W6VHc8ZFpwbfTzT3xoluEWbKkrsKT1w25
+COVERALLS_TOKEN	 = W6VHc8ZFpwbfTzT3xoluEWbKkrsKT1w25
 # DATE=$(shell date -u '+%Y-%m-%d_%I:%M:%S%p')
 BADGE 			 = s/version-v$(OLDVER)-green.svg/version-v$(VER)-green.svg/g
 CHANGELOG		 = CHANGELOG.md
