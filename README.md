@@ -110,7 +110,7 @@ modification, are permitted provided that the following conditions are met:
 
 ## Release 1.2.4.1 (August 10, 2020)
 
-* Move OISD list to domains, since it is a domain list
+* Switch to OISD domain wildcard list
 
 [[Top]](#contents)
 
