@@ -2,6 +2,10 @@
 
 ## Releases
 
+## Release 1.2.4.2 (August 14, 2020)
+
+* Resolve issue with repository not including v1.2.4.1
+
 ## Release 1.2.4.1 (August 10, 2020)
 
 * Switch to OISD domain wildcard list - reduces memory usage for ER-X series routers
