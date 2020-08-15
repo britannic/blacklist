@@ -424,7 +424,7 @@ commit;save;exit
 
 ### **How does whitelisting work?**
 
-* dnsmasq whitelists any entries it finds in the configuration files domains and hosts (or servers) with a hash in place of the IP address (the "#" forces dnsmasq to forward the DNS request to the router's configured nameservers)
+* dnsmasq whitelists any entries it finds in the configuration files domains and hosts (or servers) that have a hash in place of the IP address (the "#" forces dnsmasq to forward the DNS request to the router's configured nameservers)
 * e.g. for servers (hosts)
 
 ```bash
