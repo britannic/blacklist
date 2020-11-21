@@ -63,7 +63,7 @@ We greatly appreciate any and all donations - thank you! Funds go to maintaining
    1. [How does whitelisting work?](#how-does-whitelisting-work)
    1. [What is the difference between blocking domains and hosts?](#what-is-the-difference-between-blocking-domains-and-hosts)
    1. [Which blacklist sources are installed by default?](#which-blacklist-sources-are-installed-by-default)
-   1. [How do I troubleshoot dnsmasq blacklisting?](how-do-i-troubleshoot-dnsmasq-blacklisting)
+   1. [How do I troubleshoot dnsmasq blacklisting?](#how-do-i-troubleshoot-dnsmasq-blacklisting)
 
 ## **Overview**
 
