@@ -341,7 +341,7 @@ admicro1.vcmedia.vn
 * The update-dnsmasq binary checks for an active configuration in the following locations:
   1. Uses the EdgeOS/UniFi shell API to get the active blacklist configuration
   1. /config/config.boot (only used if -safe switch is used)
-  1. /config/user-data/blacklist.failover.cfg (only used if -safe switch is used)
+  1. /config/user-data/blacklist.failover.cfg (only used if it has been created and the -safe switch is used)
 
 * If no configuration is found, update-dnsmasq will remove any dnsmasq blocklists it previously created
 
