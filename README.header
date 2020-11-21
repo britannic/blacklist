@@ -550,7 +550,7 @@ commit; save; exit
 
 ```
 
-* Note: If the domain/hostname is manually excluded it will appear in one of the <nowiki>*</nowiki>.whitelisted-<nowiki>*</nowiki>.conf files
+* Note: If the domain/hostname is manually excluded it will appear in one of the &#42;.whitelisted-&#42;.conf files
 
 * Display installed edgeos-dnsmasq-blacklist version:
 
