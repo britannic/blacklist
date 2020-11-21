@@ -35,7 +35,7 @@ const (
 	SUFX
 )
 ```
-go:generate stringer -type=Leaf Leaf label regx map keys
+Leaf label regx map keys
 
 #### func (Leaf) String
 

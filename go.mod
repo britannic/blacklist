@@ -4,6 +4,7 @@ require (
 	github.com/britannic/go-logging v0.0.0-20180129194826-c39d9fb9b698
 	github.com/britannic/mflag v0.0.0-20180122040631-112278387586
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
+	github.com/robertkrimen/godocdown v0.0.0-20130622164427-0bfa04905481 // indirect
 	github.com/smartystreets/assertions v1.1.0 // indirect
 	github.com/smartystreets/goconvey v1.6.4
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9

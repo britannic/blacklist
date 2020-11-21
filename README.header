@@ -63,6 +63,7 @@ We greatly appreciate any and all donations - thank you! Funds go to maintaining
    1. [How does whitelisting work?](#how-does-whitelisting-work)
    1. [What is the difference between blocking domains and hosts?](#what-is-the-difference-between-blocking-domains-and-hosts)
    1. [Which blacklist sources are installed by default?](#which-blacklist-sources-are-installed-by-default)
+   1. [How do I troubleshoot dnsmasq blacklisting?](how-do-i-troubleshoot-dnsmasq-blacklisting)
 
 ## **Overview**
 
@@ -516,5 +517,42 @@ commit; save; exit
 ### **What is the difference between blocking domains and hosts?**
 
 * The difference lies in the order of update-dnsmasq's processing algorithm. Domains are processed first and take precedence over hosts, so that a blacklisted domain will force update-dnsmasq's source parser to exclude subsequent hosts from the same domain. This reduces dnsmasq's list of lookups, since it will automatically redirect hosts for a blacklisted domain.
+
+[[Top]](#contents)
+
+### **How do I troubleshoot dnsmasq blacklisting?**
+
+* View last update log:
+
+```bash
+  tail /var/log/update-dnsmasq.log
+
+  Total entries extracted = Total sites blocked
+  Timestamp = Last time the update ran
+```
+
+* Manually update the dnsmasq configuration files from sources:
+
+```bash
+  sudo /config/scripts/update-dnsmasq -v
+```
+
+* Check if a domain or hostname is being blocked or manually excluded:
+
+```bash
+  grep [host.domain.tld] /etc/dnsmasq.d/*
+
+  or:
+
+  grep [domain.tld] /etc/dnsmasq.d/* 
+
+  Note: If the domain/hostname is manually excluded it will appear in one of the whitelisted .conf files
+```
+
+* Display installed edgeos-dnsmasq-blacklist version:
+
+```bash
+  sudo /config/scripts/update-dnsmasq -version
+```
 
 [[Top]](#contents)
