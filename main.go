@@ -21,6 +21,7 @@ var (
 	prog         = basename(os.Args[0])
 	prefix       = fmt.Sprintf("%s: ", prog)
 	defCfgFile   = "/config/user-data/blacklist.failover.cfg"
+	stdCfgFile   = "/config/config.boot"
 )
 
 func main() {
@@ -43,7 +44,7 @@ func main() {
 	}
 	c, err := initEnvirons()
 	if err != nil {
-		logErrorf("%s shutting down.", err.Error())
+		logErrorf("Cannot continue due to error: %s", err.Error())
 		exitCmd(0)
 	}
 
@@ -110,6 +111,9 @@ func initEnv() (c *e.Config, err error) {
 	o.setArgs()
 	c = o.initEdgeOS()
 	if *o.File == "" {
+		if *o.Safe {
+			*o.File = stdCfgFile
+		}
 		if c, err = loadConfig(c, o); err != nil {
 			if _, err = os.Stat(defCfgFile); !os.IsNotExist(err) && *o.Safe {
 				*o.File = defCfgFile
@@ -125,14 +129,12 @@ func loadConfig(c *e.Config, o *opts) (*e.Config, error) {
 	var err error
 
 	if err = c.Blacklist(o.getCFG(c)); err != nil {
-		if err = c.Blacklist(o.getCFG(c)); err != nil {
-			fmt.Fprintf(os.Stderr, "Removing stale dnsmasq blacklist files, because %v\n", err.Error())
-			if err = files(c).Remove(); err != nil {
-				fmt.Fprintf(os.Stderr, "%v", err.Error())
-			}
-			reloadDNS(c)
-			exitCmd(0)
+		fmt.Fprintf(os.Stderr, "Removing stale dnsmasq blacklist files, because %v\n", err.Error())
+		if err = files(c).Remove(); err != nil {
+			fmt.Fprintf(os.Stderr, "%v", err.Error())
 		}
+		reloadDNS(c)
+		exitCmd(0)
 	}
 
 	return c, err
