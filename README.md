@@ -548,8 +548,9 @@ commit; save; exit
 ```bash
   grep [domain.tld] /etc/dnsmasq.d/* 
 
-  Note: If the domain/hostname is manually excluded it will appear in one of the whitelisted .conf files
 ```
+
+* Note: If the domain/hostname is manually excluded it will appear in one of the *.whitelisted-*.conf files
 
 * Display installed edgeos-dnsmasq-blacklist version:
 
