@@ -2,7 +2,7 @@
 
 ## Release 1.2.4.5 (November 21, 2020)
 
-* Fix bug preventing update-dnsmasq loading failover config file -safe switch is used
+* Fix bug preventing update-dnsmasq loading failover config file when -safe switch is used
 * Update documentation to state the /config/user-data/blacklist.failover.cfg must first be created
 * Move debian repository to `https://raw.githubusercontent.com/britannic/debian-repo/master/blacklist/public/`
 
