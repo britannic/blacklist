@@ -10,20 +10,16 @@ Please show your thanks by donating to the project using [Square Cash](https://c
 
 [![Donate](https://img.shields.io/badge/Donate-%245-orange.svg?style=plastic)](https://cash.me/$HelmRockSecurity/5 "Give $5 using Square Cash (free money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-%2410-red.svg?style=plastic)](https://cash.me/$HelmRockSecurity/10 "Give $10 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2415-yellow.svg?style=plastic)](https://cash.me/$HelmRockSecurity/15 "Give $15 using Square Cash (free money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-%2420-yellowgreen.svg?style=plastic)](https://cash.me/$HelmRockSecurity/20 "Give $20 using Square Cash (free money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-%2425-brightgreen.svg?style=plastic)](https://cash.me/$HelmRockSecurity/25 "Give $25 using Square Cash (free money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-%2450-ff69b4.svg?style=plastic)](https://cash.me/$HelmRockSecurity/50 "Give $50 using Square Cash (free money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%24100-blue.svg?style=plastic)](https://cash.me/$HelmRockSecurity/100 "Give $100 using Square Cash (free money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-Custom%20Amount-4B0082.svg?style=plastic)](https://cash.me/$HelmRockSecurity/ "Choose your own donation amount using Square Cash (free money transfer)")
 
 [![Donate](https://img.shields.io/badge/Donate-%245-orange.svg?style=plastic)](https://paypal.me/helmrocksecurity/5 "Give $5 using PayPal (PayPal money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-%2410-red.svg?style=plastic)](https://paypal.me/helmrocksecurity/10 "Give $10 using PayPal (PayPal money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%2415-yellow.svg?style=plastic)](https://paypal.me/helmrocksecurity/15 "Give $15 using PayPal (PayPal money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-%2420-yellowgreen.svg?style=plastic)](https://paypal.me/helmrocksecurity/20 "Give $20 using PayPal (PayPal money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-%2425-brightgreen.svg?style=plastic)](https://paypal.me/helmrocksecurity/25 "Give $25 using PayPal (PayPal money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-%2450-ff69b4.svg?style=plastic)](https://paypal.me/helmrocksecurity/50 "Give $50 using PayPal (PayPal money transfer)")
-[![Donate](https://img.shields.io/badge/Donate-%24100-blue.svg?style=plastic)](https://paypal.me/helmrocksecurity/100 "Give $100 using PayPal (PayPal money transfer)")
 [![Donate](https://img.shields.io/badge/Donate-Custom%20Amount-4B0082.svg?style=plastic)](https://paypal.me/helmrocksecurity/ "Choose your own donation amount using PayPal (PayPal money transfer)")
 
 We greatly appreciate any and all donations - thank you! Funds go to maintaining development servers and networks.

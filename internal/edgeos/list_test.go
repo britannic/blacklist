@@ -1,6 +1,7 @@
 package edgeos
 
 import (
+	"fmt"
 	"sort"
 	"sync"
 	"testing"
@@ -77,12 +78,12 @@ func TestMerge(t *testing.T) {
 		exp := list{RWMutex: &sync.RWMutex{}, entry: make(entry)}
 
 		for i := range Iter(20) {
-			exp.entry[string(i)] = struct{}{}
+			exp.entry[fmt.Sprint(i)] = struct{}{}
 			switch {
 			case i%2 == 0:
-				testList1.entry[string(i)] = struct{}{}
+				testList1.entry[fmt.Sprint(i)] = struct{}{}
 			case i%2 != 0:
-				testList2.entry[string(i)] = struct{}{}
+				testList2.entry[fmt.Sprint(i)] = struct{}{}
 			}
 		}
 		testList1.merge(&testList2)
