@@ -8,7 +8,8 @@ tag=${3}
 
 aptly repo add blacklist .
 aptly snapshot create blacklist-${tag} from repo blacklist
-aptly -gpg-key=11FDF4DBCDE11975 publish switch -component=main stretch blacklist-${tag}
+aptly -gpg-key=11FDF4DBCDE11975 publish switch stretch blacklist-${tag}
+# aptly publish snapshot -gpg-key=11FDF4DBCDE11975 -component=main -distribution=stretch blacklist-${tag}
 cd ../debian-repo
 git add --all
 git commit -am"Package repository release ${tag}"
