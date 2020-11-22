@@ -1,6 +1,6 @@
 # Changelog
 
-## Release 1.2.4.4 (November 21, 2020)
+## Release 1.2.4.4.1 (November 21, 2020)
 
 * Fix bug preventing update-dnsmasq loading failover config file -safe switch is used
 * Update documentation to state the /config/user-data/blacklist.failover.cfg must first be created
