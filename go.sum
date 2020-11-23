@@ -1,5 +1,7 @@
 github.com/britannic/go-logging v0.0.0-20180129194826-c39d9fb9b698 h1:FJezKsjNYlkVOwPY9s3CNQ3qFHgXfwD+dQTji+/S58c=
 github.com/britannic/go-logging v0.0.0-20180129194826-c39d9fb9b698/go.mod h1:318CiJSo7nYJQEuRwHPGuRqedSb6c/fXtsn8ZnthAqY=
+github.com/britannic/go-logging v2.0.1+incompatible h1:byu0hCPVbIC1g295uAsOBUeAYRUegtB3T5fyRoxL6Lk=
+github.com/britannic/go-logging v2.0.1+incompatible/go.mod h1:318CiJSo7nYJQEuRwHPGuRqedSb6c/fXtsn8ZnthAqY=
 github.com/britannic/mflag v0.0.0-20180122040631-112278387586 h1:qJZWvybItGwlBXGu/CtiHFZ2+ajxpn1wwWYbO0AcoiA=
 github.com/britannic/mflag v0.0.0-20180122040631-112278387586/go.mod h1:nAyHvCJTmgcUSIh2HqxiVIO6qaIzo00o8nE4Coty8OE=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 h1:EGx4pi6eqNxGaHF6qqu48+N2wcFQ5qg5FXgOdqsJ5d8=

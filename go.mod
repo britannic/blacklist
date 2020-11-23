@@ -1,7 +1,7 @@
 module github.com/britannic/blacklist
 
 require (
-	github.com/britannic/go-logging v0.0.0-20180129194826-c39d9fb9b698
+	github.com/britannic/go-logging v2.0.1+incompatible
 	github.com/britannic/mflag v0.0.0-20180122040631-112278387586
 	github.com/gopherjs/gopherjs v0.0.0-20200217142428-fce0ec30dd00 // indirect
 	github.com/smartystreets/assertions v1.1.0 // indirect
@@ -11,4 +11,4 @@ require (
 	golang.org/x/sys v0.0.0-20201009025420-dfb3f7c4e634 // indirect
 )
 
-go 1.13
+go 1.15
