@@ -1,0 +1,12 @@
+# Basic dependabot.yml file with
+# minimum configuration for go
+
+version: 2
+updates:
+  # Enable version updates for go
+  - package-ecosystem: "go"
+    # Look for `go.mod` files in the `root` directory
+    directory: "/"
+    # Check the go mod registry for updates every day (weekdays)
+    schedule:
+      interval: "daily"
