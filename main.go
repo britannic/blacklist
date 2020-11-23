@@ -20,7 +20,7 @@ var (
 	initEnvirons = initEnv
 	prog         = basename(os.Args[0])
 	prefix       = fmt.Sprintf("%s: ", prog)
-	defCfgFile   = "/config/user-data/blacklist.failover.cfg"
+	bkpCfgFile   = "/config/user-data/blacklist.failover.cfg"
 	stdCfgFile   = "/config/config.boot"
 )
 
@@ -115,8 +115,8 @@ func initEnv() (c *e.Config, err error) {
 			*o.File = stdCfgFile
 		}
 		if c, err = loadConfig(c, o); err != nil {
-			if _, err = os.Stat(defCfgFile); !os.IsNotExist(err) && *o.Safe {
-				*o.File = defCfgFile
+			if _, err = os.Stat(bkpCfgFile); !os.IsNotExist(err) && *o.Safe {
+				*o.File = bkpCfgFile
 			}
 		}
 	}

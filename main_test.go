@@ -209,8 +209,8 @@ func TestInitEnv(t *testing.T) {
 		o := getOpts()
 		o.setArgs()
 
-		origdefCfgFile := defCfgFile
-		defCfgFile = "internal/testdata/config.test.boot"
+		origBkpCfgFile := bkpCfgFile
+		bkpCfgFile = "internal/testdata/config.test.boot"
 		c := o.initEdgeOS()
 
 		*o.ARCH = *o.MIPS64
@@ -220,7 +220,7 @@ func TestInitEnv(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(c, ShouldNotBeNil)
 
-		defCfgFile = origdefCfgFile
+		bkpCfgFile = origBkpCfgFile
 		os.Args = origArgs
 	})
 }
@@ -374,11 +374,11 @@ func TestGetCFG(t *testing.T) {
 		c.Blacklist(o.getCFG(c))
 		So(c.String(), ShouldEqual, mainGetConfig)
 
-		origDefCfgFile := defCfgFile
-		defCfgFile = "internal/testdata/config.test.boot"
+		origBkpCfgFile := bkpCfgFile
+		bkpCfgFile = "internal/testdata/config.test.boot"
 		c.Blacklist(o.getCFG(c))
 		So(c.String(), ShouldEqual, mainGetConfig)
-		defCfgFile = origDefCfgFile
+		bkpCfgFile = origBkpCfgFile
 
 		origFile := *o.File
 		*o.File = "internal/testdata/config.test.boot"
