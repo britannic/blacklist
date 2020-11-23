@@ -130,8 +130,9 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Compatibility**
 
-* edgeos-dnsmasq-blacklist has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X, ER4 UniFi Security Gateway USG3 and USG4 routers
-  * EdgeMAX versions: v1.9.7+hotfix.4-v2.0.8-hotfix.1, UniFi: 4.4.51.5287926
+* edgeos-dnsmasq-blacklist has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X, ER4, UniFi Security Gateway USG3 and USG4 routers
+  * EdgeMAX versions: v1.9.7+hotfix.4-v2.0.9, 
+  * UniFi versions: 4.4.34.5140624-v4.4.51.5287926
 
 
 [[Top]](#contents)
@@ -165,7 +166,13 @@ sudo curl -L https://raw.githubusercontent.com/britannic/debian-repo/master/blac
 * Update the system repositorities and install edgeos-dnsmasq-blacklist
 
 ```bash
-sudo apt-get update && sudo apt-get install edgeos-dnsmasq-blacklist
+sudo apt-get update && sudo apt-get install -f edgeos-dnsmasq-blacklist
+```
+
+* You may see reports of unmet dependencies, run this command to fix that:
+
+```bash
+apt --fix-broken install
 ```
 
 [[Top]](#contents)
@@ -204,7 +211,7 @@ sudo dpkg -i edgeos-dnsmasq-blacklist_1.2.4.5_mipsel.deb
 * If the repository is set up and you are using apt-get:
 
 ```bash
-sudo apt-get update && sudo apt-get install --only-upgrade edgeos-dnsmasq-blacklist
+sudo apt-get update && sudo apt-get install -f --only-upgrade edgeos-dnsmasq-blacklist
 ```
 
 * Note, if you are using dpkg, it cannot upgrade packages, so follow these [instructions](#dpkg-installation---best-for-disk-space-constrained-routers) and the previous package version will be automatically removed before the new package version is installed
