@@ -1,5 +1,24 @@
 # Changelog
 
+## Release 1.2.4.6 (January 29, 2021)
+
+Change recommended by [amoeba00](https://community.ui.com/user/amoeba00/9f2abc79-fcd8-4dda-9233-c0306f22f4df), because of updated source
+
+Original:
+
+```bash
+set service dns forwarding blacklist domains source OISD description "OISD (Hosts) Light"
+set service dns forwarding blacklist domains source OISD url https://dblw.oisd.nl/light/
+set service dns forwarding blacklist domains source OISD prefix *.
+```
+
+Current:
+
+```bash
+set service dns forwarding blacklist domains source OISD description 'OISD Domains Basic'
+set service dns forwarding blacklist domains source OISD url 'https://dbl.oisd.nl/basic/'
+```
+
 ## Release 1.2.4.5 (November 21, 2020)
 
 * Fix bug preventing update-dnsmasq loading failover config file when -safe switch is used
