@@ -60,7 +60,7 @@ func TestConfigProcessContent(t *testing.T) {
 				InCLI("inSession"),
 				Logger(newLog()),
 				Method("GET"),
-				Prefix("address=", "server="),
+				Prefix("address=", "addn-hosts="),
 				Timeout(30*time.Second),
 				WCard(Wildcard{Node: "*s", Name: "*"}),
 			)
@@ -175,7 +175,7 @@ func TestConfigProcessContent(t *testing.T) {
 
 func TestNewContent(t *testing.T) {
 	Convey("Testing NewContent()", t, func() {
-		expFileObj := "address=/0.really.bad.phishing.site.ru/0.0.0.0\naddress=/cw.bad.ultraadverts.site.eu/0.0.0.0\naddress=/really.bad.phishing.site.ru/0.0.0.0\naddress=/www.ytimg.com/0.0.0.0\naddress=/ytimg.com/0.0.0.0"
+		expFileObj := "addn-hosts=/0.really.bad.phishing.site.ru/0.0.0.0\naddn-hosts=/cw.bad.ultraadverts.site.eu/0.0.0.0\naddn-hosts=/really.bad.phishing.site.ru/0.0.0.0\naddn-hosts=/www.ytimg.com/0.0.0.0\naddn-hosts=/ytimg.com/0.0.0.0"
 		tests := []struct {
 			err       error
 			exp       string
@@ -203,7 +203,7 @@ func TestNewContent(t *testing.T) {
 			},
 			{
 				i:     1,
-				exp:   "server=/adinfuse.com/#",
+				exp:   "address=/adinfuse.com/#",
 				fail:  false,
 				ltype: ExcDomns,
 				name:  "z" + ExcDomns,
@@ -212,7 +212,7 @@ func TestNewContent(t *testing.T) {
 			},
 			{
 				i:     1,
-				exp:   "server=/wv.inner-active.mobi/#",
+				exp:   "address=/wv.inner-active.mobi/#",
 				fail:  false,
 				ltype: ExcHosts,
 				name:  "z" + ExcHosts,
@@ -230,7 +230,7 @@ func TestNewContent(t *testing.T) {
 			},
 			{
 				i:     1,
-				exp:   "address=/beap.gemini.yahoo.com/0.0.0.0",
+				exp:   "addn-hosts=/beap.gemini.yahoo.com/0.0.0.0",
 				fail:  false,
 				ltype: PreHosts,
 				name:  "z" + PreHosts,
@@ -296,7 +296,7 @@ func TestNewContent(t *testing.T) {
 			},
 			{
 				i:     1,
-				exp:   "server=/adinfuse.com/#",
+				exp:   "address=/adinfuse.com/#",
 				fail:  false,
 				ltype: ExcDomns,
 				name:  ExcDomns,
@@ -305,7 +305,7 @@ func TestNewContent(t *testing.T) {
 			},
 			{
 				i:     1,
-				exp:   "server=/wv.inner-active.mobi/#",
+				exp:   "address=/wv.inner-active.mobi/#",
 				fail:  false,
 				ltype: ExcHosts,
 				name:  ExcHosts,
@@ -323,7 +323,7 @@ func TestNewContent(t *testing.T) {
 			},
 			{
 				i:     1,
-				exp:   "address=/beap.gemini.yahoo.com/0.0.0.0",
+				exp:   "addn-hosts=/beap.gemini.yahoo.com/0.0.0.0",
 				fail:  false,
 				ltype: PreHosts,
 				name:  PreHosts,
@@ -400,7 +400,7 @@ func TestNewContent(t *testing.T) {
 			InCLI("inSession"),
 			Logger(newLog()),
 			Method("GET"),
-			Prefix("address=", "server="),
+			Prefix("address=", "addn-hosts="),
 			Timeout(30*time.Second),
 			WCard(Wildcard{Node: "*s", Name: "*"}),
 		)
@@ -462,7 +462,7 @@ func TestContenterString(t *testing.T) {
 			Ext("blacklist.conf"),
 			FileNameFmt("%v/%v.%v.%v"),
 			Method("GET"),
-			Prefix("address=", "server="),
+			Prefix("address=", "addn-hosts="),
 		)
 
 		So(c.Blacklist(&CFGstatic{Cfg: testallCfg}), ShouldBeNil)
@@ -534,7 +534,7 @@ func TestMultiObjNewContent(t *testing.T) {
 			FileNameFmt("%v/%v.%v.%v"),
 			Logger(newLog()),
 			Method("GET"),
-			Prefix("address=", "server="),
+			Prefix("address=", "addn-hosts="),
 		)
 
 		So(c.Blacklist(&CFGstatic{Cfg: CfgMimimal}), ShouldBeNil)
@@ -544,11 +544,11 @@ func TestMultiObjNewContent(t *testing.T) {
 			exp   string
 			name  string
 		}{
-			{name: "ExRtObj", iFace: ExRtObj, exp: "server=/ytimg.com/#"},
+			{name: "ExRtObj", iFace: ExRtObj, exp: "address=/ytimg.com/#"},
 			{name: "ExDmObj", iFace: ExDmObj, exp: ""},
 			{name: "ExHtObj", iFace: ExHtObj, exp: ""},
 			{name: "PreDObj", iFace: PreDObj, exp: "address=/awfuladvertising.com/0.0.0.0\naddress=/badadsrvr.org/0.0.0.0\naddress=/badintellitxt.com/0.0.0.0\naddress=/disgusting.unkiosked.com/0.0.0.0\naddress=/filthydoubleclick.net/0.0.0.0\naddress=/iffyfree-counter.co.uk/0.0.0.0\naddress=/nastycentade.com/0.0.0.0\naddress=/worseadtechus.net/0.0.0.0"},
-			{name: "PreHObj", iFace: PreHObj, exp: "address=/beap.gemini.yahoo.com/192.168.168.1"},
+			{name: "PreHObj", iFace: PreHObj, exp: "addn-hosts=/beap.gemini.yahoo.com/192.168.168.1"},
 			{name: "PreRObj", iFace: PreRObj, exp: "address=/adsrvr.org/0.0.0.0\naddress=/adtechus.net/0.0.0.0\naddress=/advertising.com/0.0.0.0\naddress=/centade.com/0.0.0.0\naddress=/doubleclick.net/0.0.0.0\naddress=/free-counter.co.uk/0.0.0.0\naddress=/intellitxt.com/0.0.0.0\naddress=/kiosked.com/0.0.0.0"},
 			{name: "FileObj", iFace: FileObj, exp: expFileObj},
 			{name: "URLdObj", iFace: URLdObj, exp: expURLdObj},
@@ -586,7 +586,7 @@ func TestProcessContent(t *testing.T) {
 				FileNameFmt("%v/%v.%v.%v"),
 				Logger(newLog()),
 				Method("GET"),
-				Prefix("address=", "server="),
+				Prefix("address=", "addn-hosts="),
 			)
 
 			tests := []struct {
@@ -759,7 +759,7 @@ Blacklist:
 					expDexMap: list{entry: entry{"ytimg.com": struct{}{}}},
 					expExcMap: list{entry: entry{"ytimg.com": struct{}{}}},
 					f:         dir + "/hosts.blacklisted-servers.blacklist.conf",
-					fdata:     "address=/beap.gemini.yahoo.com/192.168.168.1\n",
+					fdata:     "addn-hosts=/beap.gemini.yahoo.com/192.168.168.1\n",
 					obj:       PreHObj,
 				},
 				{
@@ -821,9 +821,9 @@ Blacklist:
 					},
 					expExcMap: list{entry: entry{"ytimg.com": struct{}{}}},
 					f:         dir + "/hosts.tasty.blacklist.conf",
-					fdata: `address=/0.really.bad.phishing.site.ru/10.10.10.10
-address=/cw.bad.ultraadverts.site.eu/10.10.10.10
-address=/really.bad.phishing.site.ru/10.10.10.10
+					fdata: `addn-hosts=/0.really.bad.phishing.site.ru/10.10.10.10
+addn-hosts=/cw.bad.ultraadverts.site.eu/10.10.10.10
+addn-hosts=/really.bad.phishing.site.ru/10.10.10.10
 `,
 					obj: FileObj,
 				},
@@ -926,7 +926,7 @@ func TestProcessZeroContent(t *testing.T) {
 			FileNameFmt("%v/%v.%v.%v"),
 			Logger(newLog()),
 			Method("GET"),
-			Prefix("address=", "server="),
+			Prefix("address=", "addn-hosts="),
 		)
 
 		err = c.Blacklist(&CFGstatic{Cfg: cfgRedundant})
@@ -967,7 +967,7 @@ func TestProcessBadFile(t *testing.T) {
 			FileNameFmt("%v/%v.%v.%v"),
 			Logger(newLog()),
 			Method("GET"),
-			Prefix("address=", "server="),
+			Prefix("address=", "addn-hosts="),
 		)
 
 		err = c.Blacklist(&CFGstatic{Cfg: CfgMimimal})
@@ -1256,154 +1256,154 @@ var (
 	}
 }`
 
-	hostsContent = `address=/a.applovin.com/192.168.168.1
-address=/a.glcdn.co/192.168.168.1
-address=/a.vserv.mobi/192.168.168.1
-address=/ad.leadboltapps.net/192.168.168.1
-address=/ad.madvertise.de/192.168.168.1
-address=/ad.where.com/192.168.168.1
-address=/ad1.adinfuse.com/192.168.168.1
-address=/ad2.adinfuse.com/192.168.168.1
-address=/adcontent.saymedia.com/192.168.168.1
-address=/adinfuse.com/192.168.168.1
-address=/admicro1.vcmedia.vn/192.168.168.1
-address=/admicro2.vcmedia.vn/192.168.168.1
-address=/admin.vserv.mobi/192.168.168.1
-address=/ads.adiquity.com/192.168.168.1
-address=/ads.admarvel.com/192.168.168.1
-address=/ads.admoda.com/192.168.168.1
-address=/ads.celtra.com/192.168.168.1
-address=/ads.flurry.com/192.168.168.1
-address=/ads.matomymobile.com/192.168.168.1
-address=/ads.mobgold.com/192.168.168.1
-address=/ads.mobilityware.com/192.168.168.1
-address=/ads.mopub.com/192.168.168.1
-address=/ads.n-ws.org/192.168.168.1
-address=/ads.ookla.com/192.168.168.1
-address=/ads.saymedia.com/192.168.168.1
-address=/ads.smartdevicemedia.com/192.168.168.1
-address=/ads.srcxad.net/192.168.168.1
-address=/ads.vserv.mobi/192.168.168.1
-address=/ads2.mediaarmor.com/192.168.168.1
-address=/adserver.ubiyoo.com/192.168.168.1
-address=/adultmoda.com/192.168.168.1
-address=/android-sdk31.transpera.com/192.168.168.1
-address=/android.bcfads.com/192.168.168.1
-address=/api.airpush.com/192.168.168.1
-address=/api.analytics.omgpop.com/192.168.168.1
-address=/api.yp.com/192.168.168.1
-address=/apps.buzzcity.net/192.168.168.1
-address=/apps.mobilityware.com/192.168.168.1
-address=/as.adfonic.net/192.168.168.1
-address=/asotrack1.fluentmobile.com/192.168.168.1
-address=/assets.cntdy.mobi/192.168.168.1
-address=/atti.velti.com/192.168.168.1
-address=/b.scorecardresearch.com/192.168.168.1
-address=/banners.bigmobileads.com/192.168.168.1
-address=/bigmobileads.com/192.168.168.1
-address=/bo.jumptap.com/192.168.168.1
-address=/bos-tapreq01.jumptap.com/192.168.168.1
-address=/bos-tapreq02.jumptap.com/192.168.168.1
-address=/bos-tapreq03.jumptap.com/192.168.168.1
-address=/bos-tapreq04.jumptap.com/192.168.168.1
-address=/bos-tapreq05.jumptap.com/192.168.168.1
-address=/bos-tapreq06.jumptap.com/192.168.168.1
-address=/bos-tapreq07.jumptap.com/192.168.168.1
-address=/bos-tapreq08.jumptap.com/192.168.168.1
-address=/bos-tapreq09.jumptap.com/192.168.168.1
-address=/bos-tapreq10.jumptap.com/192.168.168.1
-address=/bos-tapreq11.jumptap.com/192.168.168.1
-address=/bos-tapreq12.jumptap.com/192.168.168.1
-address=/bos-tapreq13.jumptap.com/192.168.168.1
-address=/bos-tapreq14.jumptap.com/192.168.168.1
-address=/bos-tapreq15.jumptap.com/192.168.168.1
-address=/bos-tapreq16.jumptap.com/192.168.168.1
-address=/bos-tapreq17.jumptap.com/192.168.168.1
-address=/bos-tapreq18.jumptap.com/192.168.168.1
-address=/bos-tapreq19.jumptap.com/192.168.168.1
-address=/bos-tapreq20.jumptap.com/192.168.168.1
-address=/c.vrvm.com/192.168.168.1
-address=/c.vserv.mobi/192.168.168.1
-address=/c753738.r38.cf2.rackcdn.com/192.168.168.1
-address=/cache-ssl.celtra.com/192.168.168.1
-address=/cache.celtra.com/192.168.168.1
-address=/cdn.celtra.com/192.168.168.1
-address=/cdn.nearbyad.com/192.168.168.1
-address=/cdn.trafficforce.com/192.168.168.1
-address=/cdn.us.goldspotmedia.com/192.168.168.1
-address=/cdn.vdopia.com/192.168.168.1
-address=/cdn1.crispadvertising.com/192.168.168.1
-address=/cdn1.inner-active.mobi/192.168.168.1
-address=/cdn2.crispadvertising.com/192.168.168.1
-address=/click.buzzcity.net/192.168.168.1
-address=/creative1cdn.mobfox.com/192.168.168.1
-address=/d.applovin.com/192.168.168.1
-address=/d2bgg7rjywcwsy.cloudfront.net/192.168.168.1
-address=/d3anogn3pbtk4v.cloudfront.net/192.168.168.1
-address=/d3oltyb66oj2v8.cloudfront.net/192.168.168.1
-address=/edge.reporo.net/192.168.168.1
-address=/ftpcontent.worldnow.com/192.168.168.1
-address=/funnel0.adinfuse.com/192.168.168.1
-address=/gemini.yahoo.com/192.168.168.1
-address=/go.adinfuse.com/192.168.168.1
-address=/go.mobpartner.mobi/192.168.168.1
-address=/go.vrvm.com/192.168.168.1
-address=/gsmtop.net/192.168.168.1
-address=/gts-ads.twistbox.com/192.168.168.1
-address=/hhbeksrcw5d9e.pflexads.com/192.168.168.1
-address=/hybl9bazbc35.pflexads.com/192.168.168.1
-address=/i.jumptap.com/192.168.168.1
-address=/i.tapit.com/192.168.168.1
-address=/images.millennialmedia.com/192.168.168.1
-address=/images.mpression.net/192.168.168.1
-address=/img.ads.huntmad.com/192.168.168.1
-address=/img.ads.mobilefuse.net/192.168.168.1
-address=/img.ads.mocean.mobi/192.168.168.1
-address=/img.ads.mojiva.com/192.168.168.1
-address=/img.ads.taptapnetworks.com/192.168.168.1
-address=/intouch.adinfuse.com/192.168.168.1
-address=/lb.usemaxserver.de/192.168.168.1
-address=/m.adsymptotic.com/192.168.168.1
-address=/m2m1.inner-active.mobi/192.168.168.1
-address=/media.mobpartner.mobi/192.168.168.1
-address=/medrx.sensis.com.au/192.168.168.1
-address=/mobile.banzai.it/192.168.168.1
-address=/mobiledl.adboe.com/192.168.168.1
-address=/mobpartner.mobi/192.168.168.1
-address=/mwc.velti.com/192.168.168.1
-address=/netdna.reporo.net/192.168.168.1
-address=/oasc04012.247realmedia.com/192.168.168.1
-address=/orange-fr.adinfuse.com/192.168.168.1
-address=/orangeuk-mc.adinfuse.com/192.168.168.1
-address=/orencia.pflexads.com/192.168.168.1
-address=/pdn.applovin.com/192.168.168.1
-address=/r.edge.inmobicdn.net/192.168.168.1
-address=/r.mobpartner.mobi/192.168.168.1
-address=/req.appads.com/192.168.168.1
-address=/rs-staticart.ybcdn.net/192.168.168.1
-address=/ru.velti.com/192.168.168.1
-address=/s0.2mdn.net/192.168.168.1
-address=/s3.phluant.com/192.168.168.1
-address=/sf.vserv.mobi/192.168.168.1
-address=/show.buzzcity.net/192.168.168.1
-address=/sky-connect.adinfuse.com/192.168.168.1
-address=/sky.adinfuse.com/192.168.168.1
-address=/static.cdn.gtsmobi.com/192.168.168.1
-address=/static.estebull.com/192.168.168.1
-address=/stats.pflexads.com/192.168.168.1
-address=/track.celtra.com/192.168.168.1
-address=/tracking.klickthru.com/192.168.168.1
-address=/uk-ad2.adinfuse.com/192.168.168.1
-address=/uk-go.adinfuse.com/192.168.168.1
-address=/web63.jumptap.com/192.168.168.1
-address=/web64.jumptap.com/192.168.168.1
-address=/web65.jumptap.com/192.168.168.1
-address=/wv.inner-active.mobi/192.168.168.1
-address=/www.eltrafiko.com/192.168.168.1
-address=/www.mmnetwork.mobi/192.168.168.1
-address=/www.pflexads.com/192.168.168.1
-address=/www.roastfiles2017.com/192.168.168.1
-address=/wwww.adleads.com/192.168.168.1`
+	hostsContent = `addn-hosts=/a.applovin.com/192.168.168.1
+addn-hosts=/a.glcdn.co/192.168.168.1
+addn-hosts=/a.vserv.mobi/192.168.168.1
+addn-hosts=/ad.leadboltapps.net/192.168.168.1
+addn-hosts=/ad.madvertise.de/192.168.168.1
+addn-hosts=/ad.where.com/192.168.168.1
+addn-hosts=/ad1.adinfuse.com/192.168.168.1
+addn-hosts=/ad2.adinfuse.com/192.168.168.1
+addn-hosts=/adcontent.saymedia.com/192.168.168.1
+addn-hosts=/adinfuse.com/192.168.168.1
+addn-hosts=/admicro1.vcmedia.vn/192.168.168.1
+addn-hosts=/admicro2.vcmedia.vn/192.168.168.1
+addn-hosts=/admin.vserv.mobi/192.168.168.1
+addn-hosts=/ads.adiquity.com/192.168.168.1
+addn-hosts=/ads.admarvel.com/192.168.168.1
+addn-hosts=/ads.admoda.com/192.168.168.1
+addn-hosts=/ads.celtra.com/192.168.168.1
+addn-hosts=/ads.flurry.com/192.168.168.1
+addn-hosts=/ads.matomymobile.com/192.168.168.1
+addn-hosts=/ads.mobgold.com/192.168.168.1
+addn-hosts=/ads.mobilityware.com/192.168.168.1
+addn-hosts=/ads.mopub.com/192.168.168.1
+addn-hosts=/ads.n-ws.org/192.168.168.1
+addn-hosts=/ads.ookla.com/192.168.168.1
+addn-hosts=/ads.saymedia.com/192.168.168.1
+addn-hosts=/ads.smartdevicemedia.com/192.168.168.1
+addn-hosts=/ads.srcxad.net/192.168.168.1
+addn-hosts=/ads.vserv.mobi/192.168.168.1
+addn-hosts=/ads2.mediaarmor.com/192.168.168.1
+addn-hosts=/adserver.ubiyoo.com/192.168.168.1
+addn-hosts=/adultmoda.com/192.168.168.1
+addn-hosts=/android-sdk31.transpera.com/192.168.168.1
+addn-hosts=/android.bcfads.com/192.168.168.1
+addn-hosts=/api.airpush.com/192.168.168.1
+addn-hosts=/api.analytics.omgpop.com/192.168.168.1
+addn-hosts=/api.yp.com/192.168.168.1
+addn-hosts=/apps.buzzcity.net/192.168.168.1
+addn-hosts=/apps.mobilityware.com/192.168.168.1
+addn-hosts=/as.adfonic.net/192.168.168.1
+addn-hosts=/asotrack1.fluentmobile.com/192.168.168.1
+addn-hosts=/assets.cntdy.mobi/192.168.168.1
+addn-hosts=/atti.velti.com/192.168.168.1
+addn-hosts=/b.scorecardresearch.com/192.168.168.1
+addn-hosts=/banners.bigmobileads.com/192.168.168.1
+addn-hosts=/bigmobileads.com/192.168.168.1
+addn-hosts=/bo.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq01.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq02.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq03.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq04.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq05.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq06.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq07.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq08.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq09.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq10.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq11.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq12.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq13.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq14.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq15.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq16.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq17.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq18.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq19.jumptap.com/192.168.168.1
+addn-hosts=/bos-tapreq20.jumptap.com/192.168.168.1
+addn-hosts=/c.vrvm.com/192.168.168.1
+addn-hosts=/c.vserv.mobi/192.168.168.1
+addn-hosts=/c753738.r38.cf2.rackcdn.com/192.168.168.1
+addn-hosts=/cache-ssl.celtra.com/192.168.168.1
+addn-hosts=/cache.celtra.com/192.168.168.1
+addn-hosts=/cdn.celtra.com/192.168.168.1
+addn-hosts=/cdn.nearbyad.com/192.168.168.1
+addn-hosts=/cdn.trafficforce.com/192.168.168.1
+addn-hosts=/cdn.us.goldspotmedia.com/192.168.168.1
+addn-hosts=/cdn.vdopia.com/192.168.168.1
+addn-hosts=/cdn1.crispadvertising.com/192.168.168.1
+addn-hosts=/cdn1.inner-active.mobi/192.168.168.1
+addn-hosts=/cdn2.crispadvertising.com/192.168.168.1
+addn-hosts=/click.buzzcity.net/192.168.168.1
+addn-hosts=/creative1cdn.mobfox.com/192.168.168.1
+addn-hosts=/d.applovin.com/192.168.168.1
+addn-hosts=/d2bgg7rjywcwsy.cloudfront.net/192.168.168.1
+addn-hosts=/d3anogn3pbtk4v.cloudfront.net/192.168.168.1
+addn-hosts=/d3oltyb66oj2v8.cloudfront.net/192.168.168.1
+addn-hosts=/edge.reporo.net/192.168.168.1
+addn-hosts=/ftpcontent.worldnow.com/192.168.168.1
+addn-hosts=/funnel0.adinfuse.com/192.168.168.1
+addn-hosts=/gemini.yahoo.com/192.168.168.1
+addn-hosts=/go.adinfuse.com/192.168.168.1
+addn-hosts=/go.mobpartner.mobi/192.168.168.1
+addn-hosts=/go.vrvm.com/192.168.168.1
+addn-hosts=/gsmtop.net/192.168.168.1
+addn-hosts=/gts-ads.twistbox.com/192.168.168.1
+addn-hosts=/hhbeksrcw5d9e.pflexads.com/192.168.168.1
+addn-hosts=/hybl9bazbc35.pflexads.com/192.168.168.1
+addn-hosts=/i.jumptap.com/192.168.168.1
+addn-hosts=/i.tapit.com/192.168.168.1
+addn-hosts=/images.millennialmedia.com/192.168.168.1
+addn-hosts=/images.mpression.net/192.168.168.1
+addn-hosts=/img.ads.huntmad.com/192.168.168.1
+addn-hosts=/img.ads.mobilefuse.net/192.168.168.1
+addn-hosts=/img.ads.mocean.mobi/192.168.168.1
+addn-hosts=/img.ads.mojiva.com/192.168.168.1
+addn-hosts=/img.ads.taptapnetworks.com/192.168.168.1
+addn-hosts=/intouch.adinfuse.com/192.168.168.1
+addn-hosts=/lb.usemaxserver.de/192.168.168.1
+addn-hosts=/m.adsymptotic.com/192.168.168.1
+addn-hosts=/m2m1.inner-active.mobi/192.168.168.1
+addn-hosts=/media.mobpartner.mobi/192.168.168.1
+addn-hosts=/medrx.sensis.com.au/192.168.168.1
+addn-hosts=/mobile.banzai.it/192.168.168.1
+addn-hosts=/mobiledl.adboe.com/192.168.168.1
+addn-hosts=/mobpartner.mobi/192.168.168.1
+addn-hosts=/mwc.velti.com/192.168.168.1
+addn-hosts=/netdna.reporo.net/192.168.168.1
+addn-hosts=/oasc04012.247realmedia.com/192.168.168.1
+addn-hosts=/orange-fr.adinfuse.com/192.168.168.1
+addn-hosts=/orangeuk-mc.adinfuse.com/192.168.168.1
+addn-hosts=/orencia.pflexads.com/192.168.168.1
+addn-hosts=/pdn.applovin.com/192.168.168.1
+addn-hosts=/r.edge.inmobicdn.net/192.168.168.1
+addn-hosts=/r.mobpartner.mobi/192.168.168.1
+addn-hosts=/req.appads.com/192.168.168.1
+addn-hosts=/rs-staticart.ybcdn.net/192.168.168.1
+addn-hosts=/ru.velti.com/192.168.168.1
+addn-hosts=/s0.2mdn.net/192.168.168.1
+addn-hosts=/s3.phluant.com/192.168.168.1
+addn-hosts=/sf.vserv.mobi/192.168.168.1
+addn-hosts=/show.buzzcity.net/192.168.168.1
+addn-hosts=/sky-connect.adinfuse.com/192.168.168.1
+addn-hosts=/sky.adinfuse.com/192.168.168.1
+addn-hosts=/static.cdn.gtsmobi.com/192.168.168.1
+addn-hosts=/static.estebull.com/192.168.168.1
+addn-hosts=/stats.pflexads.com/192.168.168.1
+addn-hosts=/track.celtra.com/192.168.168.1
+addn-hosts=/tracking.klickthru.com/192.168.168.1
+addn-hosts=/uk-ad2.adinfuse.com/192.168.168.1
+addn-hosts=/uk-go.adinfuse.com/192.168.168.1
+addn-hosts=/web63.jumptap.com/192.168.168.1
+addn-hosts=/web64.jumptap.com/192.168.168.1
+addn-hosts=/web65.jumptap.com/192.168.168.1
+addn-hosts=/wv.inner-active.mobi/192.168.168.1
+addn-hosts=/www.eltrafiko.com/192.168.168.1
+addn-hosts=/www.mmnetwork.mobi/192.168.168.1
+addn-hosts=/www.pflexads.com/192.168.168.1
+addn-hosts=/www.roastfiles2017.com/192.168.168.1
+addn-hosts=/wwww.adleads.com/192.168.168.1`
 
 	domainsContent = "address=/192-168-0-255.com/192.1.1.1\naddress=/asi-37.fr/192.1.1.1\naddress=/bagbackpack.com/192.1.1.1\naddress=/bitmeyenkartusistanbul.com/192.1.1.1\naddress=/byxon.com/192.1.1.1\naddress=/img001.com/192.1.1.1\naddress=/loadto.net/192.1.1.1\naddress=/roastfiles2017.com/192.1.1.1"
 
@@ -1466,7 +1466,7 @@ Blacklist:
 
 	filesMin = "[\nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n \nDesc:\t \"File source\"\nDisabled: false\nFile:\t \"../../internal/testdata/blist.hosts.src\"\nIP:\t \"10.10.10.10\"\nLtype:\t \"file\"\nName:\t \"/tasty\"\nnType:\t \"host\"\nPrefix:\t \"\"\nType:\t \"hosts\"\nURL:\t \"\"\n]"
 
-	excRootContent = "server=/122.2o7.net/#\nserver=/1e100.net/#\nserver=/adobedtm.com/#\nserver=/akamai.net/#\nserver=/amazon.com/#\nserver=/amazonaws.com/#\nserver=/apple.com/#\nserver=/ask.com/#\nserver=/avast.com/#\nserver=/bitdefender.com/#\nserver=/cdn.visiblemeasures.com/#\nserver=/cloudfront.net/#\nserver=/coremetrics.com/#\nserver=/edgesuite.net/#\nserver=/freedns.afraid.org/#\nserver=/github.com/#\nserver=/githubusercontent.com/#\nserver=/google.com/#\nserver=/googleadservices.com/#\nserver=/googleapis.com/#\nserver=/googleusercontent.com/#\nserver=/gstatic.com/#\nserver=/gvt1.com/#\nserver=/gvt1.net/#\nserver=/hb.disney.go.com/#\nserver=/hp.com/#\nserver=/hulu.com/#\nserver=/images-amazon.com/#\nserver=/jumptap.com/#\nserver=/msdn.com/#\nserver=/paypal.com/#\nserver=/rackcdn.com/#\nserver=/schema.org/#\nserver=/skype.com/#\nserver=/smacargo.com/#\nserver=/sourceforge.net/#\nserver=/ssl-on9.com/#\nserver=/ssl-on9.net/#\nserver=/static.chartbeat.com/#\nserver=/storage.googleapis.com/#\nserver=/usemaxserver.de/#\nserver=/windows.net/#\nserver=/yimg.com/#\nserver=/ytimg.com/#"
+	excRootContent = "address=/122.2o7.net/#\naddress=/1e100.net/#\naddress=/adobedtm.com/#\naddress=/akamai.net/#\naddress=/amazon.com/#\naddress=/amazonaws.com/#\naddress=/apple.com/#\naddress=/ask.com/#\naddress=/avast.com/#\naddress=/bitdefender.com/#\naddress=/cdn.visiblemeasures.com/#\naddress=/cloudfront.net/#\naddress=/coremetrics.com/#\naddress=/edgesuite.net/#\naddress=/freedns.afraid.org/#\naddress=/github.com/#\naddress=/githubusercontent.com/#\naddress=/google.com/#\naddress=/googleadservices.com/#\naddress=/googleapis.com/#\naddress=/googleusercontent.com/#\naddress=/gstatic.com/#\naddress=/gvt1.com/#\naddress=/gvt1.net/#\naddress=/hb.disney.go.com/#\naddress=/hp.com/#\naddress=/hulu.com/#\naddress=/images-amazon.com/#\naddress=/jumptap.com/#\naddress=/msdn.com/#\naddress=/paypal.com/#\naddress=/rackcdn.com/#\naddress=/schema.org/#\naddress=/skype.com/#\naddress=/smacargo.com/#\naddress=/sourceforge.net/#\naddress=/ssl-on9.com/#\naddress=/ssl-on9.net/#\naddress=/static.chartbeat.com/#\naddress=/storage.googleapis.com/#\naddress=/usemaxserver.de/#\naddress=/windows.net/#\naddress=/yimg.com/#\naddress=/ytimg.com/#"
 
 	testCfg = `blacklist {
 	disabled false

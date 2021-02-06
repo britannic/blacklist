@@ -82,7 +82,7 @@ func getDnsmasqPrefix(s *source) string {
 	case domn, preDomn, preRoot, root:
 		return s.Pfx.domain + "/%v/" + s.ip
 	case excDomn, excHost, excRoot:
-		return s.Pfx.host + "/%v/#"
+		return s.Pfx.domain + "/%v/#"
 	case host, preHost:
 		return s.Pfx.host + "/%v/" + s.ip
 	}
