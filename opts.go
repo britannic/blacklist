@@ -116,7 +116,7 @@ func (o *opts) initEdgeOS() *e.Config {
 		e.FileNameFmt("%v/%v.%v.%v"),
 		e.InCLI("inSession"),
 		e.Method("GET"),
-		e.Prefix("address=", "server="),
+		e.Prefix("address=", "addn-hosts="),
 		e.Logger(log),
 		e.Timeout(30*time.Second),
 		e.Verb(*o.Verb),

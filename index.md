@@ -1,5 +1,13 @@
 # Changelog
 
+## Release 2.0.0 (February 6, 2021)
+
+Breaking change
+
+* Host entries will now use the dnsmasq configuration option: addn-hosts
+* This change was suggested and tested in a script by [@hacki11](https://community.ui.com/user/4a83c1d9-89c3-4038-a245-1a229a48c792)
+* This should speed up dnsmasq lookups
+
 ## Release 1.2.4.6 (January 29, 2021)
 
 Change recommended by [amoeba00](https://community.ui.com/user/amoeba00/9f2abc79-fcd8-4dda-9233-c0306f22f4df), because of updated source
