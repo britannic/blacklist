@@ -6,7 +6,7 @@ SHELL		= /bin/bash
 BASE			 = $(CURDIR)/
 BIN 			 = /usr/local/go/bin
 GO				 = go
-GOBUILD			 = $(GO) build
+GOBUILD			 = $(GO) build -mod=readonly 
 GOCLEAN			 = $(GO) clean -cache
 GODOC			 = godoc
 GOFMT			 = gofmt
