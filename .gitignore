@@ -5,7 +5,6 @@
 !*.*
 !*/
 !Makefile
-!*.deb
 !.travis.yml
 !testcoverage
 !VERSION
