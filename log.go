@@ -6,7 +6,7 @@ import (
 	"runtime"
 
 	logging "github.com/britannic/go-logging"
-	"golang.org/x/term"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 var (
@@ -33,7 +33,7 @@ var (
 
 // inTerminal returns true if the current terminal is interactive
 func inTerminal() bool {
-	return term.IsTerminal(int(os.Stdin.Fd()))
+	return terminal.IsTerminal(int(os.Stdin.Fd()))
 }
 
 // setLogFile returns a log directory and file name dependent on the current OS
