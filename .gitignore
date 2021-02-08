@@ -9,6 +9,7 @@
 !testcoverage
 !VERSION
 !license
+!*.deb
 
 # Ignore
 .coveralls.yml
