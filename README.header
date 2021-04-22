@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt "View the software license here")[![Version](https://img.shields.io/badge/version-v1.2.4.6-green.svg)](https://github.com/britannic/blacklist "Latest version")[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist  "Go documentation")[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist  "Build status for this version")[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master "")](https://coveralls.io/github/britannic/blacklist?branch=master "Test coverage status for this version")[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist "Quality of Go code for this version")
 
-Follow the conversation @ [community.ubnt.com](https://community.ubnt.com/t5/EdgeRouter/DNS-Adblocking-amp-Blacklisting-dnsmasq-Configuration/td-p/2215008/jump-to/first-unread-message "Follow the conversation about this software in the EdgeRouter forum (https://community.ubnt.com/t5/EdgeRouter/)")
+Follow the conversation @ [community.ui.com](https://community.ui.com/questions/DNS-Adblocking-and-Blacklisting-dnsmasq-Configuration-Integration-Package-v1-2-4-5/eb05f1b2-5316-4a80-8221-5e8b02575da4)
 
 ## Donations and Sponsorship
 
@@ -63,7 +63,7 @@ We greatly appreciate any and all donations - thank you! Funds go to maintaining
 
 ## **Overview**
 
-EdgeMax dnsmasq DNS blacklisting and redirection is inspired by the users at [EdgeMAX Community](https://community.ubnt.com/t5/EdgeMAX/bd-p/EdgeMAX/)
+EdgeMax dnsmasq DNS blacklisting and redirection is inspired by the users at [Ubiquiti UISP Community](https://community.ui.com/tags/unms)
 
 [[Top]](#contents)
 
@@ -368,9 +368,9 @@ admicro1.vcmedia.vn
 ### **How do I keep my USG configuration after an upgrade, provision or reboot?**
 
 * Follow these [instructions](https://britannic.github.io/install-edgeos-packages/) on how to automatically install edgeos-dnsmasq-blacklist
-* Generate and download a config.gateway.json file from your USG following these [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
+* Generate and download a config.gateway.json file from your USG following these [instructions](https://help.ui.com/hc/en-us/articles/215458888-UniFi-USG-Advanced-Configuration-Using-config-gateway-json)
 * Here's a sample [config.gateway.json](https://raw.githubusercontent.com/britannic/blacklist/master/config.gateway.json)
-* Once the config.gateway.json has been generated, it will need to be uploaded to your **UniFi controller** per the [instructions](https://help.ubnt.com/hc/en-us/articles/215458888-UniFi-How-to-further-customize-USG-configuration-with-config-gateway-json)
+* Once the config.gateway.json has been generated, it will need to be uploaded to your **UniFi controller** per the [instructions](https://help.ui.com/hc/en-us/articles/215458888-UniFi-USG-Advanced-Configuration-Using-config-gateway-json)
 * Alternatively follow the instructions for [how do I use standalone or failover mode?](#how-do-i-use-standalone-or-failover-mode)
 
 [[Top]](#contents)
