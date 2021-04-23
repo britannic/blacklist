@@ -280,6 +280,12 @@ test-coverage: fmt lint vendor test-coverage-tools | $(BASE) ; $(info $(M) runni
 	$(Q) $(GO) tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
 	$(Q) $(GOCOV) convert $(COVERAGE_PROFILE) | $(GOCOVXML) > $(COVERAGE_XML)
 
+
+.PHONY: profile
+profile: ; $(info $(M) profiling code…) @  ## Run profile tests
+	$(Q) cd $(BASE)
+	$(foreach pkg,$(TESTPKGS), $(shell [[ $(notdir ${pkg}) != "tdata" ]] && $(GO) test -cpuprofile cpu.$(notdir ${pkg}).prof -memprofile mem.$(notdir ${pkg}).prof) -bench ${pkg})
+
 .PHONY: lint
 lint: vendor | $(BASE) $(GOLINT) ; $(info $(M) running golangci-lint…)  @ ## Run golangci-lint
 	$(GOLINT) run ./...
