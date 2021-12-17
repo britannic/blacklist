@@ -1,0 +1,8 @@
+#!/bin/bash
+
+main='github.com/britannic/'
+pkgs='blacklist'
+
+for pkg in ${pkgs}; do
+  godocdown ${main}/${pkg} >${GOPATH}/src/${main}/${pkg}/README.md
+done

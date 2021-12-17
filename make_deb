@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+
+export COPY_EXTENDED_ATTRIBUTES_DISABLE=true
+export COPYFILE_DISABLE=true
+drop="$HOME/Dropbox/EdgeOS"
+arch=${2}
+dep=''
+desc='Adds EdgeOS dnsmasq blacklist configuration templates for "service dns forwarding"'
+dir='/tmp/'
+dist='deb'
+exc1=\**/.DS_Store
+exc2=\**/*.bak
+exe=${1}
+host='dev1'
+lic='https://opensource.org/licenses/BSD-2-Clause'
+pkg='edgeos-dnsmasq-blacklist'
+mntr="${pkg}@helmrock.com"
+# preinst='./.payload/pre-install.sh'
+postinst='./.payload/post-install.sh'
+postrm='./.payload/post-remove.sh'
+prerm='./.payload/pre-remove.sh'
+prov=${pkg}
+purge='./.payload/purge.sh'
+pwd=$(pwd)
+sdir="${pwd}/.payload"
+src1='opt/'
+src2='config/'
+scripts="${sdir}/${src2}/scripts"
+url='https://github.com/britannic/blacklist'
+vend='Helm Rock Consulting'
+ver=$(cat VERSION)
+pver=$(cat OLDVERSION)
+zver='s/'${pkg}'_'${pver}'_/'${pkg}'_'${ver}'_/g'
+deb="${pkg}_${ver}_${arch}.${dist}"
+
+bundle() {
+	cwd=$(pwd)
+	local dir='./.payload/'
+	local templt='decompress_pre-install'
+
+	cat "${templt}" >"${postinst}"
+	cd "${dir}"
+
+	tar -zc \
+		--exclude='._*' \
+		--exclude='.svn' \
+		--exclude='.DS_Store' \
+		--exclude='*.bak' \
+		--exclude='*~' \
+		./* >>"${cwd}/${postinst}"
+	cd "${cwd}"
+}
+
+# --after-remove "${postrm}"
+# --before-install "${preinst}" \
+# --deb-pre-depends "${dep}" \
+# --before-remove "${prerm}" \
+
+make_debian() {
+	fpm \
+		-f \
+		--description "${desc}" \
+		--license "${lic}" \
+		--after-install "${postinst}" \
+		--deb-after-purge "${purge}" \
+		--before-remove "${prerm}" \
+		--provides "${prov}" \
+		--url "${url}" \
+		--vendor "${vend}" \
+		--verbose \
+		-a "${arch}" \
+		-C "${sdir}" \
+		-m "${mntr}" \
+		-n "${pkg}" \
+		-t "${dist}" \
+		-v "${ver}" \
+		-x "${exc1}" \
+		-x "${exc2}" \
+		-s dir "${src1}" "${src2}"
+}
+
+compress_deb() {
+	tar -zcvf "${deb}.tgz" "${deb}"
+}
+
+update_dropbox() {
+	[[ -d "${drop}/" ]] && install -m 0755 "${deb}.tgz" "${drop}/"
+}
+
+upload() {
+	scp "${deb}" "${host}:${dir}"
+}
+
+# Build it!
+make_debian && compress_deb
