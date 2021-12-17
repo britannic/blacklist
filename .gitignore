@@ -8,8 +8,10 @@
 !.travis.yml
 !testcoverage
 !VERSION
+!OLDVERSION
 !license
 !*.deb
+!make_*
 
 # Ignore
 .coveralls.yml

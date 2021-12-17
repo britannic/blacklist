@@ -125,13 +125,11 @@ update_dns_config() {
 	try set service dns forwarding blacklist domains include themillionaireinpjs.com
 	try set service dns forwarding blacklist domains include traktrafficflow.com
 	try set service dns forwarding blacklist domains include wwwpromoter.com
-	try set service dns forwarding blacklist domains source malwaredomains.com description '"Just Domains"'
-	try set service dns forwarding blacklist domains source malwaredomains.com url 'http://mirror1.malwaredomains.com/files/justdomains'
 	try set service dns forwarding blacklist domains source NoBitCoin description '"Blocking Web Browser Bitcoin Mining"'
 	try set service dns forwarding blacklist domains source NoBitCoin prefix '0.0.0.0'
 	try set service dns forwarding blacklist domains source NoBitCoin url 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'
 	try set service dns forwarding blacklist domains source OISD description '"OISD Domains Basic"'
-	try set service dns forwarding blacklist domains source OISD url 'https://dbl.oisd.nl/basic/'
+	try set service dns forwarding blacklist domains source OISD url 'https://dbl.oisd.nl/'
 	try set service dns forwarding blacklist domains source simple_tracking description '"Basic tracking list by Disconnect"'
 	try set service dns forwarding blacklist domains source simple_tracking url 'https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt'
 	try set service dns forwarding blacklist exclude 1e100.net

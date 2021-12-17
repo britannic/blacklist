@@ -1,5 +1,11 @@
 # Changelog
 
+## Release 1.2.5 (December 18, 2021)
+
+Change recommended by [amoeba00](https://community.ui.com/user/amoeba00/9f2abc79-fcd8-4dda-9233-c0306f22f4df)
+
+* Remove extinct source malwaredomains.com
+
 ## Release 1.2.4.6 (January 29, 2021)
 
 Change recommended by [amoeba00](https://community.ui.com/user/amoeba00/9f2abc79-fcd8-4dda-9233-c0306f22f4df), because of updated source

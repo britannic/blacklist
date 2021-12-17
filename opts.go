@@ -11,6 +11,7 @@ import (
 
 	e "github.com/britannic/blacklist/internal/edgeos"
 	"github.com/britannic/blacklist/internal/tdata"
+
 	"github.com/britannic/mflag"
 )
 

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/britannic/blacklist/internal/regx"
+
 	. "github.com/smartystreets/goconvey/convey"
 )
 

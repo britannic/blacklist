@@ -11,7 +11,7 @@ GOCLEAN			 = $(GO) clean -cache
 GODOC			 = godoc
 GOFMT			 = gofmt
 GOGEN			 = $(GO) generate
-GOGET			 = $(GO) get
+GOGET			 = $(GO) install
 GOSHADOW		 = $(GO) tool vet -shadow
 GOTEST			 = $(GO) test
 PKGS	 		 = $(or $(PKG),$(shell cd $(BASE) && env GOPATH=$(GOPATH) $(GO) list ./...))
@@ -73,31 +73,31 @@ AllOfIt: clean deps amd64 mips coverage copyright docs readme pkgs
 
 GODOC2MD		= $(BIN)/godocdown
 $(BIN)/godocdown: ; @ $(info $(M) building godocdown…) @ ## Build godocdown
-	$(Q) $(GO) get -u github.com/robertkrimen/godocdown/godocdown
+	$(Q) $(GO) install github.com/robertkrimen/godocdown/godocdown@latest
 
 GOLINT 			 = $(BIN)/golangci-lint
 $(BIN)/golangci-lint: ; @ $(info $(M) building golangci-lint…)
-	$(Q) $(GO) get github.com/golangci/golangci-lint/cmd/golangci-lint
+	$(Q) $(GO) install github.com/golangci/golangci-lint/cmd/golangci-lint
 
 GOCOVMERGE 		 = $(BIN)/gocovmerge
 $(BIN)/gocovmerge: ; @ $(info $(M) building gocovmerge…)
-	$(Q) $(GO) get -u github.com/wadey/gocovmerge
+	$(Q) $(GO) install github.com/wadey/gocovmerge
 
 GOCOV 			 = $(BIN)/gocov
 $(BIN)/gocov: ; @ $(info $(M) building gocov…)
-	$(Q) $(GO) get -u github.com/axw/gocov/...
+	$(Q) $(GO) install github.com/axw/gocov/...
 
 GOCOVXML 		 = $(BIN)/gocov-xml
 $(BIN)/gocov-xml: ; @ $(info $(M) building gocov-xml…)
-	$(Q) $(GO) get -u github.com/AlekSi/gocov-xml
+	$(Q) $(GO) install github.com/AlekSi/gocov-xml
 
 GO2XUNIT 		 = $(BIN)/go2xunit
 $(BIN)/go2xunit: ; @ $(info $(M) building go2xunit…)
-	$(Q) $(GO) get -u github.com/tebeka/go2xunit
+	$(Q) $(GO) install github.com/tebeka/go2xunit
 
 GOREPORTER		 = $(BIN)/goreporter
 $(BIN)/goreporter: ; @ $(info $(M) building goreporter…)
-	$(Q) $(GO) get -u github.com/360EntSecGroup-Skylar/goreporter
+	$(Q) $(GO) install github.com/360EntSecGroup-Skylar/goreporter
 
 amd64: generate ; @ $(info building Mac OS binary…) ## Build Mac OS binary
 	$(eval LDFLAGS += -X main.architecture=amd64 -X main.hostOS=darwin)

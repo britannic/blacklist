@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
+
 	"github.com/britannic/mflag"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -128,7 +129,7 @@ func TestMain(t *testing.T) {
 
 		Convey("Testing main() with configuration file load", func() {
 			act = ""
-			os.Args = []string{prog, "-convey-json", "-f", "internal/testdata/config.erx.boot"}
+			os.Args = []string{prog, "-convey-json", "-f", "github.com/britannic/blacklist/internal/testdata/config.erx.boot"}
 			main()
 			So(act, ShouldBeEmpty)
 			os.Args = origArgs
@@ -136,7 +137,7 @@ func TestMain(t *testing.T) {
 
 		// Convey("Testing main() with non-existent configuration file load", func() {
 		// 	var s string
-		// 	os.Args = []string{prog, "-convey-json", "-f", "internal/testdata/config.bad.boot"}
+		// 	os.Args = []string{prog, "-convey-json", "-f", "github.com/britannic/blacklist/internal/testdata/config.bad.boot"}
 		// 	logFatalf = func(f string, args ...interface{}) {
 		// 		s = fmt.Sprintf(f, args...)
 		// 	}
@@ -210,7 +211,7 @@ func TestInitEnv(t *testing.T) {
 		o.setArgs()
 
 		origBkpCfgFile := bkpCfgFile
-		bkpCfgFile = "internal/testdata/config.test.boot"
+		bkpCfgFile = "github.com/britannic/blacklist/internal/testdata/config.test.boot"
 		c := o.initEdgeOS()
 
 		*o.ARCH = *o.MIPS64
@@ -342,7 +343,7 @@ func TestBasename(t *testing.T) {
 			exp string
 		}{
 			{s: "e.txt", exp: "e"},
-			{s: "/github.com/britannic/blacklist/internal/edgeos", exp: "edgeos"},
+			{s: "/internal/edgeos", exp: "edgeos"},
 		}
 
 		for _, tt := range tests {
@@ -375,13 +376,13 @@ func TestGetCFG(t *testing.T) {
 		So(c.String(), ShouldEqual, mainGetConfig)
 
 		origBkpCfgFile := bkpCfgFile
-		bkpCfgFile = "internal/testdata/config.test.boot"
+		bkpCfgFile = "github.com/britannic/blacklist/internal/testdata/config.test.boot"
 		c.Blacklist(o.getCFG(c))
 		So(c.String(), ShouldEqual, mainGetConfig)
 		bkpCfgFile = origBkpCfgFile
 
 		origFile := *o.File
-		*o.File = "internal/testdata/config.test.boot"
+		*o.File = "github.com/britannic/blacklist/internal/testdata/config.test.boot"
 		c.Blacklist(o.getCFG(c))
 		So(c.String(), ShouldEqual, mainGetConfig)
 		*o.File = origFile
