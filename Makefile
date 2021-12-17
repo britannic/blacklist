@@ -142,8 +142,8 @@ deps:
 	$(GO) mod tidy
 
 .PHONY: docs
-docs: version readme | $(GODOC2MD) ; @ $(info $(M) building docs…) ## Build docs
-	./make_docs
+docs: readme $(GODOC2MD) ; @ $(info $(M) building docs…) ## Build docs
+	# ./make_docs
 
 .PHONY: generate
 generate: ; @ $(info $(M) generating go boilerplate code…) ## Generate go boilerplate code
