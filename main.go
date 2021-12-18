@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime/debug"
+	"time"
 
 	e "github.com/britannic/blacklist/internal/edgeos"
 )
@@ -24,7 +26,22 @@ var (
 	stdCfgFile   = "/config/config.boot"
 )
 
+// Hack to reduce memory usage in Go 1.17
+func init() {
+	go func() {
+		t := time.Tick(time.Second)
+		for {
+			<-t
+			debug.FreeOSMemory()
+		}
+	}()
+}
+
 func main() {
+
+	// Memory profiling
+	// defer profile.Start(profile.MemProfile).Stop()
+
 	objex := []e.IFace{
 		e.PreRObj,
 		e.PreDObj,

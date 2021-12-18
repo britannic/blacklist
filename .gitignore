@@ -2,16 +2,17 @@
 *
 
 # Add back files with extensions and directories
-!*.*
-!*/
-!Makefile
 !.travis.yml
+!*.*
+!*.deb
+!*/
+!blacklist.cfg
+!license
+!make_*
+!Makefile
+!OLDVERSION
 !testcoverage
 !VERSION
-!OLDVERSION
-!license
-!*.deb
-!make_*
 
 # Ignore
 .coveralls.yml
@@ -32,6 +33,8 @@
 *.mips
 *.mipsel
 *.out
+*.pprof
+*.prof
 *.test
 *.tgz
 *.VC.db
@@ -39,5 +42,4 @@
 blacklist.*
 vendor/
 
-!blacklist.cfg
 

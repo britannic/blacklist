@@ -11,7 +11,7 @@ GOCLEAN			 = $(GO) clean -cache
 GODOC			 = godoc
 GOFMT			 = gofmt
 GOGEN			 = $(GO) generate
-GOGET			 = $(GO) install
+GOGET			 = $(GO) get -u
 GOSHADOW		 = $(GO) tool vet -shadow
 GOTEST			 = $(GO) test
 PKGS	 		 = $(or $(PKG),$(shell cd $(BASE) && env GOPATH=$(GOPATH) $(GO) list ./...))
@@ -71,35 +71,39 @@ mac: amd64
 all: AllOfIt ; @ $(info making everything...) ## Build everything
 AllOfIt: clean deps amd64 mips coverage copyright docs readme pkgs 
 
+GOTOOLS			= $(BIN)/stringer
+$(BIN)/stringer: ; @ $(info $(M)  installing stringer…) @ ##  Install stringer
+	$(Q) $(GOGET) golang.org/x/tools/...@latest
+
 GODOC2MD		= $(BIN)/godocdown
-$(BIN)/godocdown: ; @ $(info $(M) building godocdown…) @ ## Build godocdown
-	$(Q) $(GO) install github.com/robertkrimen/godocdown/godocdown@latest
+$(BIN)/godocdown: ; @ $(info $(M)  installing godocdown…) @ ##  Install godocdown
+	$(Q) $(GOGET) github.com/robertkrimen/godocdown/godocdown@latest
 
 GOLINT 			 = $(BIN)/golangci-lint
-$(BIN)/golangci-lint: ; @ $(info $(M) building golangci-lint…)
-	$(Q) $(GO) install github.com/golangci/golangci-lint/cmd/golangci-lint
+$(BIN)/golangci-lint: ; @ $(info $(M)  installing golangci-lint…) @ ##  Install golangci-lint
+	$(Q) $(GOGET) github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
 GOCOVMERGE 		 = $(BIN)/gocovmerge
-$(BIN)/gocovmerge: ; @ $(info $(M) building gocovmerge…)
-	$(Q) $(GO) install github.com/wadey/gocovmerge
+$(BIN)/gocovmerge: ; @ $(info $(M)  installing gocovmerge…) @ ##  Install gocovmerge
+	$(Q) $(GOGET) github.com/wadey/gocovmerge@latest
 
 GOCOV 			 = $(BIN)/gocov
-$(BIN)/gocov: ; @ $(info $(M) building gocov…)
-	$(Q) $(GO) install github.com/axw/gocov/...
+$(BIN)/gocov: ; @ $(info $(M)  installing gocov…) @ ##  Install gocov
+	$(Q) $(GOGET) github.com/axw/gocov/...@latest
 
 GOCOVXML 		 = $(BIN)/gocov-xml
-$(BIN)/gocov-xml: ; @ $(info $(M) building gocov-xml…)
-	$(Q) $(GO) install github.com/AlekSi/gocov-xml
+$(BIN)/gocov-xml: ; @ $(info $(M)  installing gocov-xml…) @ ##  Install gocov-xml
+	$(Q) $(GOGET) github.com/AlekSi/gocov-xml@latest
 
 GO2XUNIT 		 = $(BIN)/go2xunit
-$(BIN)/go2xunit: ; @ $(info $(M) building go2xunit…)
-	$(Q) $(GO) install github.com/tebeka/go2xunit
+$(BIN)/go2xunit: ; @ $(info $(M)  installing go2xunit…) @ ##  Install godocdown
+	$(Q) $(GOGET) github.com/tebeka/go2xunit@latest
 
 GOREPORTER		 = $(BIN)/goreporter
-$(BIN)/goreporter: ; @ $(info $(M) building goreporter…)
-	$(Q) $(GO) install github.com/360EntSecGroup-Skylar/goreporter
+$(BIN)/goreporter: ; @ $(info $(M)  installing goreporter…) @ ##  Install goreporter
+	$(Q) $(GOGET) github.com/360EntSecGroup-Skylar/goreporter@latest
 
-amd64: generate ; @ $(info building Mac OS binary…) ## Build Mac OS binary
+amd64: generate ; @ $(info building Mac OS binary…) ##  Install Mac OS binary
 	$(eval LDFLAGS += -X main.architecture=amd64 -X main.hostOS=darwin)
 	GOOS=darwin GOARCH=amd64 \
 	$(GOOS) $(GOARCH) $(GOBUILD) -o $(EXE).amd64 \
@@ -140,6 +144,7 @@ copyright: ; @ $(info updating copyright…) ## Update copyright
 deps: 
 #	dep ensure -update -v
 	$(GO) mod tidy
+	$(GO) mod vendor
 
 .PHONY: docs
 docs: readme $(GODOC2MD) ; @ $(info $(M) building docs…) ## Build docs
