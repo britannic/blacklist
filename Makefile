@@ -11,7 +11,7 @@ GOCLEAN			 = $(GO) clean -cache
 GODOC			 = godoc
 GOFMT			 = gofmt
 GOGEN			 = $(GO) generate
-GOGET			 = $(GO) get -u
+GOGET			 = $(GO) install 
 GOSHADOW		 = $(GO) tool vet -shadow
 GOTEST			 = $(GO) test
 PKGS	 		 = $(or $(PKG),$(shell cd $(BASE) && env GOPATH=$(GOPATH) $(GO) list ./...))
@@ -65,8 +65,8 @@ else
 endif
 export quiet Q KBUILD_VERBOSE
 
-PHONY: all clean deps amd64 mips coverage copyright docs readme pkgs
-mac: amd64
+PHONY: all clean deps amd64 arm64 mips coverage copyright docs readme pkgs
+mac: amd64 arm64
 
 all: AllOfIt ; @ $(info making everything...) ## Build everything
 AllOfIt: clean deps amd64 mips coverage copyright docs readme pkgs 
@@ -109,12 +109,14 @@ amd64: generate ; @ $(info building Mac OS binary…) ##  Install Mac OS binary
 	$(GOOS) $(GOARCH) $(GOBUILD) -o $(EXE).amd64 \
 	-ldflags "$(LDFLAGS) $(FLAGS)" -v
 
+arm64: generate ; @ $(info building Mac OS binary…) ##  Install Mac OS binary
+	$(eval LDFLAGS += -X main.architecture=arm64 -X main.hostOS=darwin)
+	GOOS=darwin GOARCH=arm64 \
+	$(GOOS) $(GOARCH) $(GOBUILD) -o $(EXE).arm64 \
+	-ldflags "$(LDFLAGS) $(FLAGS)" -v
+
 .PHONY: build
 build: clean amd64 linux mips copyright docs readme ; @ $(info building binaries…) ## Build binaries
-
-.PHONY: cdeps 
-# cdeps: ; @ $(info building dependency viewer…) ## Build dependency viewer 
-# 	dep status -dot | dot -T png | open -f -a /Applications/Preview.app
 
 .PHONY: clean
 clean: ; @ $(info cleaning directories…) ## Cleaning up directories
@@ -136,13 +138,8 @@ copyright: ; @ $(info updating copyright…) ## Update copyright
 	cp $(LIC) internal/regx/
 	cp $(LIC) internal/tdata/
 
-# .PHONY: dep-stat 
-# dep-stat: ; @ $(info showing dependency status…) ## Show dependency status
-# 	dep status
-
 .PHONY: deps
 deps: 
-#	dep ensure -update -v
 	$(GO) mod tidy
 	$(GO) mod vendor
 
@@ -197,7 +194,7 @@ readme: version ; @ $(info building READMEs…) ## Build README
 
 .PHONY: simplify
 simplify: ; @ $(info simplifying code…) ## Simplify codebase
-	@gofmt -s -l -w $(SRC)
+	@$(GOFMT) -s -l -w $(SRC)
 
 .PHONY: tags
 tags: ; @ $(info pushing git tags…) ## Push git tags
@@ -255,7 +252,8 @@ test-race:     ARGS=-race          ## Run tests with race detector
 $(TEST_TARGETS): NAME=$(MAKECMDGOALS:test-%=%)
 $(TEST_TARGETS): test
 
-check tests: fmt lint vendor | $(BASE) ; $(info $(M) running $(NAME:%=% )tests…) @ ## Run tests
+# check tests: fmt lint vendor | $(BASE) ; $(info $(M) running $(NAME:%=% )tests…) @ ## Run tests
+check tests: fmt vendor | $(BASE) ; $(info $(M) running $(NAME:%=% )tests…) @ ## Run tests
 	$(Q) cd $(BASE) && $(GO) test -timeout $(TIMEOUT)s $(ARGS) $(TESTPKGS)
 
 test-xml: fmt lint vendor | $(BASE) $(GO2XUNIT) ; $(info $(M) running $(NAME:%=% )tests…) @  ## Run tests with xUnit output
