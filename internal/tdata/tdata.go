@@ -19,7 +19,7 @@ func Get(s string) string {
 
 var (
 	// Cfg contains a valid full EdgeOS blacklist configuration
-	Cfg = `            blacklist {
+	Cfg = `blacklist {
         disabled false
         dns-redirect-ip 0.0.0.0
         domains {
