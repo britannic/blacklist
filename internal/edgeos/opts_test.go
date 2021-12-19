@@ -87,7 +87,7 @@ func TestOption(t *testing.T) {
 		exp := `{
 	"Log": null,
 	"API": "/bin/cli-shell-api",
-	"Arch": "amd64",
+	"Arch": "arm64",
 	"Bash": "/bin/bash",
 	"Cores": 2,
 	"Disabled": false,
@@ -112,7 +112,7 @@ func TestOption(t *testing.T) {
 		expRaw := Env{
 			ctr:      ctr{RWMutex: &sync.RWMutex{}, stat: make(stat)},
 			API:      "/bin/cli-shell-api",
-			Arch:     "amd64",
+			Arch:     "arm64",
 			Bash:     "/bin/bash",
 			Cores:    2,
 			Disabled: false,

@@ -387,11 +387,15 @@ func TestGetCFG(t *testing.T) {
 		So(c.String(), ShouldEqual, mainGetConfig)
 		*o.File = origFile
 
-		*o.MIPS64 = "amd64"
+		*o.MIPS64 = "arm64"
 		c = o.initEdgeOS()
 		c.Blacklist(o.getCFG(c))
-		So(c.String(), ShouldEqual, "{\n  \"nodes\": [{\n  }]\n}")
+		So(c.String(), ShouldEqual, intelCfg)
 
+		// *o.MIPS64 = "arm64"
+		// c = o.initEdgeOS()
+		// c.Blacklist(o.getCFG(c))
+		// So(c.String(), ShouldEqual, intelCfg)
 	})
 }
 
@@ -505,7 +509,7 @@ func TestInitEdgeOS(t *testing.T) {
 		"ExtraCalldepth": 0
 	},
 	"API": "/bin/cli-shell-api",
-	"Arch": "amd64",
+	"Arch": "arm64",
 	"Bash": "/bin/bash",
 	"Cores": 2,
 	"Disabled": false,
@@ -782,4 +786,8 @@ var (
 "yimg.com":{},
 "ytimg.com":{},
 `
+	intelCfg = `{
+  "nodes": [{
+  }]
+}`
 )

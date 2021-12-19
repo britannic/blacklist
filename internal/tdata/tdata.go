@@ -20,153 +20,127 @@ func Get(s string) string {
 var (
 	// Cfg contains a valid full EdgeOS blacklist configuration
 	Cfg = `blacklist {
-        disabled false
-        dns-redirect-ip 0.0.0.0
-        domains {
-            include adk2x.com
-            include adsrvr.org
-            include adtechus.net
-            include advertising.com
-            include centade.com
-            include doubleclick.net
-            include fastplayz.com
-            include free-counter.co.uk
-            include hilltopads.net
-            include intellitxt.com
-            include kiosked.com
-            include patoghee.in
-            include themillionaireinpjs.com
-            include traktrafficflow.com
-            include wwwpromoter.com
-            source NoBitCoin {
-                description "Blocking Web Browser Bitcoin Mining"
-                prefix 0.0.0.0
-                url https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt
-            }
-            source OISD {
-                description "OISD Domains Basic"
-                url https://dbl.oisd.nl/basic/
-            }
-            source simple_tracking {
-                description "Basic tracking list by Disconnect"
-                url https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
-            }
+    disabled false
+    dns-redirect-ip 0.0.0.0
+    domains {
+        dns-redirect-ip 192.168.100.1
+        include adsrvr.org
+        include adtechus.net
+        include advertising.com
+        include centade.com
+        include doubleclick.net
+        include free-counter.co.uk
+        include intellitxt.com
+        include kiosked.com
+        include patoghee.in
+        source malc0de {
+            dns-redirect-ip 192.168.168.1
+            description "List of zones serving malicious executables observed by malc0de.com/database/"
+            prefix "zone "
+            url http://malc0de.com/bl/ZONES
         }
-        exclude 1e100.net
-        exclude 2o7.net
-        exclude adjust.com
-        exclude adobedtm.com
-        exclude akamai.net
-        exclude akamaihd.net
-        exclude amazon.com
-        exclude amazonaws.com
-        exclude ampproject.org
-        exclude android.clients.google.com
-        exclude apple.com
-        exclude apresolve.spotify.com
-        exclude ask.com
-        exclude avast.com
-        exclude avira-update.com
-        exclude bannerbank.com
-        exclude bazaarvoice.com
-        exclude bing.com
-        exclude bit.ly
-        exclude bitdefender.com
-        exclude bonsaimirai.us9.list-manage.com
-        exclude c.s-microsoft.com
-        exclude cdn.ravenjs.com
-        exclude cdn.visiblemeasures.com
-        exclude clientconfig.passport.net
-        exclude clients2.google.com
-        exclude clients4.google.com
-        exclude cloudfront.net
-        exclude coremetrics.com
-        exclude dickssportinggoods.com
-        exclude dl.dropboxusercontent.com
-        exclude dropbox.com
-        exclude ebay.com
-        exclude edgesuite.net
-        exclude evernote.com
-        exclude express.co.uk
-        exclude feedly.com
-        exclude freedns.afraid.org
-        exclude github.com
-        exclude githubusercontent.com
-        exclude global.ssl.fastly.net
-        exclude google.com
-        exclude googleads.g.doubleclick.net
-        exclude googleadservices.com
-        exclude googleapis.com
-        exclude googletagmanager.com
-        exclude googleusercontent.com
-        exclude gstatic.com
-        exclude gvt1.com
-        exclude gvt1.net
-        exclude hb.disney.go.com
-        exclude herokuapp.com
-        exclude hp.com
-        exclude hulu.com
-        exclude i.s-microsoft.com
-        exclude images-amazon.com
-        exclude live.com
-        exclude logmein.com
-        exclude m.weeklyad.target.com
-        exclude magnetmail1.net
-        exclude microsoft.com
-        exclude microsoftonline.com
-        exclude msdn.com
-        exclude msecnd.net
-        exclude msftncsi.com
-        exclude mywot.com
-        exclude nsatc.net
-        exclude outlook.office365.com
-        exclude paypal.com
-        exclude pop.h-cdn.co
-        exclude products.office.com
-        exclude quora.com
-        exclude rackcdn.com
-        exclude rarlab.com
-        exclude s.youtube.com
-        exclude schema.org
-        exclude shopify.com
-        exclude skype.com
-        exclude smacargo.com
-        exclude sourceforge.net
-        exclude spclient.wg.spotify.com
-        exclude spotify.com
-        exclude spotify.edgekey.net
-        exclude spotilocal.com
-        exclude ssl-on9.com
-        exclude ssl-on9.net
-        exclude sstatic.net
-        exclude static.chartbeat.com
-        exclude storage.googleapis.com
-        exclude twimg.com
-        exclude video-stats.l.google.com
-        exclude viewpoint.com
-        exclude weeklyad.target.com
-        exclude weeklyad.target.com.edgesuite.net
-        exclude windows.net
-        exclude www.msftncsi.com
-        exclude xboxlive.com
-        exclude yimg.com
-        exclude ytimg.com
-        hosts {
-            exclude cfvod.kaltura.com
-            include ads.feedly.com
-            include beap.gemini.yahoo.com
-            source githubSteveBlack {
-                description "Blacklists adware and malware websites"
-                prefix 0.0.0.0
-                url https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
-            }
-            source openphish {
-                description "OpenPhish automatic phishing detection"
-                prefix http
-                url https://openphish.com/feed.txt
-            }
+        source malwaredomains.com {
+            dns-redirect-ip 10.0.0.1
+            description "Just domains"
+            prefix ""
+            url http://mirror1.malwaredomains.com/files/justdomains
+        }
+        source simple_tracking {
+            description "Basic tracking list by Disconnect"
+            prefix ""
+            url https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
+        }
+        source zeus {
+            description "abuse.ch ZeuS domain blocklist"
+            prefix ""
+            url https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
         }
     }
+    exclude 1e100.net
+    exclude 2o7.net
+    exclude adobedtm.com
+    exclude akamai.net
+    exclude akamaihd.net
+    exclude amazon.com
+    exclude amazonaws.com
+    exclude apple.com
+    exclude ask.com
+    exclude avast.com
+    exclude bitdefender.com
+    exclude cdn.visiblemeasures.com
+    exclude cloudfront.net
+    exclude coremetrics.com
+    exclude edgesuite.net
+    exclude freedns.afraid.org
+    exclude github.com
+    exclude githubusercontent.com
+    exclude google.com
+    exclude googleadservices.com
+    exclude googleapis.com
+    exclude googletagmanager.com
+    exclude googleusercontent.com
+    exclude gstatic.com
+    exclude gvt1.com
+    exclude gvt1.net
+    exclude hb.disney.go.com
+    exclude hp.com
+    exclude hulu.com
+    exclude images-amazon.com
+    exclude live.com
+    exclude microsoft.com
+    exclude msdn.com
+    exclude msecnd.net
+    exclude paypal.com
+    exclude rackcdn.com
+    exclude schema.org
+    exclude shopify.com
+    exclude skype.com
+    exclude smacargo.com
+    exclude sourceforge.net
+    exclude ssl-on9.com
+    exclude ssl-on9.net
+    exclude sstatic.net
+    exclude static.chartbeat.com
+    exclude storage.googleapis.com
+    exclude windows.net
+    exclude xboxlive.com
+    exclude yimg.com
+    exclude ytimg.com
+    hosts {
+        include beap.gemini.yahoo.com
+        source openphish {
+            description "OpenPhish automatic phishing detection"
+            prefix http
+            url https://openphish.com/feed.txt
+        }
+        source raw.github.com {
+            description "This hosts file is a merged collection of hosts from reputable sources"
+            prefix "0.0.0.0 "
+            url https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+        }
+        source sysctl.org {
+            dns-redirect-ip 172.16.16.1
+            description "This hosts file is a merged collection of hosts from cameleon"
+            prefix "127.0.0.1	 "
+            url http://sysctl.org/cameleon/hosts
+        }
+        source tasty {
+            description "File source"
+            dns-redirect-ip 10.10.10.10
+            file ../internal/testdata/blist.hosts.src
+        }
+        source volkerschatz {
+            description "Ad server blacklists"
+            prefix http
+            url http://www.volkerschatz.com/net/adpaths
+        }
+        source yoyo {
+            description "Fully Qualified Domain Names only - no prefix to strip"
+            prefix ""
+            url https://pgl.yoyo.org/as/serverlist.php?hostformat=nohtml&showintro=1&mimetype=plaintext
+        }
+    }
+}
 
 	/* Warning: Do not remove the following line. */
 	/* === vyatta-config-version: "config-management@1:conntrack@1:cron@1:dhcp-relay@1:dhcp-server@4:firewall@5:ipsec@5:nat@3:qos@1:quagga@2:system@4:ubnt-pptp@1:ubnt-util@1:vrrp@1:webgui@1:webproxy@1:zone-policy@1" === */
