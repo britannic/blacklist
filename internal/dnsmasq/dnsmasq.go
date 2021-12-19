@@ -1,4 +1,4 @@
-//Package dnsmasq parses dnsmasq.conf address and server name IP mapping files
+// Package dnsmasq parses dnsmasq.conf address and server name IP mapping files
 package dnsmasq
 
 import (

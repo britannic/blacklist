@@ -20,7 +20,7 @@ func (o *Objects) addObj(c *Config, node string) {
 
 // Files returns a list of dnsmasq conf files from all srcs
 func (o *Objects) Files() *CFile {
-	var c = CFile{Env: o.Env}
+	c := CFile{Env: o.Env}
 	if !o.Disabled {
 		for _, obj := range o.src {
 			c.Names = append(c.Names, obj.setFilePrefix(o.Env.Dir+"/%v.%v."+o.Env.Ext))

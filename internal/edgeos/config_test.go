@@ -62,7 +62,8 @@ func TestAddInc(t *testing.T) {
 						Pfx:     dnsPfx{domain: "", host: ""},
 						Test:    false,
 						Timeout: time.Duration(0),
-						Verb:    false},
+						Verb:    false,
+					},
 					desc:     "pre-configured global blacklisted domains",
 					disabled: false,
 					err:      nil,
@@ -117,7 +118,8 @@ func TestAddInc(t *testing.T) {
 						Pfx:     dnsPfx{domain: "", host: ""},
 						Test:    false,
 						Timeout: time.Duration(0),
-						Verb:    false},
+						Verb:    false,
+					},
 					desc:     "pre-configured blacklisted subdomains",
 					disabled: false,
 					err:      nil,
@@ -138,7 +140,8 @@ func TestAddInc(t *testing.T) {
 					url:    "",
 				},
 			},
-			{name: "hosts",
+			{
+				name: "hosts",
 				node: hosts,
 				exp: &source{
 					Env: &Env{
@@ -171,7 +174,8 @@ func TestAddInc(t *testing.T) {
 						Pfx:     dnsPfx{domain: "", host: ""},
 						Test:    false,
 						Timeout: time.Duration(0),
-						Verb:    false},
+						Verb:    false,
+					},
 					desc:     "pre-configured blacklisted servers",
 					disabled: false,
 					err:      nil,
@@ -367,6 +371,7 @@ func TestIsSource(t *testing.T) {
 		So(isntSource(node), ShouldBeTrue)
 	})
 }
+
 func TestNodeExists(t *testing.T) {
 	Convey("Testing TestNodeExists()", t, func() {
 		var (

@@ -31,7 +31,8 @@ func TestKeys(t *testing.T) {
 func TestKeyExists(t *testing.T) {
 	exp := list{
 		RWMutex: &sync.RWMutex{},
-		entry: entry{"five.six.intellitxt.com": struct{}{},
+		entry: entry{
+			"five.six.intellitxt.com":                        struct{}{},
 			"four.five.six.intellitxt.com":                   struct{}{},
 			"intellitxt.com":                                 struct{}{},
 			"one.two.three.four.five.six.intellitxt.com":     struct{}{},
@@ -52,7 +53,8 @@ func TestKeyExists(t *testing.T) {
 func TestSubKeyExists(t *testing.T) {
 	exp := list{
 		RWMutex: &sync.RWMutex{},
-		entry: entry{"five.six.intellitxt.com": struct{}{},
+		entry: entry{
+			"five.six.intellitxt.com":                        struct{}{},
 			"four.five.six.intellitxt.com":                   struct{}{},
 			"intellitxt.com":                                 struct{}{},
 			"one.two.three.four.five.six.intellitxt.com":     struct{}{},

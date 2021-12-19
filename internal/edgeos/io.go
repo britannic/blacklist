@@ -57,7 +57,7 @@ func active(a string, inCLI bool) string {
 
 // apiCMD returns a map of CLI commands
 func apiCMD(a string, inCLI bool) string {
-	var apiCMDs = map[string]string{
+	apiCMDs := map[string]string{
 		"cfExists":           "cfExists",
 		"cfReturnValue":      "cfReturnValue",
 		"cfReturnValues":     "cfReturnValues",

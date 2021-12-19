@@ -225,7 +225,7 @@ func (e *ExcRootObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for FIODataObjects
 func (f *FIODataObjects) GetList() *Objects {
-	var responses = make(chan *source, len(f.src))
+	responses := make(chan *source, len(f.src))
 
 	for _, s := range f.src {
 		s.Env = f.Env
@@ -278,7 +278,7 @@ func (p *PreRootObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for URLDomnObjects
 func (u *URLDomnObjects) GetList() *Objects {
-	var responses = make(chan *source, len(u.src))
+	responses := make(chan *source, len(u.src))
 
 	for _, s := range u.src {
 		s.Env = u.Env
@@ -297,7 +297,7 @@ func (u *URLDomnObjects) GetList() *Objects {
 
 // GetList implements the Contenter interface for URLHostObjects
 func (u *URLHostObjects) GetList() *Objects {
-	var responses = make(chan *source, len(u.src))
+	responses := make(chan *source, len(u.src))
 
 	for _, s := range u.src {
 		s.Env = u.Env

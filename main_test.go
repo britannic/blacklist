@@ -45,7 +45,7 @@ func readGolden(t *testing.T, name string) []byte {
 func writeGolden(t *testing.T, actual []byte, name string) error {
 	golden := filepath.Join("testdata", name+".golden")
 	if *update {
-		return ioutil.WriteFile(golden, actual, 0644)
+		return ioutil.WriteFile(golden, actual, 0o644)
 	}
 	return nil
 }
@@ -78,7 +78,6 @@ func (o *opts) String() string {
 			}
 		}
 		s = fmt.Sprint(s, "\n")
-
 	})
 
 	return s
@@ -182,9 +181,7 @@ func TestScreenLog(t *testing.T) {
 
 func TestExitCmd(t *testing.T) {
 	Convey("Testing exitCmd", t, func() {
-		var (
-			act int
-		)
+		var act int
 		exitCmd = func(i int) {
 			act = i
 		}

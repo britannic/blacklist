@@ -134,7 +134,6 @@ func TestGetType(t *testing.T) {
 
 func TestNewWriter(t *testing.T) {
 	Convey("Testing newWriter()", t, func() {
-
 		tests := []struct {
 			name   string
 			exp    io.Writer

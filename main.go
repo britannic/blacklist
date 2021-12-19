@@ -38,7 +38,6 @@ func init() {
 }
 
 func main() {
-
 	// Memory profiling
 	// defer profile.Start(profile.MemProfile).Stop()
 
@@ -139,7 +138,6 @@ func initEnv() (c *e.Config, err error) {
 	}
 
 	return loadConfig(c, o)
-
 }
 
 func loadConfig(c *e.Config, o *opts) (*e.Config, error) {

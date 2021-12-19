@@ -141,7 +141,6 @@ func TestMatchIP(t *testing.T) {
 				So(matchIP(tt.ip, tt.ips), ShouldEqual, tt.exp)
 			})
 		}
-
 	})
 }
 
