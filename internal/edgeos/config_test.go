@@ -123,7 +123,7 @@ func TestAddInc(t *testing.T) {
 					err:      nil,
 					exc:      nil,
 					file:     "",
-					inc:      []string{"adsrvr.org", "adtechus.net", "advertising.com", "centade.com", "doubleclick.net", "free-counter.co.uk", "intellitxt.com", "kiosked.com", "patoghee.in"},
+					inc:      []string{"adk2x.com", "adsrvr.org", "adtechus.net", "advertising.com", "centade.com", "doubleclick.net", "free-counter.co.uk", "intellitxt.com", "kiosked.com", "patoghee.in"},
 					iface:    PreDObj,
 					ip:       "192.168.100.1",
 					ltype:    "blacklisted-subdomains",
