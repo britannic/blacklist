@@ -208,7 +208,6 @@ func NewConfig(opts ...Option) *Config {
 		tree: make(tree),
 		Env: &Env{
 			ctr: ctr{RWMutex: &sync.RWMutex{}, stat: make(stat)},
-			// ctr: ctr{stat: make(stat)},
 			Dex: &list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 			Exc: &list{RWMutex: &sync.RWMutex{}, entry: make(entry)},
 		},

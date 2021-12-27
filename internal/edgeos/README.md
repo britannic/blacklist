@@ -1,4 +1,5 @@
 # edgeos
+
 --
     import "github.com/britannic/blacklist/internal/edgeos"
 
@@ -10,22 +11,22 @@ EdgeOS configuration data and files.
 ```go
 const (
 
-	// ExcDomns is a string labels for domain exclusions
-	ExcDomns = "whitelisted-subdomains"
-	// ExcHosts is a string labels for host exclusions
-	ExcHosts = "whitelisted-servers"
-	// ExcRoots is a string labels for preconfigured global domain exclusions
-	ExcRoots = "global-whitelisted-domains"
-	// PreDomns is a string label for preconfigured whitelisted domains
-	PreDomns = "blacklisted-subdomains"
-	// PreHosts is a string label for preconfigured blacklisted hosts
-	PreHosts = "blacklisted-servers"
-	// PreRoots is a string label for preconfigured global blacklisted hosts
-	PreRoots = "global-blacklisted-domains"
-	// False is a string constant
-	False = "false"
-	// True is a string constant
-	True = "true"
+ // ExcDomns is a string labels for domain exclusions
+ ExcDomns = "whitelisted-subdomains"
+ // ExcHosts is a string labels for host exclusions
+ ExcHosts = "whitelisted-servers"
+ // ExcRoots is a string labels for preconfigured global domain exclusions
+ ExcRoots = "global-whitelisted-domains"
+ // PreDomns is a string label for preconfigured whitelisted domains
+ PreDomns = "blacklisted-subdomains"
+ // PreHosts is a string label for preconfigured blacklisted hosts
+ PreHosts = "blacklisted-servers"
+ // PreRoots is a string label for preconfigured global blacklisted hosts
+ PreRoots = "global-blacklisted-domains"
+ // False is a string constant
+ False = "false"
+ // True is a string constant
+ True = "true"
 )
 ```
 
@@ -34,6 +35,7 @@ const (
 ```go
 func ChkWeb(site string, port int) bool
 ```
+
 ChkWeb returns true if DNS is working
 
 #### func  GetFile
@@ -41,6 +43,7 @@ ChkWeb returns true if DNS is working
 ```go
 func GetFile(f string) (io.Reader, error)
 ```
+
 GetFile reads a file and returns an io.Reader
 
 #### func  Iter
@@ -48,6 +51,7 @@ GetFile reads a file and returns an io.Reader
 ```go
 func Iter(i int) []struct{}
 ```
+
 Iter iterates over ints - use it in for loops
 
 #### func  NewWriter
@@ -55,14 +59,15 @@ Iter iterates over ints - use it in for loops
 ```go
 func NewWriter() io.Writer
 ```
+
 NewWriter returns an io.Writer
 
 #### type CFGcli
 
 ```go
 type CFGcli struct {
-	*Config
-	Cfg string
+ *Config
+ Cfg string
 }
 ```
 
@@ -72,8 +77,8 @@ CFGcli loads configurations using the EdgeOS CFGcli
 
 ```go
 type CFGstatic struct {
-	*Config
-	Cfg string
+ *Config
+ Cfg string
 }
 ```
 
@@ -83,8 +88,8 @@ CFGstatic loads static configurations for testing
 
 ```go
 type CFile struct {
-	*Env
-	Names []string
+ *Env
+ Names []string
 }
 ```
 
@@ -95,6 +100,7 @@ CFile holds an array of file names
 ```go
 func (c *CFile) Remove() error
 ```
+
 Remove deletes a CFile array of file names
 
 #### func (*CFile) String
@@ -102,6 +108,7 @@ Remove deletes a CFile array of file names
 ```go
 func (c *CFile) String() string
 ```
+
 String implements string method
 
 #### func (*CFile) Strings
@@ -109,13 +116,14 @@ String implements string method
 ```go
 func (c *CFile) Strings() []string
 ```
+
 Strings returns a sorted array of strings.
 
 #### type ConfLoader
 
 ```go
 type ConfLoader interface {
-	// contains filtered or unexported methods
+ // contains filtered or unexported methods
 }
 ```
 
@@ -125,7 +133,7 @@ ConfLoader interface handles multiple configuration load methods
 
 ```go
 type Config struct {
-	*Env
+ *Env
 }
 ```
 
@@ -136,6 +144,7 @@ Config is a struct of configuration fields
 ```go
 func NewConfig(opts ...Option) *Config
 ```
+
 NewConfig returns a new *Config initialized with the parameter options passed to
 it
 
@@ -144,6 +153,7 @@ it
 ```go
 func (c *Config) Blacklist(r ConfLoader) error
 ```
+
 Blacklist extracts blacklist nodes from a EdgeOS/VyOS configuration structure
 
 #### func (*Config) Get
@@ -151,6 +161,7 @@ Blacklist extracts blacklist nodes from a EdgeOS/VyOS configuration structure
 ```go
 func (c *Config) Get(nx string) *Objects
 ```
+
 Get returns an *Object for a given node
 
 #### func (*Config) GetAll
@@ -158,6 +169,7 @@ Get returns an *Object for a given node
 ```go
 func (c *Config) GetAll(ltypes ...string) *Objects
 ```
+
 GetAll returns a pointer to an Objects struct
 
 #### func (*Config) GetTotalStats
@@ -165,6 +177,7 @@ GetAll returns a pointer to an Objects struct
 ```go
 func (c *Config) GetTotalStats() (dropped, extracted, kept int32)
 ```
+
 GetTotalStats displays aggregate statistics for processed sources
 
 #### func (*Config) InSession
@@ -172,6 +185,7 @@ GetTotalStats displays aggregate statistics for processed sources
 ```go
 func (c *Config) InSession() bool
 ```
+
 InSession returns true if VyOS/EdgeOS configure is in session
 
 #### func (*Config) NewContent
@@ -179,6 +193,7 @@ InSession returns true if VyOS/EdgeOS configure is in session
 ```go
 func (c *Config) NewContent(iface IFace) (Contenter, error)
 ```
+
 NewContent returns a Contenter interface of the requested IFace type
 
 #### func (*Config) Nodes
@@ -186,6 +201,7 @@ NewContent returns a Contenter interface of the requested IFace type
 ```go
 func (c *Config) Nodes() (n []string)
 ```
+
 Nodes returns an array of configured nodes
 
 #### func (*Config) ProcessContent
@@ -193,6 +209,7 @@ Nodes returns an array of configured nodes
 ```go
 func (c *Config) ProcessContent(cts ...Contenter) error
 ```
+
 ProcessContent processes the Contents array
 
 #### func (*Config) ReloadDNS
@@ -200,6 +217,7 @@ ProcessContent processes the Contents array
 ```go
 func (c *Config) ReloadDNS() ([]byte, error)
 ```
+
 ReloadDNS reloads the dnsmasq configuration
 
 #### func (*Config) SetOpt
@@ -207,6 +225,7 @@ ReloadDNS reloads the dnsmasq configuration
 ```go
 func (c *Config) SetOpt(opts ...Option) Option
 ```
+
 SetOpt sets the specified options passed as Env and returns an option to restore
 the last set of arg's previous values
 
@@ -215,17 +234,18 @@ the last set of arg's previous values
 ```go
 func (c *Config) String() (s string)
 ```
+
 String returns pretty print for the Blacklist struct
 
 #### type Contenter
 
 ```go
 type Contenter interface {
-	Find(string) int
-	GetList() *Objects
-	Len() int
-	SetURL(string, string)
-	String() string
+ Find(string) int
+ GetList() *Objects
+ Len() int
+ SetURL(string, string)
+ String() string
 }
 ```
 
@@ -236,28 +256,28 @@ Contenter is an interface for handling the different file/http data sources
 ```go
 type Env struct {
 
-	// ioWriter io.Writer
-	Log      *logging.Logger
-	API      string        `json:"API,omitempty"`
-	Arch     string        `json:"Arch,omitempty"`
-	Bash     string        `json:"Bash,omitempty"`
-	Cores    int           `json:"Cores,omitempty"`
-	Disabled bool          `json:"Disabled"`
-	Dbug     bool          `json:"Dbug,omitempty"`
-	Dex      *list         `json:"Dex,omitempty"`
-	Dir      string        `json:"Dir,omitempty"`
-	DNSsvc   string        `json:"dnsmasq service,omitempty"`
-	Exc      *list         `json:"Exc,omitempty"`
-	Ext      string        `json:"dnsmasq fileExt.,omitempty"`
-	File     string        `json:"File,omitempty"`
-	FnFmt    string        `json:"File name fmt,omitempty"`
-	InCLI    string        `json:"-"`
-	Method   string        `json:"HTTP method,omitempty"`
-	Pfx      dnsPfx        `json:"Prefix,omitempty"`
-	Test     bool          `json:"Test,omitempty"`
-	Timeout  time.Duration `json:"Timeout,omitempty"`
-	Verb     bool          `json:"Verbosity,omitempty"`
-	Wildcard `json:"Wildcard,omitempty"`
+ // ioWriter io.Writer
+ Log      *logging.Logger
+ API      string        `json:"API,omitempty"`
+ Arch     string        `json:"Arch,omitempty"`
+ Bash     string        `json:"Bash,omitempty"`
+ Cores    int           `json:"Cores,omitempty"`
+ Disabled bool          `json:"Disabled"`
+ Dbug     bool          `json:"Dbug,omitempty"`
+ Dex      *list         `json:"Dex,omitempty"`
+ Dir      string        `json:"Dir,omitempty"`
+ DNSsvc   string        `json:"dnsmasq service,omitempty"`
+ Exc      *list         `json:"Exc,omitempty"`
+ Ext      string        `json:"dnsmasq fileExt.,omitempty"`
+ File     string        `json:"File,omitempty"`
+ FnFmt    string        `json:"File name fmt,omitempty"`
+ InCLI    string        `json:"-"`
+ Method   string        `json:"HTTP method,omitempty"`
+ Pfx      dnsPfx        `json:"Prefix,omitempty"`
+ Test     bool          `json:"Test,omitempty"`
+ Timeout  time.Duration `json:"Timeout,omitempty"`
+ Verb     bool          `json:"Verbosity,omitempty"`
+ Wildcard `json:"Wildcard,omitempty"`
 }
 ```
 
@@ -268,6 +288,7 @@ Env is struct of parameters
 ```go
 func (e *Env) Debug(s ...interface{})
 ```
+
 Debug logs debug messages when the Dbug flag is true
 
 #### func (*Env) String
@@ -275,13 +296,14 @@ Debug logs debug messages when the Dbug flag is true
 ```go
 func (e *Env) String() string
 ```
+
 Env Stringer interface
 
 #### type ExcDomnObjects
 
 ```go
 type ExcDomnObjects struct {
-	*Objects
+ *Objects
 }
 ```
 
@@ -292,6 +314,7 @@ ExcDomnObjects struct of *Objects for domain exclusions
 ```go
 func (e *ExcDomnObjects) Find(s string) int
 ```
+
 Find returns the int position of an Objects' element
 
 #### func (*ExcDomnObjects) GetList
@@ -299,6 +322,7 @@ Find returns the int position of an Objects' element
 ```go
 func (e *ExcDomnObjects) GetList() *Objects
 ```
+
 GetList implements the Contenter interface for ExcDomnObjects
 
 #### func (*ExcDomnObjects) Len
@@ -306,6 +330,7 @@ GetList implements the Contenter interface for ExcDomnObjects
 ```go
 func (e *ExcDomnObjects) Len() int
 ```
+
 Len returns how many sources there are
 
 #### func (*ExcDomnObjects) SetURL
@@ -313,6 +338,7 @@ Len returns how many sources there are
 ```go
 func (e *ExcDomnObjects) SetURL(name, url string)
 ```
+
 SetURL sets the Object's url field value
 
 #### func (*ExcDomnObjects) String
@@ -325,7 +351,7 @@ func (e *ExcDomnObjects) String() string
 
 ```go
 type ExcHostObjects struct {
-	*Objects
+ *Objects
 }
 ```
 
@@ -336,6 +362,7 @@ ExcHostObjects struct of *Objects for host exclusions
 ```go
 func (e *ExcHostObjects) Find(s string) int
 ```
+
 Find returns the int position of an Objects' element
 
 #### func (*ExcHostObjects) GetList
@@ -343,6 +370,7 @@ Find returns the int position of an Objects' element
 ```go
 func (e *ExcHostObjects) GetList() *Objects
 ```
+
 GetList implements the Contenter interface for ExcHostObjects
 
 #### func (*ExcHostObjects) Len
@@ -350,6 +378,7 @@ GetList implements the Contenter interface for ExcHostObjects
 ```go
 func (e *ExcHostObjects) Len() int
 ```
+
 Len returns how many sources there are
 
 #### func (*ExcHostObjects) SetURL
@@ -357,6 +386,7 @@ Len returns how many sources there are
 ```go
 func (e *ExcHostObjects) SetURL(name, url string)
 ```
+
 SetURL sets the Object's url field value
 
 #### func (*ExcHostObjects) String
@@ -369,7 +399,7 @@ func (e *ExcHostObjects) String() string
 
 ```go
 type ExcRootObjects struct {
-	*Objects
+ *Objects
 }
 ```
 
@@ -380,6 +410,7 @@ ExcRootObjects struct of *Objects for global domain exclusions
 ```go
 func (e *ExcRootObjects) Find(s string) int
 ```
+
 Find returns the int position of an Objects' element
 
 #### func (*ExcRootObjects) GetList
@@ -387,6 +418,7 @@ Find returns the int position of an Objects' element
 ```go
 func (e *ExcRootObjects) GetList() *Objects
 ```
+
 GetList implements the Contenter interface for ExcRootObjects
 
 #### func (*ExcRootObjects) Len
@@ -394,6 +426,7 @@ GetList implements the Contenter interface for ExcRootObjects
 ```go
 func (e *ExcRootObjects) Len() int
 ```
+
 Len returns how many sources there are
 
 #### func (*ExcRootObjects) SetURL
@@ -401,6 +434,7 @@ Len returns how many sources there are
 ```go
 func (e *ExcRootObjects) SetURL(name, url string)
 ```
+
 SetURL sets the Object's url field value
 
 #### func (*ExcRootObjects) String
@@ -413,7 +447,7 @@ func (e *ExcRootObjects) String() string
 
 ```go
 type FIODataObjects struct {
-	*Objects
+ *Objects
 }
 ```
 
@@ -424,6 +458,7 @@ FIODataObjects struct of *Objects for files
 ```go
 func (f *FIODataObjects) Find(s string) int
 ```
+
 Find returns the int position of an Objects' element
 
 #### func (*FIODataObjects) GetList
@@ -431,6 +466,7 @@ Find returns the int position of an Objects' element
 ```go
 func (f *FIODataObjects) GetList() *Objects
 ```
+
 GetList implements the Contenter interface for FIODataObjects
 
 #### func (*FIODataObjects) Len
@@ -438,6 +474,7 @@ GetList implements the Contenter interface for FIODataObjects
 ```go
 func (f *FIODataObjects) Len() int
 ```
+
 Len returns how many sources there are
 
 #### func (*FIODataObjects) SetURL
@@ -445,6 +482,7 @@ Len returns how many sources there are
 ```go
 func (f *FIODataObjects) SetURL(name, url string)
 ```
+
 SetURL sets the Object's url field value
 
 #### func (*FIODataObjects) String
@@ -457,7 +495,7 @@ func (f *FIODataObjects) String() string
 
 ```go
 type FIODomnObjects struct {
-	*Objects
+ *Objects
 }
 ```
 
@@ -467,7 +505,7 @@ FIODomnObjects struct of *Objects for files
 
 ```go
 type FIOHostObjects struct {
-	*Objects
+ *Objects
 }
 ```
 
@@ -483,20 +521,21 @@ IFace type for labeling interface types
 
 ```go
 const (
-	Invalid IFace = iota + 100
-	ExDmObj
-	ExHtObj
-	ExRtObj
-	FileObj
-	FylDObj
-	FylHObj
-	PreDObj
-	PreHObj
-	PreRObj
-	URLdObj
-	URLhObj
+ Invalid IFace = iota + 100
+ ExDmObj
+ ExHtObj
+ ExRtObj
+ FileObj
+ FylDObj
+ FylHObj
+ PreDObj
+ PreHObj
+ PreRObj
+ URLdObj
+ URLhObj
 )
 ```
+
 IFace types for labeling Content interfaces
 
 #### func (IFace) String
@@ -509,7 +548,7 @@ func (i IFace) String() string
 
 ```go
 type Objects struct {
-	*Env
+ *Env
 }
 ```
 
@@ -520,6 +559,7 @@ Objects is a struct of []*source
 ```go
 func (o *Objects) Files() *CFile
 ```
+
 Files returns a list of dnsmasq conf files from all srcs
 
 #### func (*Objects) Filter
@@ -527,6 +567,7 @@ Files returns a list of dnsmasq conf files from all srcs
 ```go
 func (o *Objects) Filter(ltype string) *Objects
 ```
+
 Filter returns a subset of Objects filtered by ltype
 
 #### func (*Objects) Find
@@ -534,6 +575,7 @@ Filter returns a subset of Objects filtered by ltype
 ```go
 func (o *Objects) Find(elem string) int
 ```
+
 Find returns the int position of an Objects' element
 
 #### func (*Objects) Len
@@ -541,6 +583,7 @@ Find returns the int position of an Objects' element
 ```go
 func (o *Objects) Len() int
 ```
+
 Implement Sort Interface for Objects
 
 #### func (*Objects) Less
@@ -554,6 +597,7 @@ func (o *Objects) Less(i, j int) bool
 ```go
 func (o *Objects) Names() (s sort.StringSlice)
 ```
+
 Names returns a sorted slice of Objects names
 
 #### func (*Objects) String
@@ -561,6 +605,7 @@ Names returns a sorted slice of Objects names
 ```go
 func (o *Objects) String() (s string)
 ```
+
 Stringer for Objects
 
 #### func (*Objects) Swap
@@ -582,6 +627,7 @@ Option is a recursive function
 ```go
 func API(s string) Option
 ```
+
 API sets the EdgeOS CLI API command
 
 #### func  Arch
@@ -589,6 +635,7 @@ API sets the EdgeOS CLI API command
 ```go
 func Arch(s string) Option
 ```
+
 Arch sets target CPU architecture
 
 #### func  Bash
@@ -596,6 +643,7 @@ Arch sets target CPU architecture
 ```go
 func Bash(s string) Option
 ```
+
 Bash sets the shell processor
 
 #### func  Cores
@@ -603,6 +651,7 @@ Bash sets the shell processor
 ```go
 func Cores(i int) Option
 ```
+
 Cores sets max CPU cores
 
 #### func  DNSsvc
@@ -610,6 +659,7 @@ Cores sets max CPU cores
 ```go
 func DNSsvc(s string) Option
 ```
+
 DNSsvc sets dnsmasq restart command
 
 #### func  Dbug
@@ -617,6 +667,7 @@ DNSsvc sets dnsmasq restart command
 ```go
 func Dbug(b bool) Option
 ```
+
 Dbug toggles Debug level on or off
 
 #### func  Dir
@@ -624,6 +675,7 @@ Dbug toggles Debug level on or off
 ```go
 func Dir(s string) Option
 ```
+
 Dir sets directory location
 
 #### func  Disabled
@@ -631,6 +683,7 @@ Dir sets directory location
 ```go
 func Disabled(b bool) Option
 ```
+
 Disabled toggles Disabled
 
 #### func  Ext
@@ -638,6 +691,7 @@ Disabled toggles Disabled
 ```go
 func Ext(s string) Option
 ```
+
 Ext sets the blacklist file n extension
 
 #### func  File
@@ -645,6 +699,7 @@ Ext sets the blacklist file n extension
 ```go
 func File(s string) Option
 ```
+
 File sets the EdgeOS configuration file
 
 #### func  FileNameFmt
@@ -652,6 +707,7 @@ File sets the EdgeOS configuration file
 ```go
 func FileNameFmt(s string) Option
 ```
+
 FileNameFmt sets the EdgeOS configuration file name format
 
 #### func  InCLI
@@ -659,6 +715,7 @@ FileNameFmt sets the EdgeOS configuration file name format
 ```go
 func InCLI(s string) Option
 ```
+
 InCLI sets the CLI inSession command
 
 #### func  Logger
@@ -666,6 +723,7 @@ InCLI sets the CLI inSession command
 ```go
 func Logger(l *logging.Logger) Option
 ```
+
 Logger sets a pointer to the logger
 
 #### func  Method
@@ -673,6 +731,7 @@ Logger sets a pointer to the logger
 ```go
 func Method(s string) Option
 ```
+
 Method sets the HTTP method
 
 #### func  Prefix
@@ -680,6 +739,7 @@ Method sets the HTTP method
 ```go
 func Prefix(d string, h string) Option
 ```
+
 Prefix sets the dnsmasq configuration address line prefix
 
 #### func  Test
@@ -687,6 +747,7 @@ Prefix sets the dnsmasq configuration address line prefix
 ```go
 func Test(b bool) Option
 ```
+
 Test toggles testing mode on or off
 
 #### func  Timeout
@@ -694,6 +755,7 @@ Test toggles testing mode on or off
 ```go
 func Timeout(t time.Duration) Option
 ```
+
 Timeout sets how long before an unresponsive goroutine is aborted
 
 #### func  Verb
@@ -701,6 +763,7 @@ Timeout sets how long before an unresponsive goroutine is aborted
 ```go
 func Verb(b bool) Option
 ```
+
 Verb sets the verbosity level to v
 
 #### func  WCard
@@ -708,13 +771,14 @@ Verb sets the verbosity level to v
 ```go
 func WCard(w Wildcard) Option
 ```
+
 WCard sets file globbing wildcard values
 
 #### type PreDomnObjects
 
 ```go
 type PreDomnObjects struct {
-	*Objects
+ *Objects
 }
 ```
 
@@ -725,6 +789,7 @@ PreDomnObjects struct of *Objects for pre-configured domains content
 ```go
 func (p *PreDomnObjects) Find(s string) int
 ```
+
 Find returns the int position of an Objects' element
 
 #### func (*PreDomnObjects) GetList
@@ -732,6 +797,7 @@ Find returns the int position of an Objects' element
 ```go
 func (p *PreDomnObjects) GetList() *Objects
 ```
+
 GetList implements the Contenter interface for PreDomnObjects
 
 #### func (*PreDomnObjects) Len
@@ -739,6 +805,7 @@ GetList implements the Contenter interface for PreDomnObjects
 ```go
 func (p *PreDomnObjects) Len() int
 ```
+
 Len returns how many sources there are
 
 #### func (*PreDomnObjects) SetURL
@@ -746,6 +813,7 @@ Len returns how many sources there are
 ```go
 func (p *PreDomnObjects) SetURL(name, url string)
 ```
+
 SetURL sets the Object's url field value
 
 #### func (*PreDomnObjects) String
@@ -758,7 +826,7 @@ func (p *PreDomnObjects) String() string
 
 ```go
 type PreHostObjects struct {
-	*Objects
+ *Objects
 }
 ```
 
@@ -769,6 +837,7 @@ PreHostObjects struct of *Objects for pre-configured hosts content
 ```go
 func (p *PreHostObjects) Find(s string) int
 ```
+
 Find returns the int position of an Objects' element
 
 #### func (*PreHostObjects) GetList
@@ -776,6 +845,7 @@ Find returns the int position of an Objects' element
 ```go
 func (p *PreHostObjects) GetList() *Objects
 ```
+
 GetList implements the Contenter interface for PreHostObjects
 
 #### func (*PreHostObjects) Len
@@ -783,6 +853,7 @@ GetList implements the Contenter interface for PreHostObjects
 ```go
 func (p *PreHostObjects) Len() int
 ```
+
 Len returns how many sources there are
 
 #### func (*PreHostObjects) SetURL
@@ -790,6 +861,7 @@ Len returns how many sources there are
 ```go
 func (p *PreHostObjects) SetURL(name, url string)
 ```
+
 SetURL sets the Object's url field value
 
 #### func (*PreHostObjects) String
@@ -802,7 +874,7 @@ func (p *PreHostObjects) String() string
 
 ```go
 type PreRootObjects struct {
-	*Objects
+ *Objects
 }
 ```
 
@@ -813,6 +885,7 @@ PreRootObjects struct of *Objects for pre-configured hosts content
 ```go
 func (p *PreRootObjects) Find(s string) int
 ```
+
 Find returns the int position of an Objects' element
 
 #### func (*PreRootObjects) GetList
@@ -820,6 +893,7 @@ Find returns the int position of an Objects' element
 ```go
 func (p *PreRootObjects) GetList() *Objects
 ```
+
 GetList implements the Contenter interface for PreRootObjects
 
 #### func (*PreRootObjects) Len
@@ -827,6 +901,7 @@ GetList implements the Contenter interface for PreRootObjects
 ```go
 func (p *PreRootObjects) Len() int
 ```
+
 Len returns how many sources there are
 
 #### func (*PreRootObjects) SetURL
@@ -834,6 +909,7 @@ Len returns how many sources there are
 ```go
 func (p *PreRootObjects) SetURL(name, url string)
 ```
+
 SetURL sets the Object's url field value
 
 #### func (*PreRootObjects) String
@@ -846,7 +922,7 @@ func (p *PreRootObjects) String() string
 
 ```go
 type URLDomnObjects struct {
-	*Objects
+ *Objects
 }
 ```
 
@@ -857,6 +933,7 @@ URLDomnObjects struct of *Objects for domain URLs
 ```go
 func (u *URLDomnObjects) Find(s string) int
 ```
+
 Find returns the int position of an Objects' element
 
 #### func (*URLDomnObjects) GetList
@@ -864,6 +941,7 @@ Find returns the int position of an Objects' element
 ```go
 func (u *URLDomnObjects) GetList() *Objects
 ```
+
 GetList implements the Contenter interface for URLDomnObjects
 
 #### func (*URLDomnObjects) Len
@@ -871,6 +949,7 @@ GetList implements the Contenter interface for URLDomnObjects
 ```go
 func (u *URLDomnObjects) Len() int
 ```
+
 Len returns how many sources there are
 
 #### func (*URLDomnObjects) SetURL
@@ -878,6 +957,7 @@ Len returns how many sources there are
 ```go
 func (u *URLDomnObjects) SetURL(name, url string)
 ```
+
 SetURL sets the Object's url field value
 
 #### func (*URLDomnObjects) String
@@ -890,7 +970,7 @@ func (u *URLDomnObjects) String() string
 
 ```go
 type URLHostObjects struct {
-	*Objects
+ *Objects
 }
 ```
 
@@ -901,6 +981,7 @@ URLHostObjects struct of *Objects for host URLs
 ```go
 func (u *URLHostObjects) Find(s string) int
 ```
+
 Find returns the int position of an Objects' element
 
 #### func (*URLHostObjects) GetList
@@ -908,6 +989,7 @@ Find returns the int position of an Objects' element
 ```go
 func (u *URLHostObjects) GetList() *Objects
 ```
+
 GetList implements the Contenter interface for URLHostObjects
 
 #### func (*URLHostObjects) Len
@@ -915,6 +997,7 @@ GetList implements the Contenter interface for URLHostObjects
 ```go
 func (u *URLHostObjects) Len() int
 ```
+
 Len returns how many sources there are
 
 #### func (*URLHostObjects) SetURL
@@ -922,6 +1005,7 @@ Len returns how many sources there are
 ```go
 func (u *URLHostObjects) SetURL(name, url string)
 ```
+
 SetURL sets the Object's url field value
 
 #### func (*URLHostObjects) String
@@ -934,8 +1018,8 @@ func (u *URLHostObjects) String() string
 
 ```go
 type Wildcard struct {
-	Node string `json:"Node,omitempty"`
-	Name string `json:"Name,omitempty"`
+ Node string `json:"Node,omitempty"`
+ Name string `json:"Name,omitempty"`
 }
 ```
 
