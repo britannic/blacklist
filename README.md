@@ -24,7 +24,7 @@ Please show your thanks by donating to the project using [Square Cash](https://c
 
 We greatly appreciate any and all donations - thank you! Funds go to maintaining development servers and networks.
 
-## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti Networks®
+## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti NetworksÂ®
 
 ## **Contents**
 
@@ -69,7 +69,7 @@ EdgeMax dnsmasq DNS blacklisting and redirection is inspired by the users at [Ub
 
 ## **Copyright**
 
-* Copyright © 2021 [Helm Rock Consulting](https://www.helmrock.com/ "Visit Helm Rock Consulting at https://www.helmrock.com/")
+* Copyright Â© 2023 [Helm Rock Consulting](https://www.helmrock.com/ "Visit Helm Rock Consulting at https://www.helmrock.com/")
 
 [[Top]](#contents)
 
