@@ -234,9 +234,9 @@ update_dns_config() {
 	try set service dns forwarding blacklist hosts exclude cfvod.kaltura.com
 	try set service dns forwarding blacklist hosts include ads.feedly.com
 	try set service dns forwarding blacklist hosts include beap.gemini.yahoo.com
-	try set service dns forwarding blacklist hosts source githubSteveBlack description '"Blacklists adware and malware websites"'
-	try set service dns forwarding blacklist hosts source githubSteveBlack prefix '0.0.0.0 '
-	try set service dns forwarding blacklist hosts source githubSteveBlack url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'
+	# try set service dns forwarding blacklist hosts source githubSteveBlack description '"Blacklists adware and malware websites"'
+	# try set service dns forwarding blacklist hosts source githubSteveBlack prefix '0.0.0.0 '
+	# try set service dns forwarding blacklist hosts source githubSteveBlack url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'
 	try set service dns forwarding blacklist hosts source openphish description '"OpenPhish automatic phishing detection"'
 	try set service dns forwarding blacklist hosts source openphish prefix 'http'
 	try set service dns forwarding blacklist hosts source openphish url 'https://openphish.com/feed.txt'
