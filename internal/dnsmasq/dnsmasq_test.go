@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"path/filepath"
 	"testing"
 
@@ -32,7 +31,7 @@ func TestConfigFile(t *testing.T) {
 						Printf("cannot open configuration file %s!", f)
 					}
 
-					b, _ = ioutil.ReadAll(r)
+					b, _ = io.ReadAll(r)
 					c := make(Conf)
 					ip := "0.0.0.0"
 					So(c.Parse(&Mapping{Contents: b}), ShouldBeNil)

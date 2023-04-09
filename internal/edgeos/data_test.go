@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"sort"
 	"strings"
@@ -91,7 +90,7 @@ func TestFormatData(t *testing.T) {
 
 			sort.Strings(lines)
 			expBytes = []byte(strings.Join(lines, ""))
-			actBytes, err := ioutil.ReadAll(formatData(fmttr, actList))
+			actBytes, err := io.ReadAll(formatData(fmttr, actList))
 
 			So(err, ShouldBeNil)
 			So(actBytes, ShouldResemble, expBytes)

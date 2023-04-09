@@ -38,7 +38,7 @@ func (d *dummyConfig) ProcessContent(cts ...Contenter) error {
 			src.ctr.Lock()
 			src.ctr.stat[area] = tally
 			src.ctr.Unlock()
-			b, _ := ioutil.ReadAll(src.process().r)
+			b, _ := io.ReadAll(src.process().r)
 			d.s = append(d.s, strings.TrimSuffix(string(b), "\n"))
 		}
 	}
@@ -902,7 +902,7 @@ address=/really.bad.phishing.site.ru/10.10.10.10
 						reader, err := GetFile(tt.f)
 						So(err, ShouldBeNil)
 
-						act, err := ioutil.ReadAll(reader)
+						act, err := io.ReadAll(reader)
 						So(err, ShouldBeNil)
 
 						Convey("Testing "+tt.name+" ProcessContent(): file data should match expected", func() {

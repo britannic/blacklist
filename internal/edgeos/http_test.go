@@ -2,7 +2,7 @@ package edgeos
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -70,7 +70,7 @@ func TestGetHTTP(t *testing.T) {
 				fmt.Printf("Test: %v, error: %v\n", i, o.err)
 			}
 
-			act, err := ioutil.ReadAll(o.r)
+			act, err := io.ReadAll(o.r)
 			So(err, ShouldBeNil)
 
 			So(string(act), ShouldEqual, tt.exp)
@@ -103,7 +103,7 @@ func TestMyHandler(t *testing.T) {
 			So(resp.StatusCode, ShouldEqual, 200)
 
 			exp := fmt.Sprintf("Visitor count: %d.", i)
-			act, err := ioutil.ReadAll(resp.Body)
+			act, err := io.ReadAll(resp.Body)
 			So(err, ShouldBeNil)
 			So(string(act), ShouldEqual, exp)
 		}

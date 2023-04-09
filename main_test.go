@@ -5,7 +5,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -35,7 +34,7 @@ var update = flag.Bool("update", false, "update .golden files")
 
 func readGolden(t *testing.T, name string) []byte {
 	path := filepath.Join("testdata", name+".golden") // relative path
-	bytes, err := ioutil.ReadFile(path)
+	bytes, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,7 +44,7 @@ func readGolden(t *testing.T, name string) []byte {
 func writeGolden(t *testing.T, actual []byte, name string) error {
 	golden := filepath.Join("testdata", name+".golden")
 	if *update {
-		return ioutil.WriteFile(golden, actual, 0o644)
+		return os.WriteFile(golden, actual, 0o644)
 	}
 	return nil
 }

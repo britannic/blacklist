@@ -2,6 +2,7 @@ package edgeos
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -24,7 +25,7 @@ func TestLoad(t *testing.T) {
 		So(err, ShouldNotBeNil)
 
 		r := CFGcli{Config: c}
-		act, err := ioutil.ReadAll(r.read())
+		act, err := io.ReadAll(r.read())
 		So(err, ShouldBeNil)
 		So(string(act), ShouldEqual, "")
 

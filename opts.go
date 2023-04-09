@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
@@ -59,7 +58,7 @@ func (o *opts) getCFG(c *e.Config) e.ConfLoader {
 			logFatalf("cannot open configuration file %s!", *o.File)
 		}
 
-		if f, err = ioutil.ReadAll(r); err != nil {
+		if f, err = io.ReadAll(r); err != nil {
 			logFatalf("cannot read configuration file %s!", *o.File)
 		}
 		return &e.CFGstatic{Config: c, Cfg: string(f)}

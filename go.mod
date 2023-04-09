@@ -8,6 +8,7 @@ require (
 	github.com/smartystreets/goconvey v1.7.2
 	golang.org/x/sync v0.1.0
 	golang.org/x/term v0.7.0
+	golang.org/x/tools v0.0.0-20190328211700-ab21143f2384
 )
 
 require (

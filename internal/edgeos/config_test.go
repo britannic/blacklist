@@ -396,7 +396,7 @@ func TestReadCfg(t *testing.T) {
 			Printf("cannot open configuration file %s!", f)
 		}
 
-		b, _ = ioutil.ReadAll(r)
+		b, _ = io.ReadAll(r)
 
 		Convey("Testing with a configuration loaded from a file", func() {
 			act := NewConfig().Blacklist(&CFGstatic{Cfg: string(b)})

@@ -3,7 +3,7 @@ package edgeos
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -33,7 +33,7 @@ func download(s *source) *source {
 		return s
 	}
 
-	body, err = ioutil.ReadAll(resp.Body)
+	body, err = io.ReadAll(resp.Body)
 
 	if len(body) < 1 {
 		str := fmt.Sprintf("No data returned for %s", s.url)
