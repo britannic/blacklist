@@ -2,8 +2,8 @@
 
 ## Release 1.2.4.8 (April 9, 2023)
 
-* Fix [Issue #55](https://github.com/britannic/blacklist/issues/55) documentation issue for obsolete malwaredomains example
-* Fix [Issue #56](https://github.com/britannic/blacklist/issues/56) removed large source [StevenBlack/hosts](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts) as it prevented dnsmasq from starting on ER-X routers
+* Fixed [Issue #55](https://github.com/britannic/blacklist/issues/55) documentation issue for obsolete malwaredomains example
+* Fixed [Issue #56](https://github.com/britannic/blacklist/issues/56) removed large source [StevenBlack/hosts](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts) as it prevented dnsmasq from starting on ER-X routers
 
 * It can be installed using
 
