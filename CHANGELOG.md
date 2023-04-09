@@ -3,7 +3,7 @@
 ## Release 1.2.4.8 (April 9, 2023)
 
 * Fixed documentation issue
-* Remove large source https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts as it prevented dnsmasq from starting on ER-X routers
+* Fix [Issue #56](https://github.com/britannic/blacklist/issues/56) removed large source https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts as it prevented dnsmasq from starting on ER-X routers
 
 * It can be installed using
 

@@ -373,11 +373,11 @@ delete service dns forwarding blacklist hosts source yoyo.org
 commit;save;exit
 ```
 
-* To add a source, first check it can serve a text list and also note the prefix (if any) before the hosts or domains, e.g. [http://www.malwaredomainlist.com/](http://www.malwaredomainlist.com/) has this format:
+* To add a source, first check it can serve a text list and also note the prefix (if any) before the hosts or domains, e.g. [No Coin Filter](https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt) has this format:
 
 ```text
-#               MalwareDomainList.com Hosts List           #
-#   http://www.malwaredomainlist.com/hostslist/hosts.txt   #
+#               No Coin Filter List           #
+#   https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt   #
 #         Last updated: Mon, 04 Dec 17 19:18:42 +0000      #
 
 
@@ -392,9 +392,9 @@ commit;save;exit
 
 ```bash
 configure
-set service dns forwarding blacklist hosts source malwaredomainlist description '127.0.0.1 based host and domain list'
-set service dns forwarding blacklist hosts source malwaredomainlist prefix '127.0.0.1  '
-set service dns forwarding blacklist hosts source malwaredomainlist url 'http://www.malwaredomainlist.com/hostslist/hosts.txt'
+set service dns forwarding blacklist hosts source nocoinfilterlist description '127.0.0.1 based host and domain list'
+set service dns forwarding blacklist hosts source nocoinfilterlist prefix '127.0.0.1  '
+set service dns forwarding blacklist hosts source nocoinfilterlist url 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'
 commit;save;exit
 ```
 
