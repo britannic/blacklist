@@ -69,7 +69,7 @@ EdgeMax dnsmasq DNS blacklisting and redirection is inspired by the users at [Ub
 
 ## **Copyright**
 
-* Copyright © 2021 [Helm Rock Consulting](https://www.helmrock.com/ "Visit Helm Rock Consulting at https://www.helmrock.com/")
+* Copyright © 2023 [Helm Rock Consulting](https://www.helmrock.com/ "Visit Helm Rock Consulting at https://www.helmrock.com/")
 
 [[Top]](#contents)
 
