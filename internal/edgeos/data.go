@@ -14,7 +14,7 @@ import (
 // ntype for labeling blacklist source types
 type ntype int
 
-//go:generate stringer -type=ntype
+//go:generate go run golang.org/x/tools/cmd/stringer -type=ntype
 // ntype label blacklist source types
 const (
 	unknown ntype = iota // denotes a coding error

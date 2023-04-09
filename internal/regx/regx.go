@@ -12,7 +12,7 @@ import (
 // Leaf is a config label
 type Leaf int
 
-//go:generate stringer -type=Leaf
+//ggo:generate go run golang.org/x/tools/cmd/stringer -type=Leaf
 // Leaf label regx map keys
 const (
 	CMNT Leaf = iota + 1000

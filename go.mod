@@ -1,6 +1,6 @@
 module github.com/britannic/blacklist
 
-go 1.17
+go 1.20
 
 require (
 	github.com/britannic/go-logging v2.0.1+incompatible
