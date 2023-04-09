@@ -1,5 +1,18 @@
 # Changelog
 
+## Release 1.2.4.8 (April 9, 2023)
+
+* Fix [Issue #55](https://github.com/britannic/blacklist/issues/55) documentation issue for obsolete malwaredomains example
+* Fix [Issue #56](https://github.com/britannic/blacklist/issues/56) removed large source [StevenBlack/hosts](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts) as it prevented dnsmasq from starting on ER-X routers
+
+* It can be installed using
+
+```bash
+set service dns forwarding blacklist hosts source githubSteveBlack url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'
+set service dns forwarding blacklist hosts source githubSteveBlack description '"Blacklists adware and malware websites"'
+set service dns forwarding blacklist hosts source githubSteveBlack prefix '0.0.0.0 '
+```
+
 ## Release 1.2.4.7 (December 18, 2021)
 
 Change recommended by [amoeba00](https://community.ui.com/user/amoeba00/9f2abc79-fcd8-4dda-9233-c0306f22f4df)

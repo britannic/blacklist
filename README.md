@@ -1,6 +1,6 @@
 # **UBNT edgeos-dnsmasq-blacklist dnsmasq DNS Blacklisting and Redirection**
 
-[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt "View the software license here")[![Version](https://img.shields.io/badge/version-v1.2.4.7-green.svg)](https://github.com/britannic/blacklist "Latest version")[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist  "Go documentation")[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist  "Build status for this version")[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master "")](https://coveralls.io/github/britannic/blacklist?branch=master "Test coverage status for this version")[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist "Quality of Go code for this version")
+[![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/britannic/blacklist/blob/master/LICENSE.txt "View the software license here")[![Version](https://img.shields.io/badge/version-v1.2.4.8-green.svg)](https://github.com/britannic/blacklist "Latest version")[![GoDoc](https://godoc.org/github.com/britannic/blacklist?status.svg)](https://godoc.org/github.com/britannic/blacklist  "Go documentation")[![Build Status](https://travis-ci.org/britannic/blacklist.svg?branch=master)](https://travis-ci.org/britannic/blacklist  "Build status for this version")[![Coverage Status](https://coveralls.io/repos/github/britannic/blacklist/badge.svg?branch=master "")](https://coveralls.io/github/britannic/blacklist?branch=master "Test coverage status for this version")[![Go Report Card](https://goreportcard.com/badge/gojp/goreportcard)](https://goreportcard.com/report/github.com/britannic/blacklist "Quality of Go code for this version")
 
 Follow the conversation @ [community.ui.com](https://community.ui.com/questions/DNS-Adblocking-and-Blacklisting-dnsmasq-Configuration-Integration-Package-v1-2-4-5/eb05f1b2-5316-4a80-8221-5e8b02575da4)
 
@@ -24,7 +24,7 @@ Please show your thanks by donating to the project using [Square Cash](https://c
 
 We greatly appreciate any and all donations - thank you! Funds go to maintaining development servers and networks.
 
-## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti NetworksÂ®
+## Note: This is 3rd party software and isn't supported or endorsed by Ubiquiti Networks®
 
 ## **Contents**
 
@@ -69,7 +69,7 @@ EdgeMax dnsmasq DNS blacklisting and redirection is inspired by the users at [Ub
 
 ## **Copyright**
 
-* Copyright Â© 2023 [Helm Rock Consulting](https://www.helmrock.com/ "Visit Helm Rock Consulting at https://www.helmrock.com/")
+* Copyright © 2021 [Helm Rock Consulting](https://www.helmrock.com/ "Visit Helm Rock Consulting at https://www.helmrock.com/")
 
 [[Top]](#contents)
 
@@ -103,13 +103,20 @@ modification, are permitted provided that the following conditions are met:
 
 ## **Latest Version**
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.2.4.7-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.2.4.8-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-## Release 1.2.4.7 (December 18, 2021)
+## Release 1.2.4.8 (April 9, 2023)
 
-Change recommended by [amoeba00](https://community.ui.com/user/amoeba00/9f2abc79-fcd8-4dda-9233-c0306f22f4df)
+* Fix [Issue #55](https://github.com/britannic/blacklist/issues/55) documentation issue for obsolete malwaredomains example
+* Fix [Issue #56](https://github.com/britannic/blacklist/issues/56) removed large source [StevenBlack/hosts](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts) as it prevented dnsmasq from starting on ER-X routers
 
-* Remove extinct source malwaredomains.com
+* It can be installed using
+
+```bash
+set service dns forwarding blacklist hosts source githubSteveBlack url 'https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'
+set service dns forwarding blacklist hosts source githubSteveBlack description '"Blacklists adware and malware websites"'
+set service dns forwarding blacklist hosts source githubSteveBlack prefix '0.0.0.0 '
+```
 
 [[Top]](#contents)
 
@@ -182,8 +189,8 @@ apt --fix-broken install
 ### **EdgeRouter ERLite-3, ERPoe-5, ER4, UniFi-Gateway-3 & UniFi-Gateway-4**
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.2.4.7_mips.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.2.4.7_mips.deb
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.2.4.8_mips.deb
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.2.4.8_mips.deb
 ```
 
 [[Top]](#contents)
@@ -200,8 +207,8 @@ delete system image
 * Now download and install the edgeos-dnsmasq-blacklist package
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.2.4.7_mipsel.deb
-sudo dpkg -i edgeos-dnsmasq-blacklist_1.2.4.7_mipsel.deb
+curl -L -O https://raw.githubusercontent.com/britannic/blacklist/master/edgeos-dnsmasq-blacklist_1.2.4.8_mipsel.deb
+sudo dpkg -i edgeos-dnsmasq-blacklist_1.2.4.8_mipsel.deb
 ```
 
 [[Top]](#contents)
@@ -373,11 +380,11 @@ delete service dns forwarding blacklist hosts source yoyo.org
 commit;save;exit
 ```
 
-* To add a source, first check it can serve a text list and also note the prefix (if any) before the hosts or domains, e.g. [http://www.malwaredomainlist.com/](http://www.malwaredomainlist.com/) has this format:
+* To add a source, first check it can serve a text list and also note the prefix (if any) before the hosts or domains, e.g. [No Coin Filter](https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt) has this format:
 
 ```text
-#               MalwareDomainList.com Hosts List           #
-#   http://www.malwaredomainlist.com/hostslist/hosts.txt   #
+#               No Coin Filter List           #
+#   https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt   #
 #         Last updated: Mon, 04 Dec 17 19:18:42 +0000      #
 
 
@@ -392,9 +399,9 @@ commit;save;exit
 
 ```bash
 configure
-set service dns forwarding blacklist hosts source malwaredomainlist description '127.0.0.1 based host and domain list'
-set service dns forwarding blacklist hosts source malwaredomainlist prefix '127.0.0.1  '
-set service dns forwarding blacklist hosts source malwaredomainlist url 'http://www.malwaredomainlist.com/hostslist/hosts.txt'
+set service dns forwarding blacklist hosts source nocoinfilterlist description '127.0.0.1 based host and domain list'
+set service dns forwarding blacklist hosts source nocoinfilterlist prefix '127.0.0.1  '
+set service dns forwarding blacklist hosts source nocoinfilterlist url 'https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt'
 commit;save;exit
 ```
 
