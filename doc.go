@@ -167,7 +167,7 @@
 //
 // • edgeos-dnsmasq-blacklist has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X and UniFi Security Gateway USG-3 routers
 //
-// • EdgeMAX versions: v1.9.7+hotfix.4-v1.10.1, UniFi: v4.4.12-v4.4.18
+// • EdgeMAX versions: v1.9.7+hotfix.6-v1.10.1, UniFi: v4.4.12-v4.4.18
 //
 // • integration could be adapted to work on VyOS and Vyatta derived ports, since  EdgeOS is a fork and port of Vyatta 6.3
 //

@@ -138,7 +138,7 @@ set service dns forwarding blacklist hosts source githubSteveBlack prefix '0.0.0
 ## **Compatibility**
 
 * edgeos-dnsmasq-blacklist has been tested on the EdgeRouter ERLite-3, ERPoe-5, ER-X, ER4, UniFi Security Gateway USG3 and USG4 routers
-  * EdgeMAX versions: v1.9.7+hotfix.4-v2.0.9-hotfix.4
+  * EdgeMAX versions: v1.9.7+hotfix.6-v2.0.9-hotfix.6
   * UniFi versions: 4.4.34.5140624-4.4.57.5578372
 
 
