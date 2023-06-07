@@ -6,7 +6,7 @@ import (
 )
 
 // ShouldPanic receives a void, niladic function and expects to recover a panic.
-func ShouldPanic(actual interface{}, expected ...interface{}) (message string) {
+func ShouldPanic(actual any, expected ...any) (message string) {
 	if fail := need(0, expected); fail != success {
 		return fail
 	}
@@ -32,7 +32,7 @@ func ShouldPanic(actual interface{}, expected ...interface{}) (message string) {
 }
 
 // ShouldNotPanic receives a void, niladic function and expects to execute the function without any panic.
-func ShouldNotPanic(actual interface{}, expected ...interface{}) (message string) {
+func ShouldNotPanic(actual any, expected ...any) (message string) {
 	if fail := need(0, expected); fail != success {
 		return fail
 	}
@@ -58,8 +58,8 @@ func ShouldNotPanic(actual interface{}, expected ...interface{}) (message string
 }
 
 // ShouldPanicWith receives a void, niladic function and expects to recover a panic with the second argument as the content.
-// If the expected value is an error and the recovered value is an error, errors.Is is used to compare them.
-func ShouldPanicWith(actual interface{}, expected ...interface{}) (message string) {
+// If the expected value is an error and the recovered value is an error, errors.Is will be used to compare them.
+func ShouldPanicWith(actual any, expected ...any) (message string) {
 	if fail := need(1, expected); fail != success {
 		return fail
 	}
@@ -93,8 +93,8 @@ func ShouldPanicWith(actual interface{}, expected ...interface{}) (message strin
 }
 
 // ShouldNotPanicWith receives a void, niladic function and expects to recover a panic whose content differs from the second argument.
-// If the expected value is an error and the recovered value is an error, errors.Is is used to compare them.
-func ShouldNotPanicWith(actual interface{}, expected ...interface{}) (message string) {
+// If the expected value is an error and the recovered value is an error, errors.Is will be used to compare them.
+func ShouldNotPanicWith(actual any, expected ...any) (message string) {
 	if fail := need(1, expected); fail != success {
 		return fail
 	}

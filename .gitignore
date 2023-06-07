@@ -43,3 +43,4 @@ blacklist.*
 vendor/
 
 
+update-dnsmasq.arm64

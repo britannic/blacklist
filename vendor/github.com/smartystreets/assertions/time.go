@@ -6,7 +6,7 @@ import (
 )
 
 // ShouldHappenBefore receives exactly 2 time.Time arguments and asserts that the first happens before the second.
-func ShouldHappenBefore(actual interface{}, expected ...interface{}) string {
+func ShouldHappenBefore(actual any, expected ...any) string {
 	if fail := need(1, expected); fail != success {
 		return fail
 	}
@@ -25,7 +25,7 @@ func ShouldHappenBefore(actual interface{}, expected ...interface{}) string {
 }
 
 // ShouldHappenOnOrBefore receives exactly 2 time.Time arguments and asserts that the first happens on or before the second.
-func ShouldHappenOnOrBefore(actual interface{}, expected ...interface{}) string {
+func ShouldHappenOnOrBefore(actual any, expected ...any) string {
 	if fail := need(1, expected); fail != success {
 		return fail
 	}
@@ -43,7 +43,7 @@ func ShouldHappenOnOrBefore(actual interface{}, expected ...interface{}) string 
 }
 
 // ShouldHappenAfter receives exactly 2 time.Time arguments and asserts that the first happens after the second.
-func ShouldHappenAfter(actual interface{}, expected ...interface{}) string {
+func ShouldHappenAfter(actual any, expected ...any) string {
 	if fail := need(1, expected); fail != success {
 		return fail
 	}
@@ -60,7 +60,7 @@ func ShouldHappenAfter(actual interface{}, expected ...interface{}) string {
 }
 
 // ShouldHappenOnOrAfter receives exactly 2 time.Time arguments and asserts that the first happens on or after the second.
-func ShouldHappenOnOrAfter(actual interface{}, expected ...interface{}) string {
+func ShouldHappenOnOrAfter(actual any, expected ...any) string {
 	if fail := need(1, expected); fail != success {
 		return fail
 	}
@@ -77,7 +77,7 @@ func ShouldHappenOnOrAfter(actual interface{}, expected ...interface{}) string {
 }
 
 // ShouldHappenBetween receives exactly 3 time.Time arguments and asserts that the first happens between (not on) the second and third.
-func ShouldHappenBetween(actual interface{}, expected ...interface{}) string {
+func ShouldHappenBetween(actual any, expected ...any) string {
 	if fail := need(2, expected); fail != success {
 		return fail
 	}
@@ -99,7 +99,7 @@ func ShouldHappenBetween(actual interface{}, expected ...interface{}) string {
 }
 
 // ShouldHappenOnOrBetween receives exactly 3 time.Time arguments and asserts that the first happens between or on the second and third.
-func ShouldHappenOnOrBetween(actual interface{}, expected ...interface{}) string {
+func ShouldHappenOnOrBetween(actual any, expected ...any) string {
 	if fail := need(2, expected); fail != success {
 		return fail
 	}
@@ -118,7 +118,7 @@ func ShouldHappenOnOrBetween(actual interface{}, expected ...interface{}) string
 
 // ShouldNotHappenOnOrBetween receives exactly 3 time.Time arguments and asserts that the first
 // does NOT happen between or on the second or third.
-func ShouldNotHappenOnOrBetween(actual interface{}, expected ...interface{}) string {
+func ShouldNotHappenOnOrBetween(actual any, expected ...any) string {
 	if fail := need(2, expected); fail != success {
 		return fail
 	}
@@ -141,7 +141,7 @@ func ShouldNotHappenOnOrBetween(actual interface{}, expected ...interface{}) str
 // ShouldHappenWithin receives a time.Time, a time.Duration, and a time.Time (3 arguments)
 // and asserts that the first time.Time happens within or on the duration specified relative to
 // the other time.Time.
-func ShouldHappenWithin(actual interface{}, expected ...interface{}) string {
+func ShouldHappenWithin(actual any, expected ...any) string {
 	if fail := need(2, expected); fail != success {
 		return fail
 	}
@@ -161,7 +161,7 @@ func ShouldHappenWithin(actual interface{}, expected ...interface{}) string {
 // ShouldNotHappenWithin receives a time.Time, a time.Duration, and a time.Time (3 arguments)
 // and asserts that the first time.Time does NOT happen within or on the duration specified relative to
 // the other time.Time.
-func ShouldNotHappenWithin(actual interface{}, expected ...interface{}) string {
+func ShouldNotHappenWithin(actual any, expected ...any) string {
 	if fail := need(2, expected); fail != success {
 		return fail
 	}
@@ -180,7 +180,7 @@ func ShouldNotHappenWithin(actual interface{}, expected ...interface{}) string {
 
 // ShouldBeChronological receives a []time.Time slice and asserts that they are
 // in chronological order starting with the first time.Time as the earliest.
-func ShouldBeChronological(actual interface{}, expected ...interface{}) string {
+func ShouldBeChronological(actual any, expected ...any) string {
 	if fail := need(0, expected); fail != success {
 		return fail
 	}
@@ -203,7 +203,7 @@ func ShouldBeChronological(actual interface{}, expected ...interface{}) string {
 
 // ShouldNotBeChronological receives a []time.Time slice and asserts that they are
 // NOT in chronological order.
-func ShouldNotBeChronological(actual interface{}, expected ...interface{}) string {
+func ShouldNotBeChronological(actual any, expected ...any) string {
 	if fail := need(0, expected); fail != success {
 		return fail
 	}
@@ -214,5 +214,5 @@ func ShouldNotBeChronological(actual interface{}, expected ...interface{}) strin
 	if result != "" {
 		return ""
 	}
-	return shouldNotHaveBeenchronological
+	return shouldNotHaveBeenChronological
 }

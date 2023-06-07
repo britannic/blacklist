@@ -9,8 +9,9 @@ const (
 	shouldHaveBeenAlmostEqual    = "Expected '%v' to almost equal '%v' (but it didn't)!"
 	shouldHaveNotBeenAlmostEqual = "Expected '%v' to NOT almost equal '%v' (but it did)!"
 
-	shouldHaveResembled    = "Expected: '%s'\nActual:   '%s'\n(Should resemble)!"
-	shouldNotHaveResembled = "Expected        '%#v'\nto NOT resemble '%#v'\n(but it did)!"
+	shouldHaveResembled            = "Expected: '%s'\nActual:   '%s'\n(Should resemble)!"
+	shouldHaveResembledButTypeDiff = "Expected: '%s'\nActual:   '%s'\n(Should resemble, but there is a type difference within the two)!"
+	shouldNotHaveResembled         = "Expected        '%#v'\nto NOT resemble '%#v'\n(but it did)!"
 
 	shouldBePointers            = "Both arguments should be pointers "
 	shouldHaveBeenNonNilPointer = shouldBePointers + "(the %s was %s)!"
@@ -104,5 +105,5 @@ const (
 
 	// format params: incorrect-index, previous-index, previous-time, incorrect-index, incorrect-time
 	shouldHaveBeenChronological    = "The 'Time' at index [%d] should have happened after the previous one (but it didn't!):\n  [%d]: %s\n  [%d]: %s (see, it happened before!)"
-	shouldNotHaveBeenchronological = "The provided times should NOT be chronological, but they were."
+	shouldNotHaveBeenChronological = "The provided times should NOT be chronological, but they were."
 )
