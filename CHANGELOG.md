@@ -1,5 +1,9 @@
 # Changelog
 
+## Release 1.2.4.9 (June 7, 2023)
+
+* Fixed [Issue #66](https://github.com/britannic/blacklist/issues/66) documentation issue
+
 ## Release 1.2.4.8 (April 9, 2023)
 
 * Fixed [Issue #55](https://github.com/britannic/blacklist/issues/55) documentation issue for obsolete malwaredomains example
