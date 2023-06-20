@@ -7,7 +7,7 @@ require (
 	github.com/britannic/mflag v0.0.0-20180122040631-112278387586
 	github.com/smartystreets/goconvey v1.8.0
 	golang.org/x/sync v0.3.0
-	golang.org/x/term v0.8.0
+	golang.org/x/term v0.9.0
 	golang.org/x/tools v0.10.0
 )
 
