@@ -105,10 +105,9 @@ modification, are permitted provided that the following conditions are met:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Latest](https://img.shields.io/badge/Release-v1.2.4.9-green.svg)](https://github.com/britannic/blacklist/releases/latest  "Latest version")
 
-## Release 1.2.4.8 (April 9, 2023)
+## Release 1.2.4.9 (June 7, 2023)
 
-* Fixed [Issue #55](https://github.com/britannic/blacklist/issues/55) documentation issue for obsolete malwaredomains example
-* Fixed [Issue #56](https://github.com/britannic/blacklist/issues/56) removed large source [StevenBlack/hosts](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts) as it prevented dnsmasq from starting on ER-X routers
+* Fixed [Issue #66](https://github.com/britannic/blacklist/issues/66) documentation issue* Fixed [Issue #56](https://github.com/britannic/blacklist/issues/56) removed large source [StevenBlack/hosts](https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts) as it prevented dnsmasq from starting on ER-X routers
 
 * It can be installed using
 
